@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -477,7 +476,6 @@ static void hc32_uart_rx_timeout(struct rt_serial_device *serial)
     FCG_TMR0_CLK(uart->config->rx_timeout->clock, ENABLE);
 
     /* TIMER0 basetimer function initialize */
-    TMR0_DeInit(TMR0_Instance);
     TMR0_SetCountValue(TMR0_Instance, ch, 0U);
     TMR0_StructInit(&stcTmr0Init);
     stcTmr0Init.u32ClockDiv = TMR0_CLK_DIV1;
