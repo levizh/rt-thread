@@ -83,6 +83,7 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
+#define RT_USING_WDT
 
 /* Using USB */
 
@@ -213,9 +214,13 @@
 
 /* Device Control */
 
+<<<<<<< HEAD
 
 /* Other */
+=======
+>>>>>>> 62477b07b (modfly drv_wdt.c,add drv_wdt_sample.c)
 
+/* Other */
 
 /* Signal IO */
 
@@ -237,6 +242,7 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_USING_WDT
 
 /* Board extended module Drivers */
 

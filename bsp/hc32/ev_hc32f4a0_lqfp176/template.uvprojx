@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>HC32F4A0SITB</Device>
           <Vendor>HDSC</Vendor>
-          <PackID>HDSC.HC32F4A0.1.0.6</PackID>
+          <PackID>HDSC.HC32F4A0.1.0.7</PackID>
           <PackURL>https://raw.githubusercontent.com/hdscmcu/pack/master/</PackURL>
           <Cpu>IROM(0x00000000,0x200000) IRAM(0x1FFE0000,0x80000)  IRAM2(0X200F0000,0x1000) CPUTYPE("Cortex-M4") FPU2 CLOCK(240000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -185,6 +185,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>1</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -351,7 +352,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
