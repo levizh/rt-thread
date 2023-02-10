@@ -36,6 +36,10 @@ extern int __bss_end;
 
 #define HEAP_END                        HC32_SRAM_END
 
+void PeripheralRegister_Unlock(void);
+void PeripheralClock_Config(void);
+void SystemClock_Config(void);
+
 #ifdef __cplusplus
 }
 #endif

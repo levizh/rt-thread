@@ -78,6 +78,11 @@ static void PeripheralClock_Config(void)
 #endif
 }
 
-
+/** Peripheral Registers Unclock
+*/
+void PeripheralRegister_Unlock(void)
+{
+    LL_PERIPH_WE(EXAMPLE_PERIPH_WE);
+}
 
 /*@}*/
