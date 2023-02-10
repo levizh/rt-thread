@@ -39,6 +39,8 @@ if GetDepend(['RT_USING_WDT']):
 if GetDepend(['RT_USING_PWM', 'BSP_USING_PWM_TMRA']):
     src += ['drv_pwm_tmra.c']
 
+src += ['drv_wktm.c']
+
 path = [cwd]
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)

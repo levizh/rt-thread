@@ -391,6 +391,11 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
+              <FileName>drv_wktm_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\drv_wktm_sample.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
@@ -571,6 +576,11 @@
               <FileName>drv_wdt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_wdt.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_wktm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32_drivers\drv_wktm.c</FilePath>
             </File>
           </Files>
         </Group>
