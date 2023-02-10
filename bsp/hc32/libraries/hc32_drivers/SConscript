@@ -53,6 +53,8 @@ if GetDepend(['RT_USING_PWM']):
 
 src += ['drv_wktm.c']
 
+src += ['drv_common.c']
+
 path = [cwd]
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)

@@ -267,4 +267,4 @@ static int rt_hw_adc_init(void)
     return ret;
 }
 INIT_DEVICE_EXPORT(rt_hw_adc_init);
-#endif
+#endif /* BSP_USING_ADC */

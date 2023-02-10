@@ -81,6 +81,36 @@ rt_err_t rt_hw_board_adc_init(CM_ADC_TypeDef *ADCx)
 }
 #endif
 
+#if defined(RT_USING_DAC)
+rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
+{
+    rt_err_t result = RT_EOK;
+    stc_gpio_init_t stcGpioInit;
+
+    (void)GPIO_StructInit(&stcGpioInit);
+    stcGpioInit.u16PinAttr = PIN_ATTR_ANALOG;
+    switch ((rt_uint32_t)DACx)
+    {
+#if defined(BSP_USING_DAC1)
+    case (rt_uint32_t)CM_DAC1:
+        (void)GPIO_Init(DAC1_CH1_PORT, DAC1_CH1_PIN, &stcGpioInit);
+        (void)GPIO_Init(DAC1_CH2_PORT, DAC1_CH2_PIN, &stcGpioInit);
+        break;
+#endif
+#if defined(BSP_USING_DAC2)
+    case (rt_uint32_t)CM_DAC2:
+        (void)GPIO_Init(DAC2_CH1_PORT, DAC2_CH1_PIN, &stcGpioInit);
+        break;
+#endif
+    default:
+        result = -RT_ERROR;
+        break;
+    }
+
+    return result;
+}
+#endif
+
 #if defined(RT_USING_CAN)
 void CanPhyEnable(void)
 {

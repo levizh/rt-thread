@@ -23,6 +23,7 @@ extern "C" {
 #include "uart_config.h"
 #include "spi_config.h"
 #include "adc_config.h"
+#include "dac_config.h"
 #include "gpio_config.h"
 #include "eth_config.h"
 #include "can_config.h"

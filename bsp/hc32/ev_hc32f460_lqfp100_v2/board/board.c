@@ -16,21 +16,6 @@
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-void Error_Handler(void)
-{
-    /* USER CODE BEGIN Error_Handler */
-    /* User can add his own implementation to report the HAL error return state */
-    while (1)
-    {
-    }
-    /* USER CODE END Error_Handler */
-}
-
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
@@ -93,81 +78,6 @@ static void PeripheralClock_Config(void)
 #endif
 }
 
-/*******************************************************************************
- * Function Name  : SysTick_Configuration
- * Description    : Configures the SysTick for OS tick.
- * Input          : None
- * Output         : None
- * Return         : None
- *******************************************************************************/
-void  SysTick_Configuration(void)
-{
-    stc_clock_freq_t stcClkFreq;
-    rt_uint32_t cnts;
 
-    CLK_GetClockFreq(&stcClkFreq);
-
-    cnts = (rt_uint32_t)stcClkFreq.u32HclkFreq / RT_TICK_PER_SECOND;
-
-    SysTick_Config(cnts);
-}
-
-/**
- * This is the timer interrupt service routine.
- *
- */
-void SysTick_Handler(void)
-{
-    /* enter interrupt */
-    rt_interrupt_enter();
-
-    rt_tick_increase();
-
-    /* leave interrupt */
-    rt_interrupt_leave();
-}
-
-/**
- * This function will initial HC32 board.
- */
-void rt_hw_board_init()
-{
-    /* Peripheral registers write unprotected */
-    LL_PERIPH_WE(EXAMPLE_PERIPH_WE);
-
-    SystemClock_Config();
-    PeripheralClock_Config();
-    /* Configure the SysTick */
-    SysTick_Configuration();
-
-    /* Heap initialization */
-#if defined(RT_USING_HEAP)
-    rt_system_heap_init((void *)HEAP_BEGIN, (void *)HEAP_END);
-#endif
-
-    /* Board underlying hardware initialization */
-#ifdef RT_USING_COMPONENTS_INIT
-    rt_components_board_init();
-#endif
-
-#if defined(RT_USING_CONSOLE) && defined(RT_USING_DEVICE)
-    rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
-#endif
-}
-
-void rt_hw_us_delay(rt_uint32_t us)
-{
-    uint32_t start, now, delta, reload, us_tick;
-    start = SysTick->VAL;
-    reload = SysTick->LOAD;
-    us_tick = SystemCoreClock / 1000000UL;
-
-    do
-    {
-        now = SysTick->VAL;
-        delta = start > now ?  start - now : reload + start - now;
-    }
-    while (delta < us_tick * us);
-}
 
 /*@}*/
