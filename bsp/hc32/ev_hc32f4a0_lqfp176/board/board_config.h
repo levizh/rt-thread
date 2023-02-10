@@ -85,4 +85,12 @@
     #define CAN2_RX_PIN_FUNC                 (GPIO_FUNC_63)
 #endif
 
+#if defined(BSP_USING_RTC)
+#if defined(BSP_RTC_USING_XTAL32)
+    #define BSP_XTAL32_PORT                  (GPIO_PORT_C)
+    #define BSP_XTAL32_IN_PIN                (GPIO_PIN_15)
+    #define BSP_XTAL32_OUT_PIN               (GPIO_PIN_14)
+#endif
+#endif
+
 #endif

@@ -241,3 +241,13 @@ rt_err_t rt_hw_eth_board_init(CM_ETH_TypeDef *CM_ETHx)
     return RT_EOK;
 }
 #endif
+
+#if defined (RT_USING_RTC)
+rt_err_t rt_hw_xtal32_board_init(void)
+{
+#if defined(BSP_RTC_USING_XTAL32)
+    //GPIO_AnalogCmd(BSP_XTAL32_PORT, BSP_XTAL32_IN_PIN | BSP_XTAL32_OUT_PIN, ENABLE);
+#endif
+    return RT_EOK;
+}
+#endif

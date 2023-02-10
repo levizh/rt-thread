@@ -155,6 +155,11 @@ extern "C" {
 #define BSP_CAN1_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_CAN1 */
 
+#if defined(RT_USING_ALARM)
+#define BSP_RTC_ALARM_IRQ_NUM           INT044_IRQn
+#define BSP_RTC_ALARM_IRQ_PRIO          DDL_IRQ_PRIO_DEFAULT
+#endif/* RT_USING_ALARM */
+
 #ifdef __cplusplus
 }
 #endif
