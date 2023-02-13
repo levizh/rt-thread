@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,8 +15,6 @@
 #include "rtdevice.h"
 #include "hc32_ll.h"
 #include <drv_log.h>
-
-#define LOG_TAG                             "drv.dac"
 
 #if defined(HC32F4A0)
     #define DAC_CHANNEL_ID_MAX              (DAC_CH2 + 1U)
