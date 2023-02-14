@@ -53,15 +53,15 @@
 
 /***********  DAC configure *********/
 #if defined(BSP_USING_DAC1)
-    #define DAC1_CH1_PORT                     (GPIO_PORT_A)
-    #define DAC1_CH1_PIN                      (GPIO_PIN_04)
-    #define DAC1_CH2_PORT                     (GPIO_PORT_A)
-    #define DAC1_CH2_PIN                      (GPIO_PIN_05)
+    #define DAC1_CH1_PORT                   (GPIO_PORT_A)
+    #define DAC1_CH1_PIN                    (GPIO_PIN_04)
+    #define DAC1_CH2_PORT                   (GPIO_PORT_A)
+    #define DAC1_CH2_PIN                    (GPIO_PIN_05)
 #endif
 
 #if defined(BSP_USING_DAC2)
-    #define DAC2_CH1_PORT                     (GPIO_PORT_C)
-    #define DAC2_CH1_PIN                      (GPIO_PIN_04)
+    #define DAC2_CH1_PORT                   (GPIO_PORT_C)
+    #define DAC2_CH1_PIN                    (GPIO_PIN_04)
 #endif
 
 /***********  CAN configure *********/
@@ -108,9 +108,9 @@
 
 #if defined(BSP_USING_RTC)
 #if defined(BSP_RTC_USING_XTAL32)
-    #define BSP_XTAL32_PORT                  (GPIO_PORT_C)
-    #define BSP_XTAL32_IN_PIN                (GPIO_PIN_15)
-    #define BSP_XTAL32_OUT_PIN               (GPIO_PIN_14)
+    #define BSP_XTAL32_PORT                 (GPIO_PORT_C)
+    #define BSP_XTAL32_IN_PIN               (GPIO_PIN_15)
+    #define BSP_XTAL32_OUT_PIN              (GPIO_PIN_14)
 #endif
 #endif
 
