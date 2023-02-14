@@ -251,3 +251,39 @@ rt_err_t rt_hw_xtal32_board_init(void)
     return RT_EOK;
 }
 #endif
+
+#if defined (RT_USING_SDIO)
+rt_err_t rt_hw_board_sdio_init(CM_SDIOC_TypeDef *SDIOCx)
+{
+    rt_err_t result = RT_EOK;
+    stc_gpio_init_t stcGpioInit;
+
+    switch ((rt_uint32_t)SDIOCx)
+    {
+#if defined(BSP_USING_SDIO1)
+    case (rt_uint32_t)CM_SDIOC1:
+        /************************* Set pin drive capacity *************************/
+        (void)GPIO_StructInit(&stcGpioInit);
+        stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
+        (void)GPIO_Init(SDIOC1_CK_PORT,  SDIOC1_CK_PIN,  &stcGpioInit);
+        (void)GPIO_Init(SDIOC1_CMD_PORT, SDIOC1_CMD_PIN, &stcGpioInit);
+        (void)GPIO_Init(SDIOC1_D0_PORT,  SDIOC1_D0_PIN,  &stcGpioInit);
+        (void)GPIO_Init(SDIOC1_D1_PORT,  SDIOC1_D1_PIN,  &stcGpioInit);
+        (void)GPIO_Init(SDIOC1_D2_PORT,  SDIOC1_D2_PIN,  &stcGpioInit);
+        (void)GPIO_Init(SDIOC1_D3_PORT,  SDIOC1_D3_PIN,  &stcGpioInit);
+
+        GPIO_SetFunc(SDIOC1_CK_PORT,  SDIOC1_CK_PIN,  GPIO_FUNC_9);
+        GPIO_SetFunc(SDIOC1_CMD_PORT, SDIOC1_CMD_PIN, GPIO_FUNC_9);
+        GPIO_SetFunc(SDIOC1_D0_PORT,  SDIOC1_D0_PIN,  GPIO_FUNC_9);
+        GPIO_SetFunc(SDIOC1_D1_PORT,  SDIOC1_D1_PIN,  GPIO_FUNC_9);
+        GPIO_SetFunc(SDIOC1_D2_PORT,  SDIOC1_D2_PIN,  GPIO_FUNC_9);
+        GPIO_SetFunc(SDIOC1_D3_PORT,  SDIOC1_D3_PIN,  GPIO_FUNC_9);
+        break;
+#endif
+    default:
+        result = -RT_ERROR;
+        break;
+    }
+
+    return result;
+}

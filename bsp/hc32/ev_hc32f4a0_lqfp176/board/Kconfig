@@ -288,6 +288,18 @@ menu "On-chip Peripheral Drivers"
                 config BSP_RTC_USING_LRC
                     bool "RTC USING LRC"
             endchoice
+
+    menuconfig BSP_USING_SDIO
+        bool "Enable SDIO"
+        default n
+        select RT_USING_SDIO
+        if BSP_USING_SDIO
+            config BSP_USING_SDIO1
+                bool "Enable SDIO1"
+                default n
+            config BSP_USING_SDIO2
+                bool "Enable SDIO2"
+                default n
         endif
 
 endmenu

@@ -27,6 +27,7 @@ extern "C" {
 #include "gpio_config.h"
 #include "eth_config.h"
 #include "can_config.h"
+#include "sdio_config.h"
 
 #ifdef __cplusplus
 }

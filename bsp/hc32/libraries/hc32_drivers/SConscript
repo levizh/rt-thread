@@ -55,6 +55,9 @@ src += ['drv_wktm.c']
 
 src += ['drv_common.c']
 
+if GetDepend(['RT_USING_SDIO']):
+    src += ['drv_sdio.c']
+
 path = [cwd]
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)

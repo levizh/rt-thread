@@ -233,14 +233,24 @@ extern "C" {
 #endif /* BSP_USING_UART10 */
 
 #if defined(BSP_USING_CAN1)
-#define BSP_CAN1_IRQ_NUM                INT004_IRQn
+#define BSP_CAN1_IRQ_NUM                INT092_IRQn
 #define BSP_CAN1_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
-#endif/* BSP_USING_CAN1 */
+#endif /* BSP_USING_CAN1 */
 
 #if defined(BSP_USING_CAN2)
-#define BSP_CAN2_IRQ_NUM                INT005_IRQn
+#define BSP_CAN2_IRQ_NUM                INT093_IRQn
 #define BSP_CAN2_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
-#endif/* BSP_USING_CAN2 */
+#endif /* BSP_USING_CAN2 */
+
+#if defined(BSP_USING_SDIO1)
+#define BSP_SDIO1_IRQ_NUM               INT004_IRQn
+#define BSP_SDIO1_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
+#endif /* BSP_USING_SDIO1 */
+
+#if defined(BSP_USING_SDIO2)
+#define BSP_SDIO2_IRQ_NUM               INT005_IRQn
+#define BSP_SDIO2_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
+#endif /* BSP_USING_SDIO2 */
 
 #if defined(RT_USING_ALARM)
 #define BSP_RTC_ALARM_IRQ_NUM           INT050_IRQn

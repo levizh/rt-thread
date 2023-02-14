@@ -28,6 +28,14 @@ extern "C" {
 #define SPI1_RX_DMA_IRQn                BSP_DMA1_CH0_IRQ_NUM
 #define SPI1_RX_DMA_INT_PRIO            BSP_DMA1_CH0_IRQ_PRIO
 #define SPI1_RX_DMA_INT_SRC             INT_SRC_DMA1_TC0
+#elif defined(BSP_USING_SDIO1) && !defined(SDIO1_RX_DMA_INSTANCE)
+#define SDIO1_RX_DMA_INSTANCE           CM_DMA1
+#define SDIO1_RX_DMA_CHANNEL            DMA_CH0
+#define SDIO1_RX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define SDIO1_RX_DMA_TRIG_SELECT        AOS_DMA1_0
+#define SDIO1_RX_DMA_IRQn               BSP_DMA1_CH0_IRQ_NUM
+#define SDIO1_RX_DMA_INT_PRIO           BSP_DMA1_CH0_IRQ_PRIO
+#define SDIO1_RX_DMA_INT_SRC            INT_SRC_DMA1_TC0
 #endif
 
 /* DMA1 ch1 */
@@ -39,6 +47,14 @@ extern "C" {
 #define SPI1_TX_DMA_IRQn                BSP_DMA1_CH1_IRQ_NUM
 #define SPI1_TX_DMA_INT_PRIO            BSP_DMA1_CH1_IRQ_PRIO
 #define SPI1_TX_DMA_INT_SRC             INT_SRC_DMA1_TC1
+#elif defined(BSP_USING_SDIO1) && !defined(SDIO1_TX_DMA_INSTANCE)
+#define SDIO1_TX_DMA_INSTANCE           CM_DMA1
+#define SDIO1_TX_DMA_CHANNEL            DMA_CH1
+#define SDIO1_TX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define SDIO1_TX_DMA_TRIG_SELECT        AOS_DMA1_1
+#define SDIO1_TX_DMA_IRQn               BSP_DMA1_CH1_IRQ_NUM
+#define SDIO1_TX_DMA_INT_PRIO           BSP_DMA1_CH1_IRQ_PRIO
+#define SDIO1_TX_DMA_INT_SRC            INT_SRC_DMA1_TC1
 #endif
 
 /* DMA1 ch2 */
@@ -50,6 +66,14 @@ extern "C" {
 #define SPI2_RX_DMA_IRQn                BSP_DMA1_CH2_IRQ_NUM
 #define SPI2_RX_DMA_INT_PRIO            BSP_DMA1_CH2_IRQ_PRIO
 #define SPI2_RX_DMA_INT_SRC             INT_SRC_DMA1_TC2
+#elif defined(BSP_USING_SDIO2) && !defined(SDIO2_RX_DMA_INSTANCE)
+#define SDIO2_RX_DMA_INSTANCE           CM_DMA1
+#define SDIO2_RX_DMA_CHANNEL            DMA_CH2
+#define SDIO2_RX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define SDIO2_RX_DMA_TRIG_SELECT        AOS_DMA1_2
+#define SDIO2_RX_DMA_IRQn               BSP_DMA1_CH2_IRQ_NUM
+#define SDIO2_RX_DMA_INT_PRIO           BSP_DMA1_CH2_IRQ_PRIO
+#define SDIO2_RX_DMA_INT_SRC            INT_SRC_DMA1_TC2
 #endif
 
 /* DMA1 ch3 */
@@ -61,6 +85,14 @@ extern "C" {
 #define SPI2_TX_DMA_IRQn                BSP_DMA1_CH3_IRQ_NUM
 #define SPI2_TX_DMA_INT_PRIO            BSP_DMA1_CH3_IRQ_PRIO
 #define SPI2_TX_DMA_INT_SRC             INT_SRC_DMA1_TC3
+#elif defined(BSP_USING_SDIO2) && !defined(SDIO2_TX_DMA_INSTANCE)
+#define SDIO2_TX_DMA_INSTANCE           CM_DMA1
+#define SDIO2_TX_DMA_CHANNEL            DMA_CH3
+#define SDIO2_TX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define SDIO2_TX_DMA_TRIG_SELECT        AOS_DMA1_3
+#define SDIO2_TX_DMA_IRQn               BSP_DMA1_CH3_IRQ_NUM
+#define SDIO2_TX_DMA_INT_PRIO           BSP_DMA1_CH3_IRQ_PRIO
+#define SDIO2_TX_DMA_INT_SRC            INT_SRC_DMA1_TC3
 #endif
 
 /* DMA1 ch4 */
