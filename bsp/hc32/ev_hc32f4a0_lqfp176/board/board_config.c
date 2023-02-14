@@ -287,3 +287,4 @@ rt_err_t rt_hw_board_sdio_init(CM_SDIOC_TypeDef *SDIOCx)
 
     return result;
 }
+#endif
