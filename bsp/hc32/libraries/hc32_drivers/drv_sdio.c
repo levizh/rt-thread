@@ -152,16 +152,15 @@ static void _sdio_wait_completed(struct rthw_sdio *sdio)
 {
     rt_uint32_t status;
     rt_uint32_t response[4];
+    __IO rt_uint32_t to_count;
     struct rt_mmcsd_cmd *cmd = sdio->pkg->cmd;
     struct rt_mmcsd_data *data = cmd->data;
     CM_SDIOC_TypeDef *instance = sdio->config->instance;
 
-    //if (rt_event_recv(&sdio->event, 0xFFFFFFFF, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
-    //                  rt_tick_from_millisecond(5000), &status) != RT_EOK)
     if (rt_event_recv(&sdio->event, 0xFFFFFFFF, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
-                      rt_tick_from_millisecond(10000), &status) != RT_EOK)
+                      rt_tick_from_millisecond(5000), &status) != RT_EOK)
     {
-        LOG_E("wait completed timeout");
+        LOG_E("wait completed timeout:cmd %2d", cmd->cmd_code);
         cmd->err = -RT_ETIMEOUT;
         return;
     }
@@ -174,6 +173,24 @@ static void _sdio_wait_completed(struct rthw_sdio *sdio)
     if (resp_type(cmd) == RESP_NONE)
     {
         ;
+    }
+    else if (resp_type(cmd) == RESP_R1B)
+    {
+        (void)SDIOC_GetResponse(instance, SDIOC_RESP_REG_BIT0_31, &response[0]);
+
+        cmd->resp[0] = response[0];
+
+        /* Wait for busy status to release */
+        to_count = 100000;
+        while (RESET == SDIOC_GetHostStatus(instance, SDIOC_HOST_FLAG_DATL_D0))
+        {
+            if (0 == to_count)
+            {
+                cmd->err = -RT_ETIMEOUT;
+                break;
+            }
+            to_count--;
+        }
     }
     else if (resp_type(cmd) == RESP_R2)
     {
@@ -237,7 +254,7 @@ static void _sdio_wait_completed(struct rthw_sdio *sdio)
         {
             LOG_D("sta:0x%08X [%08X %08X %08X %08X]", status, cmd->resp[0], cmd->resp[1], cmd->resp[2], cmd->resp[3]);
         }
-        else
+        else if ((cmd->err != RT_EOK) || (data->err != RT_EOK))
         {
             LOG_D("err:0x%08x, %s%s%s%s%s%s%s cmd:%d arg:0x%08x rw:%c len:%d blksize:%d",
                   status,
@@ -276,20 +293,20 @@ static void _sdio_transfer_by_dma(struct rthw_sdio *sdio, struct sdio_pkg *pkg)
 
     if ((RT_NULL == pkg) || (RT_NULL == sdio))
     {
-        LOG_E("_sdio_transfer_by_dma invalid args");
+        LOG_E("%s invalid args", __func__);
         return;
     }
 
     data = pkg->cmd->data;
     if (RT_NULL == data)
     {
-        LOG_E("_sdio_transfer_by_dma invalid args");
+        LOG_E("%s invalid args", __func__);
         return;
     }
 
     if (RT_NULL == pkg->buf)
     {
-        LOG_E("_sdio_transfer_by_dma invalid args");
+        LOG_E("%s invalid args", __func__);
         return;
     }
 
@@ -355,8 +372,6 @@ static void _sdio_send_command(struct rthw_sdio *sdio, struct sdio_pkg *pkg)
     /* config response type */
     stcCmdConfig.u16ResponseType = _sdio_get_cmd_resptype(resp_type(cmd));
 
-    LOG_E("_sdio_send_command : 0x%08x", instance->PSTAT);
-
     if (data != RT_NULL)
     {
         /* config data */
@@ -370,11 +385,6 @@ static void _sdio_send_command(struct rthw_sdio *sdio, struct sdio_pkg *pkg)
         if (ret != 0)
         {
             LOG_E("Configure data error : %d", ret);
-        }
-
-        if (data->blks > 1U)
-        {
-            LOG_D("Multi blks");
         }
 
         /* transfer config */
@@ -744,6 +754,7 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
     if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_EI))
     {
         SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CLR_ALL);
+        LOG_E("irq err: cmd=%2d, status=0x%08x", sdio->pkg->cmd->cmd_code, (errint_status << 16) | norint_status);
         complete = 1;
     }
     else
@@ -755,7 +766,6 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
             {
                 if (!sdio->pkg->cmd->data)
                 {
-                    LOG_D("_sdio_irq_process status:sdio->pkg->cmd->data !=NULL");
                     complete = 1;
                 }
             }
@@ -764,14 +774,6 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
         if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_TC))
         {
             SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_TC);
-            if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_BWR))
-            {
-                SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_BWR);
-            }
-            if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_BRR))
-            {
-                SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_BRR);
-            }
             complete = 1;
         }
     }
