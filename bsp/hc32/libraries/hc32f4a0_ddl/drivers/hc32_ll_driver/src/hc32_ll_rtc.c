@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -51,8 +51,7 @@
  */
 
 /* RTC TPCR register Mask */
-#define RTC_TPCR_CLR_MASK                   (RTC_TPCR0_TPCT0   | RTC_TPCR0_TPNF0 | \
-                                             RTC_TPCR0_TPRSTE0 | RTC_TPCR0_TSTPE0)
+#define RTC_TPCR_CLR_MASK                   (RTC_TPCR0_TPCT0 | RTC_TPCR0_TPNF0 | RTC_TPCR0_TPRSTE0 | RTC_TPCR0_TSTPE0)
 /* Get the specified register address of the RTC Intrusion Control */
 #define RTC_TPCRx(__CH__)                   ((uint32_t)(&(CM_RTC->TPCR0)) + (uint32_t)(__CH__))
 
@@ -426,8 +425,7 @@ void RTC_SetIntPeriod(uint8_t u8Period)
  * @brief  Set the RTC clock source.
  * @param  [in] u8Src                   Specifies the clock source.
  *         This parameter can be one of the following values:
- *           @arg RTC_CLK_SRC_XTAL32:   XTAL32 Cloc
- *           @arg RTC_CLK_SRC_LRC:      LRC/RTCLRC Clock
+ *           @arg @ref RTC_Clock_Source
  * @retval None
  */
 void RTC_SetClockSrc(uint8_t u8Src)

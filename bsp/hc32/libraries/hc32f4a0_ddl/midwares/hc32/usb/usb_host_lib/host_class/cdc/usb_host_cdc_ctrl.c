@@ -8,7 +8,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -80,7 +80,6 @@ HOST_STATUS usb_host_cdc_getlinecoding(usb_core_instance *pdev, USBH_HOST *phost
     phost->ctrlparam.setup.b.wValue.w = 0;
     phost->ctrlparam.setup.b.wIndex.w = CDC_Desc.CDC_UnionFuncDesc.bControlInterface;
     phost->ctrlparam.setup.b.wLength.w = LINE_CODING_STRUCTURE_SIZE;
-
 
     return usb_host_ctrlreq(pdev, phost, CDC_GetLineCode.Array, LINE_CODING_STRUCTURE_SIZE);
 }

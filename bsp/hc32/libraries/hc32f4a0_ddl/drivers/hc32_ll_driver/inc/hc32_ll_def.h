@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Implemented the definition of __NO_INIT for AC6 and ARM Compiler
+   2023-01-15       CDT             ARM Compiler suppress warning message: diag_1296
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -114,7 +116,7 @@ area of a module to a memory space in physical RAM. */
 #define __RAM_FUNC
 #endif /* __RAM_FUNC */
 #ifndef __NO_INIT
-#define __NO_INIT
+#define __NO_INIT                   __attribute__((section(".bss.noinit")))
 #endif /* __NO_INIT */
 #elif defined ( __GNUC__ ) && !defined (__CC_ARM) /*!< GNU Compiler */
 #ifndef __WEAKDEF
@@ -160,7 +162,7 @@ area of a module to a memory space in physical RAM. */
 #define __NOINLINE                  __attribute__((noinline))
 #endif /* __NOINLINE */
 #ifndef __NO_INIT
-#define __NO_INIT
+#define __NO_INIT                   __attribute__((section(".bss.noinit"), zero_init))
 #endif /* __NO_INIT */
 /* RAM functions are defined using the toolchain options.
 Functions that are executed in RAM should reside in a separate source module.

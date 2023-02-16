@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Delete comment code
+   2023-01-15       CDT             Add macro-definition: EIRQFR_REG/NMIENR_REG/INTWKEN_REG.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -58,8 +60,11 @@
 #define IRQn_OFFSET             (0U)
 #define EXTINT_CH_NUM_MAX       (16U)
 #define EIRQCFR_REG             (CM_INTC->EIRQCFR)
+#define EIRQFR_REG              (CM_INTC->EIRQFR)
+#define NMIENR_REG              (CM_INTC->NMIENR)
 #define NMICFR_REG              (CM_INTC->NMICFR)
 #define INTSEL_REG              (uint32_t)(&CM_INTC->SEL0)
+#define INTWKEN_REG             (CM_INTC->WUPEN)
 #define INTSEL_RST_VALUE        (0x1FFUL)
 #define IRQ_GRP_MOD             (32UL)
 #define IRQ_GRP_NUM             (6UL)
@@ -204,7 +209,6 @@ int32_t INTC_IrqSignIn(const stc_irq_signin_config_t *pstcIrqSignConfig)
                 WRITE_REG32(*INTC_SELx, pstcIrqSignConfig->enIntSrc);
                 m_apfnIrqHandler[pstcIrqSignConfig->enIRQn] = pstcIrqSignConfig->pfnCallback;
             } else if ((uint32_t)(pstcIrqSignConfig->enIntSrc) == ((*INTC_SELx) & INTSEL_RST_VALUE)) {
-                //WRITE_REG32(*INTC_SELx, pstcIrqSignConfig->enIntSrc);
                 m_apfnIrqHandler[pstcIrqSignConfig->enIRQn] = pstcIrqSignConfig->pfnCallback;
             } else {
                 i32Ret = LL_ERR_UNINIT;
@@ -249,9 +253,9 @@ void INTC_WakeupSrcCmd(uint32_t u32WakeupSrc, en_functional_state_t enNewState)
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
     if (ENABLE == enNewState) {
-        SET_REG32_BIT(CM_INTC->WUPEN, u32WakeupSrc);
+        SET_REG32_BIT(INTWKEN_REG, u32WakeupSrc);
     } else {
-        CLR_REG32_BIT(CM_INTC->WUPEN, u32WakeupSrc);
+        CLR_REG32_BIT(INTWKEN_REG, u32WakeupSrc);
     }
 }
 
@@ -378,7 +382,7 @@ int32_t NMI_Init(const stc_nmi_init_t *pstcNmiInit)
         WRITE_REG32(NMICFR_REG, NMI_SRC_ALL);
 
         /* NMI trigger source configure */
-        WRITE_REG32(CM_INTC->NMIENR, pstcNmiInit->u32Src);
+        WRITE_REG32(NMIENR_REG, pstcNmiInit->u32Src);
 
     }
     return i32Ret;
@@ -410,9 +414,9 @@ void NMI_NmiSrcCmd(uint32_t u32Src, en_functional_state_t enNewState)
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
     if (ENABLE == enNewState) {
-        SET_REG32_BIT(CM_INTC->NMIENR, u32Src);
+        SET_REG32_BIT(NMIENR_REG, u32Src);
     } else {
-        CLR_REG32_BIT(CM_INTC->NMIENR, u32Src);
+        CLR_REG32_BIT(NMIENR_REG, u32Src);
     }
 }
 
@@ -519,7 +523,7 @@ en_flag_status_t EXTINT_GetExtIntStatus(uint32_t u32ExtIntCh)
     /* Parameter validity checking */
     DDL_ASSERT(IS_EXTINT_CH(u32ExtIntCh));
 
-    return ((READ_REG16(CM_INTC->EIRQFR) & u32ExtIntCh) != 0U) ? SET : RESET;
+    return ((READ_REG16(EIRQFR_REG) & u32ExtIntCh) != 0U) ? SET : RESET;
 }
 
 /**

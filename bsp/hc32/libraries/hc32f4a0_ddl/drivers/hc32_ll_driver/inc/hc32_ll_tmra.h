@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Comments optimization
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -89,8 +90,8 @@ typedef struct {
 typedef struct {
     uint32_t u32CompareValue;               /*!< Specifies compare value of the TMRA channel.
                                                  This parameter can be a number between:
-                                                 0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
-                                                 0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs. */
+                                                 0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+                                                 0UL and 0xFFFFUL for 16-bit TimerA units. */
     uint16_t u16StartPolarity;              /*!< Specifies the polarity when the counter start counting.
                                                  This parameter can be a value of @ref TMRA_PWM_Polarity
                                                  NOTE: CAN NOT be specified as TMRA_PWM_LOW or TMRA_PWM_HIGH when
@@ -120,15 +121,14 @@ typedef struct {
  * @defgroup TMRA_Count_Src TMRA Count Source
  * @{
  */
-#define TMRA_CNT_SRC_SW                     (0U)
-#define TMRA_CNT_SRC_HW                     (1U)
+#define TMRA_CNT_SRC_SW                     (0U)                        /*!< Clock source is PCLK. */
+#define TMRA_CNT_SRC_HW                     (1U)                        /*!< Clock source is from external pin or peripheral event. */
 /**
  * @}
  */
 
 /**
  * @defgroup TMRA_Channel TMRA Channel
- * @note TMRA_1 and TMRA_2 of HC32M423 contain only one channel TMRA_CH1.
  * @{
  */
 #define TMRA_CH1                            (0U)                        /*!< Channel 1 of TMRA. */
@@ -169,7 +169,6 @@ typedef struct {
  * @}
  */
 
-/* Counter reload */
 /**
  * @defgroup TMRA_Count_Reload_En TMRA Count Reload
  * @{
@@ -201,7 +200,6 @@ typedef struct {
 
 /**
  * @defgroup TMRA_Filter_Pin TMRA Pin With Filter
- * @note TMRA_1 and TMRA_2 of HC32M423 do NOT contain pin TMRA_PIN_PWM2.
  * @{
  */
 #define TMRA_PIN_TRIG                       (0U)                        /*!< Pin TIMA_<t>_TRIG. */
@@ -232,7 +230,6 @@ typedef struct {
 #define TMRA_CNT_UP_COND_TRIG_RISING                 (TMRA_HCUPR_HCUP8)      /*!< When a rising edge occurred on TRIG, the counter register counts up. */
 #define TMRA_CNT_UP_COND_TRIG_FALLING                (TMRA_HCUPR_HCUP9)      /*!< When a falling edge occurred on TRIG, the counter register counts up. */
 #define TMRA_CNT_UP_COND_EVT                         (TMRA_HCUPR_HCUP10)     /*!< When the event specified by TMRA_HTSSR occurred, the counter register counts up. */
-/* More conditions for HC32F460, HC32F4A0, HC32M423, HC32F451, HC32F452 */
 #define TMRA_CNT_UP_COND_SYM_OVF                     (TMRA_HCUPR_HCUP11)     /*!< When the symmetric unit overflow, the counter register counts up. */
 #define TMRA_CNT_UP_COND_SYM_UDF                     (TMRA_HCUPR_HCUP12)     /*!< When the symmetric unit underflow, the counter register counts up. */
 #define TMRA_CNT_UP_COND_ALL                         (0x1FFFU)
@@ -257,7 +254,6 @@ typedef struct {
 #define TMRA_CNT_DOWN_COND_TRIG_RISING               (TMRA_HCDOR_HCDO8)      /*!< When a rising edge occurred on TRIG, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_TRIG_FALLING              (TMRA_HCDOR_HCDO9)      /*!< When a falling edge occurred on TRIG, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_EVT                       (TMRA_HCDOR_HCDO10)     /*!< When the event specified by TMRA_HTSSR occurred, the counter register counts down. */
-/* More conditions for HC32F460, HC32F4A0, HC32M423, HC32F451, HC32F452 */
 #define TMRA_CNT_DOWN_COND_SYM_OVF                   (TMRA_HCDOR_HCDO11)     /*!< When the symmetric unit overflow, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_SYM_UDF                   (TMRA_HCDOR_HCDO12)     /*!< When the symmetric unit underflow, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_ALL                       (0x1FFFU)
@@ -267,7 +263,6 @@ typedef struct {
 
 /**
  * @defgroup TMRA_Interrupt_Type TMRA Interrupt Type
- * @note TMRA_1 and TMRA_2 of HC32M423 do NOT contain interrupt TMRA_INT_CMP_CH2.
  * @{
  */
 #define TMRA_INT_OVF                        (1UL << 12U)                /*!< The interrupt of counting overflow. */
@@ -283,7 +278,6 @@ typedef struct {
 
 /**
  * @defgroup TMRA_Event_Type TMRA Event Type
- * @note TMRA_1 and TMRA_2 of HC32M423 do NOT contain event TMRA_EVT_CMP_CH2.
  * @{
  */
 #define TMRA_EVT_CMP_CH1                    (TMRA_ECONR_ETEN1)          /*!< The event of compare-match of channel 1. */
@@ -298,7 +292,6 @@ typedef struct {
 
 /**
  * @defgroup TMRA_Status_Flag TMRA Status Flag
- * @note TMRA_1 and TMRA_2 of HC32M423 do NOT contain flag TMRA_FLAG_CMP_CH2.
  * @{
  */
 #define TMRA_FLAG_OVF                       (1UL << 14U)                /*!< The flag of counting overflow. */
@@ -308,7 +301,6 @@ typedef struct {
 #define TMRA_FLAG_CMP_CH3                   (1UL << 18U)                /*!< The flag of compare-match of channel 3. */
 #define TMRA_FLAG_CMP_CH4                   (1UL << 19U)                /*!< The flag of compare-match of channel 4. */
 #define TMRA_FLAG_ALL                       (0xFC000UL)
-
 /**
  * @}
  */
@@ -488,7 +480,6 @@ int32_t TMRA_PWM_StructInit(stc_tmra_pwm_init_t *pstcPwmInit);
 void TMRA_PWM_OutputCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, en_functional_state_t enNewState);
 void TMRA_PWM_SetPolarity(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint8_t u8CountState, uint16_t u16Polarity);
 void TMRA_PWM_SetForcePolarity(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint16_t u16Polarity);
-
 /* Input capture */
 void TMRA_HWCaptureCondCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint16_t u16Cond, en_functional_state_t enNewState);
 
@@ -513,10 +504,9 @@ uint32_t TMRA_GetCountValue(const CM_TMRA_TypeDef *TMRAx);
 void TMRA_SetCompareValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint32_t u32Value);
 uint32_t TMRA_GetCompareValue(const CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch);
 
-/* Sync start. */
+/* Sync start */
 void TMRA_SyncStartCmd(CM_TMRA_TypeDef *TMRAx, en_functional_state_t enNewState);
-
-/* Reload and continue counting when overflow/underflow? */
+/* Reload and continue counting when overflow/underflow */
 void TMRA_CountReloadCmd(CM_TMRA_TypeDef *TMRAx, en_functional_state_t enNewState);
 
 void TMRA_SetCompareBufCond(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint16_t u16Cond);
@@ -524,10 +514,8 @@ void TMRA_CompareBufCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, en_functional_st
 
 en_flag_status_t TMRA_GetStatus(const CM_TMRA_TypeDef *TMRAx, uint32_t u32Flag);
 void TMRA_ClearStatus(CM_TMRA_TypeDef *TMRAx, uint32_t u32Flag);
-
 void TMRA_IntCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32IntType, en_functional_state_t enNewState);
 void TMRA_EventCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32EventType, en_functional_state_t enNewState);
-
 void TMRA_Start(CM_TMRA_TypeDef *TMRAx);
 void TMRA_Stop(CM_TMRA_TypeDef *TMRAx);
 

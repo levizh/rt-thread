@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Modify parameter check for reference clock source
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -77,7 +78,8 @@
     ((x) == FCM_TARGET_CLK_RTCLRC))
 
 #define IS_FCM_REF_SRC(x)                                                    \
-(   ((x) == FCM_REF_CLK_XTAL)             ||                                 \
+(   ((x) == FCM_REF_CLK_EXTCLK)           ||                                 \
+    ((x) == FCM_REF_CLK_XTAL)             ||                                 \
     ((x) == FCM_REF_CLK_XTAL32)           ||                                 \
     ((x) == FCM_REF_CLK_HRC)              ||                                 \
     ((x) == FCM_REF_CLK_LRC)              ||                                 \

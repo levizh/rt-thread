@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Comments optimization
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -76,7 +77,6 @@
 
 /**
  * @defgroup TMRA_Filter_Pin_Max TMRA Pin With Filter Max
- * @note TMRA_1 and TMRA_2 of HC32M423 do NOT contain pin TMRA_PIN_PWM2.
  * @{
  */
 #define TMRA_PIN_MAX                        (TMRA_PIN_PWM4)
@@ -90,7 +90,6 @@
  */
 #define IS_TMRA_BIT_MASK(x, mask)   (((x) != 0U) && (((x) | (mask)) == (mask)))
 
-/* Unit check */
 #define IS_TMRA_UNIT(x)                                                        \
 (   ((x) == CM_TMRA_1)                      ||                                 \
     ((x) == CM_TMRA_2)                      ||                                 \
@@ -105,7 +104,6 @@
     ((x) == CM_TMRA_11)                     ||                                 \
     ((x) == CM_TMRA_12))
 
-/* Sync unit check */
 #define IS_TMRA_SYNC_UNIT(x)                                                   \
 (   ((x) == CM_TMRA_2)                      ||                                 \
     ((x) == CM_TMRA_4)                      ||                                 \
@@ -116,7 +114,6 @@
 
 #define IS_TMRA_CH(x)               ((x) <= TMRA_CH4)
 
-/* Unit and channel */
 #define IS_TMRA_UNIT_CH(unit, ch)   (IS_TMRA_UNIT(unit) && IS_TMRA_CH(ch))
 
 #define IS_TMRA_CNT_SRC(x)          (((x) == TMRA_CNT_SRC_SW) || ((x) == TMRA_CNT_SRC_HW))
@@ -127,7 +124,6 @@
 
 #define IS_TMRA_MD(x)               (((x) == TMRA_MD_SAWTOOTH) || ((x) == TMRA_MD_TRIANGLE))
 
-/* Counter reload */
 #define IS_TMRA_CNT_RELOAD(x)       (((x) == TMRA_CNT_RELOAD_DISABLE) || ((x) == TMRA_CNT_RELOAD_ENABLE))
 
 #define IS_TMRA_CMPVAL_BUF_CH(x)    (((x) == TMRA_CH1) || ((x) == TMRA_CH3))
@@ -161,18 +157,12 @@
 
 #define IS_TMRA_FILTER_CLK_DIV(x)       ((x) <= TMRA_FILTER_CLK_DIV64)
 
-/* Special check of TMRA_1 & TMRA_2 of HC32M423 */
-
-/* Unit and interrupt */
 #define IS_TMRA_UNIT_INT(u, x)      (IS_TMRA_UNIT(u) && IS_TMRA_INT(x))
 
-/* Unit and event of channel */
 #define IS_TMRA_CH_EVT(u, x)        (IS_TMRA_UNIT(u) && IS_TMRA_EVT(x))
 
-/* Unit and pin with filter */
 #define IS_TMRA_UNIT_FPIN(u, x)     (IS_TMRA_UNIT(u) && IS_TMRA_FILTER_PIN(x))
 
-/* Unit and flag */
 #define IS_TMRA_UNIT_FLAG(u, x)     (IS_TMRA_UNIT(u) && IS_TMRA_FLAG(x))
 
 #define IS_TMRA_CMPVAL_BUF_COND(x)                                             \
@@ -326,7 +316,6 @@ int32_t TMRA_StructInit(stc_tmra_init_t *pstcTmraInit)
         pstcTmraInit->sw_count.u16CountMode = TMRA_MD_SAWTOOTH;
         pstcTmraInit->sw_count.u16CountDir  = TMRA_DIR_UP;
         pstcTmraInit->u32PeriodValue        = (TMRA_REG_TYPE)0xFFFFFFFFUL;
-        /* Counter reload */
         pstcTmraInit->u16CountReload = TMRA_CNT_RELOAD_ENABLE;
         i32Ret = LL_OK;
     }
@@ -616,7 +605,6 @@ void TMRA_HWCaptureCondCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint16_t u16C
         DDL_ASSERT(u32Ch == TMRA_CH3);
     }
 #endif
-
     u32CCONRAddr = (uint32_t)&TMRAx->CCONR1 + (u32Ch * 4U);
     if (enNewState == ENABLE) {
         SET_REG16_BIT(RW_MEM16(u32CCONRAddr), u16Cond);
@@ -809,7 +797,6 @@ void TMRA_DeInit(CM_TMRA_TypeDef *TMRAx)
     WRITE_REG16(TMRAx->HCONR, 0x0U);
     WRITE_REG16(TMRAx->HCUPR, 0x0U);
     WRITE_REG16(TMRAx->HCDOR, 0x0U);
-
     WRITE_REG16(TMRAx->BCONR1, 0x0U);
     WRITE_REG16(TMRAx->BCONR2, 0x0U);
 }
@@ -836,8 +823,8 @@ uint16_t TMRA_GetCountDir(const CM_TMRA_TypeDef *TMRAx)
  *   @arg  CM_TMRA_x or CM_TMRA
  * @param  [in]  u32Value               The period value to be set.
  *                                      This parameter can be a number between:
- *                                      0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *                                      0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *                                      0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *                                      0UL and 0xFFFFUL for 16-bit TimerA units.
  * @retval None
  */
 void TMRA_SetPeriodValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Value)
@@ -855,8 +842,8 @@ void TMRA_SetPeriodValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Value)
  *                                      This parameter can be a value of the following:
  *   @arg  CM_TMRA_x or CM_TMRA
  * @retval An uint32_t type type value of period value between:
- *         - 0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *         - 0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *         - 0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *         - 0UL and 0xFFFFUL for 16-bit TimerA units.
  */
 uint32_t TMRA_GetPeriodValue(const CM_TMRA_TypeDef *TMRAx)
 {
@@ -871,8 +858,8 @@ uint32_t TMRA_GetPeriodValue(const CM_TMRA_TypeDef *TMRAx)
  *   @arg  CM_TMRA_x or CM_TMRA
  * @param  [in]  u32Value               The general counter value to be set.
  *                                      This parameter can be a number between:
- *                                      0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *                                      0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *                                      0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *                                      0UL and 0xFFFFUL for 16-bit TimerA units.
  * @retval None
  */
 void TMRA_SetCountValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Value)
@@ -890,8 +877,8 @@ void TMRA_SetCountValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Value)
  *                                      This parameter can be a value of the following:
  *   @arg  CM_TMRA_x or CM_TMRA
  * @retval An uint32_t type type value of counter value between:
- *         - 0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *         - 0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *         - 0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *         - 0UL and 0xFFFFUL for 16-bit TimerA units.
  */
 uint32_t TMRA_GetCountValue(const CM_TMRA_TypeDef *TMRAx)
 {
@@ -908,8 +895,8 @@ uint32_t TMRA_GetCountValue(const CM_TMRA_TypeDef *TMRAx)
  *                                      This parameter can be a value of @ref TMRA_Channel
  * @param  [in]  u32Value               The comparison value to be set.
  *                                      This parameter can be a number between:
- *                                      0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *                                      0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *                                      0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *                                      0UL and 0xFFFFUL for 16-bit TimerA units.
  * @retval None
  */
 void TMRA_SetCompareValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint32_t u32Value)
@@ -930,8 +917,8 @@ void TMRA_SetCompareValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch, uint32_t u32Va
  * @param  [in]  u32Ch                  TMRA channel.
  *                                      This parameter can be a value of @ref TMRA_Channel
  * @retval An uint32_t type type value of comparison value value between:
- *         - 0UL and 0xFFFFFFFFUL for TimerA1 and TimerA2 of HC32F472.
- *         - 0UL and 0xFFFFUL for TimerA3/4/5/6 of HC32F472 and all TimerA units of other MCUs.
+ *         - 0UL and 0xFFFFFFFFUL for 32-bit TimerA units.
+ *         - 0UL and 0xFFFFUL for 16-bit TimerA units.
  */
 uint32_t TMRA_GetCompareValue(const CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch)
 {
@@ -943,7 +930,6 @@ uint32_t TMRA_GetCompareValue(const CM_TMRA_TypeDef *TMRAx, uint32_t u32Ch)
     return GET_VAL_BY_ADDR(u32CMPARAddr);
 }
 
-/* Sync start. */
 /**
  * @brief  Enable or disable synchronous-start. When an even unit enables synchronous-start function,
  *         start the symmetric odd unit can start the even unit at the same time.
@@ -964,7 +950,6 @@ void TMRA_SyncStartCmd(CM_TMRA_TypeDef *TMRAx, en_functional_state_t enNewState)
     WRITE_REG32(PERIPH_BIT_BAND(u32Addr, TMRA_BCSTR_SYNST_POS), enNewState);
 }
 
-/* Reload and continue counting when overflow/underflow? */
 /**
  * @brief  Enable or disable reload and continue counting when overflow/underflow.
  * @param  [in]  TMRAx                  Pointer to TMRA instance register base.

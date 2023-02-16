@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Add API GPIO_AnalogCmd() and GPIO_ExIntCmd().
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -49,8 +50,8 @@
  * @brief  GPIO port pin table definition
  */
 typedef struct {
-    uint8_t u8Port;             /*!< Set pin state to High or Low, @ref GPIO_PinState_Sel for details       */
-    uint16_t u16PinMask;        /*!< Set pin state to High or Low, @ref GPIO_PinState_Sel for details       */
+    uint8_t u8Port;             /*!< GPIO Port Source, @ref GPIO_Port_Source for details       */
+    uint16_t u16PinMask;        /*!< Pin active or inactive, @ref GPIO_All_Pins_Define for details       */
 } stc_gpio_port_pin_tbl_t;
 /**
  * @}
@@ -68,11 +69,8 @@ typedef struct {
  * @{
  */
 #define GPIO_PSPCR_RST_VALUE            (0x001FU)
-
-#define GPIO_PCCR_RST_VALUE         (0x1000U)
-
+#define GPIO_PCCR_RST_VALUE             (0x1000U)
 #define GPIO_PINAER_RST_VALUE           (0x0000U)
-
 #define GPIO_PIN_NUM_MAX                (16U)
 #define GPIO_PORT_OFFSET                (0x40UL)
 #define GPIO_PIN_OFFSET                 (0x04UL)
@@ -191,8 +189,6 @@ typedef struct {
     ((wait) == GPIO_RD_WAIT5)                   ||                              \
     ((wait) == GPIO_RD_WAIT6)                   ||                              \
     ((wait) == GPIO_RD_WAIT7))
-
-/*! Parameter validity check for Hrpwmp pin definition. */
 
 /*  Check GPIO register lock status. */
 #define IS_GPIO_UNLOCK()      (GPIO_PWPR_WE == (CM_GPIO->PWPR & GPIO_PWPR_WE))
@@ -612,7 +608,7 @@ void GPIO_WritePort(uint8_t u8Port, uint16_t u16PortVal)
     PODRx = &PODR_REG(u8Port);
     WRITE_REG(*PODRx, (GPIO_REG_TYPE)u16PortVal);
 }
-//
+
 /**
  * @brief  Toggle specified GPIO output data port pin
  * @param  [in] u8Port: GPIO_PORT_x, x can be the suffix in @ref GPIO_Port_Source for each product
@@ -631,6 +627,61 @@ void GPIO_TogglePins(uint8_t u8Port, uint16_t u16Pin)
     SET_REG_BIT(*POTRx, (GPIO_REG_TYPE)u16Pin);
 }
 
+/**
+ * @brief  GPIO Analog command.
+ * @param  [in] u8Port: GPIO_PORT_x, x can be the suffix in @ref GPIO_Port_Source for each product
+ * @param  [in] u16Pin: GPIO_PIN_x, x can be the suffix in @ref GPIO_Pins_Define for each product
+ * @param  [in] enNewState: An @ref en_functional_state_t enumeration value.
+ * @retval None
+ */
+void GPIO_AnalogCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState)
+{
+    __IO uint16_t *PCRx;
+    uint8_t u8PinPos;
+
+    /* Parameter validity checking */
+    DDL_ASSERT(IS_GPIO_PORT(u8Port));
+    DDL_ASSERT(IS_GPIO_PIN(u16Pin));
+
+    for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
+        if ((u16Pin & (1UL << u8PinPos)) != 0U) {
+            PCRx = &PCR_REG(u8Port, u8PinPos);
+            if (ENABLE == enNewState) {
+                SET_REG16_BIT(*PCRx, GPIO_PCR_DDIS);
+            } else {
+                CLR_REG16_BIT(*PCRx, GPIO_PCR_DDIS);
+            }
+        }
+    }
+}
+
+/**
+ * @brief  GPIO external interrupt command.
+ * @param  [in] u8Port: GPIO_PORT_x, x can be the suffix in @ref GPIO_Port_Source for each product
+ * @param  [in] u16Pin: GPIO_PIN_x, x can be the suffix in @ref GPIO_Pins_Define for each product
+ * @param  [in] enNewState: An @ref en_functional_state_t enumeration value.
+ * @retval None
+ */
+void GPIO_ExIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState)
+{
+    __IO uint16_t *PCRx;
+    uint8_t u8PinPos;
+
+    /* Parameter validity checking */
+    DDL_ASSERT(IS_GPIO_PORT(u8Port));
+    DDL_ASSERT(IS_GPIO_PIN(u16Pin));
+
+    for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
+        if ((u16Pin & (1UL << u8PinPos)) != 0U) {
+            PCRx = &PCR_REG(u8Port, u8PinPos);
+            if (ENABLE == enNewState) {
+                SET_REG16_BIT(*PCRx, GPIO_PCR_INTE);
+            } else {
+                CLR_REG16_BIT(*PCRx, GPIO_PCR_INTE);
+            }
+        }
+    }
+}
 /**
  * @}
  */

@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Update API parameter u16IntType to u32IntType
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -686,12 +687,10 @@ void TMR4_ClearStatus(CM_TMR4_TypeDef *TMR4x, uint32_t u32Flag);
 en_flag_status_t TMR4_GetStatus(const CM_TMR4_TypeDef *TMR4x, uint32_t u32Flag);
 void TMR4_IntCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType, en_functional_state_t enNewState);
 void TMR4_PeriodBufCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState);
-uint16_t TMR4_GetCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint16_t u16IntType);
+uint16_t TMR4_GetCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType);
 void TMR4_SetCountIntMaskTime(CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType, uint16_t u16MaskTime);
-uint16_t TMR4_GetCurrentCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint16_t u16IntType);
-
+uint16_t TMR4_GetCurrentCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType);
 void TMR4_PortOutputCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState);
-
 /**
  * @}
  */
@@ -738,9 +737,7 @@ void TMR4_PWM_StopReloadTimer(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch);
 void TMR4_PWM_SetFilterCountValue(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, uint16_t u16Value);
 void TMR4_PWM_SetDeadTimeValue(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, uint32_t u32DeadTimeIndex, uint16_t u16Value);
 uint16_t TMR4_PWM_GetDeadTimeValue(const CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, uint32_t u32DeadTimeIndex);
-
 void TMR4_PWM_SetAbnormalPinStatus(CM_TMR4_TypeDef *TMR4x, uint32_t u32PwmPin, uint32_t u32PinStatus);
-
 void TMR4_PWM_SetOEEffectTime(CM_TMR4_TypeDef *TMR4x, uint32_t u32Time);
 void TMR4_PWM_EmbHWMainOutputCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState);
 void TMR4_PWM_MainOutputCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState);
@@ -770,7 +767,6 @@ void TMR4_EVT_BufIntervalReponseCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, en_f
 void TMR4_EVT_EventIntervalReponseCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch,
                                       uint16_t u16MaskType, en_functional_state_t enNewState);
 void TMR4_EVT_MatchCondCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, uint16_t u16Cond, en_functional_state_t enNewState);
-
 void TMR4_EVT_SetOutputEventSignal(CM_TMR4_TypeDef *TMR4x, uint16_t u16Signal);
 /**
  * @}

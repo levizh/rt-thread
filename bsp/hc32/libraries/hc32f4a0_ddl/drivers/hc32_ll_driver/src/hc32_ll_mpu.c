@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Update define base on new head file.
+   2023-01-15       CDT             Modify IS_MPU_SP_START_ADDR & SP start address.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -59,7 +61,7 @@
 /* Number of SP unit */
 
 /* MPU Register Combination Mask */
-#define MPU_UNIT_CONFIG_MASK            (MPU_S1CR_SMPU1BRP | MPU_S1CR_SMPU1BWP | MPU_S1CR_SMPU1ACT)
+#define MPU_UNIT_CONFIG_MASK            (MPU_SCR_SMPUBRP | MPU_SCR_SMPUBWP | MPU_SCR_SMPUACT)
 /* DMA units have 16 regions */
 #define MPU_16REGION_UNIT               (MPU_UNIT_DMA1 | MPU_UNIT_DMA2)
 
@@ -305,7 +307,7 @@ void MPU_SetExceptionType(uint32_t u32Unit, uint32_t u32Type)
     while (0UL != u32Temp) {
         if (0UL != (u32Temp & 0x1UL)) {
             CR = MPU_CR_ADDR(u32UnitPos);
-            MODIFY_REG32(*CR, MPU_S1CR_SMPU1ACT, u32Type);
+            MODIFY_REG32(*CR, MPU_SCR_SMPUACT, u32Type);
         }
         u32Temp >>= 1UL;
         u32UnitPos++;
@@ -336,9 +338,9 @@ void MPU_BackgroundWriteCmd(uint32_t u32Unit, en_functional_state_t enNewState)
         if (0UL != (u32Temp & 0x1UL)) {
             CR = MPU_CR_ADDR(u32UnitPos);
             if (DISABLE != enNewState) {
-                CLR_REG32_BIT(*CR, MPU_S1CR_SMPU1BWP);
+                CLR_REG32_BIT(*CR, MPU_SCR_SMPUBWP);
             } else {
-                SET_REG32_BIT(*CR, MPU_S1CR_SMPU1BWP);
+                SET_REG32_BIT(*CR, MPU_SCR_SMPUBWP);
             }
         }
         u32Temp >>= 1UL;
@@ -370,9 +372,9 @@ void MPU_BackgroundReadCmd(uint32_t u32Unit, en_functional_state_t enNewState)
         if (0UL != (u32Temp & 0x1UL)) {
             CR = MPU_CR_ADDR(u32UnitPos);
             if (DISABLE != enNewState) {
-                CLR_REG32_BIT(*CR, MPU_S1CR_SMPU1BRP);
+                CLR_REG32_BIT(*CR, MPU_SCR_SMPUBRP);
             } else {
-                SET_REG32_BIT(*CR, MPU_S1CR_SMPU1BRP);
+                SET_REG32_BIT(*CR, MPU_SCR_SMPUBRP);
             }
         }
         u32Temp >>= 1UL;
@@ -404,9 +406,9 @@ void MPU_UnitCmd(uint32_t u32Unit, en_functional_state_t enNewState)
         if (0UL != (u32Temp & 0x1UL)) {
             CR = MPU_CR_ADDR(u32UnitPos);
             if (DISABLE != enNewState) {
-                SET_REG32_BIT(*CR, MPU_S1CR_SMPU1E);
+                SET_REG32_BIT(*CR, MPU_SCR_SMPUE);
             } else {
-                CLR_REG32_BIT(*CR, MPU_S1CR_SMPU1E);
+                CLR_REG32_BIT(*CR, MPU_SCR_SMPUE);
             }
         }
         u32Temp >>= 1UL;

@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             API fixed: TRNG_Init().
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -108,9 +109,15 @@
  */
 void TRNG_Init(uint32_t u32ShiftCount, uint32_t u32ReloadInitValueEn)
 {
+    uint8_t i;
+    uint32_t au32Random[2U];
+
     DDL_ASSERT(IS_TRNG_SHIFT_CNT(u32ShiftCount));
     DDL_ASSERT(IS_RNG_RELOAD_INIT_VAL_EN(u32ReloadInitValueEn));
     WRITE_REG32(CM_TRNG->MR, u32ShiftCount | u32ReloadInitValueEn);
+    for (i = 0U; i < 10U; i++) {
+        (void)TRNG_GenerateRandom(au32Random, 2U);
+    }
 }
 
 /**
@@ -191,7 +198,6 @@ int32_t TRNG_GetRandom(uint32_t *pu32Random, uint8_t u8RandomLen)
         }
         /* Disable TRNG circuit. */
         CLR_REG32_BIT(CM_TRNG->CR, TRNG_CR_EN);
-
         i32Ret = LL_OK;
     }
 

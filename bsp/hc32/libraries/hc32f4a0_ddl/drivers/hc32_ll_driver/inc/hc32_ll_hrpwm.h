@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -54,23 +54,24 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
+
 /**
  * @defgroup HRPWM_Global_Macros HRPWM Global Macros
  * @{
  */
 
-#define   HRPWM_CH_MIN                (1UL)
-#define   HRPWM_CH_MAX                (16UL)
+#define HRPWM_CH_MIN                        (1UL)
+#define HRPWM_CH_MAX                        (16UL)
 
-#define   HRPWM_CH_DELAY_NUM_MIN      (1U)
-#define   HRPWM_CH_DELAY_NUM_MAX      (256U)
+#define HRPWM_CH_DLY_NUM_MIN                (1U)
+#define HRPWM_CH_DLY_NUM_MAX                (256U)
 
 /**
  * @defgroup HRPWM_Calibrate_Unit_Define HRPWM Calibrate Unit Define
  * @{
  */
-#define   HRPWM_CAL_UNIT0             (0x00UL)
-#define   HRPWM_CAL_UNIT1             (0x01UL)
+#define HRPWM_CAL_UNIT0                     (0x00UL)
+#define HRPWM_CAL_UNIT1                     (0x01UL)
 /**
  * @}
  */
@@ -90,6 +91,7 @@ extern "C"
  * @addtogroup HRPWM_Global_Functions
  * @{
  */
+
 /* HRPWM Judge the condition of calibration function */
 en_functional_state_t HRPWM_CondConfirm(void);
 

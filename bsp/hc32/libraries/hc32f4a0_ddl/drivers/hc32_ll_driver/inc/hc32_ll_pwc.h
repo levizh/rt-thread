@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Refine API PWC_STOP_Enter().
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -67,7 +68,7 @@ typedef struct {
 } stc_pwc_lvd_init_t;
 
 /**
- * @brief PWC LVD Init
+ * @brief PWC power down mode innit
  */
 typedef struct {
     uint8_t u8Mode;         /*!< Power down mode, @ref PWC_PDMode_Sel for details. */
@@ -80,13 +81,13 @@ typedef struct {
  */
 typedef struct {
     uint16_t u16Clock;          /*!< System clock setting after wake-up from stop mode,
-                                    @ref PWC_STOP_CLK_Sel for details. */
+                                    @ref PWC_STOP_CLK_Sel for details.        */
     uint8_t u8StopDrv;          /*!< Stop mode drive capacity,
-                                    @ref PWC_STOP_DRV_Sel for details. */
+                                    @ref PWC_STOP_DRV_Sel for details.        */
     uint16_t u16ExBusHold;      /*!< Expos status in stop mode,
-                                    @ref PWC_STOP_EXBUS_Sel for details. */
+                                    @ref PWC_STOP_EXBUS_Sel for details.      */
     uint16_t u16FlashWait;      /*!< Waiting flash stable after wake-up from stop mode,
-                                    @ref STOP_FLASH_WAIT_Sel for details. */
+                                    @ref PWC_STOP_Flash_Wait_Sel for details. */
 } stc_pwc_stop_mode_config_t;
 
 /**
@@ -166,11 +167,21 @@ typedef struct {
  */
 
 /**
- * @defgroup STOP_FLASH_WAIT_Sel Whether wait flash stable or not after wake-up from stop mode
+ * @defgroup PWC_STOP_Flash_Wait_Sel Whether wait flash stable or not after wake-up from stop mode
  * @{
  */
 #define PWC_STOP_FLASH_WAIT_ON          (0x00U)                 /*!< Wait flash stable after wake-up from stop mode */
 #define PWC_STOP_FLASH_WAIT_OFF         (PWC_STPMCR_FLNWT)      /*!< Don't wait flash stable after wake-up from stop mode */
+/**
+ * @}
+ */
+
+/**
+ * @defgroup PWC_Stop_Type PWC stop mode type.
+ * @{
+ */
+#define PWC_STOP_WFI                    (0x00U)
+#define PWC_STOP_WFE                    (0x01U)
 /**
  * @}
  */
@@ -230,6 +241,7 @@ typedef struct {
  */
 #define PWC_LVD_CH1                     (0x00U)
 #define PWC_LVD_CH2                     (0x01U)
+
 /**
  * @}
  */
@@ -294,23 +306,12 @@ typedef struct {
 /**
  * @defgroup PWC_LVD_Detection_Voltage_Sel PWC LVD Detection voltage
  * @{
- * @note |    HC32F472   || HC32F451,HC32F452 ||                          ||                            ||
-*        |    HC32F4A0   ||     HC32F460      ||     HC32M423/HC32M424    || HC32F120/HC32M120/HC32F160 ||
- *       |  LVD1 | LVD2  ||    LVD1 | LVD2    ||         LVD1 | LVD2      ||            LVD             ||
- * LVL0  |  2.0V | 2.1V  ||    2.0V | 2.1V    ||        4.29V ~ 4.39V     ||       3.92V ~ 4.07V        ||
- * LVL1  |  2.1V | 2.3V  ||    2.1V | 2.3V    ||        4.14V ~ 4.23V     ||       3.67V ~ 3.77V        ||
- * LVL2  |  2.3V | 2.5V  ||    2.3V | 2.5V    ||        4.02V ~ 4.14V     ||       3.06V ~ 3.15V        ||
- * LVL3  |  2.5V | 2.6V  ||    2.5V | 2.6V    ||        3.84V ~ 3.96V     ||       2.96V ~ 3.04V        ||
- * LVL4  |  2.6V | 2.7V  ||    2.6V | 2.6V    ||        3.10V ~ 3.20V     ||       2.86V ~ 2.94V        ||
- * LVL5  |  2.7V | 2.8V  ||    2.6V | 2.8V    ||        3.00V ~ 3.09V     ||       2.75V ~ 2.83V        ||
- * LVL6  |  2.8V | 2.9V  ||    2.8V | 2.9V    ||        2.90V ~ 2.99V     ||       2.65V ~ 2.73V        ||
- * LVL7  |  2.9V |  ---  ||    2.9V |  ---    ||        2.79V ~ 2.87V     ||       2.55V ~ 2.63V        ||
- * LVL8  |  ---  |  ---  ||    ---  |  ---    ||        2.68V ~ 2.75V     ||       2.45V ~ 2.52V        ||
- * LVL9  |  ---  |  ---  ||    ---  |  ---    ||        2.34V ~ 2.41V     ||       2.04V ~ 2.11V        ||
- * LVL10 |  ---  |  ---  ||    ---  |  ---    ||        2.14V ~ 2.21V     ||       1.94V ~ 2.00V        ||
- * LVL11 |  ---  |  ---  ||    ---  |  ---    ||        1.94V ~ 2.01V     ||       1.84V ~ 1.90V        ||
- * LVL12 |  ---  |  ---  ||    ---  |  ---    ||        1.84V ~ 1.90V     ||       -------------        ||
- * EXVCC |  ---  | EXVCC ||    ---  | EXVC  C ||        ----  |  EXVCC    ||          EXVCC             ||
+ * @note
+ * @verbatim
+ *       |  LVL0  |  LVL1  |  LVL2  |  LVL3  |  LVL4  |  LVL5  |  LVL6  |  LVL7  |  EXVCC |
+ * LVD1  |  2.0V  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |
+ * LVD2  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |  EXVCC |
+ * @endverbatim
  */
 #define PWC_LVD_THRESHOLD_LVL0          (0x00U)
 #define PWC_LVD_THRESHOLD_LVL1          (0x01U)
@@ -376,7 +377,6 @@ typedef struct {
 #define PWC_PD_WKUP_WKUP33              (PWC_PDWKE1_WKE33 << PWC_PD_WKUP1_POS)
 #define PWC_PD_WKUP_LVD1                (PWC_PDWKE2_VD1WKE << PWC_PD_WKUP2_POS)
 #define PWC_PD_WKUP_LVD2                (PWC_PDWKE2_VD2WKE << PWC_PD_WKUP2_POS)
-#define PWC_PD_WKUP_NMI                 (PWC_PDWKE2_NMIWKE << PWC_PD_WKUP2_POS)
 #define PWC_PD_WKUP_RTCPRD              (PWC_PDWKE2_RTCPRDWKE << PWC_PD_WKUP2_POS)
 #define PWC_PD_WKUP_RTCALM              (PWC_PDWKE2_RTCALMWKE << PWC_PD_WKUP2_POS)
 #define PWC_PD_WKUP_WKTM                (PWC_PDWKE2_WKTMWKE << PWC_PD_WKUP2_POS)
@@ -620,7 +620,7 @@ void PWC_RamModeConfig(uint16_t u16Mode);
 void PWC_SLEEP_Enter(void);
 
 /* PWC Stop Function */
-void PWC_STOP_Enter(void);
+void PWC_STOP_Enter(uint8_t u8StopType);
 int32_t PWC_STOP_StructInit(stc_pwc_stop_mode_config_t *pstcStopConfig);
 int32_t PWC_STOP_Config(const stc_pwc_stop_mode_config_t *pstcStopConfig);
 void PWC_STOP_ClockSelect(uint8_t u8Clock);
@@ -636,7 +636,7 @@ int32_t PWC_LowSpeedToHighSpeed(void);
 /* PWC LDO Function */
 void PWC_LDO_Cmd(uint16_t u16Ldo, en_functional_state_t enNewState);
 
-/* PWC LVD Function, LVD for PVD while HC32F460, HC32F451, HC32F452 and HC32F4A0 */
+/* PWC LVD/PVD Function */
 int32_t PWC_LVD_Init(uint8_t u8Ch, const stc_pwc_lvd_init_t *pstcLvdInit);
 int32_t PWC_LVD_StructInit(stc_pwc_lvd_init_t *pstcLvdInit);
 void PWC_LVD_Cmd(uint8_t u8Ch, en_functional_state_t enNewState);

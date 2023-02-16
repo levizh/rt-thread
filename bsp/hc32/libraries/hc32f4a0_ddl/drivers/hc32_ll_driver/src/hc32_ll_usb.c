@@ -6,9 +6,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Add USB core ID select function
+   2022-10-31       CDT             Add USB DMA function
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -44,6 +46,14 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
+/*  Parameters check */
+#define IS_USB_CORE_ID(x)                                                      \
+(   ((x) == USBFS_CORE_ID)                      ||                             \
+    ((x) == USBHS_CORE_ID))
+
+#define IS_USB_PHY_TYPE(x)                                                     \
+(   ((x) == USBHS_PHY_EMBED)                    ||                             \
+    ((x) == USBHS_PHY_EXT))
 
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
@@ -52,7 +62,6 @@
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
-void usb_hoststop(LL_USB_TypeDef *USBx, uint8_t u8ChNum);
 
 /*******************************************************************************
  * Local variable definitions ('static')
@@ -61,7 +70,6 @@ void usb_hoststop(LL_USB_TypeDef *USBx, uint8_t u8ChNum);
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
-
 /**
  * @defgroup USB_Global_Functions USB Global Functions
  * @{
@@ -165,33 +173,36 @@ void usb_rdpkt(LL_USB_TypeDef *USBx, uint8_t *dest, uint16_t len)
 
 /**
  * @brief  Initialize the addresses of the core registers.
- * @param  [in] USBx        usb instance
- * @param  [in] basic_cfgs  usb core basic cfgs
+ * @param  [in] USBx                usb instance
+ * @param  [in] pstcPortIdentify    usb core and phy select
+ * @param  [in] basic_cfgs          usb core basic cfgs
  * @retval None
  */
-void usb_setregaddr(LL_USB_TypeDef *USBx, USB_CORE_BASIC_CFGS *basic_cfgs)
+void usb_setregaddr(LL_USB_TypeDef *USBx, stc_usb_port_identify *pstcPortIdentify, USB_CORE_BASIC_CFGS *basic_cfgs)
 {
     uint32_t u32Tmp = 0UL;
-    uint32_t u32baseAddr;
-
+    uint32_t u32baseAddr = CM_USBFS_BASE;
+    DDL_ASSERT(IS_USB_CORE_ID(pstcPortIdentify->u8CoreID));
+    DDL_ASSERT(IS_USB_PHY_TYPE(pstcPortIdentify->u8PhyType));
+#if defined (USB_INTERNAL_DMA_ENABLED)
+    basic_cfgs->dmaen = 1U;
+#else
     basic_cfgs->dmaen = 0U;
+#endif
     /* initialize device cfg following its address */
     basic_cfgs->host_chnum = USB_MAX_CH_NUM;
     basic_cfgs->dev_epnum = USB_MAX_EP_NUM;
-    basic_cfgs->core_type = 0U;   /* FS */
-    basic_cfgs->phy_type = 0U;
+    basic_cfgs->core_type = pstcPortIdentify->u8CoreID;
+    basic_cfgs->phy_type = pstcPortIdentify->u8PhyType;
+    if (USBFS_CORE_ID == pstcPortIdentify->u8CoreID) {
 #ifdef USB_FS_MODE
-    u32baseAddr = CM_USBFS_BASE;
-    basic_cfgs->core_type = 0U;   /* FS */
-#endif /* USB_FS_MODE */
-
-#ifdef USB_HS_MODE
-    u32baseAddr = CM_USBHS_BASE;
-    basic_cfgs->core_type = 1U;   /* HS */
-#ifdef USB_HS_EXTERNAL_PHY
-    basic_cfgs->phy_type = 1U;
+        u32baseAddr = CM_USBFS_BASE;
 #endif
-#endif  /* USB_HS_MODE */
+    } else {
+#ifdef USB_HS_MODE
+        u32baseAddr = CM_USBHS_BASE;
+#endif
+    }
 
     USBx->GREGS = (USB_CORE_GREGS *)(u32baseAddr + 0UL);
     USBx->DREGS = (USB_CORE_DREGS *)(u32baseAddr + 0x800UL);
@@ -232,7 +243,7 @@ void usb_initusbcore(LL_USB_TypeDef *USBx, USB_CORE_BASIC_CFGS *basic_cfgs)
 
     /* Select PHY for USB core*/
     usb_PhySelect(USBx, basic_cfgs->phy_type);
-    if ((basic_cfgs->phy_type == 0U) && (basic_cfgs->core_type == 1U)) {
+    if ((basic_cfgs->phy_type == USBHS_PHY_EMBED) && (basic_cfgs->core_type == USBHS_CORE_ID)) {
         /* enable the embedded PHY in USBHS mode */
         CM_PERIC->USB_SYCTLREG |= PERIC_USB_SYCTLREG_USBHS_FSPHYE;
     }
@@ -977,7 +988,7 @@ void usb_ep0revcfg(LL_USB_TypeDef *USBx, uint8_t u8DmaEn, uint8_t *u8RevBuf)
     WRITE_REG32(USBx->OUTEP_REGS[0]->DOEPTSIZ, u32deptsize);
 
     if (u8DmaEn == 1U) {
-        WRITE_REG32(USBx->OUTEP_REGS[0]->DOEPDMA, (uint32_t)&u8RevBuf);
+        WRITE_REG32(USBx->OUTEP_REGS[0]->DOEPDMA, (uint32_t)&u8RevBuf[0]);
         u32doepctl = READ_REG32(USBx->OUTEP_REGS[0]->DOEPCTL);
         u32doepctl |= (USBFS_DOEPCTL_EPENA | USBFS_DOEPCTL_USBAEP);
         WRITE_REG32(USBx->OUTEP_REGS[0]->DOEPCTL, u32doepctl);
@@ -1032,14 +1043,14 @@ void usb_hostmodeinit(LL_USB_TypeDef *USBx, USB_CORE_BASIC_CFGS *basic_cfgs)
 {
     __IO uint8_t u8Tmp = 0U;
     WRITE_REG32(*USBx->GCCTL, 0UL);  /* reset the register-GCCTL */
-#ifdef USB_HS_EXTERNAL_PHY
-    usb_fslspclkselset(USBx, HCFG_30_60_MHZ);  /* PHY clock is running at 6MHz */
-#else
-    usb_fslspclkselset(USBx, HCFG_6_MHZ);  /* PHY clock is running at 6MHz */
-#endif
+    if (USBHS_PHY_EMBED == basic_cfgs->phy_type) {
+        usb_fslspclkselset(USBx, HCFG_6_MHZ);  /* PHY clock is running at 6MHz */
+    } else {
+        usb_fslspclkselset(USBx, HCFG_30_60_MHZ);  /* PHY clock is running at 6MHz */
+    }
     usb_hprtrst(USBx);                     /* reset the port */
     usb_enumspeed(USBx);                   /* FS or LS bases on the maximum speed supported by the connected device */
-    usb_sethostfifo(USBx);
+    usb_sethostfifo(USBx, basic_cfgs->core_type);
     /* Flush all the txFIFO and the whole rxFIFO */
     usb_txfifoflush(USBx, 0x10UL);
     usb_rxfifoflush(USBx);
@@ -1062,8 +1073,6 @@ void usb_vbusctrl(LL_USB_TypeDef *USBx, uint8_t u8State)
 {
     uint32_t u32hprt;
 
-    /* enable or disable the external charge pump */
-    usb_bsp_drivevbus(USBx, u8State);
     u32hprt = usb_rdhprt(USBx);
     if ((0UL == (u32hprt & USBFS_HPRT_PWPR)) && (1U == u8State)) {
         u32hprt |= USBFS_HPRT_PWPR;
@@ -1117,11 +1126,6 @@ void usb_hprtrst(LL_USB_TypeDef *USBx)
     u32hprt &= ~USBFS_HPRT_PRST;
     WRITE_REG32(*USBx->HPRT, u32hprt);
     usb_mdelay(20UL);
-
-    //SET_REG32_BIT(*USBx->HPRT, USBFS_HPRT_PRST);
-    //usb_mdelay(10UL);
-    //CLR_REG32_BIT(*USBx->HPRT, USBFS_HPRT_PRST);
-    //usb_mdelay(20UL);
 }
 
 /**
@@ -1251,6 +1255,7 @@ uint8_t usb_hchtransbegin(LL_USB_TypeDef *USBx, uint8_t hc_num, USB_HOST_CH *pCh
     }
 
     u32hcchar = READ_REG32(USBx->HC_REGS[hc_num]->HCCHAR);
+    u32hcchar &= ~USBFS_HCCHAR_ODDFRM;
     u32hcchar |= (usb_ifevenframe(USBx) << USBFS_HCCHAR_ODDFRM_POS);
 
     /* enable this host channel whose number is hc_num */
@@ -1326,18 +1331,21 @@ void usb_hchstop(LL_USB_TypeDef *USBx, uint8_t hc_num)
     uint32_t u32hcchar;
 
     u32hcchar = READ_REG32(USBx->HC_REGS[hc_num]->HCCHAR);
-    u32hcchar |= (USBFS_HCCHAR_CHENA | USBFS_HCCHAR_CHDIS);
+    u32hcchar |= USBFS_HCCHAR_CHDIS;
     /* Check for space in the request queue to issue the halt. */
     if ((EP_TYPE_CTRL == ((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS))
             || (EP_TYPE_BULK == ((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS))) {
         if (0UL == (READ_REG32(USBx->GREGS->HNPTXSTS) & USBFS_HNPTXSTS_NPTQXSAV)) {
             u32hcchar &= (~USBFS_HCCHAR_CHENA);
+            WRITE_REG32(USBx->HC_REGS[hc_num]->HCCHAR, u32hcchar);
         }
     } else {
         if (0UL == (READ_REG32(USBx->HREGS->HPTXSTS) & USBFS_HPTXSTS_PTXQSAV)) {
             u32hcchar &= (~USBFS_HCCHAR_CHENA);
+            WRITE_REG32(USBx->HC_REGS[hc_num]->HCCHAR, u32hcchar);
         }
     }
+    u32hcchar |= USBFS_HCCHAR_CHENA;
     WRITE_REG32(USBx->HC_REGS[hc_num]->HCCHAR, u32hcchar);
 }
 

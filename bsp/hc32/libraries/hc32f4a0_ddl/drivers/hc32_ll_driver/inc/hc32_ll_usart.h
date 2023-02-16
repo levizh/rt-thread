@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -132,7 +132,6 @@ typedef struct {
  * @brief LIN mode initialization structure definition
  * @note The parameter(u32ClockDiv/u32CKOutput/u32Baudrate) is valid when clock source is the internal clock.
  */
-
 typedef struct {
     uint32_t u32ClockSrc;               /*!< Clock Source.
                                              This parameter can be a value of @ref USART_Clock_Source */
@@ -227,10 +226,8 @@ typedef struct {
 #define USART_INT_RX                    (USART_CR1_RIE)     /*!< USART receive data register not empty && receive error interrupt */
 #define USART_INT_TX_CPLT               (USART_CR1_TCIE)    /*!< USART transmission complete interrupt */
 #define USART_INT_TX_EMPTY              (USART_CR1_TXEIE)   /*!< USART transmit data register empty interrupt */
-
 #define USART_RX_TIMEOUT                (USART_CR1_RTOE)    /*!< USART RX timerout function */
 #define USART_INT_RX_TIMEOUT            (USART_CR1_RTOIE)   /*!< USART RX timerout interrupt */
-
 #define USART_LIN                       (USART_CR2_LINEN  << 16UL)  /*!< USART LIN function */
 #define USART_LIN_WKUP                  (USART_CR2_WKUPE  << 16UL)  /*!< USART LIN wakeup signal detect function */
 #define USART_LIN_ERR                   (USART_CR2_BEE    << 16UL)  /*!< USART LIN bus error detect function */
@@ -491,7 +488,6 @@ void USART_WriteID(CM_USART_TypeDef *USARTx, uint16_t u16ID);
 
 int32_t USART_SetBaudrate(CM_USART_TypeDef *USARTx, uint32_t u32Baudrate, float32_t *pf32Error);
 
-/* Smartcard function */
 void USART_SmartCard_SetEtuClock(CM_USART_TypeDef *USARTx, uint32_t u32EtuClock);
 
 void USART_StopModeNoiseFilterCmd(const CM_USART_TypeDef *USARTx, en_functional_state_t enNewState);

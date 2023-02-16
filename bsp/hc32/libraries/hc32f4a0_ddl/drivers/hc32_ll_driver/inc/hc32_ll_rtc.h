@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -121,7 +121,7 @@ typedef struct {
  * @brief RTC Intrusion structure definition
  */
 typedef struct {
-    uint8_t u8Timestamp;                /*!< Specifies the validity of RTC intrusion timestemp.
+    uint8_t u8Timestamp;                /*!< Specifies the validity of RTC intrusion timestamp.
                                              This parameter can be a value of @ref RTC_Intrusion_Timestamp */
     uint8_t u8ResetBackupReg;           /*!< Specifies the validity of RTC intrusion event that trigger backup registers reset.
                                              This parameter can be a value of @ref RTC_Intrusion_Reset_Backup_Register */
@@ -350,7 +350,6 @@ typedef struct {
  */
 #define RTC_FLAG_RD_WR                          (RTC_CR2_RWEN)                      /*!< Read and write permission flag */
 #define RTC_FLAG_ALARM                          (RTC_CR2_ALMF)                      /*!< Alarm flag                     */
-
 #define RTC_FLAG_PERIOD                         (RTC_CR2_PRDF)                      /*!< Period flag                    */
 #define RTC_FLAG_INTRU_OVF                      ((uint32_t)RTC_TPSR_TPOVF << 16U)   /*!< Intrusion overflow flag        */
 #define RTC_FLAG_INTRU_CH0                      ((uint32_t)RTC_TPSR_TPF0  << 16U)   /*!< RTCIC0 intrusion flag          */
@@ -369,7 +368,6 @@ typedef struct {
  */
 #define RTC_INT_PERIOD                          (RTC_CR2_PRDIE)                     /*!< Period interrupt          */
 #define RTC_INT_ALARM                           (RTC_CR2_ALMIE)                     /*!< Alarm interrupt           */
-
 #define RTC_INT_INTRU_CH0                       ((uint32_t)RTC_TPCR0_TPIE0 << 8U)   /*!< RTCIC0 intrusion interrupt */
 #define RTC_INT_INTRU_CH1                       ((uint32_t)RTC_TPCR1_TPIE1 << 16U)  /*!< RTCIC1 intrusion interrupt */
 #define RTC_INT_ALL                             (RTC_INT_PERIOD | RTC_INT_ALARM | RTC_INT_INTRU_CH0 | RTC_INT_INTRU_CH1)

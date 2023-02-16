@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Add frame level processing for API SPI_TxRx(),SPI_Tx()
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -225,6 +226,11 @@
 (   ((x) != 0UL)                            &&                                 \
     (((x) | SPI_FLAG_CLR_ALL) == SPI_FLAG_CLR_ALL))
 
+/*! Parameter valid check for SPI command*/
+#define IS_SPI_CMD_ALLOWED(x)                                                  \
+(   (READ_REG32_BIT(SPIx->SR, SPI_FLAG_MD_FAULT) == 0UL)    ||                 \
+    ((x) == DISABLE))
+
 /**
  * @}
  */
@@ -297,22 +303,31 @@ static int32_t SPI_TxRx(CM_SPI_TypeDef *SPIx, const void *pvTxBuf, void *pvRxBuf
     int32_t i32Ret = LL_OK;
     uint32_t u32Tmp;
     __UNUSED __IO uint32_t u32Read;
+    uint32_t i;
+    uint32_t u32Frame = READ_REG32_BIT(SPIx->CFG1, SPI_CFG1_FTHLV) + 1UL;
+    DDL_ASSERT(0UL == (u32Len % u32Frame));
 
     /* Get data bit size, SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_32BIT */
     u32BitSize = READ_REG32_BIT(SPIx->CFG2, SPI_CFG2_DSIZE);
 
     while (u32Count < u32Len) {
         if (pvTxBuf != NULL) {
-            if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
-                /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
-                WRITE_REG32(SPIx->DR, ((const uint8_t *)pvTxBuf)[u32Count]);
-            } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
-                /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
-                WRITE_REG32(SPIx->DR, ((const uint16_t *)pvTxBuf)[u32Count]);
-            } else {
-                /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
-                WRITE_REG32(SPIx->DR, ((const uint32_t *)pvTxBuf)[u32Count]);
+            i = 0UL;
+            while (i < u32Frame) {
+                if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
+                    /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
+                    WRITE_REG32(SPIx->DR, ((const uint8_t *)pvTxBuf)[u32Count]);
+                } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
+                    /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
+                    WRITE_REG32(SPIx->DR, ((const uint16_t *)pvTxBuf)[u32Count]);
+                } else {
+                    /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
+                    WRITE_REG32(SPIx->DR, ((const uint32_t *)pvTxBuf)[u32Count]);
+                }
+                i++;
+                u32Count++;
             }
+            u32Count--;
         } else {
             WRITE_REG32(SPIx->DR, 0xFFFFFFFFUL);
         }
@@ -322,21 +337,29 @@ static int32_t SPI_TxRx(CM_SPI_TypeDef *SPIx, const void *pvTxBuf, void *pvRxBuf
         if (i32Ret == LL_OK) {
             u32Tmp = READ_REG32(SPIx->DR);
             if (pvRxBuf != NULL) {
-                if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
-                    /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
-                    ((uint8_t *)pvRxBuf)[u32Count] = (uint8_t)u32Tmp;
-                } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
-                    /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
-                    ((uint16_t *)pvRxBuf)[u32Count] = (uint16_t)u32Tmp;
-                } else {
-                    /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
-                    ((uint32_t *)pvRxBuf)[u32Count] = (uint32_t)u32Tmp;
+                i = 0UL;
+                while (i < u32Frame) {
+                    if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
+                        /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
+                        ((uint8_t *)pvRxBuf)[u32Count] = (uint8_t)u32Tmp;
+                    } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
+                        /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
+                        ((uint16_t *)pvRxBuf)[u32Count] = (uint16_t)u32Tmp;
+                    } else {
+                        /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
+                        ((uint32_t *)pvRxBuf)[u32Count] = (uint32_t)u32Tmp;
+                    }
+                    i++;
+                    u32Count++;
                 }
+                u32Count--;
             } else {
                 /* Dummy read */
                 u32Read = READ_REG32(SPIx->DR);
             }
             u32Count++;
+        } else {
+            break;
         }
     }
     if (i32Ret == LL_OK) {
@@ -362,22 +385,30 @@ static int32_t SPI_Tx(CM_SPI_TypeDef *SPIx, const void *pvTxBuf, uint32_t u32Len
     __IO uint32_t u32Count = 0U;
     uint32_t u32BitSize;
     int32_t i32Ret = LL_OK;
+    uint32_t i;
+    uint32_t u32Frame = READ_REG32_BIT(SPIx->CFG1, SPI_CFG1_FTHLV) + 1UL;
+    DDL_ASSERT(0UL == (u32Len % u32Frame));
 
     /* Get data bit size, SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_32BIT */
     u32BitSize = READ_REG32_BIT(SPIx->CFG2, SPI_CFG2_DSIZE);
 
     while (u32Count < u32Len) {
-        if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
-            /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
-            WRITE_REG32(SPIx->DR, ((const uint8_t *)pvTxBuf)[u32Count]);
-        } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
-            /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
-            WRITE_REG32(SPIx->DR, ((const uint16_t *)pvTxBuf)[u32Count]);
-        } else {
-            /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
-            WRITE_REG32(SPIx->DR, ((const uint32_t *)pvTxBuf)[u32Count]);
+        i = 0UL;
+        while (i < u32Frame) {
+            if (u32BitSize <= SPI_DATA_SIZE_8BIT) {
+                /* SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_8BIT */
+                WRITE_REG32(SPIx->DR, ((const uint8_t *)pvTxBuf)[u32Count]);
+            } else if (u32BitSize <= SPI_DATA_SIZE_16BIT) {
+                /* SPI_DATA_SIZE_9BIT ~ SPI_DATA_SIZE_16BIT */
+                WRITE_REG32(SPIx->DR, ((const uint16_t *)pvTxBuf)[u32Count]);
+            } else {
+                /* SPI_DATA_SIZE_20BIT ~ SPI_DATA_SIZE_32BIT */
+                WRITE_REG32(SPIx->DR, ((const uint32_t *)pvTxBuf)[u32Count]);
+            }
+            i++;
+            u32Count++;
         }
-
+        u32Count--;
         /* Wait TX buffer empty. */
         i32Ret = SPI_WaitStatus(SPIx, SPI_FLAG_TX_BUF_EMPTY, SPI_FLAG_TX_BUF_EMPTY, u32Timeout);
         if (i32Ret != LL_OK) {
@@ -463,7 +494,7 @@ void SPI_DeInit(CM_SPI_TypeDef *SPIx)
     WRITE_REG32(SPIx->CR1, 0UL);
     WRITE_REG32(SPIx->CFG1, SPI_CFG1_DEFAULT);
     WRITE_REG32(SPIx->CFG2, SPI_CFG2_DEFAULT);
-    WRITE_REG32(SPIx->SR, SPI_SR_DEFAULT);
+    CLR_REG32_BIT(SPIx->SR, SPI_FLAG_CLR_ALL);
 }
 
 /**
@@ -528,6 +559,7 @@ void SPI_Cmd(CM_SPI_TypeDef *SPIx, en_functional_state_t enNewState)
 {
     DDL_ASSERT(IS_VALID_SPI_UNIT(SPIx));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
+    DDL_ASSERT(IS_SPI_CMD_ALLOWED(enNewState));
 
     if (ENABLE == enNewState) {
         SET_REG32_BIT(SPIx->CR1, SPI_CR1_SPE);

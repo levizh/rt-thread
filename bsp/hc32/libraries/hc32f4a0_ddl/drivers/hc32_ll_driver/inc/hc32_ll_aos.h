@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Modified parameters name of API AOS_CommonTriggerCmd() and AOS_SetTriggerEventSrc()
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -59,7 +60,7 @@ extern "C"
  */
 
 /**
- * @defgroup AOS_Trigger_Select AOS Trigger Select
+ * @defgroup AOS_Target_Select AOS Target Select
  * @{
  */
 #define AOS_DCU1                (uint32_t)(&CM_AOS->DCU_TRGSEL1)
@@ -159,9 +160,8 @@ __STATIC_INLINE void AOS_SW_Trigger(void)
     WRITE_REG32(bCM_AOS->INTSFTTRG_b.STRG, SET);
 }
 
-void AOS_CommonTriggerCmd(uint32_t u32TriggerSel, uint32_t u32CommonTrigger, en_functional_state_t enNewState);
-void AOS_SetTriggerEventSrc(uint32_t u32TriggerSel, en_event_src_t enEvent);
-
+void AOS_CommonTriggerCmd(uint32_t u32Target, uint32_t u32CommonTrigger, en_functional_state_t enNewState);
+void AOS_SetTriggerEventSrc(uint32_t u32Target, en_event_src_t enSource);
 /**
  * @}
  */

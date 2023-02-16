@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Deleted redundant comments.
+   2022-10-31       CDT             Remove CAN_FLAG_RX_BUF_OVF from CAN_FLAG_CLR_ALL.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -80,7 +82,6 @@ typedef struct {
     uint32_t u32IDType;                     /*!< Specifies the identifier(ID) type. This parameter can be a value of @ref CAN_ID_Type */
 } stc_can_filter_config_t;
 
-/* CAN-FD structure */
 /**
  * @brief CAN-FD configuration structure.
  */
@@ -144,7 +145,6 @@ typedef struct {
                                                  This parameter can be a value of @ref CAN_Rx_Ovf_Mode */
     uint8_t u8SelfAck;                      /*!< Enable or disable self-acknowledge.
                                                  This parameter can be a value of @ref CAN_Self_ACK_En */
-    /* CAN-FD configuration */
     stc_canfd_config_t *pstcCanFd;          /*!< Pointer to a CAN-FD configuration structure. @ref stc_canfd_config_t
                                                  Set it to NULL if not needed CAN-FD. */
 
@@ -263,7 +263,6 @@ typedef struct {
 #define CAN_DLC6                        (0x6U)                  /*!< CAN2.0 and CAN FD: the size of data field is 6 bytes. */
 #define CAN_DLC7                        (0x7U)                  /*!< CAN2.0 and CAN FD: the size of data field is 7 bytes. */
 #define CAN_DLC8                        (0x8U)                  /*!< CAN2.0 and CAN FD: the size of data field is 8 bytes. */
-/* More DLC for CAN-FD. */
 #define CAN_DLC12                       (0x9U)                  /*!< CAN FD: the size of data field is 12 bytes. */
 #define CAN_DLC16                       (0xAU)                  /*!< CAN FD: the size of data field is 16 bytes. */
 #define CAN_DLC20                       (0xBU)                  /*!< CAN FD: the size of data field is 20 bytes. */
@@ -453,8 +452,7 @@ typedef struct {
                                          CAN_FLAG_ERR_PASSIVE_NODE | \
                                          CAN_FLAG_TEC_REC_WARN)
 
-#define CAN_FLAG_CLR_ALL                (CAN_FLAG_RX_BUF_OVF       | \
-                                         CAN_FLAG_TX_ABORTED       | \
+#define CAN_FLAG_CLR_ALL                (CAN_FLAG_TX_ABORTED       | \
                                          CAN_FLAG_ERR_INT          | \
                                          CAN_FLAG_STB_TX           | \
                                          CAN_FLAG_PTB_TX           | \

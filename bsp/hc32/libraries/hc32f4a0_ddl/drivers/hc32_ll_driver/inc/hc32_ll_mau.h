@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -61,6 +61,7 @@ extern "C"
 
 #define MAU_SQRT_TIMEOUT               (HCLK_VALUE / 10000UL)/* About 1mS timeout */
 #define MAU_SQRT_OUTPUT_LSHIFT_MAX     (16U)
+
 #define MAU_SIN_Q15_SCALAR             (0x8000UL)
 #define MAU_SIN_ANGIDX_TOTAL           (0x1000UL)
 
@@ -81,10 +82,10 @@ extern "C"
  * @{
  */
 
-void MAU_SqrtInit(CM_MAU_TypeDef *MAUx, uint8_t u8LShBitsNumber, en_functional_state_t enIntNewState);
+void MAU_SqrtInit(CM_MAU_TypeDef *MAUx, uint8_t u8ShiftNum, en_functional_state_t enNewState);
 void MAU_SqrtDeInit(CM_MAU_TypeDef *MAUx);
 
-void MAU_SqrtResultLShiftConfig(CM_MAU_TypeDef *MAUx, uint8_t u8LShBitsNumber);
+void MAU_SqrtResultLShiftConfig(CM_MAU_TypeDef *MAUx, uint8_t u8ShiftNum);
 void MAU_SqrtIntCmd(CM_MAU_TypeDef *MAUx, en_functional_state_t enNewState);
 void MAU_SqrtWriteData(CM_MAU_TypeDef *MAUx, uint32_t u32Radicand);
 en_flag_status_t MAU_SqrtGetStatus(const CM_MAU_TypeDef *MAUx);
