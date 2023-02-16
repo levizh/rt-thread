@@ -928,3 +928,18 @@ void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
     }
 }
 #endif
+
+#if defined(BSP_USING_USBD)
+rt_err_t rt_hw_usb_board_init(void)
+{
+    stc_gpio_init_t stcGpioCfg;
+
+    (void)GPIO_StructInit(&stcGpioCfg);
+    stcGpioCfg.u16PinAttr = PIN_ATTR_ANALOG;
+    (void)GPIO_Init(USBF_DM_PORT, USBF_DM_PIN, &stcGpioCfg);
+    (void)GPIO_Init(USBF_DP_PORT, USBF_DP_PIN, &stcGpioCfg);
+    GPIO_SetFunc(USBF_VBUS_PORT, USBF_VBUS_PIN, GPIO_FUNC_10); /* VBUS */
+
+    return RT_EOK;
+}
+#endif

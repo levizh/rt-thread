@@ -94,6 +94,8 @@ if GetDepend(['RT_HWCRYPTO_USING_AES']):
 
 if GetDepend(['RT_HWCRYPTO_USING_SHA2']):
     src += ['drivers/hc32_ll_driver/src/hc32_ll_hash.c']
+if GetDepend(['BSP_USING_USBD']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_usb.c']
 
 path = [
     cwd + '/drivers/cmsis/Device/HDSC/hc32f4xx/Include',

@@ -456,6 +456,11 @@ menu "On-chip Peripheral Drivers"
                         endif
                 endif
         endif
+        
+    config BSP_USING_USBD
+        bool "Enable USBFS as USB device"
+        select RT_USING_USB_DEVICE
+        default n
 
 endmenu
 

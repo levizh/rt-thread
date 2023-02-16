@@ -18,6 +18,7 @@ if GetDepend(['BSP_USING_TCA9539']):
 path =  [cwd]
 path += [cwd + '/ports']
 path += [cwd + '/config']
+path += [cwd + '/config/usb_config']
 
 startup_path_prefix = SDK_LIB
 
