@@ -10,12 +10,13 @@
 
 #include "board.h"
 
-#ifdef RT_USING_WDT
+#ifdef BSP_USING_WDT
 
+#define DRV_DEBUG
 #define LOG_TAG             "drv_wdt"
 #include <drv_log.h>
 
-#define CLK_DIV             8192
+#define CLK_DIV             8192U
 
 struct hc32_wdt_obj
 {
@@ -84,7 +85,7 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
                 return -RT_ERROR;
             }
         }
-        LOG_I("wdg set timeout successful. timeout = %d ms", wdt_get_timeout_ms());
+        LOG_D("wdg set timeout successful. timeout = %d ms", wdt_get_timeout_ms());
         break;
     case RT_DEVICE_CTRL_WDT_GET_TIMEOUT:
         (*((rt_uint32_t*)arg)) = wdt_get_timeout_ms();

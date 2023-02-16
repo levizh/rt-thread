@@ -10,7 +10,7 @@
       <TargetName>rt-thread</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -336,17 +336,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-<<<<<<< HEAD
               <MiscControls />
               <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, HC32F4A0, __RTTHREAD__</Define>
               <Undefine />
               <IncludePath>..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;..\..\..\include;board\config;board;..\..\..\components\finsh;..\..\..\components\drivers\include;..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\inc;..\libraries\hc32_drivers;..\..\..\components\libc\compilers\common\extension\fcntl\octal;.;..\..\..\components\libc\posix\io\stdio;..\libraries\hc32f4a0_ddl\drivers\cmsis\Include;board\ports;..\..\..\libcpu\arm\cortex-m4;..\..\..\components\drivers\include;..\..\..\libcpu\arm\common;..\..\..\components\libc\posix\ipc;applications;..\..\..\components\libc\posix\io\poll;..\..\..\components\libc\compilers\common\include;..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include</IncludePath>
-=======
-              <MiscControls></MiscControls>
-              <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, HC32F4A0, __RTTHREAD__</Define>
-              <Undefine></Undefine>
-              <IncludePath>..\..\..\components\libc\posix\ipc;board\ports;..\..\..\components\libc\compilers\common\include;..\..\..\components\drivers\include;..\..\..\components\drivers\include;board\config;..\..\..\components\finsh;..\..\..\components\drivers\include;.;..\libraries\hc32_drivers;..\..\..\components\libc\compilers\common\extension;..\..\..\libcpu\arm\cortex-m4;..\..\..\components\libc\posix\io\poll;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\libraries\hc32f4a0_ddl\drivers\cmsis\Include;..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\components\libc\posix\io\stdio;applications;..\..\..\include;board;..\..\..\components\drivers\include;..\..\..\libcpu\arm\common;..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\inc</IncludePath>
->>>>>>> 62477b07b (modfly drv_wdt.c,add drv_wdt_sample.c)
             </VariousControls>
           </Cads>
           <Aads>
@@ -391,9 +384,9 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>drv_wktm_sample.c</FileName>
+              <FileName>drv_wdt_sample.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\drv_wktm_sample.c</FilePath>
+              <FilePath>applications\drv_wdt_sample.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -401,9 +394,14 @@
               <FilePath>applications\main.c</FilePath>
             </File>
             <File>
-              <FileName>drv_wdt_sample.c</FileName>
+              <FileName>drv_crypto_sample.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\drv_wdt_sample.c</FilePath>
+              <FilePath>applications\drv_crypto_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_wktm_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\drv_wktm_sample.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -488,6 +486,26 @@
           <GroupName>DeviceDrivers</GroupName>
           <Files>
             <File>
+              <FileName>hw_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\hwcrypto\hw_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_hash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\hwcrypto\hw_hash.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_symmetric.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\hwcrypto\hw_symmetric.c</FilePath>
+            </File>
+            <File>
+              <FileName>hwcrypto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\hwcrypto\hwcrypto.c</FilePath>
+            </File>
+            <File>
               <FileName>completion.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\components\drivers\ipc\completion.c</FilePath>
@@ -532,11 +550,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\components\drivers\serial\serial.c</FilePath>
             </File>
-            <File>
-              <FileName>watchdog.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\drivers\watchdog\watchdog.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -558,6 +571,11 @@
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\ARM\startup_hc32f4a0.s</FilePath>
             </File>
             <File>
+              <FileName>drv_crypto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32_drivers\drv_crypto.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_gpio.c</FilePath>
@@ -571,11 +589,6 @@
               <FileName>drv_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_wdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32_drivers\drv_wdt.c</FilePath>
             </File>
             <File>
               <FileName>drv_wktm.c</FileName>
@@ -688,6 +701,11 @@
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_clk.c</FilePath>
             </File>
             <File>
+              <FileName>hc32_ll_hash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_hash.c</FilePath>
+            </File>
+            <File>
               <FileName>hc32_ll_icg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_icg.c</FilePath>
@@ -708,6 +726,11 @@
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</FilePath>
             </File>
             <File>
+              <FileName>hc32_ll_aes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_aes.c</FilePath>
+            </File>
+            <File>
               <FileName>hc32_ll_pwc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</FilePath>
@@ -726,11 +749,6 @@
               <FileName>hc32_ll.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll.c</FilePath>
-            </File>
-            <File>
-              <FileName>hc32_ll_swdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_swdt.c</FilePath>
             </File>
             <File>
               <FileName>hc32_ll_efm.c</FileName>
@@ -763,9 +781,9 @@
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\system_hc32f4a0.c</FilePath>
             </File>
             <File>
-              <FileName>hc32_ll_wdt.c</FileName>
+              <FileName>hc32_ll_crc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_wdt.c</FilePath>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_crc.c</FilePath>
             </File>
             <File>
               <FileName>hc32_ll_tmr0.c</FileName>

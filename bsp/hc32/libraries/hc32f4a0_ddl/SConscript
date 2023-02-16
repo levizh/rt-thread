@@ -77,6 +77,18 @@ if GetDepend(['RT_USING_PWM']):
     src += ['drivers/hc32_ll_driver/src/hc32_ll_tmr6.c']
     src += ['drivers/hc32_ll_driver/src/hc32_ll_tmra.c']
 
+if GetDepend(['RT_HWCRYPTO_USING_RNG']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_trng.c']
+
+if GetDepend(['RT_HWCRYPTO_USING_CRC']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_crc.c']
+
+if GetDepend(['RT_HWCRYPTO_USING_AES']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_aes.c']
+
+if GetDepend(['RT_HWCRYPTO_USING_SHA2']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_hash.c']
+
 path = [
     cwd + '/drivers/cmsis/Device/HDSC/hc32f4xx/Include',
     cwd + '/drivers/cmsis/Include',
