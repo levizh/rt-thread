@@ -69,7 +69,7 @@ void SystemClock_Config(void)
 
 /** Peripheral Clock Configuration
 */
-static void PeripheralClock_Config(void)
+void PeripheralClock_Config(void)
 {
 #if defined(HC32F460)
 #if defined(RT_USING_ADC)
