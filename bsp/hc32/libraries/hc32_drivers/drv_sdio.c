@@ -763,7 +763,7 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
             SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CC);
             if (sdio->pkg != RT_NULL)
             {
-                if (!sdio->pkg->cmd->data)
+                if ((!sdio->pkg->cmd->data) && (resp_type(sdio->pkg->cmd) != RESP_R1B))
                 {
                     complete = 1;
                 }
@@ -817,7 +817,7 @@ static void _sdio2_handler(void)
   * @param  None
   * @retval None
   */
-static void hc32_get_sdio_irq_callback(void)
+static void _sdio_get_irq_callback(void)
 {
 #ifdef BSP_USING_SDIO1
     _sdio_config[SDIO1_INDEX].irq_callback = _sdio1_handler;
@@ -912,7 +912,7 @@ static struct rt_mmcsd_host *_sdio_host_create(struct hc32_sdio_config *config,
     host->max_seg_size = SDIO_BUFF_SIZE;
     host->max_dma_segs = 1;
     host->max_blk_size = 512;
-    host->max_blk_count = (SDIO_BUFF_SIZE / 512);
+    host->max_blk_count = (SDIO_BUFF_SIZE / host->max_blk_size);
 
     /* link up host, config, cache_buf and sdio */
     sdio->host = host;
@@ -920,6 +920,7 @@ static struct rt_mmcsd_host *_sdio_host_create(struct hc32_sdio_config *config,
     sdio->cache_buf = cache_buf;
     host->private_data = sdio;
 
+    /* enable interrupt */
     _sdio_irq_update(host, 1);
 
     /* ready to change */
@@ -941,7 +942,7 @@ int rt_hw_sdio_init(void)
         .txconfig = _sdio_dma_txconfig,
     };
 
-    hc32_get_sdio_irq_callback();
+    _sdio_get_irq_callback();
 
     for (rt_size_t i = 0; i < obj_num; i++)
     {
