@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Modify for MISRAC
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -417,13 +418,13 @@ HOST_STATUS usb_host_set_hidprotocol(usb_core_instance *pdev, USBH_HOST *phost, 
  */
 void usb_host_parse_hiddesc(USB_HOST_HIDDesc_TypeDef *desc, uint8_t *buf)
 {
-    desc->bLength                  = *(uint8_t *)(buf + 0);
-    desc->bDescriptorType          = *(uint8_t *)(buf + 1);
-    desc->bcdHID                   =  SMALL_END(buf + 2);
-    desc->bCountryCode             = *(uint8_t *)(buf + 4);
-    desc->bNumDescriptors          = *(uint8_t *)(buf + 5);
-    desc->bReportDescriptorType    = *(uint8_t *)(buf + 6);
-    desc->wItemLength              =  SMALL_END(buf + 7);
+    desc->bLength                  = buf[0];
+    desc->bDescriptorType          = buf[1];
+    desc->bcdHID                   = SMALL_END(&buf[2]);
+    desc->bCountryCode             = buf[4];
+    desc->bNumDescriptors          = buf[5];
+    desc->bReportDescriptorType    = buf[6];
+    desc->wItemLength              = SMALL_END(&buf[7]);
 }
 
 /**

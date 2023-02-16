@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -208,10 +208,10 @@ void BSP_WM8731_Record(uint32_t *pu32ReadBuf, uint16_t u16Size)
 }
 
 /**
-  * @brief  Stops audio playing and recording.
-  * @param  None
-  * @retval None
-  */
+ * @brief  Stops audio playing and recording.
+ * @param  None
+ * @retval None
+ */
 void BSP_WM8731_Stop(void)
 {
     DMA_TransCompleteIntCmd(BSP_WM8731_DMA_SD_UNIT, BSP_WM8731_DMA_SD_INT_CH, DISABLE);
@@ -227,10 +227,10 @@ void BSP_WM8731_Stop(void)
 }
 
 /**
-  * @brief  Update the audio frequency.
-  * @param  u32AudioFreq:               Audio frequency used to play the audio.
-  * @retval None
-  */
+ * @brief  Update the audio frequency.
+ * @param  u32AudioFreq:               Audio frequency used to play the audio.
+ * @retval None
+ */
 void BSP_WM8731_SetFreq(uint32_t u32AudioFreq)
 {
     (void)WM8731_SetAudioFreq(&stcWm8731Config, u32AudioFreq);
@@ -238,10 +238,10 @@ void BSP_WM8731_SetFreq(uint32_t u32AudioFreq)
 }
 
 /**
-  * @brief  Set the audio volume level.
-  * @param  u8Volume:                   Volume level, Range is 0 to 100.
-  * @retval None
-  */
+ * @brief  Set the audio volume level.
+ * @param  u8Volume:                   Volume level, Range is 0 to 100.
+ * @retval None
+ */
 void BSP_WM8731_SetVolume(uint8_t u8Volume)
 {
     (void)WM8731_SetVolume(&stcWm8731Config, u8Volume);

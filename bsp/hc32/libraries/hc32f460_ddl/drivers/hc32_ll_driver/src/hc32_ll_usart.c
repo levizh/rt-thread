@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Optimize UART DIV_Fraction calculation time
+   2023-01-15       CDT             Fix bug: expressions may cause overflow when calculate UART DIV_Fraction
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -117,11 +119,7 @@
 (   ((x) == USART_CK_OUTPUT_ENABLE)     ||                                     \
     ((x) == USART_CK_OUTPUT_DISABLE))
 
-#define IS_USART_CLK_DIV(x)                                                    \
-(   ((x) == USART_CLK_DIV1)             ||                                     \
-    ((x) == USART_CLK_DIV4)             ||                                     \
-    ((x) == USART_CLK_DIV16)            ||                                     \
-    ((x) == USART_CLK_DIV64))
+#define IS_USART_CLK_DIV(x)             ((x) <= USART_CLK_DIV_MAX)
 
 #define IS_USART_DATA(x)                ((x) <= 0x01FFUL)
 
@@ -146,30 +144,6 @@
     ((x) == USART_SC_ETU_CLK128)        ||                                     \
     ((x) == USART_SC_ETU_CLK256)        ||                                     \
     ((x) == USART_SC_ETU_CLK372))
-/**
- * @}
- */
-
-/**
- * @defgroup USART_Check_Parameters_Validity_Stopmode_Filter USART Check Parameters Validity Stopmode Filter
- * @{
- */
-/**
- * @}
- */
-
-/**
- * @defgroup USART_Check_Parameters_Validity_Timeout_Function USART Check Parameters Validity Timeout Function
- * @{
- */
-/**
- * @}
- */
-
-/**
- * @defgroup USART_Check_Parameters_Validity_LIN_Function USART Check Parameters Validity LIN Function
- * @{
- */
 /**
  * @}
  */
@@ -235,6 +209,15 @@
  */
 
 /**
+ * @defgroup USART_Clock_Division_Max USART Clock Division Max
+ * @{
+ */
+#define USART_CLK_DIV_MAX               (USART_CLK_DIV64)
+/**
+ * @}
+ */
+
+/**
  * @defgroup USART_Default_Baudrate USART Default Baudrate
  * @{
  */
@@ -273,18 +256,7 @@
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
  * @param  [in] u32Flag                 USART flag
- *         This parameter can be one of the following values:
- *           @arg USART_FLAG_RX_FULL:   Receive data register not empty flag
- *           @arg USART_FLAG_TX_CPLT:   Transmission complete flag
- *           @arg USART_FLAG_TX_EMPTY:  Transmit data register empty flag
- *           @arg USART_FLAG_OVERRUN:   Overrun error flag
- *           @arg USART_FLAG_FRAME_ERR: Framing error flag
- *           @arg USART_FLAG_PARITY_ERR:Parity error flag
- *           @arg USART_FLAG_RX_TIMEOUT: Receive timeout flag
- *           @arg USART_FLAG_MX_PROCESSOR: Receive processor ID flag
- *           @arg USART_FLAG_LIN_ERR:   LIN bus error flag
- *           @arg USART_FLAG_LIN_WKUP:  LIN wakeup signal detection flag
- *           @arg USART_FLAG_LIN_BREAK: LIN break signal detection flag
+ *         This parameter can be a value of @ref USART_Flag
  * @param  [in] enStatus                Expected status
  *         This parameter can be one of the following values:
  *           @arg  SET:                 Wait flag set
@@ -546,7 +518,11 @@ static int32_t UART_CalculateDivFraction(const CM_USART_TypeDef *USARTx, uint32_
             u64Temp = (uint64_t)((uint64_t)8UL * ((uint64_t)2UL - (uint64_t)OVER8) * ((uint64_t)DIV_Integer + \
                                  (uint64_t)1UL) * (uint64_t)B);
 
-            DIV_Fraction = (uint32_t)(256UL * u64Temp / C - 128UL);
+            if ((u64Temp << 8) > (uint64_t)(UINT32_MAX)) {
+                DIV_Fraction = (uint32_t)(256UL * u64Temp / C - 128UL);
+            } else {
+                DIV_Fraction = (uint32_t)(256UL * (uint32_t)u64Temp / C - 128UL);
+            }
 
             if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
                 *pu32DivInteger = DIV_Integer;
@@ -808,16 +784,37 @@ static int32_t SmartCard_CalculateDiv(const CM_USART_TypeDef *USARTx, uint32_t u
 }
 
 /**
- * @brief  Get USART clock frequency value.
+ * @brief  Get bus(which USART mounts on) clock frequency value.
+ * @param  [in] USARTx                  Pointer to USART instance register base
+ *         This parameter can be one of the following values:
+ *           @arg CM_USARTx:            USART unit instance register base
  * @retval USART clock frequency value
  */
-static uint32_t USART_GetBusClockFreq(void)
+static uint32_t USART_GetBusClockFreq(const CM_USART_TypeDef *USARTx)
 {
     uint32_t u32BusClock;
+
+    (void)USARTx;
 
     u32BusClock = SystemCoreClock >> (READ_REG32_BIT(CM_CMU->SCFGR, CMU_SCFGR_PCLK1S) >> CMU_SCFGR_PCLK1S_POS);
 
     return u32BusClock;
+}
+
+/**
+ * @brief  Get USART clock division value which bit field USART_PR.PSC value is converted to.
+ * @param  [in] USARTx                  Pointer to USART instance register base
+ *         This parameter can be one of the following values:
+ *           @arg CM_USARTx:            USART unit instance register base
+ * @retval USART clock division value
+ */
+static uint32_t USART_GetUsartClockDiv(const CM_USART_TypeDef *USARTx)
+{
+    uint32_t u32UsartClockDiv;
+
+    u32UsartClockDiv = (1UL << (USART_GetClockDiv(USARTx) * 2UL));
+
+    return u32UsartClockDiv;
 }
 
 /**
@@ -835,8 +832,8 @@ static uint32_t USART_GetUsartClockFreq(const CM_USART_TypeDef *USARTx)
 
     DDL_ASSERT(IS_USART_UNIT(USARTx));
 
-    u32BusClock = USART_GetBusClockFreq();
-    u32UsartDiv = (1UL << (READ_REG32_BIT((USARTx)->PR, USART_PR_PSC) * 2UL));
+    u32BusClock = USART_GetBusClockFreq(USARTx);
+    u32UsartDiv = USART_GetUsartClockDiv(USARTx);
 
     u32UsartClock = u32BusClock / u32UsartDiv;
     return u32UsartClock;
@@ -1226,21 +1223,13 @@ en_flag_status_t USART_GetStatus(const CM_USART_TypeDef *USARTx, uint32_t u32Fla
 }
 
 /**
- * @brief  Get USART flag.
+ * @brief  Clear USART flag.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
  * @param  [in] u32Flag                 USART flag type
- *         This parameter can be any composed value of the following values:
- *           @arg USART_FLAG_OVERRUN:   Overrun error flag
- *           @arg USART_FLAG_FRAME_ERR: Framing error flag
- *           @arg USART_FLAG_PARITY_ERR:Parity error flag
- *           @arg USART_FLAG_RX_TIMEOUT: Receive timeout flag
- *           @arg USART_FLAG_LIN_ERR:   LIN bus error flag
- *           @arg USART_FLAG_LIN_WKUP:  LIN wakeup signal detection flag
- *           @arg USART_FLAG_LIN_BREAK: LIN break signal detection flag
+ *         This parameter can be any composed value of the macros group @ref USART_Flag.
  * @retval None
- * @note Check whether the paramter u32Flag value is valid by @ref USART_Flag.
  */
 void USART_ClearStatus(CM_USART_TypeDef *USARTx, uint32_t u32Flag)
 {
@@ -1255,7 +1244,6 @@ void USART_ClearStatus(CM_USART_TypeDef *USARTx, uint32_t u32Flag)
     if ((u32Flag & USART_FLAG_RX_TIMEOUT) > 0UL) {
         SET_REG32_BIT(USARTx->CR1, USART_CR1_CRTOF);
     }
-
 }
 
 /**
@@ -1399,10 +1387,6 @@ void USART_SetTransType(CM_USART_TypeDef *USARTx, uint32_t u32Type)
  *           @arg CM_USARTx:            USART unit instance register base
  * @param  [in] u32ClockDiv             USART clock prescaler division.
  *         This parameter can be one of the macros group @ref USART_Clock_Division
- *           @arg USART_CLK_DIV1:       CLK
- *           @arg USART_CLK_DIV4:       CLK/4
- *           @arg USART_CLK_DIV16:      CLK/16
- *           @arg USART_CLK_DIV64:      CLK/64
  * @retval None
  * @note   The clock division function is valid only when clock source is internal clock.
  */
@@ -1419,11 +1403,7 @@ void USART_SetClockDiv(CM_USART_TypeDef *USARTx, uint32_t u32ClockDiv)
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
- * @retval Returned value can be one of the following values:
- *           - USART_CLK_DIV1:          CLK
- *           - USART_CLK_DIV4:          CLK/4
- *           - USART_CLK_DIV16:         CLK/16
- *           - USART_CLK_DIV64:         CLK/64
+ * @retval Returned value can be one of the macros group @ref USART_Clock_Division
  * @note   The clock division function is valid only when clock source is internal clock.
  */
 uint32_t USART_GetClockDiv(const CM_USART_TypeDef *USARTx)

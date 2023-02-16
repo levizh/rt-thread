@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             API fixed: OTS_CalculateTemp().
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -291,7 +292,7 @@ int32_t OTS_ScalingExperiment(uint16_t *pu16Dr1, uint16_t *pu16Dr2,
  */
 float32_t OTS_CalculateTemp(void)
 {
-    float32_t f32Ret = 0.0F;
+    float32_t f32Ret = -300.0F;
     uint16_t u16Dr1  = READ_REG16(CM_OTS->DR1);
     uint16_t u16Dr2  = READ_REG16(CM_OTS->DR2);
     uint16_t u16Ecr  = READ_REG16(CM_OTS->ECR);

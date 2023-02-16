@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Add XTAL/XTAL32 IO define.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -165,7 +166,7 @@ extern "C"
 #define BSP_KEY_KEY10_EXTINT    (EXTINT_CH01)
 #define BSP_KEY_KEY10_INT_SRC   (INT_SRC_PORT_EIRQ1)
 #define BSP_KEY_KEY10_IRQn      (INT025_IRQn)
-#define BSP_KEY_KEY10_WAKEUP    (INTC_WUPEN_EIRQWUEN_1)
+#define BSP_KEY_KEY10_WAKEUP    (INTC_STOP_WKUP_EXTINT_CH1)
 #define BSP_KEY_KEY10_EVT       (EVT_SRC_PORT_EIRQ1)
 
 #define BSP_KEYOUT0_PORT        (GPIO_PORT_A)
@@ -219,6 +220,28 @@ extern "C"
 #define BSP_PRINTF_PORT                 (GPIO_PORT_E)
 #define BSP_PRINTF_PIN                  (GPIO_PIN_06)
 #define BSP_PRINTF_PORT_FUNC            (GPIO_FUNC_36)
+/**
+ * @}
+ */
+
+/**
+ * @defgroup BSP_XTAL_CONFIG BSP XTAL Configure definition
+ * @{
+ */
+#define BSP_XTAL_PORT                   (GPIO_PORT_H)
+#define BSP_XTAL_IN_PIN                 (GPIO_PIN_01)
+#define BSP_XTAL_OUT_PIN                (GPIO_PIN_00)
+/**
+ * @}
+ */
+
+/**
+ * @defgroup BSP_XTAL32_CONFIG BSP XTAL32 Configure definition
+ * @{
+ */
+#define BSP_XTAL32_PORT                 (GPIO_PORT_C)
+#define BSP_XTAL32_IN_PIN               (GPIO_PIN_15)
+#define BSP_XTAL32_OUT_PIN              (GPIO_PIN_14)
 /**
  * @}
  */

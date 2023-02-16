@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Deleted redundant comments.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -62,7 +63,6 @@ extern "C"
  * @defgroup SRAM_Sel SRAM Selection
  * @{
  */
-/* SRAM selection */
 #define SRAM_SRAMH              (1UL << 2U)                 /*!< SRAMH: 0x1FFF8000~0x1FFFFFFF, 32KB */
 #define SRAM_SRAM12             (1UL << 0U)                 /*!< SRAM1: 0x20000000~0x2000FFFF, 64KB
                                                                  SRAM2: 0x20010000~0x2001FFFF, 64KB */

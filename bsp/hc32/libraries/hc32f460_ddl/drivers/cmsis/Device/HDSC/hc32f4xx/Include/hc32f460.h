@@ -5,10 +5,11 @@
  @verbatim
    Change Logs:
    Date             Author          Notes
-   2022-03-31       CDT          First version
+   2022-03-31       CDT             First version
+   2023-01-15       CDT             Modify headfile based on reference manual Rev1.5
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -28,11 +29,11 @@ extern "C" {
 /*******************************************************************************
  * Configuration of the Cortex-M4 Processor and Core Peripherals
  ******************************************************************************/
-#define __MPU_PRESENT             1       /*!< HC32F460 provides MPU                            */
+#define __MPU_PRESENT             1       /*!< HC32F460 provides MPU                                */
 #define __VTOR_PRESENT            1       /*!< HC32F460 supported vector table registers            */
 #define __NVIC_PRIO_BITS          4       /*!< HC32F460 uses 4 Bits for the Priority Levels         */
-#define __Vendor_SysTickConfig    0       /*!< Set to 1 if different SysTick Config is used              */
-#define __FPU_PRESENT             1       /*!< FPU present                                               */
+#define __Vendor_SysTickConfig    0       /*!< Set to 1 if different SysTick Config is used         */
+#define __FPU_PRESENT             1       /*!< FPU present                                          */
 
 /*******************************************************************************
  * Interrupt Number Definition
@@ -1053,8 +1054,8 @@ typedef struct {
     __IO uint8_t  MRCCR;
     uint8_t RESERVED8[3];
     __IO uint8_t  OSCSTBSR;
-    __IO uint8_t  MCOCFGR1;
-    __IO uint8_t  MCOCFGR2;
+    __IO uint8_t  MCO1CFGR;
+    __IO uint8_t  MCO2CFGR;
     __IO uint8_t  TPIUCKCFGR;
     __IO uint8_t  XTALSTDCR;
     __IO uint8_t  XTALSTDSR;
@@ -1148,7 +1149,7 @@ typedef struct {
     __IO uint32_t DATA1;
     __IO uint32_t DATA2;
     __O  uint32_t FLAGCLR;
-    __IO uint32_t INTSEL;
+    __IO uint32_t INTEVTSEL;
 } CM_DCU_TypeDef;
 
 /**
@@ -2320,7 +2321,7 @@ typedef struct {
     __IO uint32_t GAHBCFG;
     __IO uint32_t GUSBCFG;
     __IO uint32_t GRSTCTL;
-    __I  uint32_t GINTSTS;
+    __IO uint32_t GINTSTS;
     __IO uint32_t GINTMSK;
     __I  uint32_t GRXSTSR;
     __I  uint32_t GRXSTSP;
@@ -2345,7 +2346,7 @@ typedef struct {
     __I  uint32_t HAINT;
     __IO uint32_t HAINTMSK;
     uint8_t RESERVED5[36];
-    __I  uint32_t HPRT;
+    __IO uint32_t HPRT;
     uint8_t RESERVED6[188];
     __IO uint32_t HCCHAR0;
     uint8_t RESERVED7[4];
@@ -3181,10 +3182,10 @@ typedef struct {
 #define AOS_ADC2_ITRGSELR_COMTRG_EN_1                  (0x80000000UL)
 
 /*  Bit definition for AOS_COMTRG1 register  */
-#define AOS_COMTRG1_TRGSEL                             (0x000001FFUL)
+#define AOS_COMTRG1_COMTRG                             (0x000001FFUL)
 
 /*  Bit definition for AOS_COMTRG2 register  */
-#define AOS_COMTRG2_TRGSEL                             (0x000001FFUL)
+#define AOS_COMTRG2_COMTRG                             (0x000001FFUL)
 
 /*  Bit definition for AOS_PEVNTDIRR register  */
 #define AOS_PEVNTDIRR_PDIR00_POS                       (0U)
@@ -4354,25 +4355,25 @@ typedef struct {
 #define DCU_FLAGCLR_CLR_GT1_POS                        (6U)
 #define DCU_FLAGCLR_CLR_GT1                            (0x00000040UL)
 
-/*  Bit definition for DCU_INTSEL register  */
-#define DCU_INTSEL_INT_OP_POS                          (0U)
-#define DCU_INTSEL_INT_OP                              (0x00000001UL)
-#define DCU_INTSEL_INT_LS2_POS                         (1U)
-#define DCU_INTSEL_INT_LS2                             (0x00000002UL)
-#define DCU_INTSEL_INT_EQ2_POS                         (2U)
-#define DCU_INTSEL_INT_EQ2                             (0x00000004UL)
-#define DCU_INTSEL_INT_GT2_POS                         (3U)
-#define DCU_INTSEL_INT_GT2                             (0x00000008UL)
-#define DCU_INTSEL_INT_LS1_POS                         (4U)
-#define DCU_INTSEL_INT_LS1                             (0x00000010UL)
-#define DCU_INTSEL_INT_EQ1_POS                         (5U)
-#define DCU_INTSEL_INT_EQ1                             (0x00000020UL)
-#define DCU_INTSEL_INT_GT1_POS                         (6U)
-#define DCU_INTSEL_INT_GT1                             (0x00000040UL)
-#define DCU_INTSEL_INT_WIN_POS                         (7U)
-#define DCU_INTSEL_INT_WIN                             (0x00000180UL)
-#define DCU_INTSEL_INT_WIN_0                           (0x00000080UL)
-#define DCU_INTSEL_INT_WIN_1                           (0x00000100UL)
+/*  Bit definition for DCU_INTEVTSEL register  */
+#define DCU_INTEVTSEL_SEL_OP_POS                       (0U)
+#define DCU_INTEVTSEL_SEL_OP                           (0x00000001UL)
+#define DCU_INTEVTSEL_SEL_LS2_POS                      (1U)
+#define DCU_INTEVTSEL_SEL_LS2                          (0x00000002UL)
+#define DCU_INTEVTSEL_SEL_EQ2_POS                      (2U)
+#define DCU_INTEVTSEL_SEL_EQ2                          (0x00000004UL)
+#define DCU_INTEVTSEL_SEL_GT2_POS                      (3U)
+#define DCU_INTEVTSEL_SEL_GT2                          (0x00000008UL)
+#define DCU_INTEVTSEL_SEL_LS1_POS                      (4U)
+#define DCU_INTEVTSEL_SEL_LS1                          (0x00000010UL)
+#define DCU_INTEVTSEL_SEL_EQ1_POS                      (5U)
+#define DCU_INTEVTSEL_SEL_EQ1                          (0x00000020UL)
+#define DCU_INTEVTSEL_SEL_GT1_POS                      (6U)
+#define DCU_INTEVTSEL_SEL_GT1                          (0x00000040UL)
+#define DCU_INTEVTSEL_SEL_WIN_POS                      (7U)
+#define DCU_INTEVTSEL_SEL_WIN                          (0x00000180UL)
+#define DCU_INTEVTSEL_SEL_WIN_0                        (0x00000080UL)
+#define DCU_INTEVTSEL_SEL_WIN_1                        (0x00000100UL)
 
 /*******************************************************************************
                 Bit definition for Peripheral DMA
@@ -4517,11 +4518,11 @@ typedef struct {
 #define DMA_RCFGCTL_CNTMD_0                            (0x00100000UL)
 #define DMA_RCFGCTL_CNTMD_1                            (0x00200000UL)
 
-/*  Bit definition for DMA_SAR0 register  */
-#define DMA_SAR0                                       (0xFFFFFFFFUL)
+/*  Bit definition for DMA_SAR register  */
+#define DMA_SAR                                        (0xFFFFFFFFUL)
 
-/*  Bit definition for DMA_DAR0 register  */
-#define DMA_DAR0                                       (0xFFFFFFFFUL)
+/*  Bit definition for DMA_DAR register  */
+#define DMA_DAR                                        (0xFFFFFFFFUL)
 
 /*  Bit definition for DMA_DTCTL register  */
 #define DMA_DTCTL_BLKSIZE_POS                          (0U)
@@ -4681,11 +4682,11 @@ typedef struct {
 #define DMA_CHCTL_IE_POS                               (12U)
 #define DMA_CHCTL_IE                                   (0x00001000UL)
 
-/*  Bit definition for DMA_MONSAR0 register  */
-#define DMA_MONSAR0                                    (0xFFFFFFFFUL)
+/*  Bit definition for DMA_MONSAR register  */
+#define DMA_MONSAR                                     (0xFFFFFFFFUL)
 
-/*  Bit definition for DMA_MONDAR0 register  */
-#define DMA_MONDAR0                                    (0xFFFFFFFFUL)
+/*  Bit definition for DMA_MONDAR register  */
+#define DMA_MONDAR                                     (0xFFFFFFFFUL)
 
 /*  Bit definition for DMA_MONDTCTL register  */
 #define DMA_MONDTCTL_BLKSIZE_POS                       (0U)
@@ -4710,42 +4711,6 @@ typedef struct {
 #define DMA_MONDNSEQCTL_DOFFSET                        (0x000FFFFFUL)
 #define DMA_MONDNSEQCTL_DNSCNT_POS                     (20U)
 #define DMA_MONDNSEQCTL_DNSCNT                         (0xFFF00000UL)
-
-/*  Bit definition for DMA_SAR1 register  */
-#define DMA_SAR1                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_DAR1 register  */
-#define DMA_DAR1                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONSAR1 register  */
-#define DMA_MONSAR1                                    (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONDAR1 register  */
-#define DMA_MONDAR1                                    (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_SAR2 register  */
-#define DMA_SAR2                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_DAR2 register  */
-#define DMA_DAR2                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONSAR2 register  */
-#define DMA_MONSAR2                                    (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONDAR2 register  */
-#define DMA_MONDAR2                                    (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_SAR3 register  */
-#define DMA_SAR3                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_DAR3 register  */
-#define DMA_DAR3                                       (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONSAR3 register  */
-#define DMA_MONSAR3                                    (0xFFFFFFFFUL)
-
-/*  Bit definition for DMA_MONDAR3 register  */
-#define DMA_MONDAR3                                    (0xFFFFFFFFUL)
 
 /*******************************************************************************
                 Bit definition for Peripheral EFM
@@ -5474,8 +5439,8 @@ typedef struct {
 #define I2C_CR1_SMBDEFAULTEN                           (0x00000008UL)
 #define I2C_CR1_SMBHOSTEN_POS                          (4U)
 #define I2C_CR1_SMBHOSTEN                              (0x00000010UL)
-#define I2C_CR1_GCEN_POS                               (6U)
-#define I2C_CR1_GCEN                                   (0x00000040UL)
+#define I2C_CR1_ENGC_POS                               (6U)
+#define I2C_CR1_ENGC                                   (0x00000040UL)
 #define I2C_CR1_RESTART_POS                            (7U)
 #define I2C_CR1_RESTART                                (0x00000080UL)
 #define I2C_CR1_START_POS                              (8U)
@@ -10053,8 +10018,8 @@ typedef struct {
 #define USBFS_DIEPMSK_EPDM                             (0x00000002UL)
 #define USBFS_DIEPMSK_TOM_POS                          (3U)
 #define USBFS_DIEPMSK_TOM                              (0x00000008UL)
-#define USBFS_DIEPMSK_ITTXFEMSK_POS                    (4U)
-#define USBFS_DIEPMSK_ITTXFEMSK                        (0x00000010UL)
+#define USBFS_DIEPMSK_TTXFEMSK_POS                     (4U)
+#define USBFS_DIEPMSK_TTXFEMSK                         (0x00000010UL)
 #define USBFS_DIEPMSK_INEPNMM_POS                      (5U)
 #define USBFS_DIEPMSK_INEPNMM                          (0x00000020UL)
 #define USBFS_DIEPMSK_INEPNEM_POS                      (6U)
@@ -11211,17 +11176,17 @@ typedef struct {
 } stc_dcu_flagclr_bit_t;
 
 typedef struct {
-    __IO uint32_t INT_OP;
-    __IO uint32_t INT_LS2;
-    __IO uint32_t INT_EQ2;
-    __IO uint32_t INT_GT2;
-    __IO uint32_t INT_LS1;
-    __IO uint32_t INT_EQ1;
-    __IO uint32_t INT_GT1;
-    __IO uint32_t INT_WIN0;
-    __IO uint32_t INT_WIN1;
+    __IO uint32_t SEL_OP;
+    __IO uint32_t SEL_LS2;
+    __IO uint32_t SEL_EQ2;
+    __IO uint32_t SEL_GT2;
+    __IO uint32_t SEL_LS1;
+    __IO uint32_t SEL_EQ1;
+    __IO uint32_t SEL_GT1;
+    __IO uint32_t SEL_WIN0;
+    __IO uint32_t SEL_WIN1;
     uint32_t RESERVED0[23];
-} stc_dcu_intsel_bit_t;
+} stc_dcu_intevtsel_bit_t;
 
 typedef struct {
     __IO uint32_t EN;
@@ -11945,7 +11910,7 @@ typedef struct {
     __IO uint32_t SMBDEFAULTEN;
     __IO uint32_t SMBHOSTEN;
     uint32_t RESERVED0[1];
-    __IO uint32_t GCEN;
+    __IO uint32_t ENGC;
     __IO uint32_t RESTART;
     __IO uint32_t START;
     __IO uint32_t STOP;
@@ -14910,7 +14875,7 @@ typedef struct {
     __IO uint32_t EPDM;
     uint32_t RESERVED0[1];
     __IO uint32_t TOM;
-    __IO uint32_t ITTXFEMSK;
+    __IO uint32_t TTXFEMSK;
     __IO uint32_t INEPNMM;
     __IO uint32_t INEPNEM;
     uint32_t RESERVED1[25];
@@ -14980,7 +14945,7 @@ typedef struct {
     __IO uint32_t CNAK;
     __IO uint32_t SNAK;
     uint32_t RESERVED4[2];
-    __IO uint32_t EPDIS;
+    __I  uint32_t EPDIS;
     __IO uint32_t EPENA;
 } stc_usbfs_doepctl0_bit_t;
 
@@ -15003,7 +14968,7 @@ typedef struct {
 
 typedef struct {
     uint32_t RESERVED0[15];
-    __I  uint32_t USBAEP;
+    __IO uint32_t USBAEP;
     __I  uint32_t DPID;
     __I  uint32_t NAKSTS;
     uint32_t RESERVED1[2];
@@ -15238,7 +15203,7 @@ typedef struct {
     stc_dcu_flag_bit_t                       FLAG_b;
     uint32_t                                 RESERVED0[96];
     stc_dcu_flagclr_bit_t                    FLAGCLR_b;
-    stc_dcu_intsel_bit_t                     INTSEL_b;
+    stc_dcu_intevtsel_bit_t                  INTEVTSEL_b;
 } bCM_DCU_TypeDef;
 
 typedef struct {

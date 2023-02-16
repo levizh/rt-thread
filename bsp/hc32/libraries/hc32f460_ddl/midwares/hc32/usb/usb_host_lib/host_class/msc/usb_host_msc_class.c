@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Remove msc bot reset operation
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -263,17 +264,8 @@ HOST_STATUS usb_host_msc_process(usb_core_instance *pdev, void *phost)
                 USBH_MSC_BOTXferParam.MSCState = HOST_MSC_BOT_RESET;
                 break;
             case HOST_MSC_BOT_RESET:
-                /* issue a request to reset the bot. */
-                status = usb_host_msc_bot_reset(pdev, phost);
-                if (status == HSTATUS_OK) {
-                    USBH_MSC_BOTXferParam.MSCState = HOST_MSC_GET_MAX_LUN;
-                }
-                if (status == HSTATUS_UNSUPPORTED) {
-                    /* if the request fails, it needs to move to next state and should save the next state as backup */
-                    USBH_MSC_BOTXferParam.MSCStateBkp = HOST_MSC_GET_MAX_LUN;
-                    /* a clear feature should be issued if the request fails. */
-                    USBH_MSC_BOTXferParam.MSCState = HOST_MSC_CTRL_ERROR_STATE;
-                }
+                /* donot issue a request to reset the bot here, only when bot unrecovered error. */
+                USBH_MSC_BOTXferParam.MSCState = HOST_MSC_GET_MAX_LUN;
                 break;
             case HOST_MSC_GET_MAX_LUN:
                 /* issue a request to get the max logical unit(MAXLUN). */

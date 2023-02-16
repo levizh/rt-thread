@@ -1,5 +1,5 @@
 ;/*****************************************************************************
-; * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+; * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
 ; *
 ; * This software component is licensed by XHSC under BSD 3-Clause license
 ; * (the "License"); You may not use this file except in compliance with the
@@ -8,12 +8,17 @@
 ; *
 ; */
 ;/****************************************************************************/
-;/*  Test for IAR                                                            */
+;/*  Test for MDK                                                            */
 ;/*  Version     V1.0                                                        */
-;/*  Date        2022-03-31                                                  */
+;/*  Date        2022-09-14                                                  */
 ;/****************************************************************************/
 
-            SECTION constdata:CONST(2)
+    THUMB
+    REQUIRE8
+    PRESERVE8
+
+    AREA |.text|, CODE, READONLY, ALIGN=2
+
 data0xAAAAAAAA       DCD     0xAAAAAAAA
 data0x55555555       DCD     0x55555555
 data0x80000000       DCD     0x80000000
@@ -21,9 +26,8 @@ data0xAAAAAAA8       DCD     0xAAAAAAA8
 data0x55555554       DCD     0x55555554
 data0x00000000       DCD     0x00000000
 data0x00000001       DCD     0x00000001
-
-            ; Exported function
-            EXPORT STL_CpuTestStartup
+data0x50000000       DCD     0x50000000
+data0xA0000000       DCD     0xA0000000
 
 ;*******************************************************************************
 ; Function Name  : STL_CpuTestStartup
@@ -34,9 +38,9 @@ data0x00000001       DCD     0x00000001
 ; WARNING        : all registers destroyed when exiting this function (including
 ;                  preserved registers R4 to R11) and excluding stack point R13)
 ;*******************************************************************************/
-            THUMB
-            SECTION .text:CODE(2)
-STL_CpuTestStartup:
+STL_CpuTestStartup PROC
+            EXPORT STL_CpuTestStartup
+
             PUSH {R4-R7}                         ; Save registers
 
 _test_cpu_reg0_reg8
@@ -318,26 +322,39 @@ _test_cpu_r14_sfr
             BNE _test_cpu_r14_sfr_fail
             MOV LR, R1
 
-            ; PRIMASK register
-            MRS R1, PRIMASK
-            LDR R0, =data0x00000000
-            LDR R0, [R0]
-            MSR PRIMASK, R0
-            MRS R2, PRIMASK
-            MOVS R3, #1
-            ANDS R2, R3
-            CMP R2, #0
+            ; APSR
+            MRS R0, APSR
+            LDR R1, =data0x50000000
+            LDR R1,[R1]
+            MSR APSR,R1
+            MRS R2, APSR
+            CMP R1, R2
             BNE _test_cpu_r14_sfr_fail
 
-            LDR R0, =data0x00000001
-            LDR R0, [R0]
-            MSR PRIMASK, R0
-            MRS R2, PRIMASK
-            MOVS R3, #1
-            ANDS R2, R3
-            CMP R2, #1
+            LDR R1, =data0xA0000000
+            LDR R1,[R1]
+            MSR APSR,R1
+            MRS R2, APSR
+            CMP R1, R2
             BNE _test_cpu_r14_sfr_fail
+            MSR APSR,R0
+
+            ; PRIMASK register
+            MRS R0, PRIMASK
+            LDR R1, =data0x00000000
+            LDR R1, [R1]
             MSR PRIMASK, R1
+            MRS R2, PRIMASK
+            CMP R1, R2
+            BNE _test_cpu_r14_sfr_fail
+
+            LDR R1, =data0x00000001
+            LDR R1, [R1]
+            MSR PRIMASK, R1
+            MRS R2, PRIMASK
+            CMP R1, R2
+            BNE _test_cpu_r14_sfr_fail
+            MSR PRIMASK, R0
             B _test_cpu_pass
 
 _test_cpu_r14_sfr_fail
@@ -353,5 +370,9 @@ _test_cpu_pass
 _test_exit
             POP {R4-R7}                          ; Restore registers
             BX LR
+
+            ENDP
+
+            ALIGN
 
             END

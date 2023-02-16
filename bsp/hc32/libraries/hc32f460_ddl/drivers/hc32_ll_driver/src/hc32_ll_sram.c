@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Deleted redundant comments.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -84,8 +85,6 @@
     ((x) == SRAM_ECC_MD1)                   ||                                 \
     ((x) == SRAM_ECC_MD2)                   ||                                 \
     ((x) == SRAM_ECC_MD3))
-
-/* Error injection */
 
 /**
  * @}

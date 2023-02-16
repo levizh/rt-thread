@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Synchronize register: DCU_INTSEL -> DCU_INTEVTSEL
+   2022-06-30       CDT             Modify function comments: DCU_IntCmd
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -205,7 +207,7 @@ int32_t DCU_Init(CM_DCU_TypeDef *DCUx, const stc_dcu_init_t *pstcDcuInit)
         WRITE_REG32(DCUx->CTL, (pstcDcuInit->u32Mode | pstcDcuInit->u32DataWidth));
 
         /* Disable interrupt */
-        WRITE_REG32(DCUx->INTSEL, 0x00000000UL);
+        WRITE_REG32(DCUx->INTEVTSEL, 0x00000000UL);
 
         /* Clear Flag */
         WRITE_REG32(DCUx->FLAGCLR, 0x0000007FUL);
@@ -228,7 +230,7 @@ int32_t DCU_DeInit(CM_DCU_TypeDef *DCUx)
 
     /* Configures the registers to reset value. */
     WRITE_REG32(DCUx->CTL, 0x00000000UL);
-    WRITE_REG32(DCUx->INTSEL, 0x00000000UL);
+    WRITE_REG32(DCUx->INTEVTSEL, 0x00000000UL);
 
     /* Clear Flag */
     WRITE_REG32(DCUx->FLAGCLR, 0x0000007FUL);
@@ -350,11 +352,7 @@ void DCU_GlobalIntCmd(CM_DCU_TypeDef *DCUx, en_functional_state_t enNewState)
  * @param  [in] u32IntCategory          DCU interrupt categorye
  *         This parameter can be one of the macros group @ref DCU_Category.
  * @param  [in] u32IntType              DCU interrupt type
- *         This parameter can be one of the following case:
- *         a. this parameter can be one of the macros group @ref DCU_Operation_Interrupt when u32Category = DCU_CATEGORY_OP.
- *         b. this parameter can be one of the macros group @ref DCU_Window_Compare_Interrupt when u32Category = DCU_CATEGORY_CMP_WIN.
- *         c. this parameter can be one of the macros group @ref DCU_Compare_Interrupt when u32Category = DCU_CATEGORY_CMP_NON_WIN.
- *         d. this parameter can be one of the macros group @ref DCU_Wave_Mode_Interrupt when u32Category = DCU_CATEGORY_WAVE.
+ *         This parameter can be one of the macros group @ref DCU_Interrupt_Type.
  * @param  [in] enNewState              An @ref en_functional_state_t enumeration value.
  * @retval None
  */
@@ -380,9 +378,9 @@ void DCU_IntCmd(CM_DCU_TypeDef *DCUx, uint32_t u32IntCategory, uint32_t u32IntTy
     }
 
     if (ENABLE == enNewState) {
-        SET_REG32_BIT(DCUx->INTSEL, u32Type);
+        SET_REG32_BIT(DCUx->INTEVTSEL, u32Type);
     } else {
-        CLR_REG32_BIT(DCUx->INTSEL, u32Type);
+        CLR_REG32_BIT(DCUx->INTEVTSEL, u32Type);
     }
 }
 

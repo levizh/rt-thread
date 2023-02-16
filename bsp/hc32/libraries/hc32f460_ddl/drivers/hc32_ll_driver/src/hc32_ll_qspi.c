@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Modify the conditions for entering direct communication mode
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -160,7 +161,7 @@
  */
 
 /* Current read mode */
-static uint8_t m_u8ReadMode = 0U;
+static uint32_t m_u32ReadMode = 0U;
 
 /**
  * @}
@@ -380,9 +381,11 @@ void QSPI_XipModeCmd(uint8_t u8ModeCode, en_functional_state_t enNewState)
 void QSPI_EnterDirectCommMode(void)
 {
     /* Backup the read mode */
-    m_u8ReadMode = (uint8_t)READ_REG32_BIT(CM_QSPI->CR, QSPI_CR_MDSEL);
-    /* Set standard read mode */
-    CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_MDSEL);
+    m_u32ReadMode = READ_REG32_BIT(CM_QSPI->CR, QSPI_CR_MDSEL);
+    if (m_u32ReadMode <= QSPI_RD_MD_QUAD_IO_FAST_RD) {
+        /* Set standard read mode */
+        CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_MDSEL);
+    }
     /* Enter direct communication mode */
     SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 }
@@ -396,8 +399,10 @@ void QSPI_ExitDirectCommMode(void)
 {
     /* Exit direct communication mode */
     CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
-    /* Recovery the read mode */
-    SET_REG32_BIT(CM_QSPI->CR, m_u8ReadMode);
+    if (m_u32ReadMode <= QSPI_RD_MD_QUAD_IO_FAST_RD) {
+        /* Recovery the read mode */
+        SET_REG32_BIT(CM_QSPI->CR, m_u32ReadMode);
+    }
 }
 
 /**

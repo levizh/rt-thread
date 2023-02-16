@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Deleted redundant comments.
+   2022-10-31       CDT             Remove CAN_FLAG_RX_BUF_OVF from CAN_FLAG_CLR_ALL.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -79,8 +81,6 @@ typedef struct {
     uint32_t u32IDMask;                     /*!< Specifies the identifier(ID) mask. The mask bits of ID will be ignored by the acceptance filter. */
     uint32_t u32IDType;                     /*!< Specifies the identifier(ID) type. This parameter can be a value of @ref CAN_ID_Type */
 } stc_can_filter_config_t;
-
-/* CAN-FD structure */
 
 /**
  * @brief TTCAN configuration structure.
@@ -429,8 +429,7 @@ typedef struct {
                                          CAN_FLAG_ERR_PASSIVE_NODE | \
                                          CAN_FLAG_TEC_REC_WARN)
 
-#define CAN_FLAG_CLR_ALL                (CAN_FLAG_RX_BUF_OVF       | \
-                                         CAN_FLAG_TX_ABORTED       | \
+#define CAN_FLAG_CLR_ALL                (CAN_FLAG_TX_ABORTED       | \
                                          CAN_FLAG_ERR_INT          | \
                                          CAN_FLAG_STB_TX           | \
                                          CAN_FLAG_PTB_TX           | \

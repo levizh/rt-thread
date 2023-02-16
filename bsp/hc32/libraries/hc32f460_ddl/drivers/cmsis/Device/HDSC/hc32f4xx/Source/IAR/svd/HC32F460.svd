@@ -1,10 +1,8 @@
 <?xml version="1.0" ?>
-<device schemaVersion="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD.xsd">
-    <vendor>HDSC</vendor>
-    <vendorID>HDSC</vendorID>
-    <name>HDSC_HC32F460</name>
-    <series>ARMCM4</series>
+<device schemaVersion="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_1.xsd">
+    <name>HC32F460</name>
     <version>1.0</version>
+    <description>HC32F460</description>
     <cpu>
         <name>CM4</name>
         <revision>r0p1</revision>
@@ -17,17 +15,17 @@
     <addressUnitBits>8</addressUnitBits>
     <width>32</width>
     <size>32</size>
-    <access>read-write</access>
     <resetValue>0x0</resetValue>
-    <resetMask>0x0</resetMask>
+    <resetMask>0xFFFFFFFF</resetMask>
     <peripherals>
         <peripheral>
             <name>ADC1</name>
-            <description>desc ADC</description>
+            <description>desc ADC1</description>
             <baseAddress>0x40040000</baseAddress>
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xD0</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -119,12 +117,12 @@
                     <size>16</size>
                     <access>read-write</access>
                     <resetValue>0x0</resetValue>
-                    <resetMask>0x8383</resetMask>
+                    <resetMask>0x8787</resetMask>
                     <fields>
                         <field>
                             <name>TRGSELA</name>
                             <description>desc TRGSELA</description>
-                            <msb>1</msb>
+                            <msb>2</msb>
                             <lsb>0</lsb>
                             <access>read-write</access>
                         </field>
@@ -138,7 +136,7 @@
                         <field>
                             <name>TRGSELB</name>
                             <description>desc TRGSELB</description>
-                            <msb>9</msb>
+                            <msb>10</msb>
                             <lsb>8</lsb>
                             <access>read-write</access>
                         </field>
@@ -916,14 +914,593 @@
                 </register>
             </registers>
         </peripheral>
-        <peripheral derivedFrom="ADC1">
+        <peripheral>
             <name>ADC2</name>
-            <description>desc ADC</description>
+            <description>desc ADC2</description>
             <baseAddress>0x40040400</baseAddress>
             <addressBlock>
                 <offset>0x0</offset>
-                <size>0xD0</size>
+                <size>0xB2</size>
+                <usage>registers</usage>
             </addressBlock>
+            <registers>
+                <register>
+                    <name>STR</name>
+                    <description>desc STR</description>
+                    <addressOffset>0x0</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1</resetMask>
+                    <fields>
+                        <field>
+                            <name>STRT</name>
+                            <description>desc STRT</description>
+                            <msb>0</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CR0</name>
+                    <description>desc CR0</description>
+                    <addressOffset>0x2</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x7F3</resetMask>
+                    <fields>
+                        <field>
+                            <name>MS</name>
+                            <description>desc MS</description>
+                            <msb>1</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>ACCSEL</name>
+                            <description>desc ACCSEL</description>
+                            <msb>5</msb>
+                            <lsb>4</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CLREN</name>
+                            <description>desc CLREN</description>
+                            <msb>6</msb>
+                            <lsb>6</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>DFMT</name>
+                            <description>desc DFMT</description>
+                            <msb>7</msb>
+                            <lsb>7</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>AVCNT</name>
+                            <description>desc AVCNT</description>
+                            <msb>10</msb>
+                            <lsb>8</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CR1</name>
+                    <description>desc CR1</description>
+                    <addressOffset>0x4</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x4</resetMask>
+                    <fields>
+                        <field>
+                            <name>RSCHSEL</name>
+                            <description>desc RSCHSEL</description>
+                            <msb>2</msb>
+                            <lsb>2</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>TRGSR</name>
+                    <description>desc TRGSR</description>
+                    <addressOffset>0xA</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x8787</resetMask>
+                    <fields>
+                        <field>
+                            <name>TRGSELA</name>
+                            <description>desc TRGSELA</description>
+                            <msb>2</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>TRGENA</name>
+                            <description>desc TRGENA</description>
+                            <msb>7</msb>
+                            <lsb>7</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>TRGSELB</name>
+                            <description>desc TRGSELB</description>
+                            <msb>10</msb>
+                            <lsb>8</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>TRGENB</name>
+                            <description>desc TRGENB</description>
+                            <msb>15</msb>
+                            <lsb>15</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CHSELRA</name>
+                    <description>desc CHSELRA</description>
+                    <addressOffset>0xC</addressOffset>
+                    <size>32</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1FF</resetMask>
+                    <fields>
+                        <field>
+                            <name>CHSELA</name>
+                            <description>desc CHSELA</description>
+                            <msb>8</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CHSELRB</name>
+                    <description>desc CHSELRB</description>
+                    <addressOffset>0x10</addressOffset>
+                    <size>32</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1FF</resetMask>
+                    <fields>
+                        <field>
+                            <name>CHSELB</name>
+                            <description>desc CHSELB</description>
+                            <msb>8</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>AVCHSELR</name>
+                    <description>desc AVCHSELR</description>
+                    <addressOffset>0x14</addressOffset>
+                    <size>32</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1FF</resetMask>
+                    <fields>
+                        <field>
+                            <name>AVCHSEL</name>
+                            <description>desc AVCHSEL</description>
+                            <msb>8</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>SSTR0</name>
+                    <description>desc SSTR0</description>
+                    <addressOffset>0x20</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR1</name>
+                    <description>desc SSTR1</description>
+                    <addressOffset>0x21</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR2</name>
+                    <description>desc SSTR2</description>
+                    <addressOffset>0x22</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR3</name>
+                    <description>desc SSTR3</description>
+                    <addressOffset>0x23</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR4</name>
+                    <description>desc SSTR4</description>
+                    <addressOffset>0x24</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR5</name>
+                    <description>desc SSTR5</description>
+                    <addressOffset>0x25</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR6</name>
+                    <description>desc SSTR6</description>
+                    <addressOffset>0x26</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR7</name>
+                    <description>desc SSTR7</description>
+                    <addressOffset>0x27</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>SSTR8</name>
+                    <description>desc SSTR8</description>
+                    <addressOffset>0x28</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0xB</resetValue>
+                    <resetMask>0xFF</resetMask>
+                </register>
+                <register>
+                    <name>CHMUXR0</name>
+                    <description>desc CHMUXR0</description>
+                    <addressOffset>0x38</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x3210</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                    <fields>
+                        <field>
+                            <name>CH00MUX</name>
+                            <description>desc CH00MUX</description>
+                            <msb>3</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH01MUX</name>
+                            <description>desc CH01MUX</description>
+                            <msb>7</msb>
+                            <lsb>4</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH02MUX</name>
+                            <description>desc CH02MUX</description>
+                            <msb>11</msb>
+                            <lsb>8</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH03MUX</name>
+                            <description>desc CH03MUX</description>
+                            <msb>15</msb>
+                            <lsb>12</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CHMUXR1</name>
+                    <description>desc CHMUXR1</description>
+                    <addressOffset>0x3A</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x7654</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                    <fields>
+                        <field>
+                            <name>CH04MUX</name>
+                            <description>desc CH04MUX</description>
+                            <msb>3</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH05MUX</name>
+                            <description>desc CH05MUX</description>
+                            <msb>7</msb>
+                            <lsb>4</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH06MUX</name>
+                            <description>desc CH06MUX</description>
+                            <msb>11</msb>
+                            <lsb>8</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>CH07MUX</name>
+                            <description>desc CH07MUX</description>
+                            <msb>15</msb>
+                            <lsb>12</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>CHMUXR2</name>
+                    <description>desc CHMUXR2</description>
+                    <addressOffset>0x3C</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0xBA98</resetValue>
+                    <resetMask>0xF</resetMask>
+                    <fields>
+                        <field>
+                            <name>CH08MUX</name>
+                            <description>desc CH08MUX</description>
+                            <msb>3</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>ISR</name>
+                    <description>desc ISR</description>
+                    <addressOffset>0x46</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x3</resetMask>
+                    <fields>
+                        <field>
+                            <name>EOCAF</name>
+                            <description>desc EOCAF</description>
+                            <msb>0</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>EOCBF</name>
+                            <description>desc EOCBF</description>
+                            <msb>1</msb>
+                            <lsb>1</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>ICR</name>
+                    <description>desc ICR</description>
+                    <addressOffset>0x47</addressOffset>
+                    <size>8</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x3</resetMask>
+                    <fields>
+                        <field>
+                            <name>EOCAIEN</name>
+                            <description>desc EOCAIEN</description>
+                            <msb>0</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>EOCBIEN</name>
+                            <description>desc EOCBIEN</description>
+                            <msb>1</msb>
+                            <lsb>1</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>DR0</name>
+                    <description>desc DR0</description>
+                    <addressOffset>0x50</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR1</name>
+                    <description>desc DR1</description>
+                    <addressOffset>0x52</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR2</name>
+                    <description>desc DR2</description>
+                    <addressOffset>0x54</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR3</name>
+                    <description>desc DR3</description>
+                    <addressOffset>0x56</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR4</name>
+                    <description>desc DR4</description>
+                    <addressOffset>0x58</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR5</name>
+                    <description>desc DR5</description>
+                    <addressOffset>0x5A</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR6</name>
+                    <description>desc DR6</description>
+                    <addressOffset>0x5C</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR7</name>
+                    <description>desc DR7</description>
+                    <addressOffset>0x5E</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>DR8</name>
+                    <description>desc DR8</description>
+                    <addressOffset>0x60</addressOffset>
+                    <size>16</size>
+                    <access>read-only</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>AWDCR</name>
+                    <description>desc AWDCR</description>
+                    <addressOffset>0xA0</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1D1</resetMask>
+                    <fields>
+                        <field>
+                            <name>AWDEN</name>
+                            <description>desc AWDEN</description>
+                            <msb>0</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>AWDMD</name>
+                            <description>desc AWDMD</description>
+                            <msb>4</msb>
+                            <lsb>4</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>AWDSS</name>
+                            <description>desc AWDSS</description>
+                            <msb>7</msb>
+                            <lsb>6</lsb>
+                            <access>read-write</access>
+                        </field>
+                        <field>
+                            <name>AWDIEN</name>
+                            <description>desc AWDIEN</description>
+                            <msb>8</msb>
+                            <lsb>8</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>AWDDR0</name>
+                    <description>desc AWDDR0</description>
+                    <addressOffset>0xA4</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>AWDDR1</name>
+                    <description>desc AWDDR1</description>
+                    <addressOffset>0xA6</addressOffset>
+                    <size>16</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0xFFFF</resetMask>
+                </register>
+                <register>
+                    <name>AWDCHSR</name>
+                    <description>desc AWDCHSR</description>
+                    <addressOffset>0xAC</addressOffset>
+                    <size>32</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1FF</resetMask>
+                    <fields>
+                        <field>
+                            <name>AWDCH</name>
+                            <description>desc AWDCH</description>
+                            <msb>8</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+                <register>
+                    <name>AWDSR</name>
+                    <description>desc AWDSR</description>
+                    <addressOffset>0xB0</addressOffset>
+                    <size>32</size>
+                    <access>read-write</access>
+                    <resetValue>0x0</resetValue>
+                    <resetMask>0x1FF</resetMask>
+                    <fields>
+                        <field>
+                            <name>AWDF</name>
+                            <description>desc AWDF</description>
+                            <msb>8</msb>
+                            <lsb>0</lsb>
+                            <access>read-write</access>
+                        </field>
+                    </fields>
+                </register>
+            </registers>
         </peripheral>
         <peripheral>
             <name>AES</name>
@@ -932,6 +1509,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x30</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -1040,6 +1618,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x174</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -1695,8 +2274,8 @@
                     <resetMask>0x1FF</resetMask>
                     <fields>
                         <field>
-                            <name>TRGSEL</name>
-                            <description>desc TRGSEL</description>
+                            <name>COMTRG</name>
+                            <description>desc COMTRG</description>
                             <msb>8</msb>
                             <lsb>0</lsb>
                             <access>read-write</access>
@@ -1713,8 +2292,8 @@
                     <resetMask>0x1FF</resetMask>
                     <fields>
                         <field>
-                            <name>TRGSEL</name>
-                            <description>desc TRGSEL</description>
+                            <name>COMTRG</name>
+                            <description>desc COMTRG</description>
                             <msb>8</msb>
                             <lsb>0</lsb>
                             <access>read-write</access>
@@ -5241,6 +5820,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xCA</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -6088,6 +6668,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xA</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -6259,6 +6840,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xA</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="CMP1">
@@ -6268,6 +6850,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xA</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -6278,6 +6861,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x10E</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -6389,6 +6973,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x42A</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -6674,8 +7259,8 @@
                     </fields>
                 </register>
                 <register>
-                    <name>MCOCFGR1</name>
-                    <description>desc MCOCFGR1</description>
+                    <name>MCO1CFGR</name>
+                    <description>desc MCO1CFGR</description>
                     <addressOffset>0x3D</addressOffset>
                     <size>8</size>
                     <access>read-write</access>
@@ -6706,8 +7291,8 @@
                     </fields>
                 </register>
                 <register>
-                    <name>MCOCFGR2</name>
-                    <description>desc MCOCFGR2</description>
+                    <name>MCO2CFGR</name>
+                    <description>desc MCO2CFGR</description>
                     <addressOffset>0x3E</addressOffset>
                     <size>8</size>
                     <access>read-write</access>
@@ -7076,6 +7661,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x100</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -7457,6 +8043,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x28</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -7822,6 +8409,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -8011,8 +8599,8 @@
                     </fields>
                 </register>
                 <register>
-                    <name>INTSEL</name>
-                    <description>desc INTSEL</description>
+                    <name>INTEVTSEL</name>
+                    <description>desc INTEVTSEL</description>
                     <addressOffset>0x18</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8020,57 +8608,57 @@
                     <resetMask>0x1FF</resetMask>
                     <fields>
                         <field>
-                            <name>INT_OP</name>
-                            <description>desc INT_OP</description>
+                            <name>SEL_OP</name>
+                            <description>desc SEL_OP</description>
                             <msb>0</msb>
                             <lsb>0</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_LS2</name>
-                            <description>desc INT_LS2</description>
+                            <name>SEL_LS2</name>
+                            <description>desc SEL_LS2</description>
                             <msb>1</msb>
                             <lsb>1</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_EQ2</name>
-                            <description>desc INT_EQ2</description>
+                            <name>SEL_EQ2</name>
+                            <description>desc SEL_EQ2</description>
                             <msb>2</msb>
                             <lsb>2</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_GT2</name>
-                            <description>desc INT_GT2</description>
+                            <name>SEL_GT2</name>
+                            <description>desc SEL_GT2</description>
                             <msb>3</msb>
                             <lsb>3</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_LS1</name>
-                            <description>desc INT_LS1</description>
+                            <name>SEL_LS1</name>
+                            <description>desc SEL_LS1</description>
                             <msb>4</msb>
                             <lsb>4</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_EQ1</name>
-                            <description>desc INT_EQ1</description>
+                            <name>SEL_EQ1</name>
+                            <description>desc SEL_EQ1</description>
                             <msb>5</msb>
                             <lsb>5</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_GT1</name>
-                            <description>desc INT_GT1</description>
+                            <name>SEL_GT1</name>
+                            <description>desc SEL_GT1</description>
                             <msb>6</msb>
                             <lsb>6</lsb>
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>INT_WIN</name>
-                            <description>desc INT_WIN</description>
+                            <name>SEL_WIN</name>
+                            <description>desc SEL_WIN</description>
                             <msb>8</msb>
                             <lsb>7</lsb>
                             <access>read-write</access>
@@ -8086,6 +8674,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="DCU1">
@@ -8095,6 +8684,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="DCU1">
@@ -8104,6 +8694,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -8113,6 +8704,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x120</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -8482,6 +9074,7 @@
                 <register>
                     <name>RPTB0</name>
                     <description>desc RPTB0</description>
+                    <alternateRegister>RPT0</alternateRegister>
                     <addressOffset>0x4C</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8532,6 +9125,7 @@
                 <register>
                     <name>SNSEQCTLB0</name>
                     <description>desc SNSEQCTLB0</description>
+                    <alternateRegister>SNSEQCTL0</alternateRegister>
                     <addressOffset>0x50</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8582,6 +9176,7 @@
                 <register>
                     <name>DNSEQCTLB0</name>
                     <description>desc DNSEQCTLB0</description>
+                    <alternateRegister>DNSEQCTL0</alternateRegister>
                     <addressOffset>0x54</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8892,6 +9487,7 @@
                 <register>
                     <name>RPTB1</name>
                     <description>desc RPTB1</description>
+                    <alternateRegister>RPT1</alternateRegister>
                     <addressOffset>0x8C</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8942,6 +9538,7 @@
                 <register>
                     <name>SNSEQCTLB1</name>
                     <description>desc SNSEQCTLB1</description>
+                    <alternateRegister>SNSEQCTL1</alternateRegister>
                     <addressOffset>0x90</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -8992,6 +9589,7 @@
                 <register>
                     <name>DNSEQCTLB1</name>
                     <description>desc DNSEQCTLB1</description>
+                    <alternateRegister>DNSEQCTL1</alternateRegister>
                     <addressOffset>0x94</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9302,6 +9900,7 @@
                 <register>
                     <name>RPTB2</name>
                     <description>desc RPTB2</description>
+                    <alternateRegister>RPT2</alternateRegister>
                     <addressOffset>0xCC</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9352,6 +9951,7 @@
                 <register>
                     <name>SNSEQCTLB2</name>
                     <description>desc SNSEQCTLB2</description>
+                    <alternateRegister>SNSEQCTL2</alternateRegister>
                     <addressOffset>0xD0</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9402,6 +10002,7 @@
                 <register>
                     <name>DNSEQCTLB2</name>
                     <description>desc DNSEQCTLB2</description>
+                    <alternateRegister>DNSEQCTL2</alternateRegister>
                     <addressOffset>0xD4</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9712,6 +10313,7 @@
                 <register>
                     <name>RPTB3</name>
                     <description>desc RPTB3</description>
+                    <alternateRegister>RPT3</alternateRegister>
                     <addressOffset>0x10C</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9762,6 +10364,7 @@
                 <register>
                     <name>SNSEQCTLB3</name>
                     <description>desc SNSEQCTLB3</description>
+                    <alternateRegister>SNSEQCTL3</alternateRegister>
                     <addressOffset>0x110</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -9812,6 +10415,7 @@
                 <register>
                     <name>DNSEQCTLB3</name>
                     <description>desc DNSEQCTLB3</description>
+                    <alternateRegister>DNSEQCTL3</alternateRegister>
                     <addressOffset>0x114</addressOffset>
                     <size>32</size>
                     <access>read-write</access>
@@ -10060,6 +10664,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x120</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -10069,6 +10674,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x208</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -10502,6 +11108,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -10782,6 +11389,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="EMB0">
@@ -10791,6 +11399,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="EMB0">
@@ -10800,6 +11409,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -10809,6 +11419,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x24</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -11080,6 +11691,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x54C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -23857,6 +24469,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x80</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -24109,6 +24722,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x34</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -24156,8 +24770,8 @@
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>GCEN</name>
-                            <description>desc GCEN</description>
+                            <name>ENGC</name>
+                            <description>desc ENGC</description>
                             <msb>6</msb>
                             <lsb>6</lsb>
                             <access>read-write</access>
@@ -24809,6 +25423,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x34</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="I2C1">
@@ -24818,6 +25433,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x34</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -24827,6 +25443,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -25128,6 +25745,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="I2S1">
@@ -25137,6 +25755,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="I2S1">
@@ -25146,6 +25765,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -25155,6 +25775,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x20</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -25389,6 +26010,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x2A8</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -33262,6 +33884,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -33355,6 +33978,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x4020</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -35348,6 +35972,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -35450,6 +36075,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x8</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -35511,6 +36137,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC42C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -36901,6 +37528,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x808</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -37221,6 +37849,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x2</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -37355,6 +37984,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x40</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -37787,6 +38417,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x54</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -38894,6 +39525,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x54</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -38903,6 +39535,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -39247,6 +39880,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="SPI1">
@@ -39256,6 +39890,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="SPI1">
@@ -39265,6 +39900,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -39274,6 +39910,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x14</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -39480,6 +40117,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -39541,6 +40179,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -39814,6 +40453,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x18</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -39823,6 +40463,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xF2</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -42125,6 +42766,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xF2</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMR41">
@@ -42134,6 +42776,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xF2</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -42143,6 +42786,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -42208,6 +42852,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x90</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -43878,6 +44523,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x90</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMR61">
@@ -43887,6 +44533,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x90</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -43897,6 +44544,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x400</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -44004,6 +44652,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -45917,6 +46566,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMRA1">
@@ -45926,6 +46576,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMRA1">
@@ -45935,6 +46586,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMRA1">
@@ -45944,6 +46596,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="TMRA1">
@@ -45953,6 +46606,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x160</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -45962,6 +46616,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x14</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -46041,6 +46696,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -46416,6 +47072,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="USART1">
@@ -46425,6 +47082,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral derivedFrom="USART1">
@@ -46434,6 +47092,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0x1C</size>
+                <usage>registers</usage>
             </addressBlock>
         </peripheral>
         <peripheral>
@@ -46443,6 +47102,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xE04</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>
@@ -46634,7 +47294,7 @@
                     <description>desc GINTSTS</description>
                     <addressOffset>0x14</addressOffset>
                     <size>32</size>
-                    <access>read-only</access>
+                    <access>read-write</access>
                     <resetValue>0x14000020</resetValue>
                     <resetMask>0xF77CFCFB</resetMask>
                     <fields>
@@ -47447,7 +48107,7 @@
                     <description>desc HPRT</description>
                     <addressOffset>0x440</addressOffset>
                     <size>32</size>
-                    <access>read-only</access>
+                    <access>read-write</access>
                     <resetValue>0x0</resetValue>
                     <resetMask>0x61DCF</resetMask>
                     <fields>
@@ -50862,8 +51522,8 @@
                             <access>read-write</access>
                         </field>
                         <field>
-                            <name>ITTXFEMSK</name>
-                            <description>desc ITTXFEMSK</description>
+                            <name>TTXFEMSK</name>
+                            <description>desc TTXFEMSK</description>
                             <msb>4</msb>
                             <lsb>4</lsb>
                             <access>read-write</access>
@@ -51219,7 +51879,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>STALL</name>
@@ -51426,7 +52086,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>STALL</name>
@@ -51633,7 +52293,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>STALL</name>
@@ -51840,7 +52500,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>STALL</name>
@@ -52047,7 +52707,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>STALL</name>
@@ -52247,7 +52907,7 @@
                             <description>desc EPTYP</description>
                             <msb>19</msb>
                             <lsb>18</lsb>
-                            <access>read-write</access>
+                            <access>read-only</access>
                         </field>
                         <field>
                             <name>SNPM</name>
@@ -52282,7 +52942,7 @@
                             <description>desc EPDIS</description>
                             <msb>30</msb>
                             <lsb>30</lsb>
-                            <access>read-write</access>
+                            <access>read-only</access>
                         </field>
                         <field>
                             <name>EPENA</name>
@@ -52401,7 +53061,7 @@
                             <description>desc USBAEP</description>
                             <msb>15</msb>
                             <lsb>15</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>DPID</name>
@@ -52583,7 +53243,7 @@
                             <description>desc USBAEP</description>
                             <msb>15</msb>
                             <lsb>15</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>DPID</name>
@@ -52765,7 +53425,7 @@
                             <description>desc USBAEP</description>
                             <msb>15</msb>
                             <lsb>15</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>DPID</name>
@@ -52947,7 +53607,7 @@
                             <description>desc USBAEP</description>
                             <msb>15</msb>
                             <lsb>15</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>DPID</name>
@@ -53129,7 +53789,7 @@
                             <description>desc USBAEP</description>
                             <msb>15</msb>
                             <lsb>15</lsb>
-                            <access>read-only</access>
+                            <access>read-write</access>
                         </field>
                         <field>
                             <name>DPID</name>
@@ -53324,6 +53984,7 @@
             <addressBlock>
                 <offset>0x0</offset>
                 <size>0xC</size>
+                <usage>registers</usage>
             </addressBlock>
             <registers>
                 <register>

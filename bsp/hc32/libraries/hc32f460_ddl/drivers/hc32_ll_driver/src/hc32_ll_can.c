@@ -6,9 +6,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Deleted redundant comments.
+   2022-10-31       CDT             API fixed: CAN_FillTxFrame(), CAN_GetStatus(), CAN_ClearStatus().
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -57,7 +59,6 @@
 
 #define IS_CAN_FUNC_EN(x, en)       (((x) == 0U) || ((x) == (en)))
 
-/* CAN unit */
 #define IS_CAN_UNIT(x)              ((x) == CM_CAN)
 
 #define IS_CAN_BIT_TIME_PRESC(x)    (((x) >= 1U) && ((x) <= 256U))
@@ -144,7 +145,6 @@
  * @defgroup CAN_Miscellaneous_Macros CAN Miscellaneous Macros
  * @{
  */
-/* CAN buffer number */
 #define CAN_RX_BUF_NUM                      (10U)
 
 #define CAN_RX_WARN_MIN                     (1U)
@@ -390,7 +390,7 @@ int32_t CAN_Init(CM_CAN_TypeDef *CANx, const stc_can_init_t *pstcCanInit)
     if (pstcCanInit != NULL) {
 #if defined __DEBUG
         CAN_InitParameterCheck(CANx, pstcCanInit);
-#endif /* __DEBUG */
+#endif
 
         /* Software reset. */
         SET_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET);
@@ -403,8 +403,6 @@ int32_t CAN_Init(CM_CAN_TypeDef *CANx, const stc_can_init_t *pstcCanInit)
         MODIFY_REG8(CANx->TCTRL, CAN_TCTRL_TSMODE, pstcCanInit->u8STBPrioMode);
         /* Configures acceptance filters. */
         (void)CAN_FilterConfig(CANx, pstcCanInit->u16FilterSelect, pstcCanInit->pstcFilter);
-
-        /* Configures CAN-FD */
 
         /* CAN enters normal communication mode. */
         CLR_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET);
@@ -587,8 +585,10 @@ void CAN_IntCmd(CM_CAN_TypeDef *CANx, uint32_t u32IntType, en_functional_state_t
  */
 int32_t CAN_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8TxBufType, const stc_can_tx_frame_t *pstcTx)
 {
+    uint8_t u8RTIE;
+    uint8_t u8TCTRL;
     uint32_t u32RegAddr;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
+    int32_t i32Ret = LL_OK;
 
     DDL_ASSERT(IS_CAN_UNIT(CANx));
     DDL_ASSERT(IS_CAN_TX_BUF_TYPE(u8TxBufType));
@@ -596,33 +596,22 @@ int32_t CAN_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8TxBufType, const stc_can
     if (pstcTx != NULL) {
         DDL_ASSERT(IS_CAN20_DLC(pstcTx->FDF, pstcTx->DLC));
 
-#if defined __DEBUG
-        if (pstcTx->RTR == 1U) {
-            DDL_ASSERT(pstcTx->DLC != CAN_DLC0);
-        }
-#endif
-        i32Ret = LL_OK;
-
-        if (((pstcTx->FDF == 1U) && ((pstcTx->u32ID & 0x8UL) == 0x8UL)) || \
-                ((pstcTx->RTR == 1U) && (pstcTx->DLC == CAN_DLC0))) {
-            i32Ret = LL_ERR_INVD_PARAM;
-        }
-
-        if (i32Ret == LL_OK) {
-            if (u8TxBufType == CAN_TX_BUF_PTB) {
-                if (READ_REG8_BIT(CANx->TCMD, CAN_TCMD_TPE) != 0U) {
-                    /* PTB is being transmitted. */
-                    i32Ret = LL_ERR_BUSY;
-                }
+        if (u8TxBufType == CAN_TX_BUF_PTB) {
+            if (READ_REG8_BIT(CANx->TCMD, CAN_TCMD_TPE) != 0U) {
+                /* PTB is being transmitted. */
+                i32Ret = LL_ERR_BUSY;
+            }
+        } else {
+            if (READ_REG8_BIT(CANx->TCMD, (CAN_TCMD_TSONE | CAN_TCMD_TSALL)) != 0U) {
+                /* STB is being transmitted. */
+                i32Ret = LL_ERR_BUSY;
             } else {
-                if (READ_REG8_BIT(CANx->TCMD, (CAN_TCMD_TSONE | CAN_TCMD_TSALL)) != 0U) {
-                    /* STB is being transmitted. */
-                    i32Ret = LL_ERR_BUSY;
-                } else {
-                    if (READ_REG8_BIT(CANx->RTIE, CAN_RTIE_TSFF) != 0U) {
-                        /* All STBs are filled. */
-                        i32Ret = LL_ERR_BUF_FULL;
-                    }
+                u8RTIE  = READ_REG8(CANx->RTIE);
+                u8TCTRL = READ_REG8(CANx->TCTRL);
+                if (((u8RTIE & CAN_RTIE_TSFF) == CAN_RTIE_TSFF) || \
+                        ((u8TCTRL & CAN_TCTRL_TSSTAT) == CAN_TCTRL_TSSTAT)) {
+                    /* All STBs are filled. */
+                    i32Ret = LL_ERR_BUF_FULL;
                 }
             }
         }
@@ -643,6 +632,8 @@ int32_t CAN_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8TxBufType, const stc_can
                 SET_REG8_BIT(CANx->TCTRL, CAN_TCTRL_TSNEXT);
             }
         }
+    } else {
+        i32Ret = LL_ERR_INVD_PARAM;
     }
 
     return i32Ret;
@@ -765,7 +756,7 @@ en_flag_status_t CAN_GetStatus(const CM_CAN_TypeDef *CANx, uint32_t u32Flag)
     DDL_ASSERT(IS_CAN_UNIT(CANx));
     DDL_ASSERT(IS_CAN_FLAG(u32Flag));
 
-    u8CFGSTAT = (uint8_t)(u32Flag);
+    u8CFGSTAT = (uint8_t)(u32Flag & 0x7UL);
     u8RCTRL   = (uint8_t)(u32Flag & CAN_FLAG_RX_BUF_OVF);
     u8RTIE    = (uint8_t)(u32Flag >> 8U);
     u8RTIF    = (uint8_t)(u32Flag >> 16U);
@@ -792,7 +783,6 @@ en_flag_status_t CAN_GetStatus(const CM_CAN_TypeDef *CANx, uint32_t u32Flag)
  *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
  * @param  [in]  u32Flag                CAN status flag.
  *                                      This parameter can be values of @ref CAN_Status_Flag
- *   @arg  CAN_FLAG_RX_BUF_OVF:         Register bit RCTRL.ROV. Receive buffer is full and there is a further bit to be stored. At least one data is lost.
  *   @arg  CAN_FLAG_TX_ABORTED:         Register bit RTIF.AIF. Transmit messages requested via TCMD.TPA and TCMD.TSA were successfully canceled.
  *   @arg  CAN_FLAG_ERR_INT:            Register bit RTIF.EIF. The CFG_STAT.BUSOFF bit changes, or the relative relationship between the value of the error counter
  *                                      and the set value of the ERROR warning limit changes. For example, the value of the error counter changes from less than
@@ -823,10 +813,6 @@ void CAN_ClearStatus(CM_CAN_TypeDef *CANx, uint32_t u32Flag)
     u32Flag &= CAN_FLAG_CLR_ALL;
     u8RTIF   = (uint8_t)(u32Flag >> 16U);
     u8ERRINT = (uint8_t)(u32Flag >> 24U);
-
-    if ((u32Flag & CAN_FLAG_RX_BUF_OVF) != 0U) {
-        SET_REG8_BIT(CANx->RCTRL, CAN_RCTRL_RREL);
-    }
 
     WRITE_REG8(CANx->RTIF, u8RTIF);
 

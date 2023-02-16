@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -84,7 +84,6 @@ typedef struct {
 
 /**
  * @defgroup TMR0_Channel TMR0 Channel
- * @note TMR0 on the HC32F120,HC32F160 and HC32M120 chips is only "TMR0_CH_A".
  * @{
  */
 #define TMR0_CH_A                       (0UL)
@@ -140,7 +139,6 @@ typedef struct {
  * @{
  */
 #define TMR0_INT_CMP_A                  (TMR0_BCONR_INTENA)
-
 #define TMR0_INT_CMP_B                  (TMR0_BCONR_INTENB)
 #define TMR0_INT_ALL                    (TMR0_INT_CMP_A | TMR0_INT_CMP_B)
 /**
@@ -152,7 +150,6 @@ typedef struct {
  * @{
  */
 #define TMR0_FLAG_CMP_A                 (TMR0_STFLR_CMFA)
-
 #define TMR0_FLAG_CMP_B                 (TMR0_STFLR_CMFB)
 #define TMR0_FLAG_ALL                   (TMR0_FLAG_CMP_A | TMR0_FLAG_CMP_B)
 /**

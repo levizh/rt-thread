@@ -6,9 +6,12 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Modify macro-define: TMR4_OCSR_MASK
+   2022-10-31       CDT             Re-name parameter u16IntType to u32IntType
+   2023-01-15       CDT             Add RCSR register data type
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -136,8 +139,6 @@
 (   ((x) == TMR4_PWM_PIN_OUTPUT_OS)         ||                                 \
     ((x) == TMR4_PWM_PIN_OUTPUT_NORMAL))
 
-#define IS_TMR4_EVT_CH(x)                   ((x) <= TMR4_EVT_CH_WL)
-
 #define IS_TMR4_EVT_MATCH_COND(x)           (((x) | TMR4_EVT_MATCH_CNT_ALL) == TMR4_EVT_MATCH_CNT_ALL)
 
 #define IS_TMR4_EVT_MASK_TYPE(x)                                               \
@@ -163,6 +164,7 @@
 #define IS_TMR4_OC_CH(x)                    ((x) <= TMR4_OC_CH_WL)
 #define IS_TMR4_PWM_CH(x)                   ((x) <= TMR4_PWM_CH_W)
 #define IS_TMR4_PWM_PIN(x)                  ((x) <= TMR4_PWM_PIN_OWL)
+#define IS_TMR4_EVT_CH(x)                   ((x) <= TMR4_EVT_CH_WL)
 #define IS_TMR4_EVT_OUTPUT_EVT(x)                                              \
 (   ((x) >> TMR4_SCSR_EVTOS_POS) <= (TMR4_EVT_OUTPUT_EVT5 >> TMR4_SCSR_EVTOS_POS))
 #define IS_TMR4_EVT_OUTPUT_SIGNAL(x)        ((x) <= TMR4_EVT_OUTPUT_EVT5_SIGNAL)
@@ -191,6 +193,8 @@
  * @}
  */
 
+#define RCSR_REG_TYPE               uint16_t
+
 /**
  * @defgroup TMR4_Registers_Reset_Value TMR4 Registers Reset Value
  * @{
@@ -212,7 +216,6 @@
 /**
  * @defgroup TMR4_OCSR_Bit_Mask TMR4_OCSR Bit Mask
  * @brief Get the specified TMR4_OCSR register bis value of the specified TMR4 OC channel
- * @note  The parameter CH value is TMR4_OC_CH_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define TMR4_OCSR_OCEx_MASK(CH)     (((uint16_t)TMR4_OCSR_OCEH) << ((CH) % 2UL))
@@ -228,7 +231,6 @@
 /**
  * @defgroup TMR4_OCSR_Bit TMR4_OCSR Bit
  * @brief Get the specified TMR4_OCSR register bis value of the specified TMR4 OC channel
- * @note  The parameter CH value is TMR4_OC_CH_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define TMR4_OCSR_OCEx(CH, OCEx)    (((uint16_t)OCEx) << (((uint16_t)((CH) % 2UL)) + TMR4_OCSR_OCEH_POS))
@@ -242,7 +244,6 @@
 /**
  * @defgroup TMR4_OCER_Bit_Mask TMR4_OCER Bit Mask
  * @brief Get the specified TMR4_OCER register bis value of the specified TMR4 OC channel
- * @note  The parameter CH value is TMR4_OC_CH_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define TMR4_OCER_CxBUFEN_MASK(CH)  (((uint16_t)TMR4_OCER_CHBUFEN) << (((CH) % 2UL) << 1U))
@@ -252,7 +253,7 @@
 #define TMR4_OCER_MCECx_MASK(CH)    (((uint16_t)TMR4_OCER_MCECH) << ((CH) % 2UL))
 #define TMR4_OCER_MASK(CH)                                                   \
 (   (((uint16_t)(TMR4_OCER_CHBUFEN | TMR4_OCER_MHBUFEN)) << (((CH) % 2UL) << 1U)) | \
-    (((uint16_t)(TMR4_OCER_LMCH | TMR4_OCER_LMMH | TMR4_OCER_MCECH)) << (((CH) % 2UL) << 1U)))
+    (((uint16_t)(TMR4_OCER_LMCH | TMR4_OCER_LMMH | TMR4_OCER_MCECH)) << ((CH) % 2UL)))
 /**
  * @}
  */
@@ -260,7 +261,6 @@
 /**
  * @defgroup TMR4_OCER_Bit TMR4_OCER Bit
  * @brief Get the specified TMR4_OCER register bis value of the specified TMR4 OC channel
- * @note  The parameter CH value is TMR4_OC_CH_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define TMR4_OCER_CxBUFEN(CH, CxBUFEN)  ((uint16_t)((uint16_t)(CxBUFEN) << ((((CH) % 2UL) << 1U) + TMR4_OCER_CHBUFEN_POS)))
@@ -275,14 +275,13 @@
 /**
  * @defgroup TMR4_RCSR_Bit_Mask TMR4_RCSR Bit Mask
  * @brief Get the specified TMR4_RCSR register bis value of the specified TMR4 PWM channel
- * @note The parameter CH value is TMR4_PWM_CH_x (x=U/V/W)
  * @{
  */
-#define TMR4_RCSR_RTIDx_MASK(CH)    ((uint16_t)(((uint16_t)TMR4_RCSR_RTIDU) << (CH)))
-#define TMR4_RCSR_RTIFx_MASK(CH)    ((uint16_t)(((uint16_t)TMR4_RCSR_RTIFU) << ((CH) << 2U)))
-#define TMR4_RCSR_RTICx_MASK(CH)    ((uint16_t)(((uint16_t)TMR4_RCSR_RTICU) << ((CH) << 2U)))
-#define TMR4_RCSR_RTEx_MASK(CH)     ((uint16_t)(((uint16_t)TMR4_RCSR_RTEU) << ((CH) << 2U)))
-#define TMR4_RCSR_RTSx_MASK(CH)     ((uint16_t)(((uint16_t)TMR4_RCSR_RTSU) << ((CH) << 2U)))
+#define TMR4_RCSR_RTIDx_MASK(CH)    ((RCSR_REG_TYPE)(((RCSR_REG_TYPE)TMR4_RCSR_RTIDU) << (CH)))
+#define TMR4_RCSR_RTIFx_MASK(CH)    ((RCSR_REG_TYPE)(((RCSR_REG_TYPE)TMR4_RCSR_RTIFU) << ((CH) << 2U)))
+#define TMR4_RCSR_RTICx_MASK(CH)    ((RCSR_REG_TYPE)(((RCSR_REG_TYPE)TMR4_RCSR_RTICU) << ((CH) << 2U)))
+#define TMR4_RCSR_RTEx_MASK(CH)     ((RCSR_REG_TYPE)(((RCSR_REG_TYPE)TMR4_RCSR_RTEU) << ((CH) << 2U)))
+#define TMR4_RCSR_RTSx_MASK(CH)     ((RCSR_REG_TYPE)(((RCSR_REG_TYPE)TMR4_RCSR_RTSU) << ((CH) << 2U)))
 /**
  * @}
  */
@@ -294,11 +293,11 @@
 #define TMR4_REG_ADDR(_REG_)        ((uint32_t)(&(_REG_)))
 #define TMR4_REG16(_ADDR_)          ((__IO uint16_t *)(_ADDR_))
 #define TMR4_REG32(_ADDR_)          ((__IO uint32_t *)(_ADDR_))
+#define TMR4_RCSR_REG(_ADDR_)       ((__IO RCSR_REG_TYPE *)(_ADDR_))
 
 /**
  * @defgroup TMR4_OC_Register_UVW TMR4 OC Register
  * @brief Get the specified OC register address of the specified TMR4 unit
- * @note  The parameter CH value is TMR4_OC_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define _TMR4_OCCR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCCRUH) + ((CH) << 2U))
@@ -312,10 +311,9 @@
 /**
  * @defgroup TMR4_PWM_Register_UVW TMR4 PWM Register
  * @brief Get the specified PWM register address of the specified TMR4 unit
- * @note The parameter CH value is TMR4_PWM_CH_x (x=U/V/W)
  * @{
  */
-#define _TMR4_RCSR(UNIT)            TMR4_REG16(TMR4_REG_ADDR((UNIT)->RCSR))
+#define _TMR4_RCSR(UNIT)            TMR4_RCSR_REG(TMR4_REG_ADDR((UNIT)->RCSR))
 #define _TMR4_POCR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->POCRU) + ((CH) << 2U))
 #define _TMR4_PFSR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->PFSRU) + ((CH) << 3U))
 #define _TMR4_PDR(UNIT, CH, IDX)    TMR4_REG16(TMR4_REG_ADDR((UNIT)->PDARU) + ((CH) << 3U) + ((IDX) << 1U))
@@ -326,7 +324,6 @@
 /**
  * @defgroup TMR4_Event_Register_UVW TMR4 Event Register
  * @brief Get the specified event register address of the specified TMR4 unit
- * @note  The parameter CH value is TMR4_EVT_CH_xy (x=U/V/W, y=H/L)
  * @{
  */
 #define _TMR4_SCCR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->SCCRUH) + ((CH) << 2U))
@@ -382,6 +379,7 @@
 /**
  * @}
  */
+
 /**
  * @}
  */
@@ -712,9 +710,8 @@ void TMR4_ClearStatus(CM_TMR4_TypeDef *TMR4x, uint32_t u32Flag)
     /* PWM reload timer flag */
     u32ClearFlag = ((u32Flag & TMR4_FLAG_RELOAD_TMR_MASK) << 5U);
     if (u32ClearFlag > 0UL) {
-        SET_REG16_BIT(TMR4x->RCSR, u32ClearFlag);
+        SET_REG_BIT(TMR4x->RCSR, (RCSR_REG_TYPE)u32ClearFlag);
     }
-
 }
 
 /**
@@ -767,7 +764,7 @@ en_flag_status_t TMR4_GetStatus(const CM_TMR4_TypeDef *TMR4x, uint32_t u32Flag)
 
     /* PWM reload timer flag status */
     u32ReadFlag = ((u32Flag & (TMR4_FLAG_RELOAD_TMR_MASK)) << 4U);
-    if (READ_REG16_BIT(TMR4x->RCSR, u32ReadFlag) > 0U) {
+    if (READ_REG_BIT(TMR4x->RCSR, (RCSR_REG_TYPE)u32ReadFlag) > 0U) {
         u8FlagSetCount++;
     }
 
@@ -827,9 +824,8 @@ void TMR4_IntCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType, en_functional_stat
     /* PWM reload timer interrupt */
     u32Type = (u32IntType & TMR4_INT_RELOAD_TMR_MASK);
     if (u32Type > 0UL) {
-        (ENABLE == enNewState) ? CLR_REG16_BIT(TMR4x->RCSR, u32Type) : SET_REG16_BIT(TMR4x->RCSR, u32Type);
+        (ENABLE == enNewState) ? CLR_REG_BIT(TMR4x->RCSR, (RCSR_REG_TYPE)u32Type) : SET_REG_BIT(TMR4x->RCSR, (RCSR_REG_TYPE)u32Type);
     }
-
 }
 
 /**
@@ -857,7 +853,7 @@ void TMR4_PeriodBufCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState)
  * @param  [in] TMR4x                   Pointer to TMR4 instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_TMR4 or CM_TMR4_x: TMR4 unit instance register base
- * @param  [in] u16IntType              TMR4 interrupt source
+ * @param  [in] u32IntType              TMR4 interrupt source
  *         This parameter can be one of the following values:
  *           @arg TMR4_INT_CNT_PEAK:    Count peak interrupt
  *           @arg TMR4_INT_CNT_VALLEY : Count valley interrupt
@@ -879,14 +875,14 @@ void TMR4_PeriodBufCmd(CM_TMR4_TypeDef *TMR4x, en_functional_state_t enNewState)
  *           - TMR4_INT_CNT_MASK14: Counter interrupt flag is set once when counter counts 15 times at "0x0000" or peak (skiping 14 count)
  *           - TMR4_INT_CNT_MASK15: Counter interrupt flag is set once when counter counts 16 times at "0x0000" or peak (skiping 15 count)
  */
-uint16_t TMR4_GetCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint16_t u16IntType)
+uint16_t TMR4_GetCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType)
 {
     uint16_t u16MaskTimes;
 
     DDL_ASSERT(IS_TMR4_UNIT(TMR4x));
-    DDL_ASSERT(IS_TMR4_INT_CNT(u16IntType));
+    DDL_ASSERT(IS_TMR4_INT_CNT(u32IntType));
 
-    if (TMR4_INT_CNT_VALLEY == u16IntType) {
+    if (TMR4_INT_CNT_VALLEY == u32IntType) {
         u16MaskTimes = (READ_REG16_BIT(TMR4x->CVPR, TMR4_CVPR_ZIM) >> TMR4_CVPR_ZIM_POS);
     } else {
         u16MaskTimes = (READ_REG16_BIT(TMR4x->CVPR, TMR4_CVPR_PIM) >> TMR4_CVPR_PIM_POS);
@@ -944,7 +940,7 @@ void TMR4_SetCountIntMaskTime(CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType, uint1
  * @param  [in] TMR4x                   Pointer to TMR4 instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_TMR4 or CM_TMR4_x: TMR4 unit instance register base
- * @param  [in] u16IntType              TMR4 interrupt source
+ * @param  [in] u32IntType              TMR4 interrupt source
  *         This parameter can be one of the macros group @ref TMR4_Interrupt
  *           @arg TMR4_INT_CNT_PEAK:    Count peak interrupt
  *           @arg TMR4_INT_CNT_VALLEY : Count valley interrupt
@@ -966,14 +962,14 @@ void TMR4_SetCountIntMaskTime(CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType, uint1
  *           - TMR4_INT_CNT_MASK14:  Counter interrupt flag is set once for 15 every counter counts at "0x0000" or peak (skiping 14 count)
  *           - TMR4_INT_CNT_MASK15:  Counter interrupt flag is set once for 16 every counter counts at "0x0000" or peak (skiping 15 count)
  */
-uint16_t TMR4_GetCurrentCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint16_t u16IntType)
+uint16_t TMR4_GetCurrentCountIntMaskTime(const CM_TMR4_TypeDef *TMR4x, uint32_t u32IntType)
 {
     uint16_t u16MaskTimes;
 
     DDL_ASSERT(IS_TMR4_UNIT(TMR4x));
-    DDL_ASSERT(IS_TMR4_INT_CNT(u16IntType));
+    DDL_ASSERT(IS_TMR4_INT_CNT(u32IntType));
 
-    if (TMR4_INT_CNT_VALLEY == u16IntType) {
+    if (TMR4_INT_CNT_VALLEY == u32IntType) {
         u16MaskTimes = (READ_REG16_BIT(TMR4x->CVPR, TMR4_CVPR_ZIC) >> TMR4_CVPR_ZIC_POS);
     } else {
         u16MaskTimes = (READ_REG16_BIT(TMR4x->CVPR, TMR4_CVPR_PIC) >> TMR4_CVPR_PIC_POS);
@@ -1248,8 +1244,8 @@ void TMR4_OC_BufIntervalReponseCmd(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch,
  * @param  [in] u32Ch                   TMR4 OC channel
  *         This parameter can be one of the macros group @ref TMR4_OC_Channel
  * @retval Returned value can be one of the macros group @ref TMR4_OC_Invalid_Output_Polarity
- *           - TMR4_OC_INVD_LOW:        TMR4 OC output low level when OC is invalid
- *           - TMR4_OC_INVD_HIGH:       TMR4 OC output high level when OC is invalid
+ *           - TMR4_OC_INVD_LOW:        TMR4 OC output low level
+ *           - TMR4_OC_INVD_HIGH:       TMR4 OC output high level
  */
 uint16_t TMR4_OC_GetPolarity(const CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
 {
@@ -1345,7 +1341,7 @@ void TMR4_OC_SetCompareBufCond(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, uint16_t 
  * @param  [in] u32Ch                   TMR4 OC channel.
  *         This parameter can be one of the following values:
  * @retval The TMR4 OC high channel mode
- * @note   The function only can get low channel mode:TMR4_OC_CH_xH(x = U/V/W)
+ * @note   The function only can get high channel mode:TMR4_OC_CH_xH(x = U/V/W)
  */
 uint16_t TMR4_OC_GetHighChCompareMode(const CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
 {
@@ -1368,7 +1364,7 @@ uint16_t TMR4_OC_GetHighChCompareMode(const CM_TMR4_TypeDef *TMR4x, uint32_t u32
  *         This parameter can be one of the following values:
  * @param  [in] unTmr4Ocmrh             The TMR4 OC high channel mode @ref un_tmr4_oc_ocmrh_t
  * @retval None
- * @note   The function only can set low channel mode:TMR4_OC_CH_xH(x = U/V/W)
+ * @note   The function only can set high channel mode:TMR4_OC_CH_xH(x = U/V/W)
  */
 void TMR4_OC_SetHighChCompareMode(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, un_tmr4_oc_ocmrh_t unTmr4Ocmrh)
 {
@@ -1471,9 +1467,10 @@ int32_t TMR4_PWM_StructInit(stc_tmr4_pwm_init_t *pstcTmr4PwmInit)
  */
 int32_t TMR4_PWM_Init(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, const stc_tmr4_pwm_init_t *pstcTmr4PwmInit)
 {
-    uint16_t u16Value;
+    uint16_t POCRValue;
     __IO uint16_t *POCR;
-    __IO uint16_t *RCSR;
+    RCSR_REG_TYPE RCSRValue;
+    __IO RCSR_REG_TYPE *RCSR;
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
     if (NULL != pstcTmr4PwmInit) {
@@ -1488,12 +1485,12 @@ int32_t TMR4_PWM_Init(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, const stc_tmr4_pwm
         RCSR = TMR4_RCSR(TMR4x);
 
         /* Set POCR register */
-        u16Value = (pstcTmr4PwmInit->u16Mode | pstcTmr4PwmInit->u16ClockDiv | pstcTmr4PwmInit->u16Polarity);
-        WRITE_REG16(*POCR, u16Value);
+        POCRValue = (pstcTmr4PwmInit->u16Mode | pstcTmr4PwmInit->u16ClockDiv | pstcTmr4PwmInit->u16Polarity);
+        WRITE_REG16(*POCR, POCRValue);
 
         /* Set RCSR register */
-        u16Value = (TMR4_RCSR_RTSx_MASK(u32Ch) | TMR4_RCSR_RTIDx_MASK(u32Ch) | TMR4_RCSR_RTICx_MASK(u32Ch));
-        MODIFY_REG16(*RCSR, TMR4_RCSR_RTEx_MASK(u32Ch), u16Value);
+        RCSRValue = (TMR4_RCSR_RTSx_MASK(u32Ch) | TMR4_RCSR_RTIDx_MASK(u32Ch) | TMR4_RCSR_RTICx_MASK(u32Ch));
+        MODIFY_REG(*RCSR, TMR4_RCSR_RTEx_MASK(u32Ch), RCSRValue);
 
         i32Ret = LL_OK;
     }
@@ -1513,7 +1510,7 @@ int32_t TMR4_PWM_Init(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch, const stc_tmr4_pwm
 void TMR4_PWM_DeInit(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
 {
     __IO uint16_t *POCR;
-    __IO uint16_t *RCSR;
+    __IO RCSR_REG_TYPE *RCSR;
 
     DDL_ASSERT(IS_TMR4_UNIT(TMR4x));
     DDL_ASSERT(IS_TMR4_PWM_CH(u32Ch));
@@ -1526,8 +1523,8 @@ void TMR4_PWM_DeInit(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
     WRITE_REG16(*POCR, (TMR4_PWM_CLK_DIV1 | TMR4_PWM_MD_THROUGH | TMR4_PWM_OXH_HOLD_OXL_HOLD));
 
     /* Set RCSR register */
-    MODIFY_REG16(*RCSR, TMR4_RCSR_RTEx_MASK(u32Ch), \
-                 (TMR4_RCSR_RTIDx_MASK(u32Ch) | TMR4_RCSR_RTSx_MASK(u32Ch) | TMR4_RCSR_RTICx_MASK(u32Ch)));
+    MODIFY_REG(*RCSR, TMR4_RCSR_RTEx_MASK(u32Ch), \
+               (TMR4_RCSR_RTIDx_MASK(u32Ch) | TMR4_RCSR_RTSx_MASK(u32Ch) | TMR4_RCSR_RTICx_MASK(u32Ch)));
 }
 
 /**
@@ -1606,7 +1603,7 @@ void TMR4_PWM_StartReloadTimer(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
     DDL_ASSERT(IS_TMR4_UNIT(TMR4x));
     DDL_ASSERT(IS_TMR4_PWM_CH(u32Ch));
 
-    SET_REG16_BIT(TMR4x->RCSR, TMR4_RCSR_RTEx_MASK(u32Ch));
+    SET_REG_BIT(TMR4x->RCSR, TMR4_RCSR_RTEx_MASK(u32Ch));
 }
 
 /**
@@ -1623,7 +1620,7 @@ void TMR4_PWM_StopReloadTimer(CM_TMR4_TypeDef *TMR4x, uint32_t u32Ch)
     DDL_ASSERT(IS_TMR4_UNIT(TMR4x));
     DDL_ASSERT(IS_TMR4_PWM_CH(u32Ch));
 
-    SET_REG16_BIT(TMR4x->RCSR, TMR4_RCSR_RTSx_MASK(u32Ch));
+    SET_REG_BIT(TMR4x->RCSR, TMR4_RCSR_RTSx_MASK(u32Ch));
 }
 
 /**

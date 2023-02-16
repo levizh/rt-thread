@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Add waiting time after write CRC data
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -108,6 +109,15 @@
  * @{
  */
 #define CRC_DATA_ADDR                   ((uint32_t)(&CM_CRC->DAT0))
+/**
+ * @}
+ */
+
+/**
+ * @defgroup CRC_Calculate_Clock_Count CRC Calculate Clock Count
+ * @{
+ */
+#define CRC_CACL_CLK_COUNT              (10UL)
 /**
  * @}
  */
@@ -354,17 +364,22 @@ static uint32_t CRC_Calculate(uint32_t u32InitValue, uint8_t u8DataWidth, const 
 static en_flag_status_t CRC_CheckData(uint32_t u32InitValue, uint8_t u8DataWidth,
                                       const void *pvData, uint32_t u32Len, uint32_t u32ExpectValue)
 {
+    __IO uint32_t u32Count = CRC_CACL_CLK_COUNT;
     en_flag_status_t enStatus = RESET;
 
     if ((pvData != NULL) && (u32Len != 0UL)) {
         (void)CRC_Calculate(u32InitValue, u8DataWidth, pvData, u32Len);
 
         u32ExpectValue = CRC_ConvertCrcValue(u32ExpectValue);
-
         if (READ_REG32_BIT(CM_CRC->CR, CRC_CR_CR) == CRC_CRC32) {
             (void)CRC_WriteData32(&u32ExpectValue, 1UL);
         } else {
             (void)CRC_WriteData16((uint16_t *)((void *)&u32ExpectValue), 1UL);
+        }
+
+        /* Delay for waiting CRC result flag */
+        while (u32Count-- != 0UL) {
+            __NOP();
         }
 
         enStatus = CRC_GetResultStatus();

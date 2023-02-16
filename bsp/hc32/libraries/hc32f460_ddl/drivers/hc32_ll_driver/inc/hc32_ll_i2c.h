@@ -7,9 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-06-30       CDT             Add API I2C_SlaveAddrCmd()
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -162,24 +163,24 @@ typedef struct {
  * @defgroup I2C_Flag I2C Flag
  * @{
  */
-#define I2C_FLAG_START                (I2C_SR_STARTF)      /*!<  Start condition detected */
-#define I2C_FLAG_MATCH_ADDR0          (I2C_SR_SLADDR0F)    /*!<  Address 0 detected */
-#define I2C_FLAG_MATCH_ADDR1          (I2C_SR_SLADDR1F)    /*!<  Address 1 detected */
-#define I2C_FLAG_TX_CPLT              (I2C_SR_TENDF)       /*!<  Transfer end */
-#define I2C_FLAG_STOP                 (I2C_SR_STOPF)       /*!<  Stop condition detected */
-#define I2C_FLAG_RX_FULL              (I2C_SR_RFULLF)      /*!<  Receive buffer full */
-#define I2C_FLAG_TX_EMPTY             (I2C_SR_TEMPTYF)     /*!<  Transfer buffer empty */
-#define I2C_FLAG_ARBITRATE_FAIL       (I2C_SR_ARLOF)       /*!<  Arbitration fails */
-#define I2C_FLAG_ACKR                 (I2C_SR_ACKRF)       /*!<  ACK status */
-#define I2C_FLAG_NACKF                (I2C_SR_NACKF)       /*!<  NACK detected */
+#define I2C_FLAG_START                (I2C_SR_STARTF)      /*!< Start condition detected */
+#define I2C_FLAG_MATCH_ADDR0          (I2C_SR_SLADDR0F)    /*!< Address 0 detected */
+#define I2C_FLAG_MATCH_ADDR1          (I2C_SR_SLADDR1F)    /*!< Address 1 detected */
+#define I2C_FLAG_TX_CPLT              (I2C_SR_TENDF)       /*!< Transfer end */
+#define I2C_FLAG_STOP                 (I2C_SR_STOPF)       /*!< Stop condition detected */
+#define I2C_FLAG_RX_FULL              (I2C_SR_RFULLF)      /*!< Receive buffer full */
+#define I2C_FLAG_TX_EMPTY             (I2C_SR_TEMPTYF)     /*!< Transfer buffer empty */
+#define I2C_FLAG_ARBITRATE_FAIL       (I2C_SR_ARLOF)       /*!< Arbitration fails */
+#define I2C_FLAG_ACKR                 (I2C_SR_ACKRF)       /*!< ACK status */
+#define I2C_FLAG_NACKF                (I2C_SR_NACKF)       /*!< NACK detected */
 #define I2C_FLAG_TMOUTF               (I2C_SR_TMOUTF)      /*!<  Time out detected */
-#define I2C_FLAG_MASTER               (I2C_SR_MSL)         /*!<  Master mode flag */
-#define I2C_FLAG_BUSY                 (I2C_SR_BUSY)        /*!<  Bus busy status */
-#define I2C_FLAG_TRA                  (I2C_SR_TRA)         /*!<  Transfer mode flag */
-#define I2C_FLAG_GENERAL_CALL         (I2C_SR_GENCALLF)    /*!<  General call detected */
-#define I2C_FLAG_SMBUS_DEFAULT_MATCH  (I2C_SR_SMBDEFAULTF) /*!<  SMBUS default address detected */
-#define I2C_FLAG_SMBUS_HOST_MATCH     (I2C_SR_SMBHOSTF)    /*!<  SMBUS host address detected */
-#define I2C_FLAG_SMBUS_ALARM_MATCH    (I2C_SR_SMBALRTF)    /*!<  SMBUS alarm address detected */
+#define I2C_FLAG_MASTER               (I2C_SR_MSL)         /*!< Master mode flag */
+#define I2C_FLAG_BUSY                 (I2C_SR_BUSY)        /*!< Bus busy status */
+#define I2C_FLAG_TRA                  (I2C_SR_TRA)         /*!< Transfer mode flag */
+#define I2C_FLAG_GENERAL_CALL         (I2C_SR_GENCALLF)    /*!< General call detected */
+#define I2C_FLAG_SMBUS_DEFAULT_MATCH  (I2C_SR_SMBDEFAULTF) /*!< SMBUS default address detected */
+#define I2C_FLAG_SMBUS_HOST_MATCH     (I2C_SR_SMBHOSTF)    /*!< SMBUS host address detected */
+#define I2C_FLAG_SMBUS_ALARM_MATCH    (I2C_SR_SMBALRTF)    /*!< SMBUS alarm address detected */
 
 #define I2C_FLAG_CLR_ALL              (I2C_FLAG_START | I2C_FLAG_MATCH_ADDR0 | I2C_FLAG_MATCH_ADDR1 \
                                        | I2C_FLAG_TX_CPLT | I2C_FLAG_STOP | I2C_FLAG_RX_FULL | I2C_FLAG_TX_EMPTY \
@@ -246,6 +247,7 @@ int32_t I2C_BaudrateConfig(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cIn
 void I2C_DeInit(CM_I2C_TypeDef *I2Cx);
 int32_t I2C_Init(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cInit, float32_t *pf32Error);
 void I2C_SlaveAddrConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, uint32_t u32AddrMode, uint32_t u32Addr);
+void I2C_SlaveAddrCmd(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, en_functional_state_t enNewState);
 void I2C_Cmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState);
 void I2C_FastAckCmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState);
 void I2C_BusWaitCmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState);
@@ -271,7 +273,7 @@ void I2C_GenerateStop(CM_I2C_TypeDef *I2Cx);
 en_flag_status_t I2C_GetStatus(const CM_I2C_TypeDef *I2Cx, uint32_t u32Flag);
 void I2C_ClearStatus(CM_I2C_TypeDef *I2Cx, uint32_t u32Flag);
 
-/* Data transfer ************************************  ***************/
+/* Data transfer *****************************************************/
 void I2C_WriteData(CM_I2C_TypeDef *I2Cx, uint8_t u8Data);
 uint8_t I2C_ReadData(const CM_I2C_TypeDef *I2Cx);
 void I2C_AckConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AckConfig);

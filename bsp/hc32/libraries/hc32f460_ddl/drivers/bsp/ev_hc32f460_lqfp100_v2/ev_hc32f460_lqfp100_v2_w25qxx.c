@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Initialize CS state
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -120,6 +121,7 @@ static void BSP_SPI_Init(void)
     (void)GPIO_Init(BSP_SPI_SCK_PORT, BSP_SPI_SCK_PIN, &stcGpioInit);
     (void)GPIO_Init(BSP_SPI_MOSI_PORT, BSP_SPI_MOSI_PIN, &stcGpioInit);
     stcGpioInit.u16PinDir = PIN_DIR_OUT;
+    stcGpioInit.u16PinState = PIN_STAT_SET;
     (void)GPIO_Init(BSP_SPI_CS_PORT,  BSP_SPI_CS_PIN,  &stcGpioInit);
 
     GPIO_SetFunc(BSP_SPI_SCK_PORT, BSP_SPI_SCK_PIN, BSP_SPI_SCK_PIN_FUNC);

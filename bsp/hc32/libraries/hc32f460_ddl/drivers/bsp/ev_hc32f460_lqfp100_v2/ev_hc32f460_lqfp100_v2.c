@@ -6,9 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2022-10-31       CDT             Add configuration of XTAL IO as analog function.
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -290,6 +291,7 @@ __WEAKDEF void BSP_CLK_Init(void)
     stc_clock_xtal_init_t     stcXtalInit;
     stc_clock_pll_init_t      stcMpllInit;
 
+    GPIO_AnalogCmd(BSP_XTAL_PORT, BSP_XTAL_IN_PIN | BSP_XTAL_OUT_PIN, ENABLE);
     (void)CLK_XtalStructInit(&stcXtalInit);
     (void)CLK_PLLStructInit(&stcMpllInit);
 
@@ -492,7 +494,7 @@ int32_t BSP_PRINTF_Preinit(void *vpDevice, uint32_t u32Baudrate)
             USART_SetClockDiv(BSP_PRINTF_DEVICE, u32Div);
             i32Ret = USART_SetBaudrate(BSP_PRINTF_DEVICE, u32Baudrate, &f32Error);
             if ((LL_OK == i32Ret) && \
-                    ((-BSP_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= BSP_PRINTF_BAUDRATE_ERR_MAX))) {
+                ((-BSP_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= BSP_PRINTF_BAUDRATE_ERR_MAX))) {
                 USART_FuncCmd(BSP_PRINTF_DEVICE, USART_TX, ENABLE);
                 break;
             } else {

@@ -9,7 +9,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -129,11 +129,6 @@ typedef struct {
 } stc_usart_uart_init_t;
 
 /**
- * @brief LIN mode initialization structure definition
- * @note The parameter(u32ClockDiv/u32CKOutput/u32Baudrate) is valid when clock source is the internal clock.
- */
-
-/**
  * @brief Smartcard mode initialization structure definition
  */
 typedef struct {
@@ -201,7 +196,6 @@ typedef struct {
 #define USART_INT_RX                    (USART_CR1_RIE)     /*!< USART receive data register not empty && receive error interrupt */
 #define USART_INT_TX_CPLT               (USART_CR1_TCIE)    /*!< USART transmission complete interrupt */
 #define USART_INT_TX_EMPTY              (USART_CR1_TXEIE)   /*!< USART transmit data register empty interrupt */
-
 #define USART_RX_TIMEOUT                (USART_CR1_RTOE)    /*!< USART RX timerout function */
 #define USART_INT_RX_TIMEOUT            (USART_CR1_RTOIE)   /*!< USART RX timerout interrupt */
 
@@ -390,7 +384,6 @@ void USART_WriteID(CM_USART_TypeDef *USARTx, uint16_t u16ID);
 
 int32_t USART_SetBaudrate(CM_USART_TypeDef *USARTx, uint32_t u32Baudrate, float32_t *pf32Error);
 
-/* Smartcard function */
 void USART_SmartCard_SetEtuClock(CM_USART_TypeDef *USARTx, uint32_t u32EtuClock);
 
 int32_t USART_UART_Trans(CM_USART_TypeDef *USARTx, const void *pvBuf, uint32_t u32Len, uint32_t u32Timeout);

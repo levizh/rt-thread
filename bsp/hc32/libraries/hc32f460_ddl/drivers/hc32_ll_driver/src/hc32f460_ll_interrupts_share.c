@@ -7,9 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Bug fix of TMRA CMP DCU and USART, refine IRQ143
+                                    Rename I2Cx_Error_IrqHandler as I2Cx_EE_IrqHandler
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -363,28 +365,36 @@ void IRQ129_Handler(void)
         QSPI_Error_IrqHandler();
     }
     /*DCU1 */
-    u32Tmp1 = CM_DCU1->INTSEL;
-    u32Tmp2 = CM_DCU1->FLAG;
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_23))) {
-        DCU1_IrqHandler();
+    if (1UL == bCM_DCU1->CTL_b.INTEN) {
+        u32Tmp1 = CM_DCU1->INTEVTSEL;
+        u32Tmp2 = CM_DCU1->FLAG;
+        if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_23))) {
+            DCU1_IrqHandler();
+        }
     }
     /*DCU2 */
-    u32Tmp1 = CM_DCU2->INTSEL;
-    u32Tmp2 = CM_DCU2->FLAG;
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_24))) {
-        DCU2_IrqHandler();
+    if (1UL == bCM_DCU2->CTL_b.INTEN) {
+        u32Tmp1 = CM_DCU2->INTEVTSEL;
+        u32Tmp2 = CM_DCU2->FLAG;
+        if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_24))) {
+            DCU2_IrqHandler();
+        }
     }
     /*DCU3 */
-    u32Tmp1 = CM_DCU3->INTSEL;
-    u32Tmp2 = CM_DCU3->FLAG;
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_25))) {
-        DCU3_IrqHandler();
+    if (1UL == bCM_DCU3->CTL_b.INTEN) {
+        u32Tmp1 = CM_DCU3->INTEVTSEL;
+        u32Tmp2 = CM_DCU3->FLAG;
+        if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_25))) {
+            DCU3_IrqHandler();
+        }
     }
     /*DCU4 */
-    u32Tmp1 = CM_DCU4->INTSEL;
-    u32Tmp2 = CM_DCU4->FLAG;
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_26))) {
-        DCU4_IrqHandler();
+    if (1UL == bCM_DCU4->CTL_b.INTEN) {
+        u32Tmp1 = CM_DCU4->INTEVTSEL;
+        u32Tmp2 = CM_DCU4->FLAG;
+        if ((0UL != (u32Tmp1 & u32Tmp2 & 0x7FUL)) && (0UL != (VSSEL129 & BIT_MASK_26))) {
+            DCU4_IrqHandler();
+        }
     }
 }
 
@@ -682,7 +692,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_1->ICONR;
     u32Tmp2 = CM_TMRA_1->STFLR;
     /* TimerA Ch.1 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_02))) {
         TMRA_1_Cmp_IrqHandler();
     }
 
@@ -698,7 +708,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_2->ICONR;
     u32Tmp2 = CM_TMRA_2->STFLR;
     /* TimerA Ch.2 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_05))) {
         TMRA_2_Cmp_IrqHandler();
     }
 
@@ -714,7 +724,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_3->ICONR;
     u32Tmp2 = CM_TMRA_3->STFLR;
     /* TimerA Ch.3 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_08))) {
         TMRA_3_Cmp_IrqHandler();
     }
 
@@ -730,7 +740,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_4->ICONR;
     u32Tmp2 = CM_TMRA_4->STFLR;
     /* TimerA Ch.4 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_11))) {
         TMRA_4_Cmp_IrqHandler();
     }
 
@@ -746,7 +756,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_5->ICONR;
     u32Tmp2 = CM_TMRA_5->STFLR;
     /* TimerA Ch.5 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_14))) {
         TMRA_5_Cmp_IrqHandler();
     }
 
@@ -762,7 +772,7 @@ void IRQ136_Handler(void)
     u32Tmp1 = CM_TMRA_6->ICONR;
     u32Tmp2 = CM_TMRA_6->STFLR;
     /* TimerA Ch.6 compare match */
-    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (0xFFUL & VSSEL136))) {
+    if ((0UL != (u32Tmp1 & u32Tmp2 & 0xFFUL)) && (0UL != (VSSEL136 & BIT_MASK_18))) {
         TMRA_6_Cmp_IrqHandler();
     }
     /* USBFS global interrupt */
@@ -782,15 +792,15 @@ void IRQ136_Handler(void)
         USART1_RxError_IrqHandler();
     }
     /* USART Ch.1 Receive completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_05 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_23 & VSSEL136))) {
         USART1_RxFull_IrqHandler();
     }
     /* USART Ch.1 Transmit data empty */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_07 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_24 & VSSEL136))) {
         USART1_TxEmpty_IrqHandler();
     }
     /* USART Ch.1 Transmit completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_06 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_25 & VSSEL136))) {
         USART1_TxComplete_IrqHandler();
     }
     /* USART Ch.1 Receive timeout */
@@ -806,15 +816,15 @@ void IRQ136_Handler(void)
         USART2_RxError_IrqHandler();
     }
     /* USART Ch.2 Receive completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_05 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_28 & VSSEL136))) {
         USART2_RxFull_IrqHandler();
     }
     /* USART Ch.2 Transmit data empty */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_07 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_29 & VSSEL136))) {
         USART2_TxEmpty_IrqHandler();
     }
     /* USART Ch.2 Transmit completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_06 & VSSEL136))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_30 & VSSEL136))) {
         USART2_TxComplete_IrqHandler();
     }
     /* USART Ch.2 Receive timeout */
@@ -842,15 +852,15 @@ void IRQ137_Handler(void)
         USART3_RxError_IrqHandler();
     }
     /* USART Ch.3 Receive completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_05 & VSSEL137))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_01 & VSSEL137))) {
         USART3_RxFull_IrqHandler();
     }
     /* USART Ch.3 Transmit data empty */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_07 & VSSEL137))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_07)) && (0UL != (BIT_MASK_02 & VSSEL137))) {
         USART3_TxEmpty_IrqHandler();
     }
     /* USART Ch.3 Transmit completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_06 & VSSEL137))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_03 & VSSEL137))) {
         USART3_TxComplete_IrqHandler();
     }
     /* USART Ch.3 Receive timeout */
@@ -866,7 +876,7 @@ void IRQ137_Handler(void)
         USART4_RxError_IrqHandler();
     }
     /* USART Ch.4 Receive completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_05 & VSSEL137))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_05)) && (0UL != (BIT_MASK_06 & VSSEL137))) {
         USART4_RxFull_IrqHandler();
     }
     /* USART Ch.4 Transmit data empty */
@@ -874,7 +884,7 @@ void IRQ137_Handler(void)
         USART4_TxEmpty_IrqHandler();
     }
     /* USART Ch.4 Transmit completed */
-    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_06 & VSSEL137))) {
+    if ((0UL != (u32Tmp2 & u32Tmp1 & BIT_MASK_06)) && (0UL != (BIT_MASK_08 & VSSEL137))) {
         USART4_TxComplete_IrqHandler();
     }
     /* USART Ch.4 Receive timeout */
@@ -1292,7 +1302,7 @@ void IRQ141_Handler(void)
     u32Tmp1 = CM_I2C1->CR2 & 0x00F05217UL;
     u32Tmp2 = CM_I2C1->SR & 0x00F05217UL;
     if ((0UL != (u32Tmp1 & u32Tmp2)) && (0UL != (VSSEL141 & BIT_MASK_07))) {
-        I2C1_Error_IrqHandler();
+        I2C1_EE_IrqHandler();
     }
     /* I2C Ch.2 Receive completed */
     if (1UL == bCM_I2C2->CR2_b.RFULLIE) {
@@ -1316,7 +1326,7 @@ void IRQ141_Handler(void)
     u32Tmp1 = CM_I2C2->CR2 & 0x00F05217UL;
     u32Tmp2 = CM_I2C2->SR & 0x00F05217UL;
     if ((0UL != (u32Tmp1 & u32Tmp2)) && (0UL != (VSSEL141 & BIT_MASK_11))) {
-        I2C2_Error_IrqHandler();
+        I2C2_EE_IrqHandler();
     }
     /* I2C Ch.3 Receive completed */
     if (1UL == bCM_I2C3->CR2_b.RFULLIE) {
@@ -1340,7 +1350,7 @@ void IRQ141_Handler(void)
     u32Tmp1 = CM_I2C3->CR2 & 0x00F05217UL;
     u32Tmp2 = CM_I2C3->SR & 0x00F05217UL;
     if ((0UL != (u32Tmp1 & u32Tmp2)) && (0UL != (VSSEL141 & BIT_MASK_15))) {
-        I2C3_Error_IrqHandler();
+        I2C3_EE_IrqHandler();
     }
     /* LVD Ch.1 detected */
     if (PWC_PVDCR1_PVD1IRE == READ_REG8_BIT(CM_PWC->PVDCR1, PWC_PVDCR1_PVD1IRE | PWC_PVDCR1_PVD1IRS)) {
@@ -1455,9 +1465,10 @@ void IRQ143_Handler(void)
     uint16_t NORINTSGEN;
     uint16_t ERRINTST;
     uint16_t ERRINTSGEN;
+    uint32_t u32VSSEL143 = CM_INTC->VSSEL143;
 
     /* SDIO Ch.1 */
-    if (1UL == bCM_INTC->VSSEL143_b.VSEL2) {
+    if (0UL != (u32VSSEL143 & BIT_MASK_02)) {
         NORINTST = CM_SDIOC1->NORINTST;
         NORINTSGEN = CM_SDIOC1->NORINTSGEN;
         ERRINTST = CM_SDIOC1->ERRINTST;
@@ -1469,7 +1480,7 @@ void IRQ143_Handler(void)
     }
 
     /* SDIO Ch.2 */
-    if (1UL == bCM_INTC->VSSEL143_b.VSEL5) {
+    if (0UL != (u32VSSEL143 & BIT_MASK_05)) {
         NORINTST = CM_SDIOC2->NORINTST;
         NORINTSGEN = CM_SDIOC2->NORINTSGEN;
         ERRINTST = CM_SDIOC2->ERRINTST;
@@ -1481,18 +1492,18 @@ void IRQ143_Handler(void)
     }
 
     /* CAN */
-    if (1UL == bCM_INTC->VSSEL143_b.VSEL6) {
+    if (0UL != (u32VSSEL143 & BIT_MASK_06)) {
         RTIF = CM_CAN->RTIF;
         RTIE = CM_CAN->RTIE;
         ERRINT = CM_CAN->ERRINT;
         TTCFG = CM_CAN->TTCFG;
-        if (((0U != (TTCFG & BIT_MASK_05))                                          ||  \
+        if (((0U != (TTCFG & BIT_MASK_05))                                             ||  \
                 (0U != (RTIF & BIT_MASK_00))                                           ||  \
                 (0U != (RTIF & RTIE & 0xFEU))                                          ||  \
                 ((0U != (ERRINT & BIT_MASK_00)) && (0U != (ERRINT & BIT_MASK_01)))     ||  \
                 ((0U != (ERRINT & BIT_MASK_02)) && (0U != (ERRINT & BIT_MASK_03)))     ||  \
                 ((0U != (ERRINT & BIT_MASK_04)) && (0U != (ERRINT & BIT_MASK_05)))     ||  \
-                ((0U != (TTCFG & BIT_MASK_03)) && (0U != (TTCFG  & BIT_MASK_04)))     ||  \
+                ((0U != (TTCFG & BIT_MASK_03)) && (0U != (TTCFG  & BIT_MASK_04)))      ||  \
                 ((0U != (TTCFG & BIT_MASK_06)) && (0U != (TTCFG & BIT_MASK_07)))) != 0U) {
             CAN_IrqHandler();
         }
@@ -2094,7 +2105,7 @@ __WEAKDEF void I2C1_TxComplete_IrqHandler(void)
 __WEAKDEF void I2C1_TxEmpty_IrqHandler(void)
 {
 }
-__WEAKDEF void I2C1_Error_IrqHandler(void)
+__WEAKDEF void I2C1_EE_IrqHandler(void)
 {
 }
 __WEAKDEF void I2C2_RxFull_IrqHandler(void)
@@ -2106,7 +2117,7 @@ __WEAKDEF void I2C2_TxComplete_IrqHandler(void)
 __WEAKDEF void I2C2_TxEmpty_IrqHandler(void)
 {
 }
-__WEAKDEF void I2C2_Error_IrqHandler(void)
+__WEAKDEF void I2C2_EE_IrqHandler(void)
 {
 }
 __WEAKDEF void I2C3_RxFull_IrqHandler(void)
@@ -2118,7 +2129,7 @@ __WEAKDEF void I2C3_TxComplete_IrqHandler(void)
 __WEAKDEF void I2C3_TxEmpty_IrqHandler(void)
 {
 }
-__WEAKDEF void I2C3_Error_IrqHandler(void)
+__WEAKDEF void I2C3_EE_IrqHandler(void)
 {
 }
 __WEAKDEF void PWC_LVD1_IrqHandler(void)

@@ -8,7 +8,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -427,6 +427,9 @@ static HOST_STATUS usb_host_cdc_class_process(usb_core_instance *pdev, void *pho
     /* application process */
     pphost->user_callbk->huser_application();
 
+    if (CDC_ReqState == CDC_SET_LINE_CODING_RQUEST) {
+        return status;
+    }
     /* send data process */
     usb_host_cdc_senddata_process(pdev, pphost);
 

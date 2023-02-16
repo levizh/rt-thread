@@ -8,7 +8,7 @@
    2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -123,7 +123,7 @@ static void BSP_24CXX_I2C_DeInit(void)
  *            - LL_ERR:             Receive NACK
  *            - LL_ERR_TIMEOUT:     Timeout
  *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
- * @note   This function don't check if the data write is whthin one page
+ * @note   This function don't check if the data write is within one page
  */
 static int32_t BSP_24CXX_I2C_WritePage(uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len)
 {
