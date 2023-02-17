@@ -36,16 +36,16 @@ struct sdio_pkg
     rt_uint32_t flag;
 };
 
-typedef rt_err_t (*dma_txconfig)(CM_DMA_TypeDef *dma_instance, rt_uint8_t channel, struct sdio_pkg *pkg);
-typedef rt_err_t (*dma_rxconfig)(CM_DMA_TypeDef *dma_instance, rt_uint8_t channel, struct sdio_pkg *pkg);
+typedef rt_err_t (*sdio_txconfig)(CM_DMA_TypeDef *dma_instance, rt_uint8_t channel, struct sdio_pkg *pkg);
+typedef rt_err_t (*sdio_rxconfig)(CM_DMA_TypeDef *dma_instance, rt_uint8_t channel, struct sdio_pkg *pkg);
 typedef rt_uint32_t (*sdio_clk_get)(CM_SDIOC_TypeDef *sdio_instance);
 
 /* hc32 sdio des */
 struct hc32_sdio_des
 {
-    sdio_clk_get clk_get;
-    dma_txconfig txconfig;
-    dma_rxconfig rxconfig;
+    sdio_clk_get  clk_get;
+    sdio_txconfig txconfig;
+    sdio_rxconfig rxconfig;
 };
 
 /* hc32 sdio configure */
@@ -55,7 +55,6 @@ struct hc32_sdio_config
     CM_SDIOC_TypeDef       *instance;
     rt_uint32_t            clock;
     struct hc32_irq_config irq_config;
-    func_ptr_t             irq_callback;
     struct dma_config      dma_rx;
     struct dma_config      dma_tx;
 };

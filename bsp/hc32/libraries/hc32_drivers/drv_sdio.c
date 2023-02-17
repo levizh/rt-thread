@@ -68,6 +68,13 @@ extern rt_err_t rt_hw_board_sdio_init(CM_SDIOC_TypeDef *SDIOCx);
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
+#ifdef BSP_USING_SDIO1
+static void _sdio1_handler(void);
+#endif
+
+#ifdef BSP_USING_SDIO2
+static void _sdio2_handler(void);
+#endif
 
 /*******************************************************************************
  * Local variable definitions ('static')
@@ -90,6 +97,16 @@ static struct hc32_sdio_config _sdio_config[] =
 #endif  /* BSP_USING_SDIO1 */
 #ifdef BSP_USING_SDIO2
     SDIO2_BUS_CONFIG,
+#endif  /* BSP_USING_SDIO2 */
+};
+
+static const func_ptr_t _sdio_irq_handler[] =
+{
+#ifdef BSP_USING_SDIO1
+    _sdio1_handler,
+#endif  /* BSP_USING_SDIO1 */
+#ifdef BSP_USING_SDIO2
+    _sdio2_handler,
 #endif  /* BSP_USING_SDIO2 */
 };
 
@@ -176,20 +193,7 @@ static void _sdio_wait_completed(struct rthw_sdio *sdio)
     else if (resp_type(cmd) == RESP_R1B)
     {
         (void)SDIOC_GetResponse(instance, SDIOC_RESP_REG_BIT0_31, &response[0]);
-
         cmd->resp[0] = response[0];
-
-        /* Wait for busy status to release */
-        to_count = 100000;
-        while (RESET == SDIOC_GetHostStatus(instance, SDIOC_HOST_FLAG_DATL_D0))
-        {
-            if (0 == to_count)
-            {
-                cmd->err = -RT_ETIMEOUT;
-                break;
-            }
-            to_count--;
-        }
     }
     else if (resp_type(cmd) == RESP_R2)
     {
@@ -212,54 +216,56 @@ static void _sdio_wait_completed(struct rthw_sdio *sdio)
 
     if (status & SDIOC_INT_FLAG_EI)
     {
-        if (status & SDIOC_INT_FLAG_CCE)
+        if ((status & SDIOC_INT_FLAG_CCE) || (status & SDIOC_INT_FLAG_CEBE))
         {
             SDIOC_SWReset(instance, SDIOC_SW_RST_CMD_LINE);
-            cmd->err = -RT_ERROR;
-        }
-
-        if (status & SDIOC_INT_FLAG_CEBE)
-        {
-            SDIOC_SWReset(instance, SDIOC_SW_RST_CMD_LINE);
-            SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CEBE);
             cmd->err = -RT_ERROR;
         }
 
         if (status & SDIOC_INT_FLAG_CTOE)
         {
             SDIOC_SWReset(instance, SDIOC_SW_RST_CMD_LINE);
-            cmd->err = -RT_ERROR;
+            cmd->err = -RT_ETIMEOUT;
         }
 
-        if (status & SDIOC_INT_FLAG_DCE)
+        if ((status & SDIOC_INT_FLAG_DCE) || (status & SDIOC_INT_FLAG_DEBE))
         {
             SDIOC_SWReset(instance, SDIOC_SW_RST_DATA_LINE);
-            data->err = -RT_ERROR;
-        }
-
-        if (status & SDIOC_INT_FLAG_DEBE)
-        {
-            SDIOC_SWReset(instance, SDIOC_SW_RST_DATA_LINE);
-            data->err = -RT_ERROR;
+            if (data != NULL)
+            {
+                data->err = -RT_ERROR;
+            }
         }
 
         if (status & SDIOC_INT_FLAG_DTOE)
         {
             SDIOC_SWReset(instance, SDIOC_SW_RST_DATA_LINE);
-            data->err = -RT_ERROR;
+            if (data != NULL)
+            {
+                data->err = -RT_ERROR;
+            }
         }
 
         if (cmd->err == RT_EOK)
         {
             LOG_D("sta:0x%08X [%08X %08X %08X %08X]", status, cmd->resp[0], cmd->resp[1], cmd->resp[2], cmd->resp[3]);
         }
-        else if ((cmd->err != RT_EOK) || (data->err != RT_EOK))
+        else
         {
-            LOG_D("err:0x%08x, %s%s%s%s%s%s%s cmd:%d arg:0x%08x rw:%c len:%d blksize:%d",
+            LOG_D("err:0x%08x, %s%s%s%s cmd:%d arg:0x%08x",
                   status,
                   status & SDIOC_INT_FLAG_CCE  ? "Command CRC Error "    : "",
                   status & SDIOC_INT_FLAG_CEBE ? "Command End Bit Error" : "",
                   status & SDIOC_INT_FLAG_CTOE ? "Command Timeout Error" : "",
+                  status == 0 ? "NULL" : "",
+                  cmd->cmd_code,
+                  cmd->arg);
+        }
+
+        if ((data != NULL) && (data->err != RT_EOK))
+        {
+            LOG_D("err:0x%08x, %s%s%s%s cmd:%d arg:0x%08x rw:%c len:%d blksize:%d",
+                  status,
                   status & SDIOC_INT_FLAG_DCE  ? "Data CRC Error "       : "",
                   status & SDIOC_INT_FLAG_DEBE ? "Data End Bit Error"    : "",
                   status & SDIOC_INT_FLAG_DTOE ? "Data Timeout Error"    : "",
@@ -418,11 +424,19 @@ static void _sdio_send_command(struct rthw_sdio *sdio, struct sdio_pkg *pkg)
  */
 static void _sdio_request(struct rt_mmcsd_host *host, struct rt_mmcsd_req *req)
 {
+    rt_uint32_t mask;
     struct sdio_pkg pkg;
-    struct rthw_sdio *sdio = host->private_data;
     struct rt_mmcsd_data *data;
+    struct rthw_sdio *sdio = host->private_data;
+    CM_SDIOC_TypeDef *instance = sdio->config->instance;
 
     RTHW_SDIO_LOCK(sdio);
+
+    if (host->card != NULL)
+    {
+        mask = (CM_SDIOC1 == instance) ? PERIC_SDIOC_SYCTLREG_SELMMC1 : PERIC_SDIOC_SYCTLREG_SELMMC2;
+        (CARD_TYPE_MMC == host->card->card_type) ? (CM_PERIC->SDIOC_SYCTLREG |= mask) : (CM_PERIC->SDIOC_SYCTLREG &= ~mask);
+    }
 
     if (req->cmd != RT_NULL)
     {
@@ -484,21 +498,6 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
     rt_uint32_t clk = io_cfg->clock;
     struct rthw_sdio *sdio = host->private_data;
     CM_SDIOC_TypeDef *instance = sdio->config->instance;
-    rt_uint16_t card_type;
-    struct rt_mmcsd_card *card = host->card;
-
-    if (card != NULL)
-    {
-        card_type = card->card_type;
-        if (CARD_TYPE_MMC == card_type)
-        {
-            CM_PERIC->SDIOC_SYCTLREG |= (CM_SDIOC1 == instance) ? PERIC_SDIOC_SYCTLREG_SELMMC1 : PERIC_SDIOC_SYCTLREG_SELMMC2;
-        }
-        else if (CARD_TYPE_SD == card_type)
-        {
-            CM_PERIC->SDIOC_SYCTLREG &= (CM_SDIOC1 == instance) ? ~PERIC_SDIOC_SYCTLREG_SELMMC1 : ~PERIC_SDIOC_SYCTLREG_SELMMC2;
-        }
-    }
 
     clk_src = sdio->des.clk_get(instance);
     if (clk_src < 400 * 1000)
@@ -559,11 +558,9 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
             break;
     }
 
-    if (clk == 0)
-    {
-        instance->CLKCON = 0;
-    }
-    else
+    instance->CLKCON = 0;
+
+    if (clk > 0)
     {
         ret = SDIOC_GetOptimumClockDiv(clk, &clk_div);
         if (ret != 0)
@@ -571,8 +568,6 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
             LOG_E("The clock division error");
             return;
         }
-
-        instance->CLKCON = (clk_div | SDIOC_CLKCON_ICE | SDIOC_CLKCON_CE);
 
         SDIOC_SetClockDiv(instance, clk_div);
 
@@ -584,6 +579,8 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
         {
             SDIOC_SetSpeedMode(instance, SDIOC_SPEED_MD_HIGH);
         }
+
+        instance->CLKCON = (clk_div | SDIOC_CLKCON_ICE | SDIOC_CLKCON_CE);
     }
 
     RTHW_SDIO_UNLOCK(sdio);
@@ -599,7 +596,8 @@ static void _sdio_irq_update(struct rt_mmcsd_host *host, rt_int32_t enable)
 {
     struct rthw_sdio *sdio = host->private_data;
     CM_SDIOC_TypeDef *instance = sdio->config->instance;
-    const rt_uint32_t int_type = (SDIOC_INT_CCSEN | SDIOC_INT_TCSEN | SDIOC_ERR_INT_ALL);
+    const rt_uint32_t int_type = (SDIOC_INT_CISTSEN | SDIOC_INT_CRMSEN | \
+                                  SDIOC_INT_CCSEN | SDIOC_INT_TCSEN | SDIOC_ERR_INT_ALL);
 
     if (enable)
     {
@@ -618,12 +616,16 @@ static void _sdio_irq_update(struct rt_mmcsd_host *host, rt_int32_t enable)
 /**
  * @brief  Detect card.
  * @param  [in] host                    Pointer to a @ref rt_mmcsd_host structure
- * @retval 0x01
+ * @retval rt_int32_t:
+ *           - 0: No card
+ *           - 1: Card inserted
  */
 static rt_int32_t _sd_detect(struct rt_mmcsd_host *host)
 {
+    struct rthw_sdio *sdio = host->private_data;
+
     LOG_D("try to detect device");
-    return 0x01;
+    return (rt_int32_t)SDIOC_GetIntStatus(sdio->config->instance, SDIOC_HOST_FLAG_CIN);
 }
 
 static const struct rt_mmcsd_host_ops _mmcsd_host_ops =
@@ -750,6 +752,15 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
     rt_uint32_t norint_status = instance->NORINTST;
     rt_uint32_t errint_status = instance->ERRINTST;
 
+    if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_CRM | SDIOC_INT_FLAG_CIST))
+    {
+        SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CLR_ALL);
+
+        /* ready to change */
+        mmcsd_change(host);
+        return;
+    }
+
     if (SET == SDIOC_GetIntStatus(instance, SDIOC_INT_FLAG_EI))
     {
         SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CLR_ALL);
@@ -811,21 +822,6 @@ static void _sdio2_handler(void)
     rt_interrupt_leave();
 }
 #endif
-
-/**
-  * @brief  Get sdio irq handle.
-  * @param  None
-  * @retval None
-  */
-static void _sdio_get_irq_callback(void)
-{
-#ifdef BSP_USING_SDIO1
-    _sdio_config[SDIO1_INDEX].irq_callback = _sdio1_handler;
-#endif
-#ifdef BSP_USING_SDIO2
-    _sdio_config[SDIO2_INDEX].irq_callback = _sdio2_handler;
-#endif
-}
 
 /**
  * @brief  Enable SDIO clock.
@@ -942,8 +938,6 @@ int rt_hw_sdio_init(void)
         .txconfig = _sdio_dma_txconfig,
     };
 
-    _sdio_get_irq_callback();
-
     for (rt_size_t i = 0; i < obj_num; i++)
     {
         sdio_config = &_sdio_config[i];
@@ -966,8 +960,8 @@ int rt_hw_sdio_init(void)
             /* init DMA */
             _sdio_dma_init(sdio_config);
 
-            /* register the handle */
-            hc32_install_irq_handler(&sdio_config->irq_config, sdio_config->irq_callback, RT_TRUE);
+            /* register the irq handler */
+            hc32_install_irq_handler(&sdio_config->irq_config, _sdio_irq_handler[i], RT_TRUE);
         }
     }
 
