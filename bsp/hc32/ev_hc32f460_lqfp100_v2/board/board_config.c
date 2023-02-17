@@ -311,7 +311,7 @@ rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
 rt_err_t rt_hw_xtal32_board_init(void)
 {
 #if defined(BSP_RTC_USING_XTAL32)
-    //GPIO_AnalogCmd(BSP_XTAL32_PORT, BSP_XTAL32_IN_PIN | BSP_XTAL32_OUT_PIN, ENABLE);
+    GPIO_AnalogCmd(XTAL32_PORT, XTAL32_IN_PIN | XTAL32_OUT_PIN, ENABLE);
 #endif
     return RT_EOK;
 }
