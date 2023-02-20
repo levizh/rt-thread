@@ -36,6 +36,16 @@ extern "C" {
 #define SDIO1_RX_DMA_IRQn               BSP_DMA1_CH0_IRQ_NUM
 #define SDIO1_RX_DMA_INT_PRIO           BSP_DMA1_CH0_IRQ_PRIO
 #define SDIO1_RX_DMA_INT_SRC            INT_SRC_DMA1_TC0
+#elif defined(BSP_HASH_USING_DMA) && !defined(HASH_DMA_INSTANCE)
+#define HASH_DMA_INSTANCE               CM_DMA1
+#define HASH_DMA_CHANNEL                DMA_CH0
+#define HASH_DMA_CLOCK                  (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define HASH_DMA_TRIG_SELECT            AOS_DMA1_0
+#define HASH_DMA_IRQn                   BSP_DMA1_CH0_IRQ_NUM
+#define HASH_DMA_INT_PRIO               BSP_DMA1_CH0_IRQ_PRIO
+// #define HASH_DMA_INT_SRC                INT_SRC_DMA1_BTC0
+#define HASH_A_DMA_TRIG_EVT             HASH_TRIG_EVT_DMA1_BTC0
+#define HASH_B_DMA_TRIG_EVT             HASH_TRIG_EVT_DMA1_TC0
 #endif
 
 /* DMA1 ch1 */

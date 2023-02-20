@@ -17,9 +17,13 @@
 #define RT_USING_IDLE_HOOK
 #define RT_IDLE_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 256
+#define RT_USING_TIMER_SOFT
+#define RT_TIMER_THREAD_PRIO 4
+#define RT_TIMER_THREAD_STACK_SIZE 512
 
 /* kservice optimization */
 
+#define RT_KSERVICE_USING_STDLIB
 #define RT_DEBUG
 #define RT_DEBUG_COLOR
 
@@ -33,6 +37,7 @@
 
 /* Memory Management */
 
+#define RT_PAGE_MAX_ORDER 11
 #define RT_USING_MEMPOOL
 #define RT_USING_SMALL_MEM
 #define RT_USING_SMALL_MEM_AS_HEAP
@@ -49,6 +54,7 @@
 #define RT_USING_CPU_FFS
 #define ARCH_ARM
 #define RT_USING_CPU_FFS
+#define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
 #define ARCH_ARM_CORTEX_M4
 
@@ -71,17 +77,35 @@
 #define MSH_USING_BUILT_IN_COMMANDS
 #define FINSH_USING_DESCRIPTION
 #define FINSH_ARG_MAX 10
+#define RT_USING_DFS
+#define DFS_USING_POSIX
+#define DFS_USING_WORKDIR
+#define DFS_FILESYSTEMS_MAX 4
+#define DFS_FILESYSTEM_TYPES_MAX 4
+#define DFS_FD_MAX 16
+#define RT_USING_DFS_DEVFS
 
 /* Device Drivers */
 
 #define RT_USING_DEVICE_IPC
+#define RT_UNAMED_PIPE_NUMBER 64
 #define RT_USING_SYSTEM_WORKQUEUE
 #define RT_SYSTEM_WORKQUEUE_STACKSIZE 2048
 #define RT_SYSTEM_WORKQUEUE_PRIORITY 23
 #define RT_USING_SERIAL
 #define RT_USING_SERIAL_V1
+#define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_I2C
+#define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
+#define RT_USING_SDIO
+#define RT_SDIO_STACK_SIZE 512
+#define RT_SDIO_THREAD_PRIORITY 15
+#define RT_MMCSD_STACK_SIZE 1024
+#define RT_MMCSD_THREAD_PREORITY 22
+#define RT_MMCSD_MAX_PARTITION 16
+#define RT_SDIO_DEBUG
 #define RT_USING_HWCRYPTO
 #define RT_HWCRYPTO_DEFAULT_NAME "hwcryto"
 #define RT_HWCRYPTO_IV_MAX_SIZE 16
@@ -90,6 +114,7 @@
 #define RT_HWCRYPTO_USING_AES_ECB
 #define RT_HWCRYPTO_USING_SHA2
 #define RT_HWCRYPTO_USING_SHA2_256
+#define RT_HWCRYPTO_USING_RNG
 #define RT_HWCRYPTO_USING_CRC
 #define RT_HWCRYPTO_USING_CRC_04C11DB7
 
@@ -172,6 +197,11 @@
 
 /* peripheral libraries and drivers */
 
+/* sensors drivers */
+
+
+/* touch drivers */
+
 
 /* Kendryte SDK */
 
@@ -189,13 +219,38 @@
 /* entertainment: terminal games and other interesting software packages */
 
 
-/* Privated Packages of RealThread */
+/* Arduino libraries */
 
 
-/* Network Utilities */
+/* Projects */
 
 
-/* RT-Thread Smart */
+/* Sensors */
+
+
+/* Display */
+
+
+/* Timing */
+
+
+/* Data Processing */
+
+
+/* Data Storage */
+
+/* Communication */
+
+
+/* Device Control */
+
+
+/* Other */
+
+/* Signal IO */
+
+
+/* Uncategorized */
 
 #define SOC_FAMILY_HC32
 #define SOC_SERIES_HC32F4
@@ -212,6 +267,16 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_USING_HWCRYPTO
+#define BSP_USING_UQID
+#define BSP_USING_RNG
+#define BSP_USING_CRC
+#define BSP_USING_CRC32
+#define BSP_USING_AES
+#define BSP_USING_AES_ECB
+#define BSP_USING_HASH
+#define BSP_USING_SHA2_256
+#define BSP_HASH_USING_DMA
 
 /* Board extended module Drivers */
 

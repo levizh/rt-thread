@@ -1,3 +1,4 @@
+
 if BSP_USING_USBD
     config BSP_USBD_TYPE_FS
         bool
@@ -59,4 +60,5 @@ config BSP_USING_UDID
     bool "Enable UDID (Unique Device Identifier)"
     select RT_USING_HWCRYPTO
     default n
+
 
