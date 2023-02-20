@@ -432,17 +432,24 @@ static void _sdio_request(struct rt_mmcsd_host *host, struct rt_mmcsd_req *req)
 
     RTHW_SDIO_LOCK(sdio);
 
-    if (host->card != NULL)
-    {
-        mask = (CM_SDIOC1 == instance) ? PERIC_SDIOC_SYCTLREG_SELMMC1 : PERIC_SDIOC_SYCTLREG_SELMMC2;
-        (CARD_TYPE_MMC == host->card->card_type) ? (CM_PERIC->SDIOC_SYCTLREG |= mask) : (CM_PERIC->SDIOC_SYCTLREG &= ~mask);
-    }
-
     if (req->cmd != RT_NULL)
     {
         rt_memset(&pkg, 0, sizeof(pkg));
         data = req->cmd->data;
         pkg.cmd = req->cmd;
+
+        if (SD_SEND_IF_COND == pkg.cmd->cmd_code)
+        {
+            mask = (CM_SDIOC1 == instance) ? PERIC_SDIOC_SYCTLREG_SELMMC1 : PERIC_SDIOC_SYCTLREG_SELMMC2;
+            if (data == RT_NULL)
+            {
+                CM_PERIC->SDIOC_SYCTLREG &= ~mask;
+            }
+            else
+            {
+                CM_PERIC->SDIOC_SYCTLREG |= mask;
+            }
+        }
 
         if (data != RT_NULL)
         {
