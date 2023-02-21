@@ -50,7 +50,7 @@ struct rthw_sdio
 #endif
 
 #ifndef SDIO_ALIGN_LEN
-#define SDIO_ALIGN_LEN          (32)
+#define SDIO_ALIGN_LEN          (4)
 #endif
 
 #ifndef SDIO_MAX_FREQ
