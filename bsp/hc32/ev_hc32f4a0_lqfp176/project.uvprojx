@@ -384,14 +384,14 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>drv_crypto_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\drv_crypto_sample.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_wdt_sample.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\drv_wdt_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\main.c</FilePath>
             </File>
             <File>
               <FileName>drv_wktm_sample.c</FileName>
@@ -399,9 +399,9 @@
               <FilePath>applications\drv_wktm_sample.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>drv_crypto_sample.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\main.c</FilePath>
+              <FilePath>applications\drv_crypto_sample.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -566,6 +566,21 @@
               <FilePath>..\..\..\components\drivers\misc\pin.c</FilePath>
             </File>
             <File>
+              <FileName>lptimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\pm\lptimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>pm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\pm\pm.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\components\drivers\rtc\rtc.c</FilePath>
+            </File>
+            <File>
               <FileName>block_dev.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\components\drivers\sdio\block_dev.c</FilePath>
@@ -639,6 +654,11 @@
               <FileName>drv_irq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_irq.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32_drivers\drv_rtc.c</FilePath>
             </File>
             <File>
               <FileName>drv_sdio.c</FileName>
@@ -874,6 +894,11 @@
               <FileName>hc32_ll_interrupts.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</FilePath>
+            </File>
+            <File>
+              <FileName>hc32_ll_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_rtc.c</FilePath>
             </File>
             <File>
               <FileName>hc32_ll_aos.c</FileName>

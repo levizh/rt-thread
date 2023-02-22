@@ -12,6 +12,8 @@
 #include <board.h>
 #include <drv_wktm.h>
 
+#ifdef RT_USING_PM
+
 //#define DRV_DEBUG
 #define LOG_TAG             "drv_wktm"
 #include <drv_log.h>
@@ -35,7 +37,7 @@ void PWC_WakeupTimer_IrqHandler(void)
 {
     if (SET == PWC_WKT_GetStatus())
     {
-        LOG_D("Wake-up timer ovweflow.");
+        LOG_D("Wake-up timer overflow.");
         PWC_WKT_ClearStatus();
     }
 }
@@ -97,12 +99,7 @@ void hc32_wktm_stop(void)
 rt_uint32_t hc32_wktm_get_countfreq(void)
 {
     rt_uint32_t freq = 0;
-#if defined(HC32F460)
-    freq = (rt_uint32_t)(LRC_VALUE / (float)cmpval);
-#elif defined(HC32F4A0)
-    freq = (rt_uint32_t)(RTCLRC_VALUE / (float)cmpval);
-#endif
-
+    freq = 64U / (float)cmpval;
     return freq;
 }
 
@@ -120,21 +117,7 @@ int hc32_hw_wktm_init(void)
     /* Disable WKTM inadvance */
     PWC_WKT_Cmd(DISABLE);
     /* WKTM init */
-#if defined(HC32F460)
-    /* LRC for WKTM */
-    CLK_LrcCmd(ENABLE);
-    PWC_WKT_Config(PWC_WKT_CLK_SRC_LRC, CMPVAL_MAX);
-#elif defined(HC32F4A0)
-#ifdef RT_USING_RTC
-    /* RTCLRC for WKTM */
-    RTC_LrcCmd(ENABLE);
-#else
-    LOG_E("wktm init failed! must open rtc module.");
-    ret = -RT_ERROR;
-#endif
-    PWC_WKT_Config(PWC_WKT_CLK_SRC_RTCLRC, CMPVAL_MAX);
-#endif
-
+    PWC_WKT_Config(PWC_WKT_CLK_SRC_64HZ, CMPVAL_MAX);
     /* Wakeup timer NVIC config, not mandatory for this sample */
     (void)INTC_ShareIrqCmd(INT_SRC_WKTM_PRD, ENABLE);
     NVIC_ClearPendingIRQ(WKTM_IRQn);
@@ -145,4 +128,6 @@ int hc32_hw_wktm_init(void)
 }
 
 INIT_DEVICE_EXPORT(hc32_hw_wktm_init);
+
+#endif
 
