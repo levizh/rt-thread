@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>../libraries/hc32f4a0_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/ARM/sfr/HDSC_HC32F4A0.SFR</SFDFile>
+          <SFDFile>D:\RTT\rt-thread\bsp\hc32\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\ARM\sfr\HC32F4A0.SFR</SFDFile>
           <bCustSvd>1</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -384,11 +384,6 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>drv_wdt_sample.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\drv_wdt_sample.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
@@ -397,6 +392,11 @@
               <FileName>drv_wktm_sample.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\drv_wktm_sample.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_wdt_sample.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\drv_wdt_sample.c</FilePath>
             </File>
             <File>
               <FileName>drv_crypto_sample.c</FileName>
@@ -566,14 +566,9 @@
               <FilePath>..\..\..\components\drivers\misc\pin.c</FilePath>
             </File>
             <File>
-              <FileName>lptimer.c</FileName>
+              <FileName>rt_drv_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\components\drivers\pm\lptimer.c</FilePath>
-            </File>
-            <File>
-              <FileName>pm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\components\drivers\pm\pm.c</FilePath>
+              <FilePath>..\..\..\components\drivers\misc\rt_drv_pwm.c</FilePath>
             </File>
             <File>
               <FileName>rtc.c</FileName>
@@ -654,6 +649,11 @@
               <FileName>drv_irq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_irq.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32_drivers\drv_pwm.c</FilePath>
             </File>
             <File>
               <FileName>drv_rtc.c</FileName>
@@ -871,9 +871,9 @@
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_gpio.c</FilePath>
             </File>
             <File>
-              <FileName>hc32_ll_usart.c</FileName>
+              <FileName>hc32_ll_tmra.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_usart.c</FilePath>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_tmra.c</FilePath>
             </File>
             <File>
               <FileName>system_hc32f4a0.c</FileName>
@@ -904,6 +904,11 @@
               <FileName>hc32_ll_aos.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_aos.c</FilePath>
+            </File>
+            <File>
+              <FileName>hc32_ll_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_usart.c</FilePath>
             </File>
             <File>
               <FileName>hc32_ll_trng.c</FileName>

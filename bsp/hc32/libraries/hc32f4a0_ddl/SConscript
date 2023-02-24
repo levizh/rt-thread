@@ -73,8 +73,8 @@ if GetDepend(['RT_USING_PULSE_ENCODER']):
     src += ['drivers/hc32_ll_driver/src/hc32_ll_tmra.c']
 
 if GetDepend(['RT_USING_PWM']):
-    src += ['drivers/hc32_ll_driver/src/hc32_ll_tmr4.c']
-    src += ['drivers/hc32_ll_driver/src/hc32_ll_tmr6.c']
+    #src += ['drivers/hc32_ll_driver/src/hc32_ll_tmr4.c']
+    #src += ['drivers/hc32_ll_driver/src/hc32_ll_tmr6.c']
     src += ['drivers/hc32_ll_driver/src/hc32_ll_tmra.c']
 
 if GetDepend(['RT_HWCRYPTO_USING_RNG']):

@@ -362,6 +362,36 @@ menu "On-chip Peripheral Drivers"
 
         endif
 
+    menuconfig BSP_USING_PWM_TMRA
+        bool "Enable timerA output PWM"
+        //depends on (!BSP_USING_UART3)
+        default n
+        select RT_USING_PWM
+        if BSP_USING_PWM_TMRA
+            menuconfig BSP_USING_PWM_TMRA_4
+                bool "Enable timerA-4 output PWM"
+                default n
+                if BSP_USING_PWM_TMRA_4
+                    config BSP_USING_PWM_TMRA_4_CH1
+                        bool "Enable timerA-4 channel1"
+                        default n
+                    config BSP_USING_PWM_TMRA_4_CH2
+                        bool "Enable timerA-4 channel2"
+                        default n
+                endif
+            menuconfig BSP_USING_PWM_TMRA_5
+                bool "Enable timerA-5 output PWM"
+                default n
+                if BSP_USING_PWM_TMRA_5
+                    config BSP_USING_PWM_TMRA_5_CH1
+                        bool "Enable timerA-5 channel1"
+                        default n
+                    config BSP_USING_PWM_TMRA_5_CH2
+                        bool "Enable timerA-5 channel2"
+                        default n
+                endif
+        endif
+
 endmenu
 
 menu "Board extended module Drivers"

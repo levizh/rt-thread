@@ -197,7 +197,6 @@ extern "C" {
 #endif /* PWM_TMRA_6_CONFIG */
 #endif /* BSP_USING_PWM_TMRA_6 */
 
-
 #ifdef __cplusplus
 }
 #endif
