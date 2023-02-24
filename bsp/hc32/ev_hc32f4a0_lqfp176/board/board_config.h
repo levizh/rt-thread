@@ -682,13 +682,54 @@
 
 
 #if defined(BSP_USING_USBD)
-/* USBFS Core*/
-#define USBF_DP_PORT                        (GPIO_PORT_A)
-#define USBF_DP_PIN                         (GPIO_PIN_12)
-#define USBF_DM_PORT                        (GPIO_PORT_A)
-#define USBF_DM_PIN                         (GPIO_PIN_11)
-#define USBF_VBUS_PORT                      (GPIO_PORT_A)
-#define USBF_VBUS_PIN                       (GPIO_PIN_09)
+#if defined(BSP_USING_USBFS)
+    /* USBFS Core*/
+    #define USBF_DP_PORT                    (GPIO_PORT_A)
+    #define USBF_DP_PIN                     (GPIO_PIN_12)
+    #define USBF_DM_PORT                    (GPIO_PORT_A)
+    #define USBF_DM_PIN                     (GPIO_PIN_11)
+    #define USBF_VBUS_PORT                  (GPIO_PORT_A)
+    #define USBF_VBUS_PIN                   (GPIO_PIN_09)
+#elif defined(BSP_USING_USBHS)
+/* USBHS Core*/
+#if defined(BSP_USING_USBHS_PHY_EMBED)
+    #define USBH_DP_PORT                    (GPIO_PORT_B)
+    #define USBH_DP_PIN                     (GPIO_PIN_15)
+    #define USBH_DM_PORT                    (GPIO_PORT_B)
+    #define USBH_DM_PIN                     (GPIO_PIN_14)
+    #define USBH_VBUS_PORT                  (GPIO_PORT_B)
+    #define USBH_VBUS_PIN                   (GPIO_PIN_13)
+#else
+    /* USBHS Core, external PHY */
+    #define USBH_ULPI_CLK_PORT              (GPIO_PORT_E)
+    #define USBH_ULPI_CLK_PIN               (GPIO_PIN_12)
+    #define USBH_ULPI_DIR_PORT              (GPIO_PORT_C)
+    #define USBH_ULPI_DIR_PIN               (GPIO_PIN_02)
+    #define USBH_ULPI_NXT_PORT              (GPIO_PORT_C)
+    #define USBH_ULPI_NXT_PIN               (GPIO_PIN_03)
+    #define USBH_ULPI_STP_PORT              (GPIO_PORT_C)
+    #define USBH_ULPI_STP_PIN               (GPIO_PIN_00)
+    #define USBH_ULPI_D0_PORT               (GPIO_PORT_E)
+    #define USBH_ULPI_D0_PIN                (GPIO_PIN_13)
+    #define USBH_ULPI_D1_PORT               (GPIO_PORT_E)
+    #define USBH_ULPI_D1_PIN                (GPIO_PIN_14)
+    #define USBH_ULPI_D2_PORT               (GPIO_PORT_E)
+    #define USBH_ULPI_D2_PIN                (GPIO_PIN_15)
+    #define USBH_ULPI_D3_PORT               (GPIO_PORT_B)
+    #define USBH_ULPI_D3_PIN                (GPIO_PIN_10)
+    #define USBH_ULPI_D4_PORT               (GPIO_PORT_B)
+    #define USBH_ULPI_D4_PIN                (GPIO_PIN_11)
+    #define USBH_ULPI_D5_PORT               (GPIO_PORT_B)
+    #define USBH_ULPI_D5_PIN                (GPIO_PIN_12)
+    #define USBH_ULPI_D6_PORT               (GPIO_PORT_B)
+    #define USBH_ULPI_D6_PIN                (GPIO_PIN_13)
+    #define USBH_ULPI_D7_PORT               (GPIO_PORT_E)
+    #define USBH_ULPI_D7_PIN                (GPIO_PIN_11)
+    /* 3300 reset */                      
+    #define USB_3300_RESET_PORT             (EIO_PORT1)
+    #define USB_3300_RESET_PIN              (EIO_USB3300_RST)
+#endif
+#endif
 #endif
 
 #endif

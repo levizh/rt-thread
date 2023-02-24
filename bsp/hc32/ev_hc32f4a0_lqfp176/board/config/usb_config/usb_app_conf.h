@@ -20,6 +20,7 @@ extern "C"
 /*******************************************************************************
  * Include files
  ******************************************************************************/
+#include "rtconfig.h"
 
 /* USB MODE CONFIGURATION */
 /*
@@ -34,12 +35,19 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
     Not support, forbid!!
 */
 
-//#define USB_HS_MODE
+#if defined(BSP_USING_USBHS)
+#define USB_HS_MODE
+#elif defined(BSP_USING_USBFS)
 #define USB_FS_MODE
+#endif
 
+#if defined(BSP_USING_USBD)
 #define USE_DEVICE_MODE
+#elif defined(BSP_USING_USBH)
+#define USE_HOST_MODE
+#endif
 
-#ifdef USB_HS_MODE
+#if defined(USB_HS_MODE) && defined(BSP_USING_USBHS_PHY_EXTERN)
 #define USB_HS_EXTERNAL_PHY
 #endif
 
@@ -85,23 +93,23 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #endif
 
 #ifdef USB_HS_MODE
-#define RX_FIFO_HS_SIZE         (128U)
+#define RX_FIFO_HS_SIZE         (512U)
 #define TX0_FIFO_HS_SIZE        (64U)
-#define TX1_FIFO_HS_SIZE        (0U)
+#define TX1_FIFO_HS_SIZE        (64U)
 #define TX2_FIFO_HS_SIZE        (64U)
-#define TX3_FIFO_HS_SIZE        (0U)
-#define TX4_FIFO_HS_SIZE        (0U)
+#define TX3_FIFO_HS_SIZE        (64U)
+#define TX4_FIFO_HS_SIZE        (64U)
 #define TX5_FIFO_HS_SIZE        (64U)
-#define TX6_FIFO_HS_SIZE        (0U)
-#define TX7_FIFO_HS_SIZE        (0U)
-#define TX8_FIFO_HS_SIZE        (0U)
-#define TX9_FIFO_HS_SIZE        (0U)
-#define TX10_FIFO_HS_SIZE       (0U)
-#define TX11_FIFO_HS_SIZE       (0U)
-#define TX12_FIFO_HS_SIZE       (0U)
-#define TX13_FIFO_HS_SIZE       (0U)
-#define TX14_FIFO_HS_SIZE       (0U)
-#define TX15_FIFO_HS_SIZE       (0U)
+#define TX6_FIFO_HS_SIZE        (64U)
+#define TX7_FIFO_HS_SIZE        (64U)
+#define TX8_FIFO_HS_SIZE        (64U)
+#define TX9_FIFO_HS_SIZE        (64U)
+#define TX10_FIFO_HS_SIZE       (64U)
+#define TX11_FIFO_HS_SIZE       (64U)
+#define TX12_FIFO_HS_SIZE       (64U)
+#define TX13_FIFO_HS_SIZE       (64U)
+#define TX14_FIFO_HS_SIZE       (64U)
+#define TX15_FIFO_HS_SIZE       (64U)
 
 #if ((RX_FIFO_HS_SIZE + \
       TX0_FIFO_HS_SIZE + TX1_FIFO_HS_SIZE + TX2_FIFO_HS_SIZE + TX3_FIFO_HS_SIZE + TX4_FIFO_HS_SIZE + \
@@ -112,9 +120,9 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #endif
 #endif
 
-
+#if defined(BSP_USING_USBD_VBUS_SENSING)
 #define VBUS_SENSING_ENABLED
-//#define SELF_POWER
+#endif
 
 
 #ifdef __cplusplus

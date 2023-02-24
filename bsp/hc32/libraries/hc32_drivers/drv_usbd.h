@@ -27,39 +27,47 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define MAX_DATA_LENGTH                        (0x200U)
+#define MAX_DATA_LENGTH      (0x200U)
 
 
 /* The bit of the diepint/doepint */
-#define XFER_COMPL        (1UL)
-#define EPDISABLED        (1UL<<1)
-#define TIME_OUT          (1UL<<3)
-#define SETUP_BIT         (1UL<<3)
-#define INTKNTXFEMP       (1UL<<4)
-#define INEPNAKEFF        (1UL<<6)
-#define TXFEMP            (1UL<<7)
+#define XFER_COMPL           (1UL)
+#define EPDISABLED           (1UL<<1)
+#define TIME_OUT             (1UL<<3)
+#define SETUP_BIT            (1UL<<3)
+#define INTKNTXFEMP          (1UL<<4)
+#define INEPNAKEFF           (1UL<<6)
+#define TXFEMP               (1UL<<7)
 
 /* The bit of the GINTSTS */
-#define MODEMIS_INT       (1UL<<1)
-#define SOF_INT           (1UL<<3)
-#define RXFLVL_INT        (1UL<<4)
-#define USBSUSP_INT       (1UL<<11)
-#define USBRST_INT        (1UL<<12)
-#define ENUMDONE_INT      (1UL<<13)
-#define INEP_INT          (1UL<<18)
-#define OUTEP_INT         (1UL<<19)
-#define INCOMPLSOIN       (1UL<<20)
-#define INCOMPLSOOUT      (1UL<<21)
-#define VBUSV_INT         (1UL<<30)
-#define WAKEUP_INT        (1UL<<31)
+#define MODEMIS_INT          (1UL<<1)
+#define SOF_INT              (1UL<<3)
+#define RXFLVL_INT           (1UL<<4)
+#define USBSUSP_INT          (1UL<<11)
+#define USBRST_INT           (1UL<<12)
+#define ENUMDONE_INT         (1UL<<13)
+#define INEP_INT             (1UL<<18)
+#define OUTEP_INT            (1UL<<19)
+#define INCOMPLSOIN          (1UL<<20)
+#define INCOMPLSOOUT         (1UL<<21)
+#define VBUSV_INT            (1UL<<30)
+#define WAKEUP_INT           (1UL<<31)
 
 /* Data packet status for device mode */
-#define STS_GOUT_NAK      (1U)
-#define STS_DATA_UPDT     (2U)
-#define STS_XFER_COMP     (3U)
-#define STS_SETUP_COMP    (4U)
-#define STS_SETUP_UPDT    (6U)
+#define STS_GOUT_NAK         (1U)
+#define STS_DATA_UPDT        (2U)
+#define STS_XFER_COMP        (3U)
+#define STS_SETUP_COMP       (4U)
+#define STS_SETUP_UPDT       (6U)
 
+/* USB EP0 state */
+#define USB_EP0_IDLE         (0U)
+#define USB_EP0_SETUP        (1U)
+#define USB_EP0_DATA_IN      (2U)
+#define USB_EP0_DATA_OUT     (3U)
+#define USB_EP0_STATUS_IN    (4U)
+#define USB_EP0_STATUS_OUT   (5U)
+#define USB_EP0_STALL        (6U)
 
 /*******************************************************************************
  * Global type definitions ('typedef')

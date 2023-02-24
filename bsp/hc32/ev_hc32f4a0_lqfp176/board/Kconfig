@@ -457,10 +457,41 @@ menu "On-chip Peripheral Drivers"
                 endif
         endif
         
-    config BSP_USING_USBD
-        bool "Enable USBFS as USB device"
+    menuconfig BSP_USING_USBD
+        bool "Enable USBHS/FS as USB device"
         select RT_USING_USB_DEVICE
         default n
+        if BSP_USING_USBD
+            choice
+                prompt "Select USB Module"
+                default BSP_USING_USBFS
+
+                config BSP_USING_USBFS
+                    bool "Use USBFS Module"
+
+                config BSP_USING_USBHS
+                    bool "Use USBHS Module"
+            endchoice
+
+            choice
+                depends on BSP_USING_USBHS
+                prompt "Select USB PHY"
+                default BSP_USING_USBHS_PHY_EMBED
+
+                config BSP_USING_USBHS_PHY_EMBED
+                    bool "Use USBHS Embedded PHY"
+
+                config BSP_USING_USBHS_PHY_EXTERN
+                    bool "Use USBHS External PHY"
+                    select BSP_USING_I2C1
+                    select BSP_USING_TCA9539
+            endchoice
+
+            config BSP_USING_USBD_VBUS_SENSING
+                bool "Enable VBUS Sensing"
+                default y
+
+        endif
 
 endmenu
 

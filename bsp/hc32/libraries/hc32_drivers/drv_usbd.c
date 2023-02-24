@@ -15,11 +15,17 @@
 #include <rtdevice.h>
 
 #if defined(BSP_USING_USBD)
+
+//#define DRV_DEBUG
+#define LOG_TAG             "drv.usbd"
+#include <drv_log.h>
+
 #include "board_config.h"
 #include "irq_config.h"
 #include "drv_usbd.h"
 
 extern rt_err_t rt_hw_usb_board_init(void);
+extern void rt_hw_us_delay(rt_uint32_t us);
 
 static usb_core_instance _hc32_usb;
 static struct udcd _hc32_udc;
@@ -36,30 +42,39 @@ static struct ep_id _ep_pool[] =
     {0x3,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x4,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x4,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
-    {0x5,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
-    {0x5,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
-    {0x6,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
-    {0x6,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0x6,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0x6,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x7,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0x7,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x8,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0x8,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x9,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x9,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xA,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xA,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xB,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xB,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xC,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xC,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xD,  USB_EP_ATTR_INT,         USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xD,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xE,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xE,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+    {0xF,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
+    {0xF,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0xFF, USB_EP_ATTR_TYPE_MASK,   USB_DIR_MASK,   0,  ID_ASSIGNED  },
 };
 
 void usb_udelay(const uint32_t usec)
 {
-    __IO uint32_t i;
-    uint32_t j;
-    j = (HCLK_VALUE + 1000000UL - 1UL) / 1000000UL * usec;
-    for (i = 0UL; i < j; i++)
-    {
-    }
+    rt_hw_us_delay(usec);
 }
 
 void usb_mdelay(const uint32_t msec)
 {
-    usb_udelay(msec * 1000UL);
+    rt_thread_mdelay(msec);
 }
 
 void usb_opendevep(usb_core_instance *pdev, uint8_t ep_addr, uint16_t ep_mps, uint8_t ep_type)
@@ -238,6 +253,7 @@ void usb_dev_rst(usb_core_instance *pdev)
     usb_opendevep(pdev, 0x00U, USB_MAX_EP0_SIZE, EP_TYPE_CTRL);
     usb_opendevep(pdev, 0x80U, USB_MAX_EP0_SIZE, EP_TYPE_CTRL);
     rt_usbd_reset_handler(&_hc32_udc);
+    LOG_D("USB Reset");
 }
 
 void usb_ctrlconn(usb_core_instance *pdev, uint8_t conn)
@@ -247,21 +263,23 @@ void usb_ctrlconn(usb_core_instance *pdev, uint8_t conn)
     if (tmp_1 != 0U)
     {
         rt_usbd_connect_handler(&_hc32_udc);
+        LOG_D("USB Connect");
     }
     else
     {
         rt_usbd_disconnect_handler(&_hc32_udc);
+        LOG_D("USB Disconnect");
     }
 }
 
 void usb_dev_susp(usb_core_instance *pdev)
 {
-    /* reserved */
+    LOG_D("USB Suspend");
 }
 
 void usb_dev_resume(usb_core_instance *pdev)
 {
-    /* reserved */
+    LOG_D("USB Resume");
 }
 
 void usb_sof_process(usb_core_instance *pdev)
@@ -404,7 +422,13 @@ static void usb_resume_isr(usb_core_instance *pdev)
 
 static void usb_susp_isr(usb_core_instance *pdev)
 {
-    dev_int_cbkpr->Suspend(pdev);
+    uint32_t u32dsts;
+    
+    u32dsts = READ_REG32(pdev->regs.DREGS->DSTS);
+    if((u32dsts & 1UL) != 0UL)
+    {
+        dev_int_cbkpr->Suspend(pdev);
+    }
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_USBSUSP);
 }
 
@@ -428,7 +452,6 @@ static void usb_inep_isr(usb_core_instance *pdev)
                 CLR_REG32_BIT(pdev->regs.DREGS->DIEPEMPMSK, u32diepempmsk);
                 WRITE_REG32(pdev->regs.INEP_REGS[u8epnum]->DIEPINT, XFER_COMPL);
                 dev_int_cbkpr->DataInStage(pdev, u8epnum);
-#if 0
                 if (pdev->basic_cfgs.dmaen == 1U)
                 {
                     if ((pdev->dev.device_state == USB_EP0_STATUS_IN) && (u8epnum == 0U))
@@ -440,7 +463,6 @@ static void usb_inep_isr(usb_core_instance *pdev)
                         pdev->dev.device_state = USB_EP0_IDLE;
                     }
                 }
-#endif
             }
             if ((u32diepint & EPDISABLED) != 0UL)
             {
@@ -497,7 +519,6 @@ static void usb_outep_isr(usb_core_instance *pdev)
                     }
                 }
                 dev_int_cbkpr->DataOutStage(pdev, u8epnum);
-#if 0
                 if (pdev->basic_cfgs.dmaen == 1U)
                 {
                     if ((pdev->dev.device_state == USB_EP0_STATUS_OUT) && (u8epnum == 0U))
@@ -509,7 +530,6 @@ static void usb_outep_isr(usb_core_instance *pdev)
                         pdev->dev.device_state = USB_EP0_IDLE;
                     }
                 }
-#endif
             }
             if ((u32doepint & EPDISABLED) != 0UL)
             {
@@ -703,7 +723,6 @@ void usbd_irq_handler(void)
 {
     rt_interrupt_enter();
     usb_isr_handler(&_hc32_usb);
-    /* leave interrupt */
     rt_interrupt_leave();
 }
 
@@ -790,10 +809,22 @@ static rt_err_t _init(rt_device_t device)
 
     pdev = (usb_core_instance *)device->user_data;
     rt_hw_usb_board_init();
+#if !defined(BSP_USING_USBHS)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_USBFS, ENABLE);
+#else
+    FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_USBHS, ENABLE);
+#endif
     /* Parameters */
+#if !defined(BSP_USING_USBHS)
     stcPortIdentify.u8CoreID = USBFS_CORE_ID;
+#else
+    stcPortIdentify.u8CoreID = USBHS_CORE_ID;
+#endif
+#if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
+#else
+    stcPortIdentify.u8PhyType = USBHS_PHY_EXT;
+#endif
     usb_setregaddr(&pdev->regs, &stcPortIdentify, &pdev->basic_cfgs);
 
     usb_gintdis(&pdev->regs);
@@ -807,7 +838,11 @@ static rt_err_t _init(rt_device_t device)
     usb_ginten(&pdev->regs);
     /* NVIC Config */
     irq_config.irq_num = BSP_USB_GLB_IRQ_NUM;
+#if !defined(BSP_USING_USBHS)
     irq_config.int_src = INT_SRC_USBFS_GLB;
+#else
+    irq_config.int_src = INT_SRC_USBHS_GLB;
+#endif
     irq_config.irq_prio = BSP_USB_GLB_IRQ_PRIO;
     /* register interrupt */
     hc32_install_irq_handler(&irq_config,
