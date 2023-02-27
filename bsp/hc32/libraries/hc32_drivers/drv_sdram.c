@@ -29,7 +29,7 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define DRV_DEBUG
+//#define DRV_DEBUG
 #define LOG_TAG "drv.sdram"
 #include <drv_log.h>
 
@@ -74,15 +74,15 @@ static void _sdram_initialization_sequence(rt_uint32_t chip, rt_uint32_t md_reg_
 }
 
 /**
- * @brief  check clock.
- * @retval initialization result
+ * @brief  verify clock frequency.
+ * @retval result
  */
 static rt_int32_t _sdram_verify_clock_frequency(void)
 {
     rt_int32_t ret = RT_EOK;
 
 #if defined (HC32F4A0)
-    /* EXCLK max frequency: 60MHz */
+    /* EXCLK max frequency for SDRAM: 60MHz */
     if (CLK_GetBusClockFreq(CLK_BUS_EXCLK) > (60 * 1000000))
     {
         ret = RT_ERROR;
@@ -95,7 +95,7 @@ static rt_int32_t _sdram_verify_clock_frequency(void)
 /**
  * @brief  SDRAM initialization.
  * @param  None
- * @retval initialization result
+ * @retval result
  */
 static rt_int32_t _sdram_init(void)
 {
@@ -154,28 +154,28 @@ static rt_int32_t _sdram_init(void)
     /* SDRAM initialization sequence. */
     md_reg_value = (SDRAM_MODEREG_BURST_TYPE | SDRAM_MODEREG_WRITEBURST_MODE | SDRAM_MODEREG_OPERATING_MODE);
     if (2U == stcDmcInit.stcTimingConfig.u8CASL)
-	{
+    {
         md_reg_value |= SDRAM_MODEREG_CAS_LATENCY_2;
     }
-	else
-	{
+    else
+    {
         md_reg_value |= SDRAM_MODEREG_CAS_LATENCY_3;
     }
 
     if (EXMC_DMC_BURST_1BEAT == stcDmcInit.u32MemBurst)
-	{
+    {
         md_reg_value |= SDRAM_MODEREG_BURST_LENGTH_1;
     }
-	else if (EXMC_DMC_BURST_2BEAT == stcDmcInit.u32MemBurst)
-	{
+    else if (EXMC_DMC_BURST_2BEAT == stcDmcInit.u32MemBurst)
+    {
         md_reg_value |= SDRAM_MODEREG_BURST_LENGTH_2;
     }
-	else if (EXMC_DMC_BURST_4BEAT == stcDmcInit.u32MemBurst)
-	{
+    else if (EXMC_DMC_BURST_4BEAT == stcDmcInit.u32MemBurst)
+    {
         md_reg_value |= SDRAM_MODEREG_BURST_LENGTH_4;
     }
-	else
-	{
+    else
+    {
         md_reg_value |= SDRAM_MODEREG_BURST_LENGTH_8;
     }
 
@@ -186,14 +186,14 @@ static rt_int32_t _sdram_init(void)
     EXMC_DMC_SetState(EXMC_DMC_CTRL_STATE_WAKEUP);
     EXMC_DMC_SetState(EXMC_DMC_CTRL_STATE_GO);
 
-	return RT_EOK;
+    return RT_EOK;
 }
 
 int rt_hw_sdram_init(void)
 {
     rt_int32_t ret;
 
-	ret = _sdram_init();
+    ret = _sdram_init();
     if (RT_EOK != ret)
     {
         LOG_E("SDRAM init failed!");
