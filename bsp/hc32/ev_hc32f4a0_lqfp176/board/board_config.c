@@ -668,9 +668,128 @@ rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
         result = -RT_ERROR;
         break;
     }
+#endif
+
+#if defined (BSP_USING_SDRAM)
+rt_err_t rt_hw_board_sdram_init(void)
+{
+    rt_err_t result = RT_EOK;
+    stc_gpio_init_t stcGpioInit;
+
+    /************************* Set pin drive capacity *************************/
+    (void)GPIO_StructInit(&stcGpioInit);
+    stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
+
+    /* DMC_CKE */
+    (void)GPIO_Init(SDRAM_CKE_PORT, SDRAM_CKE_PIN, &stcGpioInit);
+
+    /* DMC_CLK */
+    (void)GPIO_Init(SDRAM_CLK_PORT, SDRAM_CLK_PIN, &stcGpioInit);
+
+    /* DMC_LDQM && DMC_UDQM */
+    (void)GPIO_Init(SDRAM_DQM0_PORT, SDRAM_DQM0_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DQM1_PORT, SDRAM_DQM1_PIN, &stcGpioInit);
+
+    /* DMC_BA[0:1] */
+    (void)GPIO_Init(SDRAM_BA0_PORT, SDRAM_BA0_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_BA1_PORT, SDRAM_BA1_PIN, &stcGpioInit);
+
+    /* DMC_CAS && DMC_RAS */
+    (void)GPIO_Init(SDRAM_CAS_PORT, SDRAM_CAS_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_RAS_PORT, SDRAM_RAS_PIN, &stcGpioInit);
+
+    /* DMC_WE */
+    (void)GPIO_Init(SDRAM_WE_PORT, SDRAM_WE_PIN, &stcGpioInit);
+
+    /* DMC_DATA[0:15] */
+    (void)GPIO_Init(SDRAM_DATA0_PORT, SDRAM_DATA0_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA1_PORT, SDRAM_DATA1_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA2_PORT, SDRAM_DATA2_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA3_PORT, SDRAM_DATA3_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA4_PORT, SDRAM_DATA4_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA5_PORT, SDRAM_DATA5_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA6_PORT, SDRAM_DATA6_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA7_PORT, SDRAM_DATA7_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA8_PORT, SDRAM_DATA8_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA9_PORT, SDRAM_DATA9_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA10_PORT, SDRAM_DATA10_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA11_PORT, SDRAM_DATA11_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA12_PORT, SDRAM_DATA12_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA13_PORT, SDRAM_DATA13_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA14_PORT, SDRAM_DATA14_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_DATA15_PORT, SDRAM_DATA15_PIN, &stcGpioInit);
+
+    /* DMC_ADD[0:11]*/
+    (void)GPIO_Init(SDRAM_ADD0_PORT, SDRAM_ADD0_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD1_PORT, SDRAM_ADD1_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD2_PORT, SDRAM_ADD2_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD3_PORT, SDRAM_ADD3_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD4_PORT, SDRAM_ADD4_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD5_PORT, SDRAM_ADD5_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD6_PORT, SDRAM_ADD6_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD7_PORT, SDRAM_ADD7_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD8_PORT, SDRAM_ADD8_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD9_PORT, SDRAM_ADD9_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, &stcGpioInit);
+
+    /************************** Set EXMC pin function *************************/
+    /* DMC_CKE */
+    GPIO_SetFunc(SDRAM_CKE_PORT, SDRAM_CKE_PIN, GPIO_FUNC_12);
+
+    /* DMC_CLK */
+    GPIO_SetFunc(SDRAM_CLK_PORT, SDRAM_CLK_PIN, GPIO_FUNC_12);
+
+    /* DMC_LDQM && DMC_UDQM */
+    GPIO_SetFunc(SDRAM_DQM0_PORT, SDRAM_DQM0_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DQM1_PORT, SDRAM_DQM1_PIN, GPIO_FUNC_12);
+
+    /* DMC_BA[0:1] */
+    GPIO_SetFunc(SDRAM_BA0_PORT, SDRAM_BA0_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_BA1_PORT, SDRAM_BA1_PIN, GPIO_FUNC_12);
+
+    /* DMC_CS */
+    GPIO_SetFunc(SDRAM_CS_PORT, SDRAM_CS_PIN, GPIO_FUNC_12);
+
+    /* DMC_CAS && DMC_RAS */
+    GPIO_SetFunc(SDRAM_CAS_PORT, SDRAM_CAS_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_RAS_PORT, SDRAM_RAS_PIN, GPIO_FUNC_12);
+
+    /* DMC_WE */
+    GPIO_SetFunc(SDRAM_WE_PORT, SDRAM_WE_PIN, GPIO_FUNC_12);
+
+    /* DMC_DATA[0:15] */
+    GPIO_SetFunc(SDRAM_DATA0_PORT, SDRAM_DATA0_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA1_PORT, SDRAM_DATA1_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA2_PORT, SDRAM_DATA2_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA3_PORT, SDRAM_DATA3_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA4_PORT, SDRAM_DATA4_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA5_PORT, SDRAM_DATA5_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA6_PORT, SDRAM_DATA6_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA7_PORT, SDRAM_DATA7_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA8_PORT, SDRAM_DATA8_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA9_PORT, SDRAM_DATA9_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA10_PORT, SDRAM_DATA10_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA11_PORT, SDRAM_DATA11_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA12_PORT, SDRAM_DATA12_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA13_PORT, SDRAM_DATA13_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA14_PORT, SDRAM_DATA14_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_DATA15_PORT, SDRAM_DATA15_PIN, GPIO_FUNC_12);
+
+    /* DMC_ADD[0:11]*/
+    GPIO_SetFunc(SDRAM_ADD0_PORT, SDRAM_ADD0_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD1_PORT, SDRAM_ADD1_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD2_PORT, SDRAM_ADD2_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD3_PORT, SDRAM_ADD3_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD4_PORT, SDRAM_ADD4_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD5_PORT, SDRAM_ADD5_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD6_PORT, SDRAM_ADD6_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD7_PORT, SDRAM_ADD7_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD8_PORT, SDRAM_ADD8_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD9_PORT, SDRAM_ADD9_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, GPIO_FUNC_12);
 
     return result;
 }
-#endif
-
 #endif

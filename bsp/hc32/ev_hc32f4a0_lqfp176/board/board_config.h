@@ -106,6 +106,96 @@
     #define SDIOC1_D3_PIN                   (GPIO_PIN_05)
 #endif
 
+/************************ SDRAM port **********************/
+#if defined(BSP_USING_SDRAM)
+    #define SDRAM_CKE_PORT                  (GPIO_PORT_C)   /* PC03 - EXMC_ALE */
+    #define SDRAM_CKE_PIN                   (GPIO_PIN_03)
+
+    #define SDRAM_CLK_PORT                  (GPIO_PORT_G)   /* PD03 - EXMC_CLK */
+    #define SDRAM_CLK_PIN                   (GPIO_PIN_08)
+
+    #define SDRAM_DQM0_PORT                 (GPIO_PORT_E)   /* PE00 - EXMC_CE4 */
+    #define SDRAM_DQM0_PIN                  (GPIO_PIN_00)
+    #define SDRAM_DQM1_PORT                 (GPIO_PORT_E)   /* PE01 - EXMC_CE5 */
+    #define SDRAM_DQM1_PIN                  (GPIO_PIN_01)
+
+    #define SDRAM_BA0_PORT                  (GPIO_PORT_D)   /* PD11 - EXMC_ADD16 */
+    #define SDRAM_BA0_PIN                   (GPIO_PIN_11)
+    #define SDRAM_BA1_PORT                  (GPIO_PORT_D)   /* PD12 - EXMC_ADD17 */
+    #define SDRAM_BA1_PIN                   (GPIO_PIN_12)
+
+    #define SDRAM_CS_PORT                   (GPIO_PORT_G)   /* PG09 - EXMC_CE1 */
+    #define SDRAM_CS_PIN                    (GPIO_PIN_09)
+
+    #define SDRAM_RAS_PORT                  (GPIO_PORT_F)   /* PF11 - EXMC_OE */
+    #define SDRAM_RAS_PIN                   (GPIO_PIN_11)
+
+    #define SDRAM_CAS_PORT                  (GPIO_PORT_G)   /* PG15 - EXMC_BAA */
+    #define SDRAM_CAS_PIN                   (GPIO_PIN_15)
+
+    #define SDRAM_WE_PORT                   (GPIO_PORT_C)   /* PC00 - EXMC_WE */
+    #define SDRAM_WE_PIN                    (GPIO_PIN_00)
+
+    #define SDRAM_ADD0_PORT                 (GPIO_PORT_F)   /* PF00 - EXMC_ADD0 */
+    #define SDRAM_ADD0_PIN                  (GPIO_PIN_00)
+    #define SDRAM_ADD1_PORT                 (GPIO_PORT_F)   /* PF01 - EXMC_ADD1 */
+    #define SDRAM_ADD1_PIN                  (GPIO_PIN_01)
+    #define SDRAM_ADD2_PORT                 (GPIO_PORT_F)   /* PF02 - EXMC_ADD2 */
+    #define SDRAM_ADD2_PIN                  (GPIO_PIN_02)
+    #define SDRAM_ADD3_PORT                 (GPIO_PORT_F)   /* PF03 - EXMC_ADD3 */
+    #define SDRAM_ADD3_PIN                  (GPIO_PIN_03)
+    #define SDRAM_ADD4_PORT                 (GPIO_PORT_F)   /* PF04 - EXMC_ADD4 */
+    #define SDRAM_ADD4_PIN                  (GPIO_PIN_04)
+    #define SDRAM_ADD5_PORT                 (GPIO_PORT_F)   /* PF05 - EXMC_ADD5 */
+    #define SDRAM_ADD5_PIN                  (GPIO_PIN_05)
+    #define SDRAM_ADD6_PORT                 (GPIO_PORT_F)   /* PF12 - EXMC_ADD6 */
+    #define SDRAM_ADD6_PIN                  (GPIO_PIN_12)
+    #define SDRAM_ADD7_PORT                 (GPIO_PORT_F)   /* PF13 - EXMC_ADD7 */
+    #define SDRAM_ADD7_PIN                  (GPIO_PIN_13)
+    #define SDRAM_ADD8_PORT                 (GPIO_PORT_F)   /* PF14 - EXMC_ADD8 */
+    #define SDRAM_ADD8_PIN                  (GPIO_PIN_14)
+    #define SDRAM_ADD9_PORT                 (GPIO_PORT_F)   /* PF15 - EXMC_ADD9 */
+    #define SDRAM_ADD9_PIN                  (GPIO_PIN_15)
+    #define SDRAM_ADD10_PORT                (GPIO_PORT_G)   /* PG00 - EXMC_ADD10 */
+    #define SDRAM_ADD10_PIN                 (GPIO_PIN_00)
+    #define SDRAM_ADD11_PORT                (GPIO_PORT_G)   /* PG01 - EXMC_ADD11 */
+    #define SDRAM_ADD11_PIN                 (GPIO_PIN_01)
+
+    #define SDRAM_DATA0_PORT                (GPIO_PORT_D)   /* PD14 - EXMC_DATA0 */
+    #define SDRAM_DATA0_PIN                 (GPIO_PIN_14)
+    #define SDRAM_DATA1_PORT                (GPIO_PORT_D)   /* PD15 - EXMC_DATA1 */
+    #define SDRAM_DATA1_PIN                 (GPIO_PIN_15)
+    #define SDRAM_DATA2_PORT                (GPIO_PORT_D)   /* PD00 - EXMC_DATA2 */
+    #define SDRAM_DATA2_PIN                 (GPIO_PIN_00)
+    #define SDRAM_DATA3_PORT                (GPIO_PORT_D)   /* PD01 - EXMC_DATA3 */
+    #define SDRAM_DATA3_PIN                 (GPIO_PIN_01)
+    #define SDRAM_DATA4_PORT                (GPIO_PORT_E)   /* PE07 - EXMC_DATA4 */
+    #define SDRAM_DATA4_PIN                 (GPIO_PIN_07)
+    #define SDRAM_DATA5_PORT                (GPIO_PORT_E)   /* PE08 - EXMC_DATA5 */
+    #define SDRAM_DATA5_PIN                 (GPIO_PIN_08)
+    #define SDRAM_DATA6_PORT                (GPIO_PORT_E)   /* PE09 - EXMC_DATA6 */
+    #define SDRAM_DATA6_PIN                 (GPIO_PIN_09)
+    #define SDRAM_DATA7_PORT                (GPIO_PORT_E)   /* PE10 - EXMC_DATA7 */
+    #define SDRAM_DATA7_PIN                 (GPIO_PIN_10)
+    #define SDRAM_DATA8_PORT                (GPIO_PORT_E)   /* PE11 - EXMC_DATA8 */
+    #define SDRAM_DATA8_PIN                 (GPIO_PIN_11)
+    #define SDRAM_DATA9_PORT                (GPIO_PORT_E)   /* PE12 - EXMC_DATA9 */
+    #define SDRAM_DATA9_PIN                 (GPIO_PIN_12)
+    #define SDRAM_DATA10_PORT               (GPIO_PORT_E)   /* PE13 - EXMC_DATA10 */
+    #define SDRAM_DATA10_PIN                (GPIO_PIN_13)
+    #define SDRAM_DATA11_PORT               (GPIO_PORT_E)   /* PE14 - EXMC_DATA11 */
+    #define SDRAM_DATA11_PIN                (GPIO_PIN_14)
+    #define SDRAM_DATA12_PORT               (GPIO_PORT_E)   /* PE15 - EXMC_DATA12 */
+    #define SDRAM_DATA12_PIN                (GPIO_PIN_15)
+    #define SDRAM_DATA13_PORT               (GPIO_PORT_D)   /* PD08 - EXMC_DATA13 */
+    #define SDRAM_DATA13_PIN                (GPIO_PIN_08)
+    #define SDRAM_DATA14_PORT               (GPIO_PORT_D)   /* PD09 - EXMC_DATA14 */
+    #define SDRAM_DATA14_PIN                (GPIO_PIN_09)
+    #define SDRAM_DATA15_PORT               (GPIO_PORT_D)   /* PD10 - EXMC_DATA15 */
+    #define SDRAM_DATA15_PIN                (GPIO_PIN_10)
+#endif
+
+/************************ RTC *****************************/
 #if defined(BSP_USING_RTC)
 #if defined(BSP_RTC_USING_XTAL32)
     #define XTAL32_PORT                     (GPIO_PORT_C)
