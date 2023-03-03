@@ -793,3 +793,138 @@ rt_err_t rt_hw_board_sdram_init(void)
     return result;
 }
 #endif
+
+#ifdef RT_USING_PM
+#define EFM_ERASE_TIME_MAX_IN_MILLISECOND                   (20)
+#define PLL_SRC                                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
+
+static void _pm_sleep_common_init(rt_bool_t b_disable_unused_clk)
+{
+    CLK_Xtal32Cmd(ENABLE);
+
+    rt_tick_t tick_start = rt_tick_get_millisecond();
+    rt_err_t rt_stat = RT_EOK;
+    //wait flash idle
+    while (SET != EFM_GetStatus(EFM_FLAG_RDY))
+    {
+        if (rt_tick_get_millisecond() - tick_start > EFM_ERASE_TIME_MAX_IN_MILLISECOND)
+        {
+            rt_stat = RT_ERROR;
+            break;
+        }
+    }
+    RT_ASSERT(rt_stat == RT_EOK);
+
+    if (b_disable_unused_clk)
+    {
+        uint32_t cur_clk_src = READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW);
+
+        switch (cur_clk_src)
+        {
+        case CLK_SYSCLK_SRC_HRC:
+            CLK_PLLCmd(DISABLE);
+            CLK_MrcCmd(DISABLE);
+            CLK_LrcCmd(DISABLE);
+            CLK_XtalCmd(DISABLE);
+            PWC_LDO_Cmd(PWC_LDO_PLL, DISABLE);
+            break;
+        case CLK_SYSCLK_SRC_MRC:
+            CLK_PLLCmd(DISABLE);
+            CLK_HrcCmd(DISABLE);
+            CLK_LrcCmd(DISABLE);
+            CLK_XtalCmd(DISABLE);
+            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
+
+            break;
+        case CLK_SYSCLK_SRC_XTAL:
+            CLK_PLLCmd(DISABLE);
+            CLK_HrcCmd(DISABLE);
+            CLK_MrcCmd(DISABLE);
+            CLK_LrcCmd(DISABLE);
+            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
+
+            break;
+        case CLK_SYSCLK_SRC_XTAL32:
+            CLK_PLLCmd(DISABLE);
+            CLK_HrcCmd(DISABLE);
+            CLK_MrcCmd(DISABLE);
+            CLK_LrcCmd(DISABLE);
+            CLK_XtalCmd(DISABLE);
+            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
+
+            break;
+        case CLK_SYSCLK_SRC_PLL:
+            if (CLK_PLL_SRC_XTAL == PLL_SRC)
+            {
+                CLK_HrcCmd(DISABLE);
+            }
+            else
+            {
+                CLK_XtalCmd(DISABLE);
+            }
+            CLK_MrcCmd(DISABLE);
+            CLK_LrcCmd(DISABLE);
+            PWC_LDO_Cmd(PWC_LDO_HRC, DISABLE);
+
+            break;
+        default:
+            break;
+        }
+    }
+
+}
+
+void rt_hw_board_pm_sleep_deep_init(void)
+{
+#if (PM_SLEEP_DEEP_CFG_CLK   == PWC_STOP_CLK_KEEP)
+    _pm_sleep_common_init(RT_TRUE);
+#else
+    _pm_sleep_common_init(RT_FALSE);
+    CLK_PLLCmd(DISABLE);
+    CLK_HrcCmd(DISABLE);
+    CLK_LrcCmd(DISABLE);
+    CLK_XtalCmd(DISABLE);
+    PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
+#endif
+}
+
+void rt_hw_board_pm_sleep_shutdown_init(void)
+{
+    _pm_sleep_common_init(RT_TRUE);
+}
+
+static void __xtal_init(void)
+{
+    stc_clock_xtal_init_t stcXtalInit;
+
+    /* XTAL config */
+    (void)CLK_XtalStructInit(&stcXtalInit);
+    /* Config Xtal and Enable Xtal */
+    stcXtalInit.u8State = CLK_XTAL_ON;
+    stcXtalInit.u8Mode = CLK_XTAL_MD_OSC;
+    stcXtalInit.u8Drv = CLK_XTAL_DRV_ULOW;
+    stcXtalInit.u8StableTime = CLK_XTAL_STB_2MS;
+
+    GPIO_AnalogCmd(GPIO_PORT_H, GPIO_PIN_01 | GPIO_PIN_00, ENABLE);
+    (void)CLK_XtalInit(&stcXtalInit);
+}
+
+void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
+{
+    switch (run_mode)
+    {
+    case PM_RUN_MODE_HIGH_SPEED:
+    case PM_RUN_MODE_NORMAL_SPEED:
+        CLK_XtalCmd(DISABLE);
+        SystemClock_Config();
+        break;
+
+    case PM_RUN_MODE_LOW_SPEED:
+        __xtal_init();
+        CLK_SetSysClockSrc(CLK_SYSCLK_SRC_XTAL);
+
+    default:
+        break;
+    }
+}
+#endif

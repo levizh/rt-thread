@@ -51,7 +51,9 @@ if GetDepend(['RT_USING_PULSE_ENCODER']):
 if GetDepend(['RT_USING_PWM']):
     src += ['drv_pwm.c']
 
-src += ['drv_wktm.c']
+if GetDepend(['RT_USING_PM']):
+    src += ['drv_pm.c']
+    src += ['drv_wktm.c']
 
 src += ['drv_common.c']
 
