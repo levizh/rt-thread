@@ -573,7 +573,6 @@ rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
         result = -RT_ERROR;
         break;
     }
-
     return result;
 }
 #endif
@@ -668,6 +667,9 @@ rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
         result = -RT_ERROR;
         break;
     }
+
+    return result;
+}
 #endif
 
 #if defined (BSP_USING_SDRAM)
