@@ -290,200 +290,201 @@ rt_err_t rt_hw_board_sdio_init(CM_SDIOC_TypeDef *SDIOCx)
 #endif
 
 #if defined(RT_USING_PWM)
+#if defined(BSP_USING_PWM_TIMA)
 rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
 {
     rt_err_t result = RT_EOK;
     switch ((rt_uint32_t)TMRAx)
     {
-#if defined(BSP_USING_PWM_TMRA_1)
+#if defined(BSP_USING_PWM_TIMA_1)
     case (rt_uint32_t)CM_TMRA_1:
-    #ifdef BSP_USING_PWM_TMRA_1_CH1
-        GPIO_SetFunc(PWM_TMRA_1_CH1_PORT, PWM_TMRA_1_CH1_PIN, PWM_TMRA_1_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_1_CH1
+        GPIO_SetFunc(PWM_TIMA_1_CH1_PORT, PWM_TIMA_1_CH1_PIN, PWM_TIMA_1_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_1_CH2
-        GPIO_SetFunc(PWM_TMRA_1_CH2_PORT, PWM_TMRA_1_CH2_PIN, PWM_TMRA_1_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_1_CH2
+        GPIO_SetFunc(PWM_TIMA_1_CH2_PORT, PWM_TIMA_1_CH2_PIN, PWM_TIMA_1_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_1_CH3
-        GPIO_SetFunc(PWM_TMRA_1_CH3_PORT, PWM_TMRA_1_CH3_PIN, PWM_TMRA_1_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_1_CH3
+        GPIO_SetFunc(PWM_TIMA_1_CH3_PORT, PWM_TIMA_1_CH3_PIN, PWM_TIMA_1_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_1_CH4
-        GPIO_SetFunc(PWM_TMRA_1_CH4_PORT, PWM_TMRA_1_CH4_PIN, PWM_TMRA_1_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_1_CH4
+        GPIO_SetFunc(PWM_TIMA_1_CH4_PORT, PWM_TIMA_1_CH4_PIN, PWM_TIMA_1_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_2)
+#if defined(BSP_USING_PWM_TIMA_2)
     case (rt_uint32_t)CM_TMRA_2:
-    #ifdef BSP_USING_PWM_TMRA_2_CH1
-        GPIO_SetFunc(PWM_TMRA_2_CH1_PORT, PWM_TMRA_2_CH1_PIN, PWM_TMRA_2_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_2_CH1
+        GPIO_SetFunc(PWM_TIMA_2_CH1_PORT, PWM_TIMA_2_CH1_PIN, PWM_TIMA_2_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_2_CH2
-        GPIO_SetFunc(PWM_TMRA_2_CH2_PORT, PWM_TMRA_2_CH2_PIN, PWM_TMRA_2_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_2_CH2
+        GPIO_SetFunc(PWM_TIMA_2_CH2_PORT, PWM_TIMA_2_CH2_PIN, PWM_TIMA_2_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_2_CH3
-        GPIO_SetFunc(PWM_TMRA_2_CH3_PORT, PWM_TMRA_2_CH3_PIN, PWM_TMRA_2_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_2_CH3
+        GPIO_SetFunc(PWM_TIMA_2_CH3_PORT, PWM_TIMA_2_CH3_PIN, PWM_TIMA_2_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_2_CH4
-        GPIO_SetFunc(PWM_TMRA_2_CH4_PORT, PWM_TMRA_2_CH4_PIN, PWM_TMRA_2_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_2_CH4
+        GPIO_SetFunc(PWM_TIMA_2_CH4_PORT, PWM_TIMA_2_CH4_PIN, PWM_TIMA_2_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_3)
+#if defined(BSP_USING_PWM_TIMA_3)
     case (rt_uint32_t)CM_TMRA_3:
-    #ifdef BSP_USING_PWM_TMRA_3_CH1
-        GPIO_SetFunc(PWM_TMRA_3_CH1_PORT, PWM_TMRA_3_CH1_PIN, PWM_TMRA_3_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_3_CH1
+        GPIO_SetFunc(PWM_TIMA_3_CH1_PORT, PWM_TIMA_3_CH1_PIN, PWM_TIMA_3_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_3_CH2
-        GPIO_SetFunc(PWM_TMRA_3_CH2_PORT, PWM_TMRA_3_CH2_PIN, PWM_TMRA_3_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_3_CH2
+        GPIO_SetFunc(PWM_TIMA_3_CH2_PORT, PWM_TIMA_3_CH2_PIN, PWM_TIMA_3_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_3_CH3
-        GPIO_SetFunc(PWM_TMRA_3_CH3_PORT, PWM_TMRA_3_CH3_PIN, PWM_TMRA_3_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_3_CH3
+        GPIO_SetFunc(PWM_TIMA_3_CH3_PORT, PWM_TIMA_3_CH3_PIN, PWM_TIMA_3_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_3_CH4
-        GPIO_SetFunc(PWM_TMRA_3_CH4_PORT, PWM_TMRA_3_CH4_PIN, PWM_TMRA_3_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_3_CH4
+        GPIO_SetFunc(PWM_TIMA_3_CH4_PORT, PWM_TIMA_3_CH4_PIN, PWM_TIMA_3_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_4)
+#if defined(BSP_USING_PWM_TIMA_4)
     case (rt_uint32_t)CM_TMRA_4:
-    #ifdef BSP_USING_PWM_TMRA_4_CH1
-        GPIO_SetFunc(PWM_TMRA_4_CH1_PORT, PWM_TMRA_4_CH1_PIN, PWM_TMRA_4_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_4_CH1
+        GPIO_SetFunc(PWM_TIMA_4_CH1_PORT, PWM_TIMA_4_CH1_PIN, PWM_TIMA_4_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_4_CH2
-        GPIO_SetFunc(PWM_TMRA_4_CH2_PORT, PWM_TMRA_4_CH2_PIN, PWM_TMRA_4_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_4_CH2
+        GPIO_SetFunc(PWM_TIMA_4_CH2_PORT, PWM_TIMA_4_CH2_PIN, PWM_TIMA_4_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_4_CH3
-        GPIO_SetFunc(PWM_TMRA_4_CH3_PORT, PWM_TMRA_4_CH3_PIN, PWM_TMRA_4_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_4_CH3
+        GPIO_SetFunc(PWM_TIMA_4_CH3_PORT, PWM_TIMA_4_CH3_PIN, PWM_TIMA_4_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_4_CH4
-        GPIO_SetFunc(PWM_TMRA_4_CH4_PORT, PWM_TMRA_4_CH4_PIN, PWM_TMRA_4_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_4_CH4
+        GPIO_SetFunc(PWM_TIMA_4_CH4_PORT, PWM_TIMA_4_CH4_PIN, PWM_TIMA_4_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_5)
+#if defined(BSP_USING_PWM_TIMA_5)
     case (rt_uint32_t)CM_TMRA_5:
-    #ifdef BSP_USING_PWM_TMRA_5_CH1
-        GPIO_SetFunc(PWM_TMRA_5_CH1_PORT, PWM_TMRA_5_CH1_PIN, PWM_TMRA_5_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_5_CH1
+        GPIO_SetFunc(PWM_TIMA_5_CH1_PORT, PWM_TIMA_5_CH1_PIN, PWM_TIMA_5_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_5_CH2
-        GPIO_SetFunc(PWM_TMRA_5_CH2_PORT, PWM_TMRA_5_CH2_PIN, PWM_TMRA_5_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_5_CH2
+        GPIO_SetFunc(PWM_TIMA_5_CH2_PORT, PWM_TIMA_5_CH2_PIN, PWM_TIMA_5_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_5_CH3
-        GPIO_SetFunc(PWM_TMRA_5_CH3_PORT, PWM_TMRA_5_CH3_PIN, PWM_TMRA_5_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_5_CH3
+        GPIO_SetFunc(PWM_TIMA_5_CH3_PORT, PWM_TIMA_5_CH3_PIN, PWM_TIMA_5_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_5_CH4
-        GPIO_SetFunc(PWM_TMRA_5_CH4_PORT, PWM_TMRA_5_CH4_PIN, PWM_TMRA_5_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_5_CH4
+        GPIO_SetFunc(PWM_TIMA_5_CH4_PORT, PWM_TIMA_5_CH4_PIN, PWM_TIMA_5_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_6)
+#if defined(BSP_USING_PWM_TIMA_6)
     case (rt_uint32_t)CM_TMRA_6:
-    #ifdef BSP_USING_PWM_TMRA_6_CH1
-        GPIO_SetFunc(PWM_TMRA_6_CH1_PORT, PWM_TMRA_6_CH1_PIN, PWM_TMRA_6_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_6_CH1
+        GPIO_SetFunc(PWM_TIMA_6_CH1_PORT, PWM_TIMA_6_CH1_PIN, PWM_TIMA_6_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_6_CH2
-        GPIO_SetFunc(PWM_TMRA_6_CH2_PORT, PWM_TMRA_6_CH2_PIN, PWM_TMRA_6_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_6_CH2
+        GPIO_SetFunc(PWM_TIMA_6_CH2_PORT, PWM_TIMA_6_CH2_PIN, PWM_TIMA_6_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_6_CH3
-        GPIO_SetFunc(PWM_TMRA_6_CH3_PORT, PWM_TMRA_6_CH3_PIN, PWM_TMRA_6_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_6_CH3
+        GPIO_SetFunc(PWM_TIMA_6_CH3_PORT, PWM_TIMA_6_CH3_PIN, PWM_TIMA_6_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_6_CH4
-        GPIO_SetFunc(PWM_TMRA_6_CH4_PORT, PWM_TMRA_6_CH4_PIN, PWM_TMRA_6_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_6_CH4
+        GPIO_SetFunc(PWM_TIMA_6_CH4_PORT, PWM_TIMA_6_CH4_PIN, PWM_TIMA_6_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_7)
+#if defined(BSP_USING_PWM_TIMA_7)
     case (rt_uint32_t)CM_TMRA_7:
-    #ifdef BSP_USING_PWM_TMRA_7_CH1
-        GPIO_SetFunc(PWM_TMRA_7_CH1_PORT, PWM_TMRA_7_CH1_PIN, PWM_TMRA_7_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_7_CH1
+        GPIO_SetFunc(PWM_TIMA_7_CH1_PORT, PWM_TIMA_7_CH1_PIN, PWM_TIMA_7_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_7_CH2
-        GPIO_SetFunc(PWM_TMRA_7_CH2_PORT, PWM_TMRA_7_CH2_PIN, PWM_TMRA_7_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_7_CH2
+        GPIO_SetFunc(PWM_TIMA_7_CH2_PORT, PWM_TIMA_7_CH2_PIN, PWM_TIMA_7_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_7_CH3
-        GPIO_SetFunc(PWM_TMRA_7_CH3_PORT, PWM_TMRA_7_CH3_PIN, PWM_TMRA_7_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_7_CH3
+        GPIO_SetFunc(PWM_TIMA_7_CH3_PORT, PWM_TIMA_7_CH3_PIN, PWM_TIMA_7_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_7_CH4
-        GPIO_SetFunc(PWM_TMRA_7_CH4_PORT, PWM_TMRA_7_CH4_PIN, PWM_TMRA_7_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_7_CH4
+        GPIO_SetFunc(PWM_TIMA_7_CH4_PORT, PWM_TIMA_7_CH4_PIN, PWM_TIMA_7_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_8)
+#if defined(BSP_USING_PWM_TIMA_8)
     case (rt_uint32_t)CM_TMRA_8:
-    #ifdef BSP_USING_PWM_TMRA_8_CH1
-        GPIO_SetFunc(PWM_TMRA_8_CH1_PORT, PWM_TMRA_8_CH1_PIN, PWM_TMRA_8_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_8_CH1
+        GPIO_SetFunc(PWM_TIMA_8_CH1_PORT, PWM_TIMA_8_CH1_PIN, PWM_TIMA_8_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_8_CH2
-        GPIO_SetFunc(PWM_TMRA_8_CH2_PORT, PWM_TMRA_8_CH2_PIN, PWM_TMRA_8_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_8_CH2
+        GPIO_SetFunc(PWM_TIMA_8_CH2_PORT, PWM_TIMA_8_CH2_PIN, PWM_TIMA_8_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_8_CH3
-        GPIO_SetFunc(PWM_TMRA_8_CH3_PORT, PWM_TMRA_8_CH3_PIN, PWM_TMRA_8_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_8_CH3
+        GPIO_SetFunc(PWM_TIMA_8_CH3_PORT, PWM_TIMA_8_CH3_PIN, PWM_TIMA_8_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_8_CH4
-        GPIO_SetFunc(PWM_TMRA_8_CH4_PORT, PWM_TMRA_8_CH4_PIN, PWM_TMRA_8_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_8_CH4
+        GPIO_SetFunc(PWM_TIMA_8_CH4_PORT, PWM_TIMA_8_CH4_PIN, PWM_TIMA_8_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_9)
+#if defined(BSP_USING_PWM_TIMA_9)
     case (rt_uint32_t)CM_TMRA_9:
-    #ifdef BSP_USING_PWM_TMRA_9_CH1
-        GPIO_SetFunc(PWM_TMRA_9_CH1_PORT, PWM_TMRA_9_CH1_PIN, PWM_TMRA_9_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_9_CH1
+        GPIO_SetFunc(PWM_TIMA_9_CH1_PORT, PWM_TIMA_9_CH1_PIN, PWM_TIMA_9_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_9_CH2
-        GPIO_SetFunc(PWM_TMRA_9_CH2_PORT, PWM_TMRA_9_CH2_PIN, PWM_TMRA_9_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_9_CH2
+        GPIO_SetFunc(PWM_TIMA_9_CH2_PORT, PWM_TIMA_9_CH2_PIN, PWM_TIMA_9_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_9_CH3
-        GPIO_SetFunc(PWM_TMRA_9_CH3_PORT, PWM_TMRA_9_CH3_PIN, PWM_TMRA_9_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_9_CH3
+        GPIO_SetFunc(PWM_TIMA_9_CH3_PORT, PWM_TIMA_9_CH3_PIN, PWM_TIMA_9_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_9_CH4
-        GPIO_SetFunc(PWM_TMRA_9_CH4_PORT, PWM_TMRA_9_CH4_PIN, PWM_TMRA_9_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_9_CH4
+        GPIO_SetFunc(PWM_TIMA_9_CH4_PORT, PWM_TIMA_9_CH4_PIN, PWM_TIMA_9_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_10)
+#if defined(BSP_USING_PWM_TIMA_10)
     case (rt_uint32_t)CM_TMRA_10:
-    #ifdef BSP_USING_PWM_TMRA_10_CH1
-        GPIO_SetFunc(PWM_TMRA_10_CH1_PORT, PWM_TMRA_10_CH1_PIN, PWM_TMRA_10_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_10_CH1
+        GPIO_SetFunc(PWM_TIMA_10_CH1_PORT, PWM_TIMA_10_CH1_PIN, PWM_TIMA_10_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_10_CH2
-        GPIO_SetFunc(PWM_TMRA_10_CH2_PORT, PWM_TMRA_10_CH2_PIN, PWM_TMRA_10_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_10_CH2
+        GPIO_SetFunc(PWM_TIMA_10_CH2_PORT, PWM_TIMA_10_CH2_PIN, PWM_TIMA_10_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_10_CH3
-        GPIO_SetFunc(PWM_TMRA_10_CH3_PORT, PWM_TMRA_10_CH3_PIN, PWM_TMRA_10_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_10_CH3
+        GPIO_SetFunc(PWM_TIMA_10_CH3_PORT, PWM_TIMA_10_CH3_PIN, PWM_TIMA_10_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_10_CH4
-        GPIO_SetFunc(PWM_TMRA_10_CH4_PORT, PWM_TMRA_10_CH4_PIN, PWM_TMRA_10_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_10_CH4
+        GPIO_SetFunc(PWM_TIMA_10_CH4_PORT, PWM_TIMA_10_CH4_PIN, PWM_TIMA_10_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_11)
+#if defined(BSP_USING_PWM_TIMA_11)
     case (rt_uint32_t)CM_TMRA_11:
-    #ifdef BSP_USING_PWM_TMRA_11_CH1
-        GPIO_SetFunc(PWM_TMRA_11_CH1_PORT, PWM_TMRA_11_CH1_PIN, PWM_TMRA_11_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_11_CH1
+        GPIO_SetFunc(PWM_TIMA_11_CH1_PORT, PWM_TIMA_11_CH1_PIN, PWM_TIMA_11_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_11_CH2
-        GPIO_SetFunc(PWM_TMRA_11_CH2_PORT, PWM_TMRA_11_CH2_PIN, PWM_TMRA_11_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_11_CH2
+        GPIO_SetFunc(PWM_TIMA_11_CH2_PORT, PWM_TIMA_11_CH2_PIN, PWM_TIMA_11_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_11_CH3
-        GPIO_SetFunc(PWM_TMRA_11_CH3_PORT, PWM_TMRA_11_CH3_PIN, PWM_TMRA_11_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_11_CH3
+        GPIO_SetFunc(PWM_TIMA_11_CH3_PORT, PWM_TIMA_11_CH3_PIN, PWM_TIMA_11_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_11_CH4
-        GPIO_SetFunc(PWM_TMRA_11_CH4_PORT, PWM_TMRA_11_CH4_PIN, PWM_TMRA_11_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_11_CH4
+        GPIO_SetFunc(PWM_TIMA_11_CH4_PORT, PWM_TIMA_11_CH4_PIN, PWM_TIMA_11_CH4_PIN_FUNC);
     #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_12)
+#if defined(BSP_USING_PWM_TIMA_12)
     case (rt_uint32_t)CM_TMRA_12:
-    #ifdef BSP_USING_PWM_TMRA_12_CH1
-        GPIO_SetFunc(PWM_TMRA_12_CH1_PORT, PWM_TMRA_12_CH1_PIN, PWM_TMRA_12_CH1_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_12_CH1
+        GPIO_SetFunc(PWM_TIMA_12_CH1_PORT, PWM_TIMA_12_CH1_PIN, PWM_TIMA_12_CH1_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_12_CH2
-        GPIO_SetFunc(PWM_TMRA_12_CH2_PORT, PWM_TMRA_12_CH2_PIN, PWM_TMRA_12_CH2_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_12_CH2
+        GPIO_SetFunc(PWM_TIMA_12_CH2_PORT, PWM_TIMA_12_CH2_PIN, PWM_TIMA_12_CH2_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_12_CH3
-        GPIO_SetFunc(PWM_TMRA_12_CH3_PORT, PWM_TMRA_12_CH3_PIN, PWM_TMRA_12_CH3_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_12_CH3
+        GPIO_SetFunc(PWM_TIMA_12_CH3_PORT, PWM_TIMA_12_CH3_PIN, PWM_TIMA_12_CH3_PIN_FUNC);
     #endif
-    #ifdef BSP_USING_PWM_TMRA_12_CH4
-        GPIO_SetFunc(PWM_TMRA_12_CH4_PORT, PWM_TMRA_12_CH4_PIN, PWM_TMRA_12_CH4_PIN_FUNC);
+    #ifdef BSP_USING_PWM_TIMA_12_CH4
+        GPIO_SetFunc(PWM_TIMA_12_CH4_PORT, PWM_TIMA_12_CH4_PIN, PWM_TIMA_12_CH4_PIN_FUNC);
     #endif
         break;
 #endif
@@ -494,4 +495,182 @@ rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
 
     return result;
 }
+#endif
+
+#if defined(BSP_USING_PWM_TIM4)
+rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
+{
+    rt_err_t result = RT_EOK;
+    switch ((rt_uint32_t)TMR4x)
+    {
+#if defined(BSP_USING_PWM_TIM4_1)
+    case (rt_uint32_t)CM_TMR4_1:
+    #ifdef BSP_USING_PWM_TIM4_1_OUH
+        GPIO_SetFunc(PWM_TIM4_1_OUH_PORT, PWM_TIM4_1_OUH_PIN, PWM_TIM4_1_OUH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_1_OUL
+        GPIO_SetFunc(PWM_TIM4_1_OUL_PORT, PWM_TIM4_1_OUL_PIN, PWM_TIM4_1_OUL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_1_OVH
+        GPIO_SetFunc(PWM_TIM4_1_OVH_PORT, PWM_TIM4_1_OVH_PIN, PWM_TIM4_1_OVH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_1_OVL
+        GPIO_SetFunc(PWM_TIM4_1_OVL_PORT, PWM_TIM4_1_OVL_PIN, PWM_TIM4_1_OVL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_1_OWH
+        GPIO_SetFunc(PWM_TIM4_1_OWH_PORT, PWM_TIM4_1_OWH_PIN, PWM_TIM4_1_OWH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_1_OWL
+        GPIO_SetFunc(PWM_TIM4_1_OWL_PORT, PWM_TIM4_1_OWL_PIN, PWM_TIM4_1_OWL_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM4_2)
+    case (rt_uint32_t)CM_TMR4_2:
+    #ifdef BSP_USING_PWM_TIM4_2_OUH
+        GPIO_SetFunc(PWM_TIM4_2_OUH_PORT, PWM_TIM4_2_OUH_PIN, PWM_TIM4_2_OUH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_2_OUL
+        GPIO_SetFunc(PWM_TIM4_2_OUL_PORT, PWM_TIM4_2_OUL_PIN, PWM_TIM4_2_OUL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_2_OVH
+        GPIO_SetFunc(PWM_TIM4_2_OVH_PORT, PWM_TIM4_2_OVH_PIN, PWM_TIM4_2_OVH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_2_OVL
+        GPIO_SetFunc(PWM_TIM4_2_OVL_PORT, PWM_TIM4_2_OVL_PIN, PWM_TIM4_2_OVL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_2_OWH
+        GPIO_SetFunc(PWM_TIM4_2_OWH_PORT, PWM_TIM4_2_OWH_PIN, PWM_TIM4_2_OWH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_2_OWL
+        GPIO_SetFunc(PWM_TIM4_2_OWL_PORT, PWM_TIM4_2_OWL_PIN, PWM_TIM4_2_OWL_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM4_3)
+    case (rt_uint32_t)CM_TMR4_3:
+    #ifdef BSP_USING_PWM_TIM4_3_OUH
+        GPIO_SetFunc(PWM_TIM4_3_OUH_PORT, PWM_TIM4_3_OUH_PIN, PWM_TIM4_3_OUH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_3_OUL
+        GPIO_SetFunc(PWM_TIM4_3_OUL_PORT, PWM_TIM4_3_OUL_PIN, PWM_TIM4_3_OUL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_3_OVH
+        GPIO_SetFunc(PWM_TIM4_3_OVH_PORT, PWM_TIM4_3_OVH_PIN, PWM_TIM4_3_OVH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_3_OVL
+        GPIO_SetFunc(PWM_TIM4_3_OVL_PORT, PWM_TIM4_3_OVL_PIN, PWM_TIM4_3_OVL_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_3_OWH
+        GPIO_SetFunc(PWM_TIM4_3_OWH_PORT, PWM_TIM4_3_OWH_PIN, PWM_TIM4_3_OWH_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM4_3_OWL
+        GPIO_SetFunc(PWM_TIM4_3_OWL_PORT, PWM_TIM4_3_OWL_PIN, PWM_TIM4_3_OWL_PIN_FUNC);
+    #endif
+        break;
+#endif
+    default:
+        result = -RT_ERROR;
+        break;
+    }
+
+    return result;
+}
+#endif
+
+#if defined(BSP_USING_PWM_TIM6)
+rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
+{
+    rt_err_t result = RT_EOK;
+    switch ((rt_uint32_t)TMR6x)
+    {
+#if defined(BSP_USING_PWM_TIM6_1)
+    case (rt_uint32_t)CM_TMR6_1:
+    #ifdef BSP_USING_PWM_TIM6_1_A
+        GPIO_SetFunc(PWM_TIM6_1_A_PORT, PWM_TIM6_1_A_PIN, PWM_TIM6_1_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_1_B
+        GPIO_SetFunc(PWM_TIM6_1_B_PORT, PWM_TIM6_1_B_PIN, PWM_TIM6_1_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_2)
+    case (rt_uint32_t)CM_TMR6_2:
+    #ifdef BSP_USING_PWM_TIM6_2_A
+        GPIO_SetFunc(PWM_TIM6_2_A_PORT, PWM_TIM6_2_A_PIN, PWM_TIM6_2_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_2_B
+        GPIO_SetFunc(PWM_TIM6_2_B_PORT, PWM_TIM6_2_B_PIN, PWM_TIM6_2_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_3)
+    case (rt_uint32_t)CM_TMR6_3:
+    #ifdef BSP_USING_PWM_TIM6_3_A
+        GPIO_SetFunc(PWM_TIM6_3_A_PORT, PWM_TIM6_3_A_PIN, PWM_TIM6_3_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_3_B
+        GPIO_SetFunc(PWM_TIM6_3_B_PORT, PWM_TIM6_3_B_PIN, PWM_TIM6_3_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_4)
+    case (rt_uint32_t)CM_TMR6_4:
+    #ifdef BSP_USING_PWM_TIM6_4_A
+        GPIO_SetFunc(PWM_TIM6_4_A_PORT, PWM_TIM6_4_A_PIN, PWM_TIM6_4_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_4_B
+        GPIO_SetFunc(PWM_TIM6_4_B_PORT, PWM_TIM6_4_B_PIN, PWM_TIM6_4_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_5)
+    case (rt_uint32_t)CM_TMR6_5:
+    #ifdef BSP_USING_PWM_TIM6_5_A
+        GPIO_SetFunc(PWM_TIM6_5_A_PORT, PWM_TIM6_5_A_PIN, PWM_TIM6_5_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_5_B
+        GPIO_SetFunc(PWM_TIM6_5_B_PORT, PWM_TIM6_5_B_PIN, PWM_TIM6_5_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_6)
+    case (rt_uint32_t)CM_TMR6_6:
+    #ifdef BSP_USING_PWM_TIM6_6_A
+        GPIO_SetFunc(PWM_TIM6_6_A_PORT, PWM_TIM6_6_A_PIN, PWM_TIM6_6_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_6_B
+        GPIO_SetFunc(PWM_TIM6_6_B_PORT, PWM_TIM6_6_B_PIN, PWM_TIM6_6_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_7)
+    case (rt_uint32_t)CM_TMR6_7:
+    #ifdef BSP_USING_PWM_TIM6_7_A
+        GPIO_SetFunc(PWM_TIM6_7_A_PORT, PWM_TIM6_7_A_PIN, PWM_TIM6_7_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_7_B
+        GPIO_SetFunc(PWM_TIM6_7_B_PORT, PWM_TIM6_7_B_PIN, PWM_TIM6_7_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+#if defined(BSP_USING_PWM_TIM6_8)
+    case (rt_uint32_t)CM_TMR6_8:
+    #ifdef BSP_USING_PWM_TIM6_8_A
+        GPIO_SetFunc(PWM_TIM6_8_A_PORT, PWM_TIM6_8_A_PIN, PWM_TIM6_8_A_PIN_FUNC);
+    #endif
+    #ifdef BSP_USING_PWM_TIM6_8_B
+        GPIO_SetFunc(PWM_TIM6_8_B_PORT, PWM_TIM6_8_B_PIN, PWM_TIM6_8_B_PIN_FUNC);
+    #endif
+        break;
+#endif
+    default:
+        result = -RT_ERROR;
+        break;
+    }
+
+    return result;
+}
+#endif
+
 #endif

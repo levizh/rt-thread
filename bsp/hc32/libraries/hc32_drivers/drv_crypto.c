@@ -416,9 +416,9 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
     }
 #endif
 
-    if (info->length != 16U)
+    if ((info->length % 16U) != 0)
     {
-        LOG_E("aes only support input data length: 16");
+        LOG_E("aes supports only an integer multiple of 16 in length");
         result = RT_ERROR;
         goto _exit;
     }
