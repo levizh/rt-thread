@@ -671,6 +671,7 @@ rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
     return result;
 }
 #endif
+#endif
 
 #if defined (BSP_USING_SDRAM)
 rt_err_t rt_hw_board_sdram_init(void)
