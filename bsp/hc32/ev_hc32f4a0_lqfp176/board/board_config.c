@@ -932,7 +932,7 @@ void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
 }
 #endif
 
-#if defined(BSP_USING_USBD)
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
 rt_err_t rt_hw_usb_board_init(void)
 {
     stc_gpio_init_t stcGpioCfg;
@@ -944,6 +944,9 @@ rt_err_t rt_hw_usb_board_init(void)
 #if defined(BSP_USING_USBD_VBUS_SENSING)
     GPIO_SetFunc(USBF_VBUS_PORT, USBF_VBUS_PIN, GPIO_FUNC_10); /* VBUS */
 #endif
+#if defined(BSP_USING_USBH)
+    GPIO_SetFunc(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN, GPIO_FUNC_10); /* DRV VBUS */
+#endif
 #elif defined(BSP_USING_USBHS)
 #if defined(BSP_USING_USBHS_PHY_EMBED)
     /* USBHS work in embedded PHY */
@@ -952,6 +955,9 @@ rt_err_t rt_hw_usb_board_init(void)
     (void)GPIO_Init(USBH_DP_PORT, USBH_DP_PIN, &stcGpioCfg);
 #if defined(BSP_USING_USBD_VBUS_SENSING)
     GPIO_SetFunc(USBH_VBUS_PORT, USBH_VBUS_PIN, GPIO_FUNC_12);
+#endif
+#if defined(BSP_USING_USBH)
+    GPIO_SetFunc(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN, GPIO_FUNC_10); /* DRV VBUS */
 #endif
 #else
    /* Reset 3300 */

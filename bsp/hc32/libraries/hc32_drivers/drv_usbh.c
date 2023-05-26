@@ -305,10 +305,10 @@ static void usb_host_sof_isr(usb_core_instance *pdev)
 
 static void usb_host_disconn_isr(usb_core_instance *pdev)
 {
-    usb_gintdis(&pdev->regs);
+    //usb_gintdis(&pdev->regs);
     /* enable or disable the external charge pump */
-    usb_bsp_drivevbus(pdev, 0U);
-    usb_vbusctrl(&pdev->regs, 0U);
+    //usb_bsp_drivevbus(pdev, 0U);
+    //usb_vbusctrl(&pdev->regs, 0U);
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_DISCINT);
 
     pdev->host.is_dev_connect = 0U;

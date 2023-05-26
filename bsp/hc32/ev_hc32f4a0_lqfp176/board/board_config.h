@@ -681,7 +681,7 @@
 #endif
 
 
-#if defined(BSP_USING_USBD)
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
 #if defined(BSP_USING_USBFS)
     /* USBFS Core*/
     #define USBF_DP_PORT                    (GPIO_PORT_A)
@@ -690,6 +690,8 @@
     #define USBF_DM_PIN                     (GPIO_PIN_11)
     #define USBF_VBUS_PORT                  (GPIO_PORT_A)
     #define USBF_VBUS_PIN                   (GPIO_PIN_09)
+    #define USBF_DRVVBUS_PORT               (GPIO_PORT_C)
+    #define USBF_DRVVBUS_PIN                (GPIO_PIN_09)
 #elif defined(BSP_USING_USBHS)
 /* USBHS Core*/
 #if defined(BSP_USING_USBHS_PHY_EMBED)
@@ -699,6 +701,8 @@
     #define USBH_DM_PIN                     (GPIO_PIN_14)
     #define USBH_VBUS_PORT                  (GPIO_PORT_B)
     #define USBH_VBUS_PIN                   (GPIO_PIN_13)
+    #define USBF_DRVVBUS_PORT               (GPIO_PORT_B)
+    #define USBF_DRVVBUS_PIN                (GPIO_PIN_11)
 #else
     /* USBHS Core, external PHY */
     #define USBH_ULPI_CLK_PORT              (GPIO_PORT_E)

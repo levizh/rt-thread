@@ -22,7 +22,7 @@ void SystemClock_Config(void)
 {
     stc_clock_xtal_init_t stcXtalInit;
     stc_clock_pll_init_t stcPLLHInit;
-#if defined(BSP_USING_USBD)
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
     stc_clock_pllx_init_t stcPLLAInit;
 #endif
 
@@ -69,7 +69,7 @@ void SystemClock_Config(void)
 
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
 
-#if defined(BSP_USING_USBD)
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
     /* PLLX for USB */
     (void)CLK_PLLxStructInit(&stcPLLAInit);
     /* VCO = (8/2)*120 = 480MHz*/
@@ -100,7 +100,7 @@ void PeripheralClock_Config(void)
     CLK_SetPeriClockSrc(CLK_PERIPHCLK_PCLK);
 #endif
 
-#if defined(BSP_USING_USBD)
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
     CLK_SetUSBClockSrc(CLK_USBCLK_PLLXP);
 #endif
 #endif
