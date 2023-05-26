@@ -14,7 +14,7 @@
 
 #ifdef RT_USING_PM
 
-//#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv_wktm"
 #include <drv_log.h>
 
@@ -130,4 +130,3 @@ int hc32_hw_wktm_init(void)
 INIT_DEVICE_EXPORT(hc32_hw_wktm_init);
 
 #endif
-

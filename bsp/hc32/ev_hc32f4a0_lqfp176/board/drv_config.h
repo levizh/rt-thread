@@ -28,6 +28,7 @@ extern "C" {
 #include "eth_config.h"
 #include "can_config.h"
 #include "sdio_config.h"
+#include "pm_config.h"
 
 #ifdef __cplusplus
 }
