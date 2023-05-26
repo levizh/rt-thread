@@ -39,12 +39,16 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #define USB_HS_MODE
 #elif defined(BSP_USING_USBFS)
 #define USB_FS_MODE
+#else
+#define USB_FS_MODE
 #endif
 
 #if defined(BSP_USING_USBD)
 #define USE_DEVICE_MODE
 #elif defined(BSP_USING_USBH)
 #define USE_HOST_MODE
+#else
+#define USE_DEVICE_MODE
 #endif
 
 #if defined(USB_HS_MODE) && defined(BSP_USING_USBHS_PHY_EXTERN)
@@ -63,25 +67,25 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #endif
 #endif
 
-/* USB FIFO CONFIGURATION */
+/* USB DEVICE FIFO CONFIGURATION */
 #ifdef USB_FS_MODE
-#define RX_FIFO_FS_SIZE         (128U)
-#define TX0_FIFO_FS_SIZE        (32U)
-#define TX1_FIFO_FS_SIZE        (32U)
-#define TX2_FIFO_FS_SIZE        (32U)
-#define TX3_FIFO_FS_SIZE        (32U)
-#define TX4_FIFO_FS_SIZE        (32U)
-#define TX5_FIFO_FS_SIZE        (32U)
-#define TX6_FIFO_FS_SIZE        (32U)
-#define TX7_FIFO_FS_SIZE        (32U)
-#define TX8_FIFO_FS_SIZE        (32U)
-#define TX9_FIFO_FS_SIZE        (32U)
-#define TX10_FIFO_FS_SIZE       (32U)
-#define TX11_FIFO_FS_SIZE       (32U)
-#define TX12_FIFO_FS_SIZE       (32U)
-#define TX13_FIFO_FS_SIZE       (32U)
-#define TX14_FIFO_FS_SIZE       (32U)
-#define TX15_FIFO_FS_SIZE       (32U)
+#define RX_FIFO_FS_SIZE                         (128U)
+#define TX0_FIFO_FS_SIZE                        (32U)
+#define TX1_FIFO_FS_SIZE                        (32U)
+#define TX2_FIFO_FS_SIZE                        (32U)
+#define TX3_FIFO_FS_SIZE                        (32U)
+#define TX4_FIFO_FS_SIZE                        (32U)
+#define TX5_FIFO_FS_SIZE                        (32U)
+#define TX6_FIFO_FS_SIZE                        (32U)
+#define TX7_FIFO_FS_SIZE                        (32U)
+#define TX8_FIFO_FS_SIZE                        (32U)
+#define TX9_FIFO_FS_SIZE                        (32U)
+#define TX10_FIFO_FS_SIZE                       (32U)
+#define TX11_FIFO_FS_SIZE                       (32U)
+#define TX12_FIFO_FS_SIZE                       (32U)
+#define TX13_FIFO_FS_SIZE                       (32U)
+#define TX14_FIFO_FS_SIZE                       (32U)
+#define TX15_FIFO_FS_SIZE                       (32U)
 
 #if ((RX_FIFO_FS_SIZE + \
       TX0_FIFO_FS_SIZE + TX1_FIFO_FS_SIZE + TX2_FIFO_FS_SIZE + TX3_FIFO_FS_SIZE + TX4_FIFO_FS_SIZE + \
@@ -93,23 +97,23 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #endif
 
 #ifdef USB_HS_MODE
-#define RX_FIFO_HS_SIZE         (512U)
-#define TX0_FIFO_HS_SIZE        (64U)
-#define TX1_FIFO_HS_SIZE        (64U)
-#define TX2_FIFO_HS_SIZE        (64U)
-#define TX3_FIFO_HS_SIZE        (64U)
-#define TX4_FIFO_HS_SIZE        (64U)
-#define TX5_FIFO_HS_SIZE        (64U)
-#define TX6_FIFO_HS_SIZE        (64U)
-#define TX7_FIFO_HS_SIZE        (64U)
-#define TX8_FIFO_HS_SIZE        (64U)
-#define TX9_FIFO_HS_SIZE        (64U)
-#define TX10_FIFO_HS_SIZE       (64U)
-#define TX11_FIFO_HS_SIZE       (64U)
-#define TX12_FIFO_HS_SIZE       (64U)
-#define TX13_FIFO_HS_SIZE       (64U)
-#define TX14_FIFO_HS_SIZE       (64U)
-#define TX15_FIFO_HS_SIZE       (64U)
+#define RX_FIFO_HS_SIZE                         (512U)
+#define TX0_FIFO_HS_SIZE                        (64U)
+#define TX1_FIFO_HS_SIZE                        (64U)
+#define TX2_FIFO_HS_SIZE                        (64U)
+#define TX3_FIFO_HS_SIZE                        (64U)
+#define TX4_FIFO_HS_SIZE                        (64U)
+#define TX5_FIFO_HS_SIZE                        (64U)
+#define TX6_FIFO_HS_SIZE                        (64U)
+#define TX7_FIFO_HS_SIZE                        (64U)
+#define TX8_FIFO_HS_SIZE                        (64U)
+#define TX9_FIFO_HS_SIZE                        (64U)
+#define TX10_FIFO_HS_SIZE                       (64U)
+#define TX11_FIFO_HS_SIZE                       (64U)
+#define TX12_FIFO_HS_SIZE                       (64U)
+#define TX13_FIFO_HS_SIZE                       (64U)
+#define TX14_FIFO_HS_SIZE                       (64U)
+#define TX15_FIFO_HS_SIZE                       (64U)
 
 #if ((RX_FIFO_HS_SIZE + \
       TX0_FIFO_HS_SIZE + TX1_FIFO_HS_SIZE + TX2_FIFO_HS_SIZE + TX3_FIFO_HS_SIZE + TX4_FIFO_HS_SIZE + \
@@ -124,6 +128,27 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #define VBUS_SENSING_ENABLED
 #endif
 
+
+/* USB HOST FIFO CONFIGURATION */
+#ifdef USB_FS_MODE
+#define RX_FIFO_FS_SIZE                          (128U)
+#define TXH_NP_FS_FIFOSIZ                        (32U)
+#define TXH_P_FS_FIFOSIZ                         (64U)
+
+#if ((RX_FIFO_FS_SIZE + TXH_NP_FS_FIFOSIZ + TXH_P_FS_FIFOSIZ) > 640U)
+#error  "The USB max FIFO size is 640 x 4 Bytes!"
+#endif
+#endif
+
+#ifdef USB_HS_MODE
+#define RX_FIFO_HS_SIZE                          (512U)
+#define TXH_NP_HS_FIFOSIZ                        (128U)
+#define TXH_P_HS_FIFOSIZ                         (256U)
+
+#if ((RX_FIFO_FS_SIZE + TXH_NP_FS_FIFOSIZ + TXH_P_FS_FIFOSIZ) > 2048U)
+#error  "The USB max FIFO size is 2048 x 4 Bytes!"
+#endif
+#endif
 
 #ifdef __cplusplus
 }
