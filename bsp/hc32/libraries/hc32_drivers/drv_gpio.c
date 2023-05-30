@@ -303,7 +303,6 @@ static int hc32_pin_read(struct rt_device *device, rt_base_t pin)
 
 static rt_err_t hc32_pin_attach_irq(struct rt_device *device, rt_int32_t pin,
                                     rt_uint32_t mode, void (*hdr)(void *args), void *args)
-
 {
     rt_base_t level;
     rt_int32_t irqindex = -1;

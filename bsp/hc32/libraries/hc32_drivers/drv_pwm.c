@@ -6,7 +6,7 @@
  * Change Logs:
  * Date           Author            Notes
  * 2022-06-27     lianghongquan     first version
- * 2023-02-22     CDT               add hc32f4a2 support
+ * 2023-02-22     CDT               add hc32f4a0,hc32f4a2 support
  */
 
 #include <board.h>
@@ -683,11 +683,11 @@ static rt_err_t tmra_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     case PWM_CMD_SET:
         return tmra_pwm_set(TMRAx, configuration);
     case PWM_CMD_GET:
-        return tmra_pwm_get(TMRAx, configuration);    
-//    case PWM_CMD_SET_PERIOD:
-//        return tmra_pwm_set_period(TMRAx, configuration->channel, configuration->period);
-//    case PWM_CMD_SET_PULSE:
-//        return tmra_pwm_set_pulse(TMRAx, configuration->channel, configuration->pulse);
+        return tmra_pwm_get(TMRAx, configuration);
+    case PWM_CMD_SET_PERIOD:
+        return tmra_pwm_set_period(TMRAx, configuration->channel, configuration->period);
+    case PWM_CMD_SET_PULSE:
+        return tmra_pwm_set_pulse(TMRAx, configuration->channel, configuration->pulse);
     default:
         return RT_EINVAL;
     }
@@ -1083,10 +1083,10 @@ static rt_err_t tmr4_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
         return tmr4_pwm_set(TMR4x, configuration);
     case PWM_CMD_GET:
         return tmr4_pwm_get(TMR4x, configuration);
-//    case PWM_CMD_SET_PERIOD:
-//        return tmr4_pwm_set_period(TMR4x, configuration->channel, configuration->period);
-//    case PWM_CMD_SET_PULSE:
-//        return tmr4_pwm_set_pulse(TMR4x, configuration->channel, configuration->pulse);
+    case PWM_CMD_SET_PERIOD:
+        return tmr4_pwm_set_period(TMR4x, configuration->channel, configuration->period);
+    case PWM_CMD_SET_PULSE:
+        return tmr4_pwm_set_pulse(TMR4x, configuration->channel, configuration->pulse);
     // case PWM_CMD_SET_DEAD_TIME:
     //     return tmr4_dead_time_set(TMR4x, configuration);
     default:
@@ -1534,10 +1534,10 @@ static rt_err_t tmr6_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
         return tmr6_pwm_set(TMR6x, configuration);
     case PWM_CMD_GET:
         return tmr6_pwm_get(TMR6x, configuration);
-//    case PWM_CMD_SET_PERIOD:
-//        return tmr6_pwm_set_period(TMR6x, configuration->channel, configuration->period);
-//    case PWM_CMD_SET_PULSE:
-//        return tmr6_pwm_set_pulse(TMR6x, configuration->channel, configuration->pulse);
+    case PWM_CMD_SET_PERIOD:
+        return tmr6_pwm_set_period(TMR6x, configuration->channel, configuration->period);
+    case PWM_CMD_SET_PULSE:
+        return tmr6_pwm_set_pulse(TMR6x, configuration->channel, configuration->pulse);
     default:
         return RT_EINVAL;
     }
