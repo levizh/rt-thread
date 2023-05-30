@@ -24,8 +24,8 @@ struct hc32_hwcrypto_device
 
 #if defined(BSP_USING_CRC)
 
-#define DEFAULT_CRC16_X25_POLY      0x1021       /*!<  X^16 + X^12 + X^5 + 1 */
-#define DEFAULT_CRC32_POLY          0x04C11DB7   /*!<  X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 + X^10 +X^8 + X^7 + X^5 + X^4 + X^2+ X + 1 */
+#define DEFAULT_CRC16_X25_POLY      (0x1021)       /*!<  X^16 + X^12 + X^5 + 1 */
+#define DEFAULT_CRC32_POLY          (0x04C11DB7)   /*!<  X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 + X^10 +X^8 + X^7 + X^5 + X^4 + X^2+ X + 1 */
 
 static stc_crc_init_t stcCrcInit;
 static stc_crc_init_t stcCrcInit_bk;
@@ -132,182 +132,27 @@ static const struct hwcrypto_rng_ops rng_ops =
 static const rt_uint8_t *hash_in = RT_NULL;
 static rt_size_t hash_length = 0;
 
-#if defined(BSP_HASH_USING_DMA)
-#include "drv_dma.h"
-#include "dma_config.h"
-
-/* 64byte = 16word = 512bit */
-#define HASH_GROUP_SIZE             (64U)
-#define HASH_LAST_GROUP_SIZE_MAX    (56U)
-
-#define HASH_DMA_CONFIG                                  \
-    {                                                    \
-        .Instance       = HASH_DMA_INSTANCE,             \
-        .channel        = HASH_DMA_CHANNEL,              \
-        .clock          = HASH_DMA_CLOCK,                \
-        .trigger_select = HASH_DMA_TRIG_SELECT,          \
-        .trigger_event  = EVT_SRC_AOS_STRG,              \
-    }
-
-static struct dma_config hash_dma = HASH_DMA_CONFIG;
-
-static uint8_t  u8TempFlag = 0U;
-static uint8_t  u8FillFlag = 0U;
-static uint32_t u32Temp = 0U;
-static uint32_t u32FillData = 0U;
-static uint32_t u32Pos = 0U;
-static uint32_t u32TsfCnt = 0U;
-static uint32_t u32FillBuffer[HASH_GROUP_SIZE / 4];
-
-static rt_err_t DMA_Config(void)
-{
-    rt_err_t res = RT_EOK;
-    stc_dma_init_t stcDmaInit;
-
-    /* Enable DMA. */
-    FCG_Fcg0PeriphClockCmd(hash_dma.clock, ENABLE);
-
-    (void)DMA_StructInit(&stcDmaInit);
-    /* Configures DMA */
-    stcDmaInit.u32DataWidth = DMA_DATAWIDTH_32BIT;
-    stcDmaInit.u32BlockSize = (HASH_GROUP_SIZE / 4);
-    stcDmaInit.u32IntEn     = DMA_INT_DISABLE;
-    /* Set transfer count */
-    stcDmaInit.u32TransCount = 1U;
-    stcDmaInit.u32SrcAddr = (uint32_t)(&u32FillBuffer[0]);
-    stcDmaInit.u32DestAddr    = (uint32_t)(&CM_HASH->DR15);
-    stcDmaInit.u32SrcAddrInc  = DMA_SRC_ADDR_INC;
-    stcDmaInit.u32DestAddrInc = DMA_DEST_ADDR_INC;
-    if (DMA_Init(hash_dma.Instance, hash_dma.channel, &stcDmaInit) != LL_OK) {
-        LOG_E("hash dma init failed.");
-        FCG_Fcg0PeriphClockCmd(hash_dma.clock, DISABLE);
-        res = -RT_ERROR;
-        return res;
-    }
-
-    /* Set DMA trigger source */
-    AOS_SetTriggerEventSrc(hash_dma.trigger_select, hash_dma.trigger_event);
-    /* DMA module enable */
-    DMA_Cmd(hash_dma.Instance, ENABLE);
-    /* DMA channel enable */
-    DMA_ChCmd(hash_dma.Instance, hash_dma.channel, ENABLE);
-
-    return res;
-}
-
-static void DMA_Reconfig(void)
-{
-    DMA_SetTransCount(hash_dma.Instance, hash_dma.channel, 1U);
-    DMA_SetSrcAddr(hash_dma.Instance, hash_dma.channel, (uint32_t)(&u32FillBuffer[0U]));
-    DMA_SetDestAddr(hash_dma.Instance, hash_dma.channel, (uint32_t)(&CM_HASH->DR15));
-    /* DMA channel enable */
-    DMA_ChCmd(hash_dma.Instance, hash_dma.channel, ENABLE);
-}
-
-static void FillData(void)
-{
-    uint8_t i;
-    uint32_t u32BitLenHigh;
-    uint32_t u32BitLenLow;
-    uint8_t au8Buffer[64U] = {0U};
-
-    u32BitLenHigh = (hash_length >> 29U) & 0x7U;
-    u32BitLenLow  = (hash_length << 3U);
-    if ((u32FillData >= HASH_LAST_GROUP_SIZE_MAX) && (u8TempFlag == 0U)) {
-        (void)memcpy(au8Buffer, &hash_in[HASH_GROUP_SIZE * u32TsfCnt], u32FillData);
-        au8Buffer[u32FillData] = 0x80U;
-        for (i = 0U; i < HASH_GROUP_SIZE; i += 4U) {
-            u32Temp = *((uint32_t *)&au8Buffer[i]);
-            u32FillBuffer[i / 4U] = (uint32_t)__REV(u32Temp);
-        }
-        u8FillFlag = 0U;
-        u32FillData = 0U;
-        u8TempFlag = 1U;
-    } else {
-        if (u8TempFlag == 0U) {
-            (void)memcpy(au8Buffer, &hash_in[HASH_GROUP_SIZE * u32TsfCnt], u32FillData);
-            au8Buffer[u32FillData] = 0x80U;
-        }
-        au8Buffer[63U] = (uint8_t)(u32BitLenLow);
-        au8Buffer[62U] = (uint8_t)(u32BitLenLow >> 8U);
-        au8Buffer[61U] = (uint8_t)(u32BitLenLow >> 16U);
-        au8Buffer[60U] = (uint8_t)(u32BitLenLow >> 24U);
-        au8Buffer[59U] = (uint8_t)(u32BitLenHigh);
-        au8Buffer[58U] = (uint8_t)(u32BitLenHigh >> 8U);
-        au8Buffer[57U] = (uint8_t)(u32BitLenHigh >> 16U);
-        au8Buffer[56U] = (uint8_t)(u32BitLenHigh >> 24U);
-        u8FillFlag = 1U;
-        for (i = 0U; i < HASH_GROUP_SIZE; i += 4U) {
-            u32Temp = *((uint32_t *)&au8Buffer[i]);
-            u32FillBuffer[i / 4U] = (uint32_t)__REV(u32Temp);
-        }
-    }
-}
-#endif
-
 static void HASH_Config(void)
 {
     /* Enable HASH. */
     FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_HASH, ENABLE);
     /* Configures HASH. SHA256 operating mode */
     (void)HASH_SetMode(HASH_MD_SHA256);
-#if defined(BSP_HASH_USING_DMA)
-    /* Disable interrupt function */
-    (void)HASH_IntCmd(HASH_INT_GRP, DISABLE);
-    /* Enable AOS. */
-    FCG_Fcg0PeriphClockCmd(PWC_FCG0_AOS, ENABLE);
-    /* AOS_HASH_A: HASH_TRIG_EVT_XXX_BTCn */
-    AOS_SetTriggerEventSrc(AOS_HASH_A, HASH_A_DMA_TRIG_EVT);
-#endif
 }
 
 static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt_size_t length)
 {
     rt_uint32_t result = RT_EOK;
-    uint32_t i = 0;
 
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
-    /* Start HASH computation using DMA transfer */
+    /* Start HASH computation transfer */
     switch (ctx->parent.type)
     {
     case HWCRYPTO_TYPE_SHA256:
         hash_in = in;
         hash_length = length;
-#if defined(BSP_HASH_USING_DMA)
-        /* Set the first group. */
-        (void)HASH_SetMsgGroup(HASH_MSG_GRP_FIRST);
-        /* Start HASH */
-        (void)HASH_Start();
-        do {
-            /* clear the DMA transfer completed flag */
-            // DMA_ClearTransCompleteStatus(hash_dma.Instance, HASH_DMA_FLAG);     //todo
-            if (strlen((char *)hash_in) <= HASH_LAST_GROUP_SIZE_MAX) {
-                /* Set the last group. */
-                (void)HASH_SetMsgGroup(HASH_MSG_GRP_END);
-            }
-            u32FillData = strlen((char *)hash_in) - HASH_GROUP_SIZE * u32TsfCnt;
-            if (u32FillData >= HASH_GROUP_SIZE) {
-                for (i = 0U; i < (HASH_GROUP_SIZE / 4); i++) {
-                    u32Temp = *((uint32_t *)&hash_in[u32Pos]);
-                    u32FillBuffer[i] = (uint32_t)__REV(u32Temp);
-                    u32Pos += 4U;
-                }
-                u32TsfCnt++;
-            } else {
-                FillData();
-                if (u8FillFlag == 1U) {
-                    /* AOS_HASH_B: HASH_TRIG_EVT_XXX_TCn */
-                    AOS_SetTriggerEventSrc(AOS_HASH_B, HASH_B_DMA_TRIG_EVT);
-                }
-            }
-            /* DMA Reconfiguration */
-            DMA_Reconfig();
-            /* AOS trigger for DMA */
-            AOS_SW_Trigger();
-        } while (u8FillFlag == 0U);
-#endif
        break;
     default :
         LOG_E("not support hash type: %x", ctx->parent.type);
@@ -323,7 +168,6 @@ static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt
 static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size_t length)
 {
     rt_uint32_t result = RT_EOK;
-    rt_uint32_t timeout = 1000000U;
 
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
@@ -341,16 +185,7 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
     case HWCRYPTO_TYPE_SHA256:
         if (length == HASH_MSG_DIGEST_SIZE)
         {
-#if defined(BSP_HASH_USING_DMA)
-            /* Wait for the message operation to complete */
-            while (HASH_GetStatus(HASH_FLAG_CYC_END) == RESET && timeout--);
-            /* Get the digest result */
-            HASH_GetMsgDigest(out);
-            /* Clear the flag */
-            (void)HASH_ClearStatus(HASH_FLAG_CYC_END);
-#else
             result = HASH_Calculate(hash_in, hash_length, out);
-#endif
         }
         else 
         {
@@ -466,7 +301,6 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
         /* TRNG initialization configuration. */
         TRNG_Init(TRNG_SHIFT_CNT64, TRNG_RELOAD_INIT_VAL_ENABLE);
 
-        // ctx->contex = RT_NULL;
         ((struct hwcrypto_rng *)ctx)->ops = &rng_ops;
 
         break;
@@ -482,10 +316,10 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
         CRC_StructInit(&stcCrcInit);
 #if defined(BSP_USING_CRC32)
         stcCrcInit.u32Protocol = CRC_CRC32;
-        stcCrcInit.u32InitValue = 0xFFFFFFFF;
+        stcCrcInit.u32InitValue = 0xFFFFFFFFU;
 #else
         stcCrcInit.u32Protocol = CRC_CRC16;
-        stcCrcInit.u32InitValue = 0xFFFF;
+        stcCrcInit.u32InitValue = 0xFFFFU;
 #endif
         if (CRC_Init(&stcCrcInit) != LL_OK)
         {
@@ -494,7 +328,7 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
             break;
         }
         rt_memcpy(&stcCrcInit_bk, &stcCrcInit, sizeof(stc_crc_init_t));
-        // ctx->contex = hcrc;
+
         ((struct hwcrypto_crc *)ctx)->ops = &crc_ops;
 
         break;
@@ -510,11 +344,6 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
         {
             /* Configures HASH */
             HASH_Config();
-        #if defined(BSP_HASH_USING_DMA)
-            /* Configures DMA */
-            res = DMA_Config();
-        #endif
-            // ctx->contex = hash;
             ((struct hwcrypto_hash *)ctx)->ops = &hash_ops;
         }
         else
@@ -536,7 +365,6 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
         /* Enable AES peripheral clock. */
         FCG_Fcg0PeriphClockCmd(PWC_FCG0_AES, ENABLE);
 
-        // ctx->contex = cryp;
         ((struct hwcrypto_symmetric *)ctx)->ops = &cryp_ops;
 
         break;

@@ -79,6 +79,7 @@ struct hc32_pwm_tmra
     CM_TMRA_TypeDef *instance;
     rt_uint32_t channel;
     uint32_t CompareValue[TMRA_CHANNEL_NUM_MAX];
+    rt_bool_t complementary[TMRA_CHANNEL_NUM_MAX];
     stc_tmra_init_t stcTmraInit;
     stc_tmra_pwm_init_t stcPwmInit;
 };
@@ -201,23 +202,60 @@ static rt_uint32_t tmra_get_clk_bydiv(CM_TMRA_TypeDef *TMRAx)
     return u32clkFreq;
 }
 
-static void tmra_pwmp_enable(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration *configuration)
+static void tmra_duyt100or0_output(CM_TMRA_TypeDef *TMRAx, uint32_t channel, uint32_t CompareValue)
 {
     rt_uint8_t i;
+    rt_uint8_t ch = channel % TMRA_CHANNEL_NUM_MAX;
     for (i=0; i<PWM_TIMA_UNIT_NUM; i++)
     {
         if (g_pwm_tmra_array[i].instance == TMRAx)
         {
-            stc_tmra_pwm_init_t *stcPwmInit = &g_pwm_tmra_array[i].stcPwmInit;
-            stcPwmInit->u32CompareValue = TMRA_GetCompareValue(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX));
-            TMRA_PWM_Init(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX), stcPwmInit);
+            /* Realize 100% duty output */
+            if (TMRA_GetPeriodValue(TMRAx) == CompareValue) {
+                if (RT_TRUE == g_pwm_tmra_array[i].complementary[ch])
+                {
+                    TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_LOW);
+                } else {
+                    TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_HIGH);
+                }
+            } else if (0 == CompareValue) {    /* Realize 0% duty output */
+                if (RT_TRUE == g_pwm_tmra_array[i].complementary[ch])
+                {
+                    TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_HIGH);
+                } else {
+                    TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_LOW);
+                }
+            }
             break;
         }
     }
 }
 
+static void tmra_pwmp_enable(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration *configuration)
+{
+    rt_uint8_t i;
+    stc_tmra_pwm_init_t *stcPwmInit;
+    for (i=0; i<PWM_TIMA_UNIT_NUM; i++)
+    {
+        if (g_pwm_tmra_array[i].instance == TMRAx)
+        {
+            stcPwmInit = &g_pwm_tmra_array[i].stcPwmInit;
+            stcPwmInit->u32CompareValue = TMRA_GetCompareValue(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX));
+            TMRA_PWM_Init(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX), stcPwmInit);
+            g_pwm_tmra_array[i].complementary[configuration->channel % TMRA_CHANNEL_NUM_MAX] = RT_FALSE;
+            break;
+        }
+    }
+    if (0 == stcPwmInit->u32CompareValue || stcPwmInit->u32CompareValue == TMRA_GetPeriodValue(TMRAx)) {
+        tmra_duyt100or0_output(TMRAx, configuration->channel, stcPwmInit->u32CompareValue);
+    } else {
+        TMRA_PWM_SetForcePolarity(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX), TMRA_PWM_FORCE_INVD);
+    }
+}
+
 static void tmra_pwmn_enable(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration *configuration)
 {
+    rt_uint8_t i;
     stc_tmra_pwm_init_t stcPwmNInit;
     stcPwmNInit.u32CompareValue = TMRA_GetCompareValue(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX));
     stcPwmNInit.u16StartPolarity = TMRA_PWM_HIGH;
@@ -225,6 +263,19 @@ static void tmra_pwmn_enable(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration
     stcPwmNInit.u16CompareMatchPolarity = TMRA_PWM_LOW;
     stcPwmNInit.u16PeriodMatchPolarity = TMRA_PWM_HIGH;
     TMRA_PWM_Init(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX), &stcPwmNInit);
+    /* Flags whether the channel complements output */
+    for (i=0; i<PWM_TIMA_UNIT_NUM; i++)
+    {
+        if (g_pwm_tmra_array[i].instance == TMRAx)
+        {
+            g_pwm_tmra_array[i].complementary[configuration->channel % TMRA_CHANNEL_NUM_MAX] = RT_TRUE;
+        }
+    }
+    if (0 == stcPwmNInit.u32CompareValue || stcPwmNInit.u32CompareValue == TMRA_GetPeriodValue(TMRAx)) {
+        tmra_duyt100or0_output(TMRAx, configuration->channel, stcPwmNInit.u32CompareValue);
+    } else {
+        TMRA_PWM_SetForcePolarity(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX), TMRA_PWM_FORCE_INVD);
+    }
 }
 
 static rt_err_t tmra_pwm_enable(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration *configuration, rt_bool_t enable)
@@ -252,7 +303,7 @@ static rt_err_t tmra_pwm_get(CM_TMRA_TypeDef *TMRAx, struct rt_pwm_configuration
     rt_uint32_t u32clkFreq;
     rt_uint64_t u64clk_ns;
     u32clkFreq = tmra_get_clk_bydiv(TMRAx);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     configuration->period = u64clk_ns * TMRA_GetPeriodValue(TMRAx);
     configuration->pulse = u64clk_ns * TMRA_GetCompareValue(TMRAx, (configuration->channel % TMRA_CHANNEL_NUM_MAX));
     return RT_EOK;
@@ -264,18 +315,18 @@ static rt_uint64_t tmra_auto_set_div(CM_TMRA_TypeDef *TMRAx, uint32_t period)
     rt_uint64_t u64clk_ns;
     rt_uint64_t u64val;
     u32clkFreq = tmra_get_clk_bydiv(TMRAx);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     u64val = (rt_uint64_t)period / u64clk_ns;
     /* clk not match, need change div */
-    if ((period <= u64clk_ns) || (u64val > 0xFFFF))
+    if ((period <= u64clk_ns) || (u64val > 0xFFFFU))
     {
         uint32_t div_bit;
         u32clkFreq = tmra_get_clk_notdiv(TMRAx);
-        u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+        u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
         u64val = (rt_uint64_t)period / u64clk_ns;
         for (div_bit = 0; div_bit <= 10; div_bit++)
         {
-            if (u64val < 0xFFFF)
+            if (u64val < 0xFFFFU)
             {
                 break;
             }
@@ -283,11 +334,11 @@ static rt_uint64_t tmra_auto_set_div(CM_TMRA_TypeDef *TMRAx, uint32_t period)
         }
         if (div_bit > 10)
         {
-            return -RT_ERROR;
+            return 0;
         }
         TMRA_SetClockDiv(TMRAx, div_bit << TMRA_BCSTR_CKDIV_POS);
         u32clkFreq = tmra_get_clk_bydiv(TMRAx);
-        u64clk_ns = (rt_uint64_t)(1000000000ul / u32clkFreq);
+        u64clk_ns = (rt_uint64_t)(1000000000UL / u32clkFreq);
     }
     return u64clk_ns;
 }
@@ -296,6 +347,9 @@ static rt_err_t tmra_pwm_set_period(CM_TMRA_TypeDef *TMRAx, uint32_t channel, ui
 {
     rt_uint8_t i,j;
     rt_uint64_t u64clk_ns = tmra_auto_set_div(TMRAx, period);
+    if (!u64clk_ns) {
+        return -RT_ERROR;
+    }
     TMRA_SetPeriodValue(TMRAx, period / u64clk_ns);
     /* setting PeriodValue maybe change the div,so we need to recalculate the CompareValue */
     for (i=0; i<PWM_TIMA_UNIT_NUM; i++)
@@ -318,23 +372,25 @@ static rt_err_t tmra_pwm_set_pulse(CM_TMRA_TypeDef *TMRAx, uint32_t channel, uin
     rt_uint8_t i;
     rt_uint32_t u32clkFreq;
     rt_uint64_t u64clk_ns;
+    rt_uint32_t CompareValue;
     rt_uint8_t ch = channel % TMRA_CHANNEL_NUM_MAX;
     u32clkFreq = tmra_get_clk_bydiv(TMRAx);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     TMRA_SetCompareValue(TMRAx, ch, pulse / u64clk_ns);
+    CompareValue = TMRA_GetCompareValue(TMRAx, ch);
     for (i=0; i<PWM_TIMA_UNIT_NUM; i++)
     {
         if (g_pwm_tmra_array[i].instance == TMRAx)
         {
             g_pwm_tmra_array[i].CompareValue[ch] = pulse;
-            /* Realize 100% duty output */
-            if (g_pwm_tmra_array[i].stcTmraInit.u32PeriodValue == pulse) {
-                TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_HIGH);
-            } else {
-                TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_INVD);
-            }
             break;
         }
+    }
+    if (0 == CompareValue || CompareValue == TMRA_GetPeriodValue(TMRAx))
+    {
+        tmra_duyt100or0_output(TMRAx, channel, CompareValue);
+    } else {
+        TMRA_PWM_SetForcePolarity(TMRAx, ch, TMRA_PWM_FORCE_INVD);
     }
     return RT_EOK;
 }
@@ -371,255 +427,255 @@ static void pwm_tmra_get_channel(void)
 {
 #ifdef BSP_USING_PWM_TIMA_1
     #ifdef BSP_USING_PWM_TIMA_1_CH1
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH2
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH3
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH4
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_1_CH5
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH6
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH7
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_1_CH8
-        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_2
     #ifdef BSP_USING_PWM_TIMA_2_CH1
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH2
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH3
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH4
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_2_CH5
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH6
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH7
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_2_CH8
-        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_3
     #ifdef BSP_USING_PWM_TIMA_3_CH1
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH2
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH3
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH4
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_3_CH5
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH6
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH7
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_3_CH8
-        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_4
     #ifdef BSP_USING_PWM_TIMA_4_CH1
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH2
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH3
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH4
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_4_CH5
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH6
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH7
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_4_CH8
-        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_5
     #ifdef BSP_USING_PWM_TIMA_5_CH1
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH2
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH3
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH4
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_5_CH5
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH6
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH7
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_5_CH8
-        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_6
     #ifdef BSP_USING_PWM_TIMA_6_CH1
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH2
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH3
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH4
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 3);
     #endif
 #if defined(HC32F460)
     #ifdef BSP_USING_PWM_TIMA_6_CH5
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 4;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH6
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 5;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 5);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH7
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 6;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 6);
     #endif
     #ifdef BSP_USING_PWM_TIMA_6_CH8
-        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= 1 << 7;
+        g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 7);
     #endif
 #endif
 #endif
 #if defined(HC32F4A0)
 #ifdef BSP_USING_PWM_TIMA_7
     #ifdef BSP_USING_PWM_TIMA_7_CH1
-        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_7_CH2
-        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_7_CH3
-        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_7_CH4
-        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_8
     #ifdef BSP_USING_PWM_TIMA_8_CH1
-        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_8_CH2
-        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_8_CH3
-        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_8_CH4
-        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_8_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_9
     #ifdef BSP_USING_PWM_TIMA_9_CH1
-        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_9_CH2
-        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_9_CH3
-        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_9_CH4
-        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_9_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_10
     #ifdef BSP_USING_PWM_TIMA_10_CH1
-        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_10_CH2
-        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_10_CH3
-        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_10_CH4
-        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_10_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_11
     #ifdef BSP_USING_PWM_TIMA_11_CH1
-        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_11_CH2
-        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_11_CH3
-        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_11_CH4
-        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_11_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_12
     #ifdef BSP_USING_PWM_TIMA_12_CH1
-        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= 1 << 0;
+        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIMA_12_CH2
-        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= 1 << 1;
+        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIMA_12_CH3
-        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= 1 << 2;
+        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIMA_12_CH4
-        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= 1 << 3;
+        g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= (1 << 3);
     #endif
 #endif
 #endif
@@ -846,7 +902,7 @@ static rt_err_t tmr4_pwm_get(CM_TMR4_TypeDef *TMR4x, struct rt_pwm_configuration
     rt_uint32_t u32clkFreq;
     rt_uint64_t u64clk_ns;
     u32clkFreq = tmr4_get_clk_bydiv(TMR4x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     configuration->period = u64clk_ns * TMR4_GetPeriodValue(TMR4x);
     configuration->pulse = u64clk_ns * TMR4_OC_GetCompareValue(TMR4x, configuration->channel);
     return RT_EOK;
@@ -858,18 +914,18 @@ static rt_uint64_t tmr4_auto_set_div(CM_TMR4_TypeDef *TMR4x, uint32_t period)
     rt_uint64_t u64clk_ns;
     rt_uint64_t u64val;
     u32clkFreq = tmr4_get_clk_bydiv(TMR4x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     u64val = (rt_uint64_t)period / u64clk_ns;
     /* clk not match, need change div */
-    if ((period <= u64clk_ns) || (u64val > 0xFFFF))
+    if ((period <= u64clk_ns) || (u64val > 0xFFFFU))
     {
         uint32_t div_bit;
         u32clkFreq = tmr4_get_clk_notdiv(TMR4x);
-        u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+        u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
         u64val = (rt_uint64_t)period / u64clk_ns;
         for (div_bit = 0; div_bit <= 10; div_bit++)
         {
-            if (u64val < 0xFFFF)
+            if (u64val < 0xFFFFU)
             {
                 break;
             }
@@ -877,11 +933,11 @@ static rt_uint64_t tmr4_auto_set_div(CM_TMR4_TypeDef *TMR4x, uint32_t period)
         }
         if (div_bit > 10)
         {
-            return RT_ERROR;
+            return 0;
         }
         TMR4_SetClockDiv(TMR4x, div_bit << TMR4_CCSR_CKDIV_POS);
         u32clkFreq = tmr4_get_clk_bydiv(TMR4x);
-        u64clk_ns = (rt_uint64_t)(1000000000ul / u32clkFreq);
+        u64clk_ns = (rt_uint64_t)(1000000000UL / u32clkFreq);
     }
     return u64clk_ns;
 }
@@ -890,6 +946,9 @@ static rt_err_t tmr4_pwm_set_period(CM_TMR4_TypeDef *TMR4x, uint32_t channel, ui
 {
     rt_uint8_t i,j;
     rt_uint64_t u64clk_ns = tmr4_auto_set_div(TMR4x, period);
+    if (!u64clk_ns) {
+        return -RT_ERROR;
+    }
     TMR4_SetPeriodValue(TMR4x, period / u64clk_ns);
     /* setting PeriodValue maybe change the div,so we need to recalculate the CompareValue */
     for (i=0; i<PWM_TIM4_UNIT_NUM; i++)
@@ -915,22 +974,22 @@ static void tmr4_pwm_set_cmpmode(CM_TMR4_TypeDef *TMR4x, uint32_t channel, uint3
     if (pulse) {
         if(ch % 2) {
             /* TMR4 OC low channel: compare mode OCMR[31:0] 0x000 124F = b 0101 1010 0100 0000   0101 1010 0100 1111 */
-            unTmr4OcOcmrl.OCMRx = 0x5A405A4F;
+            unTmr4OcOcmrl.OCMRx = 0x5A405A4FU;
             TMR4_OC_SetLowChCompareMode(TMR4x, ch, unTmr4OcOcmrl);
         } else {
             /* TMR4 OC high channel: compare mode OCMR[15:0] = 0x5A4F = b 0101 1010 0100 1111 */
-            unTmr4OcOcmrh.OCMRx = 0x5A4F;
+            unTmr4OcOcmrh.OCMRx = 0x5A4FU;
             TMR4_OC_SetHighChCompareMode(TMR4x, ch, unTmr4OcOcmrh);
         }
     } else {
         /* Realize 0% duty output */
         if(ch % 2) {
             /* TMR4 OC low channel: compare mode OCMR[31:0] 0x000 124F = b 1010 1010 1000 0000   1010 1010 1000 1111 */
-            unTmr4OcOcmrl.OCMRx = 0xAA80AA8F;
+            unTmr4OcOcmrl.OCMRx = 0xAA80AA8FU;
             TMR4_OC_SetLowChCompareMode(TMR4x, ch, unTmr4OcOcmrl);
         } else {
             /* TMR4 OC high channel: compare mode OCMR[15:0] = 0x5A4F = b 1010 1010 1000 1111 */
-            unTmr4OcOcmrh.OCMRx = 0xAA8F;
+            unTmr4OcOcmrh.OCMRx = 0xAA8FU;
             TMR4_OC_SetHighChCompareMode(TMR4x, ch, unTmr4OcOcmrh);
         }
     }
@@ -943,7 +1002,7 @@ static rt_err_t tmr4_pwm_set_pulse(CM_TMR4_TypeDef *TMR4x, uint32_t channel, uin
     rt_uint64_t u64clk_ns;
     uint32_t ch = channel % TMR4_CHANNEL_NUM_MAX;
     u32clkFreq = tmr4_get_clk_bydiv(TMR4x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     TMR4_OC_SetCompareValue(TMR4x, ch, pulse / u64clk_ns);
     for (i=0; i<PWM_TIM4_UNIT_NUM; i++)
     {
@@ -1006,62 +1065,62 @@ static void pwm_tmr4_get_channel(void)
 {
 #ifdef BSP_USING_PWM_TIM4_1
     #ifdef BSP_USING_PWM_TIM4_1_OUH
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 0;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM4_1_OUL
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 1;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIM4_1_OVH
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 2;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIM4_1_OVL
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 3;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 3);
     #endif
     #ifdef BSP_USING_PWM_TIM4_1_OWH
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 4;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIM4_1_OWH
-        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= 1 << 5;
+        g_pwm_tmr4_array[PWM_TIM4_1_INDEX].channel |= (1 << 5);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM4_2
     #ifdef BSP_USING_PWM_TIM4_2_OUH
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 0;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM4_2_OUL
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 1;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIM4_2_OVH
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 2;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIM4_2_OVL
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 3;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 3);
     #endif
     #ifdef BSP_USING_PWM_TIM4_2_OWH
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 4;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIM4_2_OWH
-        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= 1 << 5;
+        g_pwm_tmr4_array[PWM_TIM4_2_INDEX].channel |= (1 << 5);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM4_3
     #ifdef BSP_USING_PWM_TIM4_3_OUH
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 0;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM4_3_OUL
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 1;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 1);
     #endif
     #ifdef BSP_USING_PWM_TIM4_3_OVH
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 2;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 2);
     #endif
     #ifdef BSP_USING_PWM_TIM4_3_OVL
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 3;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 3);
     #endif
     #ifdef BSP_USING_PWM_TIM4_3_OWH
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 4;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 4);
     #endif
     #ifdef BSP_USING_PWM_TIM4_3_OWH
-        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= 1 << 5;
+        g_pwm_tmr4_array[PWM_TIM4_3_INDEX].channel |= (1 << 5);
     #endif
 #endif
 }
@@ -1087,8 +1146,6 @@ static rt_err_t tmr4_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
         return tmr4_pwm_set_period(TMR4x, configuration->channel, configuration->period);
     case PWM_CMD_SET_PULSE:
         return tmr4_pwm_set_pulse(TMR4x, configuration->channel, configuration->pulse);
-    // case PWM_CMD_SET_DEAD_TIME:
-    //     return tmr4_dead_time_set(TMR4x, configuration);
     default:
         return RT_EINVAL;
     }
@@ -1142,6 +1199,7 @@ struct hc32_pwm_tmr6
     rt_uint32_t channel;
     stc_tmr6_init_t stcTmr6Init;
     stc_tmr6_pwm_init_t stcPwmInit[TMR6_CHANNEL_NUM_MAX];
+    rt_bool_t complementary[TMRA_CHANNEL_NUM_MAX];
 };
 
 static struct hc32_pwm_tmr6 g_pwm_tmr6_array[] =
@@ -1240,6 +1298,35 @@ static rt_uint32_t tmr6_get_clk_bydiv(CM_TMR6_TypeDef *TMR6x)
     return u32clkFreq;
 }
 
+static void tmr6_duyt100or0_output(CM_TMR6_TypeDef *TMR6x, uint32_t channel, uint32_t CompareValue)
+{
+    rt_uint8_t i;
+    rt_uint8_t ch = channel % TMR6_CHANNEL_NUM_MAX;
+    for (i=0; i<PWM_TIM6_UNIT_NUM; i++)
+    {
+        if (g_pwm_tmr6_array[i].instance == TMR6x)
+        {
+            /* Realize 100% duty output */
+            if (TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A) == CompareValue) {
+                if (RT_TRUE == g_pwm_tmr6_array[i].complementary[ch])
+                {
+                    TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_LOW);
+                } else {
+                    TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_HIGH);
+                }
+            } else if (0 == CompareValue) {    /* Realize 0% duty output */
+                if (RT_TRUE == g_pwm_tmr6_array[i].complementary[ch])
+                {
+                    TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_HIGH);
+                } else {
+                    TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_LOW);
+                }
+            }
+            break;
+        }
+    }
+}
+
 static void tmr6_pwmp_enable(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration *configuration)
 {
     rt_uint8_t i;
@@ -1252,13 +1339,20 @@ static void tmr6_pwmp_enable(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration
             rt_memcpy(&stcPwmInit, &g_pwm_tmr6_array[i].stcPwmInit[ch], sizeof(stc_tmr6_pwm_init_t));
             stcPwmInit.u32CompareValue = TMR6_GetCompareValue(TMR6x, ch);
             TMR6_PWM_Init(TMR6x, ch, &stcPwmInit);
+            g_pwm_tmr6_array[i].complementary[ch] = RT_FALSE;
             break;
         }
+    }
+    if (0 == stcPwmInit.u32CompareValue || stcPwmInit.u32CompareValue == TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A)) {
+        tmr6_duyt100or0_output(TMR6x, configuration->channel, stcPwmInit.u32CompareValue);
+    } else {
+        TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_INVD);
     }
 }
 
 static void tmr6_pwmn_enable(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration *configuration)
 {
+    rt_uint8_t i;
     rt_uint8_t ch = configuration->channel % TMR6_CHANNEL_NUM_MAX;
     stc_tmr6_pwm_init_t stcPwmInit;
     stcPwmInit.u32CompareValue = TMR6_GetCompareValue(TMR6x, ch);
@@ -1279,6 +1373,19 @@ static void tmr6_pwmn_enable(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration
     stcPwmInit.u32UdfPolarity             = TMR6_PWM_HIGH;
     stcPwmInit.u32OvfPolarity             = TMR6_PWM_HIGH;
     TMR6_PWM_Init(TMR6x, ch, &stcPwmInit);
+    /* Flags whether the channel complements output */
+    for (i=0; i<PWM_TIM6_UNIT_NUM; i++)
+    {
+        if (g_pwm_tmr6_array[i].instance == TMR6x)
+        {
+            g_pwm_tmr6_array[i].complementary[ch] = RT_TRUE;
+        }
+    }
+    if (0 == stcPwmInit.u32CompareValue || stcPwmInit.u32CompareValue == TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A)) {
+        tmr6_duyt100or0_output(TMR6x, configuration->channel, stcPwmInit.u32CompareValue);
+    } else {
+        TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_INVD);
+    }
 }
 
 static rt_err_t tmr6_pwm_enable(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration *configuration, rt_bool_t enable)
@@ -1306,7 +1413,7 @@ static rt_err_t tmr6_pwm_get(CM_TMR6_TypeDef *TMR6x, struct rt_pwm_configuration
     rt_uint32_t u32clkFreq;
     rt_uint64_t u64clk_ns;
     u32clkFreq = tmr6_get_clk_bydiv(TMR6x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     configuration->period = u64clk_ns * TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A);
     configuration->pulse = u64clk_ns * TMR6_GetCompareValue(TMR6x, (configuration->channel % TMR6_CHANNEL_NUM_MAX));
     return RT_EOK;
@@ -1318,18 +1425,18 @@ static rt_uint64_t tmr6_auto_set_div(CM_TMR6_TypeDef *TMR6x, uint32_t period)
     rt_uint64_t u64clk_ns;
     rt_uint64_t u64val;
     u32clkFreq = tmr6_get_clk_bydiv(TMR6x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     u64val = (rt_uint64_t)period / u64clk_ns;
     /* clk not match, need change div */
-    if ((period <= u64clk_ns) || (u64val > 0xFFFF))
+    if ((period <= u64clk_ns) || (u64val > 0xFFFFU))
     {
         uint32_t div_bit;
         u32clkFreq = tmr6_get_clk_notdiv(TMR6x);
-        u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+        u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
         u64val = (rt_uint64_t)period / u64clk_ns;
         for (div_bit = 0; div_bit <= 10; div_bit++)
         {
-            if (u64val < 0xFFFF)
+            if (u64val < 0xFFFFU)
             {
                 break;
             }
@@ -1337,11 +1444,11 @@ static rt_uint64_t tmr6_auto_set_div(CM_TMR6_TypeDef *TMR6x, uint32_t period)
         }
         if (div_bit > 10)
         {
-            return RT_ERROR;
+            return 0;
         }
         TMR6_SetClockDiv(TMR6x, div_bit << TMR6_GCONR_CKDIV_POS);
         u32clkFreq = tmr6_get_clk_bydiv(TMR6x);
-        u64clk_ns = (rt_uint64_t)(1000000000ul / u32clkFreq);
+        u64clk_ns = (rt_uint64_t)(1000000000UL / u32clkFreq);
     }
     return u64clk_ns;
 }
@@ -1350,6 +1457,9 @@ static rt_err_t tmr6_pwm_set_period(CM_TMR6_TypeDef *TMR6x, uint32_t channel, ui
 {
     rt_uint8_t i,j;
     rt_uint64_t u64clk_ns = tmr6_auto_set_div(TMR6x, period);
+    if (!u64clk_ns) {
+        return -RT_ERROR;
+    }
     TMR6_SetPeriodValue(TMR6x, TMR6_PERIOD_REG_A, period / u64clk_ns);
     /* setting PeriodValue maybe change the div,so we need to recalculate the CompareValue */
     for (i=0; i<PWM_TIM6_UNIT_NUM; i++)
@@ -1371,24 +1481,26 @@ static rt_err_t tmr6_pwm_set_pulse(CM_TMR6_TypeDef *TMR6x, uint32_t channel, uin
 {
     rt_uint8_t i;
     rt_uint32_t u32clkFreq;
+    rt_uint32_t CompareValue;
     rt_uint64_t u64clk_ns;
     rt_uint8_t ch = channel % TMR6_CHANNEL_NUM_MAX;
     u32clkFreq = tmr6_get_clk_bydiv(TMR6x);
-    u64clk_ns = (rt_uint64_t)1000000000ul / u32clkFreq;
+    u64clk_ns = (rt_uint64_t)1000000000UL / u32clkFreq;
     TMR6_SetCompareValue(TMR6x, ch, pulse / u64clk_ns);
+    CompareValue = TMR6_GetCompareValue(TMR6x, ch);
     for (i=0; i<PWM_TIM6_UNIT_NUM; i++)
     {
         if (g_pwm_tmr6_array[i].instance == TMR6x)
         {
             g_pwm_tmr6_array[i].stcPwmInit[ch].u32CompareValue = pulse;
-            /* Realize 100% duty output */
-            if (g_pwm_tmr6_array[i].stcTmr6Init.u32PeriodValue == pulse) {
-                TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_HIGH);
-            } else {
-                TMR6_PWM_SetForcePolarity(TMR6x, ch, TMR6_PWM_FORCE_INVD);
-            }
             break;
         }
+    }
+    if (0 == CompareValue || CompareValue == TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A))
+    {
+        tmr6_duyt100or0_output(TMR6x, channel, CompareValue);
+    } else {
+        TMR6_PWM_SetForcePolarity(TMR6x, channel, TMR6_PWM_FORCE_INVD);
     }
     return RT_EOK;
 }
@@ -1453,66 +1565,66 @@ static void pwm_tmr6_get_channel(void)
 {
 #ifdef BSP_USING_PWM_TIM6_1
     #ifdef BSP_USING_PWM_TIM6_1_A
-        g_pwm_tmr6_array[PWM_TIM6_1_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_1_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_1_B
-        g_pwm_tmr6_array[PWM_TIM6_1_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_1_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_2
     #ifdef BSP_USING_PWM_TIM6_2_A
-        g_pwm_tmr6_array[PWM_TIM6_2_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_2_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_2_B
-        g_pwm_tmr6_array[PWM_TIM6_2_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_2_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_3
     #ifdef BSP_USING_PWM_TIM6_3_A
-        g_pwm_tmr6_array[PWM_TIM6_3_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_3_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_3_B
-        g_pwm_tmr6_array[PWM_TIM6_3_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_3_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_4
     #ifdef BSP_USING_PWM_TIM6_4_A
-        g_pwm_tmr6_array[PWM_TIM6_4_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_4_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_4_B
-        g_pwm_tmr6_array[PWM_TIM6_4_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_4_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_5
     #ifdef BSP_USING_PWM_TIM6_5_A
-        g_pwm_tmr6_array[PWM_TIM6_5_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_5_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_5_B
-        g_pwm_tmr6_array[PWM_TIM6_5_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_5_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_6
     #ifdef BSP_USING_PWM_TIM6_6_A
-        g_pwm_tmr6_array[PWM_TIM6_6_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_6_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_6_B
-        g_pwm_tmr6_array[PWM_TIM6_6_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_6_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_7
     #ifdef BSP_USING_PWM_TIM6_7_A
-        g_pwm_tmr6_array[PWM_TIM6_7_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_7_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_7_B
-        g_pwm_tmr6_array[PWM_TIM6_7_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_7_INDEX].channel |= (1 << 1);
     #endif
 #endif
 #ifdef BSP_USING_PWM_TIM6_8
     #ifdef BSP_USING_PWM_TIM6_8_A
-        g_pwm_tmr6_array[PWM_TIM6_8_INDEX].channel |= 1 << 0;
+        g_pwm_tmr6_array[PWM_TIM6_8_INDEX].channel |= (1 << 0);
     #endif
     #ifdef BSP_USING_PWM_TIM6_8_B
-        g_pwm_tmr6_array[PWM_TIM6_8_INDEX].channel |= 1 << 1;
+        g_pwm_tmr6_array[PWM_TIM6_8_INDEX].channel |= (1 << 1);
     #endif
 #endif
 }

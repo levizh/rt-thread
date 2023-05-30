@@ -16,7 +16,7 @@
 #define LOG_TAG             "drv_wdt"
 #include <drv_log.h>
 
-#define CLK_DIV             8192U
+#define CLK_DIV             (8192U)
 
 struct hc32_wdt_obj
 {
@@ -35,16 +35,16 @@ static rt_uint32_t wdt_get_timeout_ms(void)
     switch (hc32_wdt.stcwdg.u32CountPeriod)
     {
     case WDT_CNT_PERIOD256:
-        CountPeriod = 256;
+        CountPeriod = 256U;
         break;
     case WDT_CNT_PERIOD4096:
-        CountPeriod = 4096;
+        CountPeriod = 4096U;
         break;
     case WDT_CNT_PERIOD16384:
-        CountPeriod = 16384;
+        CountPeriod = 16384U;
         break;
     case WDT_CNT_PERIOD65536:
-        CountPeriod = 65536;
+        CountPeriod = 65536U;
         break;
     default:
         break;

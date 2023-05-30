@@ -205,7 +205,7 @@
 #endif
 
 #if defined(RT_USING_PWM)
-/***********  PWM_TIMA configure *********/
+/*********** PWM_TIMA configure *********/
 #if defined(BSP_USING_PWM_TIMA_1)
 #if defined(BSP_USING_PWM_TIMA_1_CH1)
     #define PWM_TIMA_1_CH1_PORT             (GPIO_PORT_A)
@@ -482,7 +482,7 @@
 #endif
 #endif
 
-/***********  PWM_TIM4 configure *********/
+/*********** PWM_TIM4 configure *********/
 #if defined(BSP_USING_PWM_TIM4_1)
 #if defined(BSP_USING_PWM_TIM4_1_OUH)
     #define PWM_TIM4_1_OUH_PORT             (GPIO_PORT_E)
@@ -580,7 +580,7 @@
 #endif
 #endif
 
-/***********  PWM_TIM6 configure *********/
+/*********** PWM_TIM6 configure *********/
 #if defined(BSP_USING_PWM_TIM6_1)
 #if defined(BSP_USING_PWM_TIM6_1_A)
     #define PWM_TIM6_1_A_PORT               (GPIO_PORT_F)

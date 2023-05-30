@@ -375,11 +375,6 @@ menu "On-chip Peripheral Drivers"
                     bool "Using Hardware SHA2_256 mode"
                     select RT_HWCRYPTO_USING_SHA2_256
                     default y
-                    if BSP_USING_SHA2_256
-                        config BSP_HASH_USING_DMA
-                            bool "Enable Hash DMA"
-                            default y
-                    endif
             endif
 
         endif
