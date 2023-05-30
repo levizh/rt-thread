@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -48,7 +47,7 @@
 #if defined (HC32F460)
     #define FCG_USART_CLK               FCG_Fcg1PeriphClockCmd
 
-#elif defined (HC32F4A0)
+#elif defined(HC32F4A0) || defined(HC32F4A2)
     #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
 #endif
 
@@ -156,7 +155,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     uart_init.u32OverSampleBit = USART_OVER_SAMPLE_8BIT;
     uart_init.u32Baudrate = cfg->baud_rate;
     uart_init.u32ClockSrc = USART_CLK_SRC_INTERNCLK;
-#if defined (HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
             (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
 #elif defined (HC32F460)
@@ -217,7 +216,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     {
         uart_init.u32FirstBit = USART_FIRST_BIT_MSB;
     }
-#if defined (HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
     switch (cfg->flowcontrol)
     {
     case RT_SERIAL_FLOWCONTROL_NONE:
@@ -463,7 +462,7 @@ static void hc32_uart_rx_timeout(struct rt_serial_device *serial)
     {
         RT_ASSERT(TMR0_CH_B == ch);
     }
-#elif defined (HC32F4A0)
+#elif defined(HC32F4A0) || defined(HC32F4A2)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART6 == uart->config->Instance))
     {
         RT_ASSERT(TMR0_CH_A == ch);
@@ -477,7 +476,6 @@ static void hc32_uart_rx_timeout(struct rt_serial_device *serial)
     FCG_TMR0_CLK(uart->config->rx_timeout->clock, ENABLE);
 
     /* TIMER0 basetimer function initialize */
-    TMR0_DeInit(TMR0_Instance);
     TMR0_SetCountValue(TMR0_Instance, ch, 0U);
     TMR0_StructInit(&stcTmr0Init);
     stcTmr0Init.u32ClockDiv = TMR0_CLK_DIV1;

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -67,7 +66,7 @@ static void _adc_internal_trigger0_set(adc_device *p_adc_dev)
         return;
     }
 
-#if defined(HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
     switch ((rt_uint32_t)p_adc_dev->instance)
     {
     case (rt_uint32_t)CM_ADC1:
@@ -114,7 +113,7 @@ static void _adc_internal_trigger1_set(adc_device *p_adc_dev)
         return;
     }
 
-#if defined(HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
     switch ((rt_uint32_t)p_adc_dev->instance)
     {
     case (rt_uint32_t)CM_ADC1:
@@ -202,7 +201,7 @@ static struct rt_adc_ops g_adc_ops =
 
 static void _adc_clock_enable(void)
 {
-#if defined(HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
 #if defined(BSP_USING_ADC1)
     FCG_Fcg3PeriphClockCmd(FCG3_PERIPH_ADC1, ENABLE);
 #endif

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -23,7 +22,7 @@
     #error "Please define at least one BSP_USING_CANx"
 #endif
 
-#if defined (HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
     #define FILTER_COUNT                                    (16)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -74,7 +73,7 @@ typedef struct
 
 static can_device g_can_dev_array[] =
 {
-#if defined (HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
 #ifdef BSP_USING_CAN1
     {
         {0},
@@ -160,7 +159,7 @@ static rt_err_t _can_config(struct rt_can_device *can, struct can_configure *cfg
     int32_t ret = CAN_Init(p_can_dev->instance, &p_can_dev->ll_init);
     if (ret != LL_OK)
     {
-        rt_ret = RT_EINVAL;
+        rt_ret = -RT_EINVAL;
     }
 
     return rt_ret;
@@ -172,22 +171,22 @@ static uint16_t _get_filter_idx(struct rt_can_filter_config *filter_cfg)
 
     for (int i = 0; i < filter_cfg->count; i++)
     {
-        if (filter_cfg->items[i].hdr != -1)
+        if (filter_cfg->items[i].hdr_bank != -1)
         {
-            u16FilterSelected |= 1 << filter_cfg->items[i].hdr;
+            u16FilterSelected |= 1 << filter_cfg->items[i].hdr_bank;
         }
     }
 
     for (int i = 0; i < filter_cfg->count; i++)
     {
-        if (filter_cfg->items[i].hdr == -1)
+        if (filter_cfg->items[i].hdr_bank == -1)
         {
             for (int j = 0; j < FILTER_COUNT; j++)
             {
                 if ((u16FilterSelected & 1 << j) == 0)
                 {
-                    filter_cfg->items[i].hdr = j;
-                    u16FilterSelected |= 1 << filter_cfg->items[i].hdr;
+                    filter_cfg->items[i].hdr_bank = j;
+                    u16FilterSelected |= 1 << filter_cfg->items[i].hdr_bank;
                     break;
                 }
             }
@@ -390,7 +389,7 @@ static int _can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t 
     ll_ret = CAN_FillTxFrame(p_can_dev->instance, CAN_TX_BUF_PTB, &stc_tx_frame);
     if (ll_ret != LL_OK)
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     /* Request transmission */
     CAN_StartTx(p_can_dev->instance, CAN_TX_REQ_PTB);
@@ -435,8 +434,8 @@ static int _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
     }
     /* get len */
     pmsg->len = ll_rx_frame.DLC;
-    /* get hdr */
-    pmsg->hdr = 0;
+    /* get hdr_index */
+    pmsg->hdr_index = 0;
     rt_memcpy(pmsg->data, &ll_rx_frame.au8Data, ll_rx_frame.DLC);
 
     return RT_EOK;
@@ -582,7 +581,7 @@ static void _can2_irq_handler(void)
 
 static void _can_clock_enable(void)
 {
-#if defined(HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A2)
 #if defined(BSP_USING_CAN1)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
 #endif

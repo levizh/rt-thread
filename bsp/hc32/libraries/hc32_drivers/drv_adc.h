@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -64,14 +63,14 @@ struct adc_dev_init_params
 /*******************************************************************************
  * Global function prototypes (definition in C source)
  ******************************************************************************/
-int rt_hw_uart_init(void);
+int rt_hw_adc_init(void);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __DRV_USART_H__ */
+#endif /* __DRV_ADC_H__ */
 
 /*******************************************************************************
  * EOF (not truncated)

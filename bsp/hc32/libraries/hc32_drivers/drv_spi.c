@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -156,7 +155,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
     /* SI/SO pin shared */
     if (cfg->mode & RT_SPI_3WIRE)
     {
-        return RT_EINVAL;
+        return -RT_EINVAL;
     }
     else
     {
@@ -212,7 +211,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
     }
     else
     {
-        return RT_EIO;
+        return -RT_EIO;
     }
     /* Get BUS clock */
     CLK_GetClockFreq(&stcClkFreq);
@@ -258,7 +257,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
     rt_hw_spi_board_init(spi_instance);
     if (LL_OK != SPI_Init(spi_instance, &stcSpiInit))
     {
-        return RT_EIO;
+        return -RT_EIO;
     }
 
     /* DMA configuration */
@@ -296,7 +295,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
         /* Init Dma */
         if (LL_OK != DMA_Init(spi_dma->Instance, spi_dma->channel, &stcDmaInit))
         {
-            return RT_EIO;
+            return -RT_EIO;
         }
         NVIC_EnableIRQ(spi_dma->irq_config.irq_num);
         /* Enable Dma */
@@ -335,7 +334,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
         /* Init Dma */
         if (LL_OK != DMA_Init(spi_dma->Instance, spi_dma->channel, &stcDmaInit))
         {
-            return RT_EIO;
+            return -RT_EIO;
         }
         NVIC_EnableIRQ(spi_dma->irq_config.irq_num);
         /* Enable Dma */
@@ -441,8 +440,16 @@ static rt_uint32_t hc32_spi_xfer(struct rt_spi_device *device, struct rt_spi_mes
 
         /* calculate the start address */
         already_send_length = message->length - send_length - message_length;
-        send_buf = (rt_uint8_t *)message->send_buf + already_send_length;
-        recv_buf = (rt_uint8_t *)message->recv_buf + already_send_length;
+        /* avoid null pointer problems */
+        if (message->send_buf)
+        {
+            send_buf = (rt_uint8_t *)message->send_buf + already_send_length;
+        }
+        if (message->recv_buf)
+        {
+            recv_buf = (rt_uint8_t *)message->recv_buf + already_send_length;
+        }
+        
         if (message->send_buf && message->recv_buf)
         {
             if ((spi_drv->spi_dma_flag & RT_DEVICE_FLAG_DMA_TX) && (spi_drv->spi_dma_flag & RT_DEVICE_FLAG_DMA_RX))
