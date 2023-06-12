@@ -518,6 +518,28 @@ menu "On-chip Peripheral Drivers"
 
         endif
 
+    menuconfig BSP_USING_PULSE_ENCODER
+        bool "Enable Pulse Encoder"
+        default n
+        select RT_USING_PULSE_ENCODER
+        if BSP_USING_PULSE_ENCODER
+            menuconfig BSP_USING_TIMERA_PULSE_ENCODER
+                bool "Use TIMERA As The Pulse Encoder"
+                default n
+                if BSP_USING_TIMERA_PULSE_ENCODER
+                    config BSP_USING_PULSE_ENCODER_TIMA_1
+                        bool "Use TIMERA_1 As The Pulse Encoder"
+                        default n
+                endif
+            menuconfig BSP_USING_TIMER6_PULSE_ENCODER
+                bool "Use TIMER6 As The Pulse Encoder"
+                default n
+                if BSP_USING_TIMER6_PULSE_ENCODER
+                    config BSP_USING_PULSE_ENCODER_TIM6_1
+                        bool "Use TIMER6_1 As The Pulse Encoder"
+                        default n
+                endif
+        endif
 
 endmenu
 

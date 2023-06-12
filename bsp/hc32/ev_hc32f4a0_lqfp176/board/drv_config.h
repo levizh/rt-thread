@@ -29,6 +29,7 @@ extern "C" {
 #include "can_config.h"
 #include "sdio_config.h"
 #include "pm_config.h"
+#include "pulse_encoder_config.h"
 
 #ifdef __cplusplus
 }

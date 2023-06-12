@@ -1,0 +1,457 @@
+/*
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author            Notes
+ * 2023-06-09     CDT               first version
+ */
+
+#ifndef __PULSE_ENCODER_CONFIG_H__
+#define __PULSE_ENCODER_CONFIG_H__
+
+#include <rtthread.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(RT_USING_PULSE_ENCODER)
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_1
+#ifndef PULSE_ENCODER_TIMA_1_CONFIG
+#define PULSE_ENCODER_TIMA_1_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_1,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_1, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_1_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_1_UDF,   \
+            .enIRQn   = INT135_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a1"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_1_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_1 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_2
+#ifndef PULSE_ENCODER_TIMA_2_CONFIG
+#define PULSE_ENCODER_TIMA_2_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_2,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_2, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_2_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_2_UDF,   \
+            .enIRQn   = INT135_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a2"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_2_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_2 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_3
+#ifndef PULSE_ENCODER_TIMA_3_CONFIG
+#define PULSE_ENCODER_TIMA_3_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_3,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_3, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_3_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_3_UDF,   \
+            .enIRQn   = INT136_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a3"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_3_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_3 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_4
+#ifndef PULSE_ENCODER_TIMA_4_CONFIG
+#define PULSE_ENCODER_TIMA_4_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_4,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_4, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_4_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_4_UDF,   \
+            .enIRQn   = INT136_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a4"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_4_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_4 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_5
+#ifndef PULSE_ENCODER_TIMA_5_CONFIG
+#define PULSE_ENCODER_TIMA_5_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_5,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_5, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_5_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_5_UDF,   \
+            .enIRQn   = INT138_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a5"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_5_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_5 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_6
+#ifndef PULSE_ENCODER_TIMA_6_CONFIG
+#define PULSE_ENCODER_TIMA_6_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_6,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_6, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_6_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_6_UDF,   \
+            .enIRQn   = INT138_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a6"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_6_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_6 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_7
+#ifndef PULSE_ENCODER_TIMA_7_CONFIG
+#define PULSE_ENCODER_TIMA_7_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_7,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_7, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_7_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_7_UDF,   \
+            .enIRQn   = INT138_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a7"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_7_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_7 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_8
+#ifndef PULSE_ENCODER_TIMA_8_CONFIG
+#define PULSE_ENCODER_TIMA_8_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_8,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_8, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_8_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_8_UDF,   \
+            .enIRQn   = INT138_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a8"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_8_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_8 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_9
+#ifndef PULSE_ENCODER_TIMA_9_CONFIG
+#define PULSE_ENCODER_TIMA_9_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMRA_9,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_9, \
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_9_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMRA_9_UDF,   \
+            .enIRQn   = INT139_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a9"     \
+    }
+#endif /* PULSE_ENCODER_TIMA_9_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_9 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_10
+#ifndef PULSE_ENCODER_TIMA_10_CONFIG
+#define PULSE_ENCODER_TIMA_10_CONFIG              \
+    {                                             \
+       .tim_handler             = CM_TMRA_10,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_10,\
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_10_OVF,  \
+            .enIntSrc_UDF = INT_SRC_TMRA_10_UDF,  \
+            .enIRQn   = INT139_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a10"    \
+    }
+#endif /* PULSE_ENCODER_TIMA_10_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_10 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_11
+#ifndef PULSE_ENCODER_TIMA_11_CONFIG
+#define PULSE_ENCODER_TIMA_11_CONFIG              \
+    {                                             \
+       .tim_handler             = CM_TMRA_11,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_11,\
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_11_OVF,  \
+            .enIntSrc_UDF = INT_SRC_TMRA_11_UDF,  \
+            .enIRQn   = INT139_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a11"    \
+    }
+#endif /* PULSE_ENCODER_TIMA_11_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_11 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_12
+#ifndef PULSE_ENCODER_TIMA_12_CONFIG
+#define PULSE_ENCODER_TIMA_12_CONFIG              \
+    {                                             \
+       .tim_handler             = CM_TMRA_12,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMRA_12,\
+       .hw_count = {                              \
+            .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
+            .u16CountDownCond = TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMRA_12_OVF,  \
+            .enIntSrc_UDF = INT_SRC_TMRA_12_UDF,  \
+            .enIRQn   = INT139_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_a12"    \
+    }
+#endif /* PULSE_ENCODER_TIMA_12_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIMA_12 */
+
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_1
+#ifndef PULSE_ENCODER_TIM6_1_CONFIG
+#define PULSE_ENCODER_TIM6_1_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_1,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_1, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_1_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_1_UDF,   \
+            .enIRQn   = INT132_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_61"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_1_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_1 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_2
+#ifndef PULSE_ENCODER_TIM6_2_CONFIG
+#define PULSE_ENCODER_TIM6_2_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_2,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_2, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_2_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_2_UDF,   \
+            .enIRQn   = INT132_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_62"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_2_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_2 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_3
+#ifndef PULSE_ENCODER_TIM6_3_CONFIG
+#define PULSE_ENCODER_TIM6_3_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_3,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_3, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_3_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_3_UDF,   \
+            .enIRQn   = INT133_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_63"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_3_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_3 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_4
+#ifndef PULSE_ENCODER_TIM6_4_CONFIG
+#define PULSE_ENCODER_TIM6_4_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_4,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_4, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_4_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_4_UDF,   \
+            .enIRQn   = INT134_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_64"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_4_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_4 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_5
+#ifndef PULSE_ENCODER_TIM6_5_CONFIG
+#define PULSE_ENCODER_TIM6_5_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_5,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_5, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_5_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_5_UDF,   \
+            .enIRQn   = INT135_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_65"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_5_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_5 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_6
+#ifndef PULSE_ENCODER_TIM6_6_CONFIG
+#define PULSE_ENCODER_TIM6_6_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_6,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_6, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_6_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_6_UDF,   \
+            .enIRQn   = INT135_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_66"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_6_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_6 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_7
+#ifndef PULSE_ENCODER_TIM6_7_CONFIG
+#define PULSE_ENCODER_TIM6_7_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_7,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_7, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_7_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_7_UDF,   \
+            .enIRQn   = INT136_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_67"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_7_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_7 */
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_8
+#ifndef PULSE_ENCODER_TIM6_8_CONFIG
+#define PULSE_ENCODER_TIM6_8_CONFIG               \
+    {                                             \
+       .tim_handler              = CM_TMR6_8,     \
+       .u32Fcg2Periph       = FCG2_PERIPH_TMR6_8, \
+       .hw_count = {                              \
+            .u32CountUpCond = TMR6_CNT_UP_COND_PWMA_HIGH_PWMB_RISING,     \
+            .u32CountDownCond = TMR6_CNT_DOWN_COND_PWMB_HIGH_PWMA_RISING, \
+       },                                         \
+       .isr = {                                   \
+            .enIntSrc_OVF = INT_SRC_TMR6_8_OVF,   \
+            .enIntSrc_UDF = INT_SRC_TMR6_8_UDF,   \
+            .enIRQn   = INT136_IRQn,              \
+            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+       },                                         \
+       .u32PeriodValue           = 1000UL,        \
+       .name                     = "pulse_68"     \
+    }
+#endif /* PULSE_ENCODER_TIM6_8_CONFIG */
+#endif /* BSP_USING_PULSE_ENCODER_TIM6_8 */
+
+#endif /* RT_USING_PULSE_ENCODER */
+
+#endif /* __PULSE_ENCODER_CONFIG_H__ */
