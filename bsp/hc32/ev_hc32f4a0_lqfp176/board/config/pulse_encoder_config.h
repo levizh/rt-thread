@@ -31,9 +31,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_1_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_1_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_1_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_1_UDF,   \
-            .enIRQn   = INT135_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_1_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_1_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a1"     \
@@ -53,9 +55,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_2_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_2_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_2_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_2_UDF,   \
-            .enIRQn   = INT135_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_2_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_2_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a2"     \
@@ -75,9 +79,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_3_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_3_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_3_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_3_UDF,   \
-            .enIRQn   = INT136_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_3_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_3_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a3"     \
@@ -97,9 +103,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_4_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_4_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_4_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_4_UDF,   \
-            .enIRQn   = INT136_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_4_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_4_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a4"     \
@@ -119,9 +127,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_5_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_5_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_5_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_5_UDF,   \
-            .enIRQn   = INT138_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_5_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_5_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a5"     \
@@ -141,9 +151,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_6_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_6_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_6_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_6_UDF,   \
-            .enIRQn   = INT138_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_6_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_6_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a6"     \
@@ -163,9 +175,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_7_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_7_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_7_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_7_UDF,   \
-            .enIRQn   = INT138_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_7_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_7_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a7"     \
@@ -185,9 +199,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_8_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_8_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_8_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_8_UDF,   \
-            .enIRQn   = INT138_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_8_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_8_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a8"     \
@@ -207,9 +223,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_9_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_9_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_9_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMRA_9_UDF,   \
-            .enIRQn   = INT139_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_9_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_9_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a9"     \
@@ -221,7 +239,7 @@ extern "C" {
 #ifndef PULSE_ENCODER_TIMA_10_CONFIG
 #define PULSE_ENCODER_TIMA_10_CONFIG              \
     {                                             \
-       .tim_handler             = CM_TMRA_10,     \
+       .tim_handler              = CM_TMRA_10,    \
        .u32Fcg2Periph       = FCG2_PERIPH_TMRA_10,\
        .hw_count = {                              \
             .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
@@ -229,9 +247,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_10_OVF,  \
-            .enIntSrc_UDF = INT_SRC_TMRA_10_UDF,  \
-            .enIRQn   = INT139_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_10_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_10_OVF_IRQ_PRIO,      \
+            .enIntSrc_UDF = INT_SRC_TMRA_10_UDF,   \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_10_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_10_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a10"    \
@@ -243,7 +263,7 @@ extern "C" {
 #ifndef PULSE_ENCODER_TIMA_11_CONFIG
 #define PULSE_ENCODER_TIMA_11_CONFIG              \
     {                                             \
-       .tim_handler             = CM_TMRA_11,     \
+       .tim_handler              = CM_TMRA_11,    \
        .u32Fcg2Periph       = FCG2_PERIPH_TMRA_11,\
        .hw_count = {                              \
             .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
@@ -251,9 +271,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_11_OVF,  \
-            .enIntSrc_UDF = INT_SRC_TMRA_11_UDF,  \
-            .enIRQn   = INT139_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_11_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_11_OVF_IRQ_PRIO,      \
+            .enIntSrc_UDF = INT_SRC_TMRA_11_UDF,   \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_11_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_11_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a11"    \
@@ -265,7 +287,7 @@ extern "C" {
 #ifndef PULSE_ENCODER_TIMA_12_CONFIG
 #define PULSE_ENCODER_TIMA_12_CONFIG              \
     {                                             \
-       .tim_handler             = CM_TMRA_12,     \
+       .tim_handler              = CM_TMRA_12,    \
        .u32Fcg2Periph       = FCG2_PERIPH_TMRA_12,\
        .hw_count = {                              \
             .u16CountUpCond = TMRA_CNT_UP_COND_CLKA_HIGH_CLKB_RISING,     \
@@ -273,9 +295,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMRA_12_OVF,  \
-            .enIntSrc_UDF = INT_SRC_TMRA_12_UDF,  \
-            .enIRQn   = INT139_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIMA_12_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIMA_12_OVF_IRQ_PRIO,      \
+            .enIntSrc_UDF = INT_SRC_TMRA_12_UDF,   \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIMA_12_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIMA_12_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_a12"    \
@@ -295,9 +319,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_1_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_1_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_1_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_1_UDF,   \
-            .enIRQn   = INT132_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_1_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_1_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_61"     \
@@ -316,9 +342,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_2_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_2_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_2_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_2_UDF,   \
-            .enIRQn   = INT132_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_2_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_2_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_62"     \
@@ -337,9 +365,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_3_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_3_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_3_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_3_UDF,   \
-            .enIRQn   = INT133_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_3_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_3_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_63"     \
@@ -358,9 +388,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_4_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_4_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_4_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_4_UDF,   \
-            .enIRQn   = INT134_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_4_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_4_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_64"     \
@@ -379,9 +411,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_5_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_5_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_5_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_5_UDF,   \
-            .enIRQn   = INT135_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_5_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_5_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_65"     \
@@ -400,9 +434,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_6_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_6_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_6_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_6_UDF,   \
-            .enIRQn   = INT135_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_6_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_6_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_66"     \
@@ -421,9 +457,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_7_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_7_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_7_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_7_UDF,   \
-            .enIRQn   = INT136_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_7_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_7_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_67"     \
@@ -442,9 +480,11 @@ extern "C" {
        },                                         \
        .isr = {                                   \
             .enIntSrc_OVF = INT_SRC_TMR6_8_OVF,   \
+            .enIRQn_OVF = BSP_PULSE_ENCODER_TIM6_8_OVF_IRQ_NUM,           \
+            .u8Int_Prio_OVF = BSP_PULSE_ENCODER_TIM6_8_OVF_IRQ_PRIO,      \
             .enIntSrc_UDF = INT_SRC_TMR6_8_UDF,   \
-            .enIRQn   = INT136_IRQn,              \
-            .u8Int_Prio   = DDL_IRQ_PRIO_03,      \
+            .enIRQn_UDF = BSP_PULSE_ENCODER_TIM6_8_UDF_IRQ_NUM,           \
+            .u8Int_Prio_UDF = BSP_PULSE_ENCODER_TIM6_8_UDF_IRQ_PRIO,      \
        },                                         \
        .u32PeriodValue           = 1000UL,        \
        .name                     = "pulse_68"     \

@@ -13,7 +13,7 @@
 
 #ifdef RT_USING_PULSE_ENCODER
 
-//#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv.pulse_encoder"
 #include <drv_log.h>
 
@@ -78,9 +78,13 @@ struct hc32_pulse_encoder_tima_device
     } hw_count;
     struct {
         en_int_src_t enIntSrc_OVF;
+        IRQn_Type enIRQn_OVF;
+        uint8_t u8Int_Prio_OVF;
+        func_ptr_t irq_Ovf_callback;
         en_int_src_t enIntSrc_UDF;
-        IRQn_Type enIRQn;
-        uint8_t u8Int_Prio;
+        IRQn_Type enIRQn_UDF;
+        uint8_t u8Int_Prio_UDF;
+        func_ptr_t irq_Udf_callback;
     } isr;
     rt_uint32_t u32PeriodValue;
     rt_int32_t over_under_flowcount;
@@ -128,153 +132,211 @@ static struct hc32_pulse_encoder_tima_device hc32_pulse_encoder_tima_obj[] =
 };
 
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_1
-void TMRA_1_Ovf_IrqHandler(void)
+static void TMRA_1_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].over_under_flowcount++;
 }
-void TMRA_1_Udf_IrqHandler(void)
+static void TMRA_1_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_2
-void TMRA_2_Ovf_IrqHandler(void)
+static void TMRA_2_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].over_under_flowcount++;
 }
-void TMRA_2_Udf_IrqHandler(void)
+static void TMRA_2_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_3
-void TMRA_3_Ovf_IrqHandler(void)
+static void TMRA_3_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].over_under_flowcount++;
 }
-void TMRA_3_Udf_IrqHandler(void)
+static void TMRA_3_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_4
-void TMRA_4_Ovf_IrqHandler(void)
+static void TMRA_4_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].over_under_flowcount++;
 }
-void TMRA_4_Udf_IrqHandler(void)
+static void TMRA_4_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_5
-void TMRA_5_Ovf_IrqHandler(void)
+static void TMRA_5_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].over_under_flowcount++;
 }
-void TMRA_5_Udf_IrqHandler(void)
+static void TMRA_5_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_6
-void TMRA_6_Ovf_IrqHandler(void)
+static void TMRA_6_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].over_under_flowcount++;
 }
-void TMRA_6_Udf_IrqHandler(void)
+static void TMRA_6_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_7
-void TMRA_7_Ovf_IrqHandler(void)
+static void TMRA_7_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].over_under_flowcount++;
 }
-void TMRA_7_Udf_IrqHandler(void)
+static void TMRA_7_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_8
-void TMRA_8_Ovf_IrqHandler(void)
+static void TMRA_8_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].over_under_flowcount++;
 }
-void TMRA_8_Udf_IrqHandler(void)
+static void TMRA_8_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_9
-void TMRA_9_Ovf_IrqHandler(void)
+static void TMRA_9_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].over_under_flowcount++;
 }
-void TMRA_9_Udf_IrqHandler(void)
+static void TMRA_9_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_10
-void TMRA_10_Ovf_IrqHandler(void)
+static void TMRA_10_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].over_under_flowcount++;
 }
-void TMRA_10_Udf_IrqHandler(void)
+static void TMRA_10_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_11
-void TMRA_11_Ovf_IrqHandler(void)
+static void TMRA_11_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].over_under_flowcount++;
 }
-void TMRA_11_Udf_IrqHandler(void)
+static void TMRA_11_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIMA_12
-void TMRA_12_Ovf_IrqHandler(void)
+static void TMRA_12_Ovf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].tim_handler, TMRA_FLAG_OVF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].over_under_flowcount++;
 }
-void TMRA_12_Udf_IrqHandler(void)
+static void TMRA_12_Udf_callback(void)
 {
     TMRA_ClearStatus(hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].tim_handler, TMRA_FLAG_UDF);
     hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].over_under_flowcount--;
 }
 #endif
 
+/**
+  * @brief  This function gets pulse_encoder_tima irq handle.
+  * @param  None
+  * @retval None
+  */
+static void hc32_get_pulse_encoder_tima_callback(void)
+{
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_1
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].isr.irq_Ovf_callback = TMRA_1_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_1_INDEX].isr.irq_Udf_callback = TMRA_1_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_2
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].isr.irq_Ovf_callback = TMRA_2_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_2_INDEX].isr.irq_Udf_callback = TMRA_2_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_3
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].isr.irq_Ovf_callback = TMRA_3_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_3_INDEX].isr.irq_Udf_callback = TMRA_3_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_4
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].isr.irq_Ovf_callback = TMRA_4_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_4_INDEX].isr.irq_Udf_callback = TMRA_4_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_5
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].isr.irq_Ovf_callback = TMRA_5_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_5_INDEX].isr.irq_Udf_callback = TMRA_5_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_6
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].isr.irq_Ovf_callback = TMRA_6_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_6_INDEX].isr.irq_Udf_callback = TMRA_6_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_7
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].isr.irq_Ovf_callback = TMRA_7_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_7_INDEX].isr.irq_Udf_callback = TMRA_7_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_8
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].isr.irq_Ovf_callback = TMRA_8_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_8_INDEX].isr.irq_Udf_callback = TMRA_8_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_9
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].isr.irq_Ovf_callback = TMRA_9_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_9_INDEX].isr.irq_Udf_callback = TMRA_9_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_10
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].isr.irq_Ovf_callback = TMRA_10_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_10_INDEX].isr.irq_Udf_callback = TMRA_10_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_11
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].isr.irq_Ovf_callback = TMRA_11_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_11_INDEX].isr.irq_Udf_callback = TMRA_11_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIMA_12
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].isr.irq_Ovf_callback = TMRA_12_Ovf_callback;
+    hc32_pulse_encoder_tima_obj[PULSE_ENCODER_TIMA_12_INDEX].isr.irq_Udf_callback = TMRA_12_Udf_callback;
+#endif
+}
+
 rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
 {
     stc_tmra_init_t stcTmraInit;
+    stc_irq_signin_config_t stcIrq;
     struct hc32_pulse_encoder_tima_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tima_device*)pulse_encoder;
 
@@ -289,17 +351,25 @@ rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
     stcTmraInit.u32PeriodValue = hc32_device->u32PeriodValue;
     (void)TMRA_Init(hc32_device->tim_handler, &stcTmraInit);
 
+    /* OVF interrupt configuration */
+    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_OVF;
+    stcIrq.enIRQn      = hc32_device->isr.enIRQn_OVF;
+    stcIrq.pfnCallback = hc32_device->isr.irq_Ovf_callback;
+    (void)INTC_IrqSignIn(&stcIrq);
+    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
+    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_OVF);
+    NVIC_EnableIRQ(stcIrq.enIRQn);
+    /* UDF interrupt configuration */
+    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_UDF;
+    stcIrq.enIRQn      = hc32_device->isr.enIRQn_UDF;
+    stcIrq.pfnCallback = hc32_device->isr.irq_Udf_callback;
+    (void)INTC_IrqSignIn(&stcIrq);
+    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
+    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_UDF);
+    NVIC_EnableIRQ(stcIrq.enIRQn);
+
     /* Enable the specified interrupts of TimerA. */
     TMRA_IntCmd(hc32_device->tim_handler, TMRA_INT_OVF | TMRA_INT_UDF, ENABLE);
-
-    /* OVF interrupt configuration */
-    (void)INTC_ShareIrqCmd(hc32_device->isr.enIntSrc_OVF, ENABLE);
-    /* UDF interrupt configuration */
-    (void)INTC_ShareIrqCmd(hc32_device->isr.enIntSrc_UDF, ENABLE);
-
-    NVIC_ClearPendingIRQ(hc32_device->isr.enIRQn);
-    NVIC_SetPriority(hc32_device->isr.enIRQn, hc32_device->isr.u8Int_Prio);
-    NVIC_EnableIRQ(hc32_device->isr.enIRQn);
 
     LOG_D("pulse_encoder_tima_init");
 
@@ -406,9 +476,13 @@ struct hc32_pulse_encoder_tim6_device
     } hw_count;
     struct {
         en_int_src_t enIntSrc_OVF;
+        IRQn_Type enIRQn_OVF;
+        uint8_t u8Int_Prio_OVF;
+        func_ptr_t irq_Ovf_callback;
         en_int_src_t enIntSrc_UDF;
-        IRQn_Type enIRQn;
-        uint8_t u8Int_Prio;
+        IRQn_Type enIRQn_UDF;
+        uint8_t u8Int_Prio_UDF;
+        func_ptr_t irq_Udf_callback;
     } isr;
     rt_uint32_t u32PeriodValue;
     rt_int32_t over_under_flowcount;
@@ -444,105 +518,147 @@ static struct hc32_pulse_encoder_tim6_device hc32_pulse_encoder_tim6_obj[] =
 };
 
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_1
-void TMR6_1_GOvf_IrqHandler(void)
+void TMR6_1_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].over_under_flowcount++;
 }
-void TMR6_1_GUdf_IrqHandler(void)
+void TMR6_1_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_2
-void TMR6_2_GOvf_IrqHandler(void)
+void TMR6_2_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].over_under_flowcount++;
 }
-void TMR6_2_GUdf_IrqHandler(void)
+void TMR6_2_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_3
-void TMR6_3_GOvf_IrqHandler(void)
+void TMR6_3_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].over_under_flowcount++;
 }
-void TMR6_3_GUdf_IrqHandler(void)
+void TMR6_3_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_4
-void TMR6_4_GOvf_IrqHandler(void)
+void TMR6_4_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].over_under_flowcount++;
 }
-void TMR6_4_GUdf_IrqHandler(void)
+void TMR6_4_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_5
-void TMR6_5_GOvf_IrqHandler(void)
+void TMR6_5_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].over_under_flowcount++;
 }
-void TMR6_5_GUdf_IrqHandler(void)
+void TMR6_5_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_6
-void TMR6_6_GOvf_IrqHandler(void)
+void TMR6_6_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].over_under_flowcount++;
 }
-void TMR6_6_GUdf_IrqHandler(void)
+void TMR6_6_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_7
-void TMR6_7_GOvf_IrqHandler(void)
+void TMR6_7_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].over_under_flowcount++;
 }
-void TMR6_7_GUdf_IrqHandler(void)
+void TMR6_7_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].over_under_flowcount--;
 }
 #endif
 #ifdef BSP_USING_PULSE_ENCODER_TIM6_8
-void TMR6_8_GOvf_IrqHandler(void)
+void TMR6_8_Ovf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].tim_handler, TMR6_FLAG_OVF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].over_under_flowcount++;
 }
-void TMR6_8_GUdf_IrqHandler(void)
+void TMR6_8_Udf_callback(void)
 {
     TMR6_ClearStatus(hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].tim_handler, TMR6_FLAG_UDF);
     hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].over_under_flowcount--;
 }
 #endif
 
+/**
+  * @brief  This function gets pulse_encoder_tim6 irq handle.
+  * @param  None
+  * @retval None
+  */
+static void hc32_get_pulse_encoder_tim6_callback(void)
+{
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_1
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].isr.irq_Ovf_callback = TMR6_1_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_1_INDEX].isr.irq_Udf_callback = TMR6_1_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_2
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].isr.irq_Ovf_callback = TMR6_2_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_2_INDEX].isr.irq_Udf_callback = TMR6_2_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_3
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].isr.irq_Ovf_callback = TMR6_3_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_3_INDEX].isr.irq_Udf_callback = TMR6_3_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_4
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].isr.irq_Ovf_callback = TMR6_4_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_4_INDEX].isr.irq_Udf_callback = TMR6_4_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_5
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].isr.irq_Ovf_callback = TMR6_5_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_5_INDEX].isr.irq_Udf_callback = TMR6_5_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_6
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].isr.irq_Ovf_callback = TMR6_6_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_6_INDEX].isr.irq_Udf_callback = TMR6_6_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_7
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].isr.irq_Ovf_callback = TMR6_7_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_7_INDEX].isr.irq_Udf_callback = TMR6_7_Udf_callback;
+#endif
+#ifdef BSP_USING_PULSE_ENCODER_TIM6_8
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].isr.irq_Ovf_callback = TMR6_8_Ovf_callback;
+    hc32_pulse_encoder_tim6_obj[PULSE_ENCODER_TIM6_8_INDEX].isr.irq_Udf_callback = TMR6_8_Udf_callback;
+#endif
+}
+
 rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
 {
     stc_tmr6_init_t stcTmr6Init;
+    stc_irq_signin_config_t stcIrq;
     struct hc32_pulse_encoder_tim6_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tim6_device*)pulse_encoder;
 
@@ -557,17 +673,25 @@ rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
     stcTmr6Init.u32PeriodValue = hc32_device->u32PeriodValue;
     (void)TMR6_Init(hc32_device->tim_handler, &stcTmr6Init);
 
+    /* OVF interrupt configuration */
+    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_OVF;
+    stcIrq.enIRQn      = hc32_device->isr.enIRQn_OVF;
+    stcIrq.pfnCallback = hc32_device->isr.irq_Ovf_callback;
+    (void)INTC_IrqSignIn(&stcIrq);
+    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
+    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_OVF);
+    NVIC_EnableIRQ(stcIrq.enIRQn);
+    /* UDF interrupt configuration */
+    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_UDF;
+    stcIrq.enIRQn      = hc32_device->isr.enIRQn_UDF;
+    stcIrq.pfnCallback = hc32_device->isr.irq_Udf_callback;
+    (void)INTC_IrqSignIn(&stcIrq);
+    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
+    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_UDF);
+    NVIC_EnableIRQ(stcIrq.enIRQn);
+
     /* Enable the specified interrupts of Timer6. */
     TMR6_IntCmd(hc32_device->tim_handler, TMR6_INT_OVF | TMR6_INT_UDF, ENABLE);
-
-    /* OVF interrupt configuration */
-    (void)INTC_ShareIrqCmd(hc32_device->isr.enIntSrc_OVF, ENABLE);
-    /* UDF interrupt configuration */
-    (void)INTC_ShareIrqCmd(hc32_device->isr.enIntSrc_UDF, ENABLE);
-
-    NVIC_ClearPendingIRQ(hc32_device->isr.enIRQn);
-    NVIC_SetPriority(hc32_device->isr.enIRQn, hc32_device->isr.u8Int_Prio);
-    NVIC_EnableIRQ(hc32_device->isr.enIRQn);
 
     LOG_D("pulse_encoder_tim6_init");
 
@@ -636,6 +760,7 @@ int hw_pulse_encoder_init(void)
 #if defined(BSP_USING_TIMERA_PULSE_ENCODER)
     extern rt_err_t rt_hw_board_pulse_encoder_tmra_init(void);
     result = rt_hw_board_pulse_encoder_tmra_init();
+    hc32_get_pulse_encoder_tima_callback();
     for (i = 0; i < sizeof(hc32_pulse_encoder_tima_obj) / sizeof(hc32_pulse_encoder_tima_obj[0]); i++)
     {
         hc32_pulse_encoder_tima_obj[i].pulse_encoder.type = AB_PHASE_PULSE_ENCODER;
@@ -652,6 +777,7 @@ int hw_pulse_encoder_init(void)
 #if defined(BSP_USING_TIMER6_PULSE_ENCODER)
     extern rt_err_t rt_hw_board_pulse_encoder_tmr6_init(void);
     result = rt_hw_board_pulse_encoder_tmr6_init();
+    hc32_get_pulse_encoder_tim6_callback();
     for (i = 0; i < sizeof(hc32_pulse_encoder_tim6_obj) / sizeof(hc32_pulse_encoder_tim6_obj[0]); i++)
     {
         hc32_pulse_encoder_tim6_obj[i].pulse_encoder.type = AB_PHASE_PULSE_ENCODER;
@@ -669,4 +795,4 @@ int hw_pulse_encoder_init(void)
 }
 INIT_BOARD_EXPORT(hw_pulse_encoder_init);
 
-#endif
+#endif /* RT_USING_PULSE_ENCODER */
