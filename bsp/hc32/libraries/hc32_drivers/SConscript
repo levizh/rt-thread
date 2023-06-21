@@ -13,7 +13,10 @@ if GetDepend(['RT_USING_PIN']):
     src += ['drv_gpio.c']
 
 if GetDepend(['RT_USING_SERIAL']):
-    src += ['drv_usart.c']
+    if GetDepend(['RT_USING_SERIAL_V2']):
+        src += ['drv_usart_v2.c']
+    else:
+        src += ['drv_usart.c']
 
 if GetDepend(['RT_USING_SPI']):
     src += ['drv_spi.c']
@@ -21,8 +24,10 @@ if GetDepend(['RT_USING_SPI']):
 if GetDepend(['RT_USING_QSPI']):
     src += ['drv_qspi.c']
 
-if GetDepend(['RT_USING_I2C', 'RT_USING_I2C_BITOPS']):
-    src += ['drv_soft_i2c.c']
+if GetDepend(['RT_USING_I2C']):
+    src += ['drv_i2c.c']
+    if GetDepend(['RT_USING_I2C_BITOPS']):
+        src += ['drv_soft_i2c.c']
 
 if GetDepend(['BSP_USING_ETH', 'RT_USING_LWIP']):
     src += ['drv_eth.c']
@@ -75,7 +80,13 @@ if GetDepend(['BSP_USING_USBD']):
 if GetDepend(['BSP_USING_USBH']):
     src += ['drv_usbh.c']
 
+if GetDepend(['BSP_USING_ON_CHIP_FLASH', 'SOC_SERIES_HC32F4']):
+    src += ['drv_flash/drv_flash_f4.c']
+
 path = [cwd]
+
+if GetDepend('BSP_USING_ON_CHIP_FLASH'):
+    path += [cwd + '/drv_flash']
 
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)
 

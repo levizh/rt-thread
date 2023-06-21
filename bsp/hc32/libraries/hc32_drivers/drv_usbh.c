@@ -55,7 +55,7 @@ void usb_device_connect_callback(usb_core_instance *pdev)
     if (!connect_status)
     {
         connect_status = RT_TRUE;
-        RT_DEBUG_LOG(RT_DEBUG_USB, ("usb connected\n"));
+        LOG_D("usb connected");
         rt_usbh_root_hub_connect_handler(hcd, USB_FS_PORT, RT_FALSE);
     }
 }
@@ -66,7 +66,7 @@ void usb_device_disconnect_callback(usb_core_instance *pdev)
     if (connect_status)
     {
         connect_status = RT_FALSE;
-        RT_DEBUG_LOG(RT_DEBUG_USB, ("usb disconnnect\n"));
+        LOG_D("usb disconnnect");
         rt_usbh_root_hub_disconnect_handler(hcd, USB_FS_PORT);
     }
 }
@@ -87,80 +87,112 @@ static void usb_host_chx_out_isr(usb_core_instance *pdev, uint8_t chnum)
     u32hcintmsk = READ_REG32(pdev->regs.HC_REGS[chnum]->HCINTMSK);
     u32hcint = u32hcint & u32hcintmsk;
 
-    if (0UL != (u32hcint & USBFS_HCINT_ACK)) {
+    if (0UL != (u32hcint & USBFS_HCINT_ACK))
+    {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
-#if defined(HC32F4A0) || defined(HC32F4A2)
-    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
+#if defined (HC32F4A0) || defined (HC32F4A2)
+    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
+    {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
         usb_host_int_unmskchhltd(pdev, chnum);
     }
 #endif
-    else if (0UL != (u32hcint & USBFS_HCINT_FRMOR)) {
+    else if (0UL != (u32hcint & USBFS_HCINT_FRMOR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_FRMOR);
-    } else if (0UL != (u32hcint & USBFS_HCINT_XFRC)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_XFRC))
+    {
         pdev->host.ErrCnt[chnum] = 0U;
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_XFRC);
         pdev->host.HC_Status[chnum] = HOST_CH_XFERCOMPL;
-    } else if (0UL != (u32hcint & USBFS_HCINT_STALL)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_STALL))
+    {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_STALL);
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         pdev->host.HC_Status[chnum] = HOST_CH_STALL;
-    } else if (0UL != (u32hcint & USBFS_HCINT_NAK)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_NAK))
+    {
         pdev->host.ErrCnt[chnum] = 0U;
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
         pdev->host.HC_Status[chnum] = HOST_CH_NAK;
-    } else if (0UL != (u32hcint & USBFS_HCINT_TXERR)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_TXERR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         pdev->host.ErrCnt[chnum] ++;
         pdev->host.HC_Status[chnum] = HOST_CH_XACTERR;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_TXERR);
-    } else if (0UL != (u32hcint & HCINT_NYET)) {
+    }
+    else if (0UL != (u32hcint & HCINT_NYET))
+    {
         pdev->host.ErrCnt[chnum] = 0U;
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, HCINT_NYET);
         pdev->host.HC_Status[chnum] = HOST_CH_NYET;
-    } else if (0UL != (u32hcint & USBFS_HCINT_DTERR)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_DTERR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
         pdev->host.HC_Status[chnum] = HOST_CH_DATATGLERR;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_DTERR);
-    } else if (0UL != (u32hcint & USBFS_HCINT_CHH)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_CHH))
+    {
         usb_host_int_mskchhltd(pdev, chnum);
-        if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL) {
+        if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_DONE;
 
-            if (((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS) == EP_TYPE_BULK) {
+            if (((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS) == EP_TYPE_BULK)
+            {
                 pdev->host.hc[chnum].out_toggle ^= 1U;
             }
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_NAK) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_NAK)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_UNREADY;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_NYET) {
-            if (pdev->host.hc[chnum].do_ping == 1U) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_NYET)
+        {
+            if (pdev->host.hc[chnum].do_ping == 1U)
+            {
                 usb_pingtokenissue(&pdev->regs, chnum);
             }
             pdev->host.URB_State[chnum] = HOST_CH_XFER_UNREADY;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_STALL) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_STALL)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_STALL;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_XACTERR) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_XACTERR)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_ERROR;
             pdev->host.ErrCnt[chnum] = 0UL;
-        } else {
+        }
+        else
+        {
             ;
         }
         usb_host_clrint(pdev, chnum, USBFS_HCINT_CHH);
         usb_host_notify_urbchange_Callback(pdev, chnum, pdev->host.URB_State[chnum]);
-    } else {
+    }
+    else
+    {
         ;
     }
 }
@@ -179,33 +211,43 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
     u32hcint = u32hcint & u32hcintmsk;
 
     u32eptypetmp = (u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS;
-    if (0UL != (u32hcint & USBFS_HCINT_ACK)) {
+    if (0UL != (u32hcint & USBFS_HCINT_ACK))
+    {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
-#if defined(HC32F4A0) || defined(HC32F4A2)
-    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
+#if defined (HC32F4A0) || defined (HC32F4A2)
+    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
+    {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
         usb_host_int_unmskchhltd(pdev, chnum);
     }
 #endif
-    else if (0UL != (u32hcint & USBFS_HCINT_STALL)) {
+    else if (0UL != (u32hcint & USBFS_HCINT_STALL))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         pdev->host.HC_Status[chnum] = HOST_CH_STALL;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_STALL);
         usb_hchstop(&pdev->regs, chnum);
-    } else if (0UL != (u32hcint & USBFS_HCINT_DTERR)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_DTERR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
         pdev->host.HC_Status[chnum] = HOST_CH_DATATGLERR;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_DTERR);
-    } else if (0UL != (u32hcint & USBFS_HCINT_FRMOR)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_FRMOR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_FRMOR);
-    } else if (0UL != (u32hcint & USBFS_HCINT_XFRC)) {
-        if (pdev->basic_cfgs.dmaen == 1U) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_XFRC))
+    {
+        if (pdev->basic_cfgs.dmaen == 1U)
+        {
             u32hctsiz = READ_REG32(pdev->regs.HC_REGS[chnum]->HCTSIZ);
             pdev->host.XferCnt[chnum] =  pdev->host.hc[chnum].xfer_len - (u32hctsiz & USBFS_HCTSIZ_XFRSIZ);
             pdev->host.hc[chnum].xfer_count += pdev->host.XferCnt[chnum];
@@ -213,68 +255,93 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
         pdev->host.HC_Status[chnum] = HOST_CH_XFERCOMPL;
         pdev->host.ErrCnt [chnum] = 0U;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_XFRC);
-        switch (u32eptypetmp) {
-            case EP_TYPE_CTRL:
-            case EP_TYPE_BULK:
-                usb_host_int_unmskchhltd(pdev, chnum);
-                usb_hchstop(&pdev->regs, chnum);
-                usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
-                pdev->host.hc[chnum].in_toggle ^= (uint8_t)1;
-                break;
-            case EP_TYPE_INTR:
-                u32hcchar |= USBFS_HCCHAR_ODDFRM;
-                WRITE_REG32(pdev->regs.HC_REGS[chnum]->HCCHAR, u32hcchar);
+        switch (u32eptypetmp)
+        {
+        case EP_TYPE_CTRL:
+        case EP_TYPE_BULK:
+            usb_host_int_unmskchhltd(pdev, chnum);
+            usb_hchstop(&pdev->regs, chnum);
+            usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
+            pdev->host.hc[chnum].in_toggle ^= (uint8_t)1;
+            break;
+        case EP_TYPE_INTR:
+            u32hcchar |= USBFS_HCCHAR_ODDFRM;
+            WRITE_REG32(pdev->regs.HC_REGS[chnum]->HCCHAR, u32hcchar);
+            pdev->host.URB_State[chnum] = HOST_CH_XFER_DONE;
+            usb_host_notify_urbchange_Callback(pdev, chnum, pdev->host.URB_State[chnum]);
+            break;
+        case EP_TYPE_ISOC:
+            if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL)
+            {
                 pdev->host.URB_State[chnum] = HOST_CH_XFER_DONE;
                 usb_host_notify_urbchange_Callback(pdev, chnum, pdev->host.URB_State[chnum]);
-                break;
-            case EP_TYPE_ISOC:
-                if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL) {
-                    pdev->host.URB_State[chnum] = HOST_CH_XFER_DONE;
-                    usb_host_notify_urbchange_Callback(pdev, chnum, pdev->host.URB_State[chnum]);
-                }
-                break;
-            default:
-                break;
+            }
+            break;
+        default:
+            break;
         }
-    } else if (0UL != (u32hcint & USBFS_HCINT_CHH)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_CHH))
+    {
         usb_host_int_mskchhltd(pdev, chnum);
-        if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL) {
+        if (pdev->host.HC_Status[chnum] == HOST_CH_XFERCOMPL)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_DONE;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_STALL) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_STALL)
+        {
             pdev->host.URB_State[chnum] = HOST_CH_XFER_STALL;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_XACTERR) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_XACTERR)
+        {
             pdev->host.ErrCnt[chnum] = 0U;
             pdev->host.URB_State[chnum] = HOST_CH_XFER_ERROR;
-        } else if (pdev->host.HC_Status[chnum] == HOST_CH_DATATGLERR) {
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_DATATGLERR)
+        {
             pdev->host.ErrCnt[chnum] = 0U;
             pdev->host.URB_State[chnum] = HOST_CH_XFER_ERROR;
-        } else if (u32eptypetmp == EP_TYPE_INTR) {
+        }
+        else if (u32eptypetmp == EP_TYPE_INTR)
+        {
             pdev->host.hc[chnum].in_toggle ^= (uint8_t)1;
-        } else {
+        }
+        else
+        {
             ;
         }
         usb_host_clrint(pdev, chnum, USBFS_HCINT_CHH);
         usb_host_notify_urbchange_Callback(pdev, chnum, pdev->host.URB_State[chnum]);
-    } else if (0UL != (u32hcint & USBFS_HCINT_TXERR)) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_TXERR))
+    {
         usb_host_int_unmskchhltd(pdev, chnum);
         pdev->host.ErrCnt[chnum] ++;
         pdev->host.HC_Status[chnum] = HOST_CH_XACTERR;
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_TXERR);
-    } else if (0UL != (u32hcint & USBFS_HCINT_NAK)) {
-        if (u32eptypetmp == EP_TYPE_INTR) {
+    }
+    else if (0UL != (u32hcint & USBFS_HCINT_NAK))
+    {
+        if (u32eptypetmp == EP_TYPE_INTR)
+        {
             usb_host_int_unmskchhltd(pdev, chnum);
             usb_hchstop(&pdev->regs, chnum);
-        } else if ((u32eptypetmp == EP_TYPE_CTRL) || (u32eptypetmp == EP_TYPE_BULK)) {
-            u32hcchar |= USBFS_HCCHAR_CHENA;
-            u32hcchar &= ~USBFS_HCCHAR_CHDIS;
-            WRITE_REG32(pdev->regs.HC_REGS[chnum]->HCCHAR, u32hcchar);
-        } else {
+        }
+        else if ((u32eptypetmp == EP_TYPE_CTRL) || (u32eptypetmp == EP_TYPE_BULK))
+        {
+            usb_host_int_unmskchhltd(pdev, chnum);
+            usb_hchstop(&pdev->regs, chnum);/* stop hc avoid block */
+        }
+        else
+        {
             ;
         }
         pdev->host.HC_Status[chnum] = HOST_CH_NAK;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);
-    } else {
+    }
+    else
+    {
         ;
     }
 }
@@ -286,12 +353,17 @@ void usb_host_hc_isr(usb_core_instance *pdev)
     uint32_t u32haint;
 
     u32haint = READ_REG32(pdev->regs.HREGS->HAINT);
-    for (u8Cnt = 0U; u8Cnt < pdev->basic_cfgs.host_chnum; u8Cnt++) {
-        if (0UL != (u32haint & (1UL << u8Cnt))) {
+    for (u8Cnt = 0U; u8Cnt < pdev->basic_cfgs.host_chnum; u8Cnt++)
+    {
+        if (0UL != (u32haint & (1UL << u8Cnt)))
+        {
             u32hcchar = READ_REG32(pdev->regs.HC_REGS[u8Cnt]->HCCHAR);
-            if (0UL != ((u32hcchar & USBFS_HCCHAR_EPDIR) >> USBFS_HCCHAR_EPDIR_POS)) {
+            if (0UL != ((u32hcchar & USBFS_HCCHAR_EPDIR) >> USBFS_HCCHAR_EPDIR_POS))
+            {
                 usb_host_chx_in_isr(pdev, u8Cnt);
-            } else {
+            }
+            else
+            {
                 usb_host_chx_out_isr(pdev, u8Cnt);
             }
         }
@@ -305,12 +377,12 @@ static void usb_host_sof_isr(usb_core_instance *pdev)
 
 static void usb_host_disconn_isr(usb_core_instance *pdev)
 {
-    //usb_gintdis(&pdev->regs);
-    /* enable or disable the external charge pump */
-    //usb_bsp_drivevbus(pdev, 0U);
-    //usb_vbusctrl(&pdev->regs, 0U);
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_DISCINT);
-
+    
+    /* flush all the txFIFOs and the whole rxFIFO */
+    usb_rxfifoflush(&pdev->regs);
+    usb_txfifoflush(&pdev->regs, 0x10UL);
+    
     pdev->host.is_dev_connect = 0U;
     usb_device_disconnect_callback(pdev);
 }
@@ -329,9 +401,11 @@ static void usb_host_nptxfifoempty_isr(usb_core_instance *pdev)
     u8ChNum = (uint8_t)((u32hnptxsts & USBFS_HNPTXSTS_NPTXQTOP_CHEPNUM) >> USBFS_HNPTXSTS_NPTXQTOP_CHEPNUM_POS) % USB_MAX_TX_FIFOS;
 
     u16LenWord = (uint16_t)((pdev->host.hc[u8ChNum].xfer_len + 3UL) / 4UL);
-    while (((u32hnptxsts & USBFS_HNPTXSTS_NPTXFSAV) > u16LenWord) && (pdev->host.hc[u8ChNum].xfer_len != 0U)) {
+    while (((u32hnptxsts & USBFS_HNPTXSTS_NPTXFSAV) > u16LenWord) && (pdev->host.hc[u8ChNum].xfer_len != 0U))
+    {
         u16Len = (uint16_t)((u32hnptxsts & USBFS_HNPTXSTS_NPTXFSAV) * 4UL);
-        if (u16Len > pdev->host.hc[u8ChNum].xfer_len) {
+        if (u16Len > pdev->host.hc[u8ChNum].xfer_len)
+        {
             u16Len = (uint16_t)pdev->host.hc[u8ChNum].xfer_len;
             CLR_REG32_BIT(pdev->regs.GREGS->GINTMSK, USBFS_GINTSTS_NPTXFE);
         }
@@ -357,9 +431,11 @@ static void usb_host_ptxfifoempty_isr(usb_core_instance *pdev)
     u32hptxsts = READ_REG32(pdev->regs.HREGS->HPTXSTS);
     u8ChNum = (uint8_t)((u32hptxsts & USBFS_HPTXSTS_PTXQTOP_CHNUM) >> USBFS_HPTXSTS_PTXQTOP_CHNUM_POS) % USB_MAX_TX_FIFOS;
     u16LenWord = (uint16_t)((pdev->host.hc[u8ChNum].xfer_len + 3UL) / 4UL);
-    while ((((u32hptxsts & USBFS_HPTXSTS_PTXFSAVL)) > u16LenWord) && (pdev->host.hc[u8ChNum].xfer_len != 0U)) {
+    while ((((u32hptxsts & USBFS_HPTXSTS_PTXFSAVL)) > u16LenWord) && (pdev->host.hc[u8ChNum].xfer_len != 0U))
+    {
         u16Len = (uint16_t)((u32hptxsts & USBFS_HPTXSTS_PTXFSAVL) * 4UL);
-        if (u16Len > pdev->host.hc[u8ChNum].xfer_len) {
+        if (u16Len > pdev->host.hc[u8ChNum].xfer_len)
+        {
             u16Len = (uint16_t)pdev->host.hc[u8ChNum].xfer_len;
             CLR_REG32_BIT(pdev->regs.GREGS->GINTMSK, USBFS_GINTMSK_PTXFEM);
         }
@@ -394,41 +470,55 @@ static void usb_host_port_isr(usb_core_instance *pdev)
     u32hprt_bk &= ~(USBFS_HPRT_PENA | USBFS_HPRT_PCDET | USBFS_HPRT_PENCHNG);
 
     /* check if a port connect have been detected */
-    if ((u32hprt & USBFS_HPRT_PCDET) != 0UL) {
+    if ((u32hprt & USBFS_HPRT_PCDET) != 0UL)
+    {
         u32hprt_bk |= USBFS_HPRT_PCDET;
-        if (host_driver_getvbusdrivestate(pdev) != 0UL) {
+        if (host_driver_getvbusdrivestate(pdev) != 0UL)
+        {
             pdev->host.is_dev_connect = 1U;
             usb_device_connect_callback(pdev);
         }
     }
     /* check if port enable or disable change */
-    if ((u32hprt & USBFS_HPRT_PENCHNG) != 0UL) {
+    if ((u32hprt & USBFS_HPRT_PENCHNG) != 0UL)
+    {
         u32hprt_bk |= USBFS_HPRT_PENCHNG;
 
-        if ((u32hprt & USBFS_HPRT_PENA) != 0UL) {
+        if ((u32hprt & USBFS_HPRT_PENA) != 0UL)
+        {
             u8PortSpeed = (uint8_t)((u32hprt & USBFS_HPRT_PSPD) >> USBFS_HPRT_PSPD_POS);
-            if ((u8PortSpeed == PRTSPD_LOW_SPEED) || (u8PortSpeed == PRTSPD_FULL_SPEED)) {
+            pdev->host.devspeed = u8PortSpeed;
+            if ((u8PortSpeed == PRTSPD_LOW_SPEED) || (u8PortSpeed == PRTSPD_FULL_SPEED))
+            {
                 u8fslspclksel = (uint8_t)(READ_REG32(pdev->regs.HREGS->HCFG) & USBFS_HCFG_FSLSPCS);
-                if (u8PortSpeed == PRTSPD_LOW_SPEED) {
-                    if (u8fslspclksel != HCFG_6_MHZ) {
+                if (u8PortSpeed == PRTSPD_LOW_SPEED)
+                {
+                    if (u8fslspclksel != HCFG_6_MHZ)
+                    {
                         do_reset = 1U;
                     }
-                } else {
+                }
+                else
+                {
                     /* 1ms*(PHY clock frequency for FS/LS)-1 */
                     WRITE_REG32(pdev->regs.HREGS->HFIR, 48000UL);
-                    if (u8fslspclksel != HCFG_48_MHZ) {
+                    if (u8fslspclksel != HCFG_48_MHZ)
+                    {
                         usb_fslspclkselset(&pdev->regs, HCFG_48_MHZ);
                         do_reset = 1U;
                     }
                 }
-            } else {
+            }
+            else
+            {
                 do_reset = 1U;
             }
         }
     }
 
-    if (0UL != do_reset) {
-        //usb_hprtrst(&pdev->regs);
+    if (0UL != do_reset)
+    {
+        /* RTT Will Call Reset */
     }
     WRITE_REG32(*pdev->regs.HPRT, u32hprt_bk);
 }
@@ -449,32 +539,35 @@ static void usb_host_rxflvl_isr(usb_core_instance *pdev)
     u16bcnt = (uint16_t)((u32grxsts & USBFS_GRXSTSP_BCNT) >> USBFS_GRXSTSP_BCNT_POS);
     u32hcchar = READ_REG32(pdev->regs.HC_REGS[u8chnum]->HCCHAR);
 
-    switch ((u32grxsts & USBFS_GRXSTSP_PKTSTS) >> USBFS_GRXSTSP_PKTSTS_POS) {
-        case 2:              /* IN dat packet received */
-            pu8Tmp = pdev->host.hc[u8chnum].xfer_buff;
-            if ((u16bcnt > 0U) && (pu8Tmp != (void *)0U)) {
-                usb_rdpkt(&pdev->regs, pdev->host.hc[u8chnum].xfer_buff, u16bcnt);
-                pdev->host.hc[u8chnum].xfer_buff += u16bcnt;
-                pdev->host.hc[u8chnum].xfer_count  += u16bcnt;
-                pdev->host.XferCnt[u8chnum] = pdev->host.hc[u8chnum].xfer_count;
+    switch ((u32grxsts & USBFS_GRXSTSP_PKTSTS) >> USBFS_GRXSTSP_PKTSTS_POS)
+    {
+    case 2:              /* IN dat packet received */
+        pu8Tmp = pdev->host.hc[u8chnum].xfer_buff;
+        if ((u16bcnt > 0U) && (pu8Tmp != (void *)0U))
+        {
+            usb_rdpkt(&pdev->regs, pdev->host.hc[u8chnum].xfer_buff, u16bcnt);
+            pdev->host.hc[u8chnum].xfer_buff += u16bcnt;
+            pdev->host.hc[u8chnum].xfer_count  += u16bcnt;
+            pdev->host.XferCnt[u8chnum] = pdev->host.hc[u8chnum].xfer_count;
 
-                u32hctsiz = READ_REG32(pdev->regs.HC_REGS[u8chnum]->HCTSIZ);
-                if (((u32hctsiz & USBFS_HCTSIZ_PKTCNT) >> USBFS_HCTSIZ_PKTCNT_POS) > 0U) {
-                    u32hcchar |= USBFS_HCCHAR_CHENA;
-                    u32hcchar &= ~USBFS_HCCHAR_CHDIS;
-                    WRITE_REG32(pdev->regs.HC_REGS[u8chnum]->HCCHAR, u32hcchar);
-                }
+            u32hctsiz = READ_REG32(pdev->regs.HC_REGS[u8chnum]->HCTSIZ);
+            if (((u32hctsiz & USBFS_HCTSIZ_PKTCNT) >> USBFS_HCTSIZ_PKTCNT_POS) > 0U)
+            {
+                u32hcchar |= USBFS_HCCHAR_CHENA;
+                u32hcchar &= ~USBFS_HCCHAR_CHDIS;
+                WRITE_REG32(pdev->regs.HC_REGS[u8chnum]->HCCHAR, u32hcchar);
             }
-            break;
+        }
+        break;
 
-        case 3:              /* IN transfer completed(trigger an interrupt) */
-            break;
-        case 5:              /* Daat toggle error(trigger an interrupt) */
-            break;
-        case 7:              /* Channel halted(trigger an interrupt) */
-            break;
-        default:
-            break;
+    case 3:              /* IN transfer completed(trigger an interrupt) */
+        break;
+    case 5:              /* Daat toggle error(trigger an interrupt) */
+        break;
+    case 7:              /* Channel halted(trigger an interrupt) */
+        break;
+    default:
+        break;
     }
 
     SET_REG32_BIT(pdev->regs.GREGS->GINTMSK, USBFS_GINTSTS_RXFNE);
@@ -502,33 +595,43 @@ static void usb_host_wkupint_isr(usb_core_instance *pdev)
 void usb_host_isr(usb_core_instance *pdev)
 {
     uint32_t gintstsval;
-    if (0U != usb_getcurmod(&pdev->regs)) {
+    if (0U != usb_getcurmod(&pdev->regs))
+    {
         gintstsval = usb_getcoreintr(&pdev->regs);
-        if (0UL != (gintstsval & USBFS_GINTSTS_SOF)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_SOF))
+        {
             usb_host_sof_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_RXFNE)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_RXFNE))
+        {
             usb_host_rxflvl_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_NPTXFE)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_NPTXFE))
+        {
             usb_host_nptxfifoempty_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_PTXFE)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_PTXFE))
+        {
             usb_host_ptxfifoempty_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_HCINT)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_HCINT))
+        {
             usb_host_hc_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_HPRTINT)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_HPRTINT))
+        {
             usb_host_port_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_DISCINT)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_DISCINT))
+        {
             usb_host_disconn_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_IPXFR_INCOMPISOOUT)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_IPXFR_INCOMPISOOUT))
+        {
             usb_host_incomplisoout_isr(pdev);
         }
-        if (0UL != (gintstsval & USBFS_GINTSTS_WKUINT)) {
+        if (0UL != (gintstsval & USBFS_GINTSTS_WKUINT))
+        {
             usb_host_wkupint_isr(pdev);
         }
     }
@@ -541,19 +644,13 @@ void usbh_irq_handler(void)
     rt_interrupt_leave();
 }
 
-static uint32_t host_driver_getcurrentspd(usb_core_instance *pdev)
-{
-    uint32_t u32hppt;
-    u32hppt = READ_REG32(*pdev->regs.HPRT);
-    return ((u32hppt & USBFS_HPRT_PSPD) >> USBFS_HPRT_PSPD_POS);
-}
 static void usb_host_chopen(usb_core_instance *pdev,
-                     uint8_t  hc_num,
-                     uint8_t  epnum,
-                     uint8_t  dev_address,
-                     uint8_t  speed,
-                     uint8_t  ep_type,
-                     uint16_t mps)
+                            uint8_t  hc_num,
+                            uint8_t  epnum,
+                            uint8_t  dev_address,
+                            uint8_t  speed,
+                            uint8_t  ep_type,
+                            uint16_t mps)
 {
     pdev->host.channel[hc_num] = epnum; /* assign channel here */
     pdev->host.hc[hc_num].ep_idx     = (uint8_t) pdev->host.channel[hc_num] & 0x7FU;
@@ -568,121 +665,140 @@ static void usb_host_chopen(usb_core_instance *pdev,
     (void)usb_inithch(&pdev->regs, hc_num, &pdev->host.hc[hc_num], pdev->basic_cfgs.dmaen);
 }
 
-static uint32_t usb_host_submitrequest(usb_core_instance *pdev,
-                                           uint8_t ch_num,
-                                           uint8_t direction,
-                                           uint8_t ep_type,
-                                           uint8_t token,
-                                           uint8_t *pbuff,
-                                           uint16_t length,
-                                           uint8_t do_ping)
+static void usb_host_ch_init(usb_core_instance *pdev,
+                             uint8_t  hc_num,
+                             uint8_t  epnum,
+                             uint8_t  dev_address,
+                             uint8_t  speed,
+                             uint8_t  ep_type,
+                             uint16_t mps)
 {
-  pdev->host.hc[ch_num].is_epin = direction;
-  pdev->host.hc[ch_num].ep_type  = ep_type;
+    pdev->host.channel[hc_num] = epnum; /* assign channel here */
+    pdev->host.hc[hc_num].ep_idx     = (uint8_t) pdev->host.channel[hc_num] & 0x7FU;
+    pdev->host.hc[hc_num].is_epin    = (uint8_t)((pdev->host.channel[hc_num] & 0x80U) == 0x80U);
+    pdev->host.hc[hc_num].dev_addr   = dev_address;
+    pdev->host.hc[hc_num].ep_type    = ep_type;
+    pdev->host.hc[hc_num].max_packet = mps;
+    pdev->host.hc[hc_num].ch_speed   = speed;
 
-  if (token == 0U)
-  {
-    pdev->host.hc[ch_num].pid_type = PID_SETUP;
-    pdev->host.hc[ch_num].do_ping = do_ping;
-  }
-  else
-  {
-    pdev->host.hc[ch_num].pid_type = PID_DATA1;
-  }
+    (void)usb_inithch(&pdev->regs, hc_num, &pdev->host.hc[hc_num], pdev->basic_cfgs.dmaen);
+}
 
-  /* Manage Data Toggle */
-  switch (ep_type)
-  {
+static uint32_t usb_host_submitrequest(usb_core_instance *pdev,
+                                       uint8_t ch_num,
+                                       uint8_t direction,
+                                       uint8_t ep_type,
+                                       uint8_t token,
+                                       uint8_t *pbuff,
+                                       uint16_t length,
+                                       uint8_t do_ping)
+{
+    pdev->host.hc[ch_num].is_epin = direction;
+    pdev->host.hc[ch_num].ep_type  = ep_type;
+
+    if (token == 0U)
+    {
+        pdev->host.hc[ch_num].pid_type = PID_SETUP;
+        pdev->host.hc[ch_num].do_ping = do_ping;
+    }
+    else
+    {
+        pdev->host.hc[ch_num].pid_type = PID_DATA1;
+    }
+
+    /* Manage Data Toggle */
+    switch (ep_type)
+    {
     case EP_TYPE_CTRL:
-      if ((token == 1U) && (direction == 0U)) /*send data */
-      {
-        if (length == 0U)
+        if ((token == 1U) && (direction == 0U)) /*send data */
         {
-          /* For Status OUT stage, Length==0, Status Out PID = 1 */
-          pdev->host.hc[ch_num].out_toggle = 1U;
+            if (length == 0U)
+            {
+                /* For Status OUT stage, Length==0, Status Out PID = 1 */
+                pdev->host.hc[ch_num].out_toggle = 1U;
+            }
+            /* Set the Data Toggle bit as per the Flag */
+            if (pdev->host.hc[ch_num].out_toggle == 0U)
+            {
+                /* Put the PID 0 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            }
+            else
+            {
+                /* Put the PID 1 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            }
         }
-        /* Set the Data Toggle bit as per the Flag */
-        if (pdev->host.hc[ch_num].out_toggle == 0U)
-        {
-          /* Put the PID 0 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA0;
-        }
-        else
-        {
-          /* Put the PID 1 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA1;
-        }
-      }
-      break;
+        break;
     case EP_TYPE_BULK:
-      if (direction == 0U)
-      {
-        /* Set the Data Toggle bit as per the Flag */
-        if (pdev->host.hc[ch_num].out_toggle == 0U)
+        if (direction == 0U)
         {
-          /* Put the PID 0 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            /* Set the Data Toggle bit as per the Flag */
+            if (pdev->host.hc[ch_num].out_toggle == 0U)
+            {
+                /* Put the PID 0 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            }
+            else
+            {
+                /* Put the PID 1 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            }
         }
         else
         {
-          /* Put the PID 1 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            if (pdev->host.hc[ch_num].in_toggle == 0U)
+            {
+                pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            }
+            else
+            {
+                pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            }
         }
-      }
-      else
-      {
-        if (pdev->host.hc[ch_num].in_toggle == 0U)
-        {
-          pdev->host.hc[ch_num].pid_type = PID_DATA0;
-        }
-        else
-        {
-          pdev->host.hc[ch_num].pid_type = PID_DATA1;
-        }
-      }
-      break;
+        break;
     case EP_TYPE_INTR:
-      if (direction == 0U)
-      {
-        /* Set the Data Toggle bit as per the Flag */
-        if (pdev->host.hc[ch_num].out_toggle == 0U)
+        if (direction == 0U)
         {
-          /* Put the PID 0 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            /* Set the Data Toggle bit as per the Flag */
+            if (pdev->host.hc[ch_num].out_toggle == 0U)
+            {
+                /* Put the PID 0 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            }
+            else
+            {
+                /* Put the PID 1 */
+                pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            }
         }
         else
         {
-          /* Put the PID 1 */
-          pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            if (pdev->host.hc[ch_num].in_toggle == 0U)
+            {
+                pdev->host.hc[ch_num].pid_type = PID_DATA0;
+            }
+            else
+            {
+                pdev->host.hc[ch_num].pid_type = PID_DATA1;
+            }
         }
-      }
-      else
-      {
-        if (pdev->host.hc[ch_num].in_toggle == 0U)
-        {
-          pdev->host.hc[ch_num].pid_type = PID_DATA0;
-        }
-        else
-        {
-          pdev->host.hc[ch_num].pid_type = PID_DATA1;
-        }
-      }
-      break;
+        break;
     case EP_TYPE_ISOC:
-      pdev->host.hc[ch_num].pid_type = PID_DATA0;
-      break;
+        pdev->host.hc[ch_num].pid_type = PID_DATA0;
+        break;
     default:
-      break;
-  }
+        break;
+    }
 
-  pdev->host.hc[ch_num].xfer_buff = pbuff;
-  pdev->host.hc[ch_num].xfer_len  = length;
-  pdev->host.hc[ch_num].xfer_count = 0U;
-  //pdev->host.hc[ch_num].ch_num = ch_num;
-  pdev->host.HC_Status[ch_num] = HOST_CH_IDLE; /* state */
-  pdev->host.URB_State[ch_num] = HOST_CH_XFER_IDLE; /* urb state */
+    pdev->host.hc[ch_num].xfer_buff = pbuff;
+    pdev->host.hc[ch_num].xfer_len  = length;
+    pdev->host.hc[ch_num].xfer_count = 0U;
+    //pdev->host.hc[ch_num].ch_num = ch_num;
+    pdev->host.HC_Status[ch_num] = HOST_CH_IDLE; /* state */
+    pdev->host.URB_State[ch_num] = HOST_CH_XFER_IDLE; /* urb state */
 
-  return usb_hchtransbegin(&pdev->regs, ch_num, &pdev->host.hc[ch_num], pdev->basic_cfgs.dmaen);
+    return usb_hchtransbegin(&pdev->regs, ch_num, &pdev->host.hc[ch_num], pdev->basic_cfgs.dmaen);
 }
 
 static HOST_CH_XFER_STATE usb_hsot_get_ch_urbstate(usb_core_instance *pdev, uint8_t chnum)
@@ -711,6 +827,7 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
 {
     int timeout = timeouts;
     uint8_t  devspeed;
+    uint32_t u32NakCnt = 0;
 
     while (1)
     {
@@ -720,37 +837,54 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
         }
         rt_completion_init(&urb_completion);
         usb_host_submitrequest(&_hc32_usbh,
-                                 pipe->pipe_index,
-                                 (pipe->ep.bEndpointAddress & 0x80) >> 7,
-                                 pipe->ep.bmAttributes,
-                                 token,
-                                 buffer,
-                                 nbytes,
-                                 0);
+                               pipe->pipe_index,
+                               (pipe->ep.bEndpointAddress & 0x80) >> 7,
+                               pipe->ep.bmAttributes,
+                               token,
+                               buffer,
+                               nbytes,
+                               0);
+        if ((pipe->ep.bEndpointAddress & 0x80))
+        {
+            LOG_D("IN");
+        }
+        else
+        {
+            LOG_D("OUT");
+        }
+
         rt_completion_wait(&urb_completion, timeout);
         rt_thread_mdelay(1);
         if (usb_hsot_get_ch_state(&_hc32_usbh, pipe->pipe_index) == HOST_CH_NAK)
         {
-            RT_DEBUG_LOG(RT_DEBUG_USB, ("nak\n"));
+            LOG_D("nak");
+#define  MAX_NAK_CNT    (5U)
+            u32NakCnt ++;
+            if (u32NakCnt > MAX_NAK_CNT)
+            {
+                return -1;
+            }
             if (pipe->ep.bmAttributes == USB_EP_ATTR_INT)
             {
                 rt_thread_delay((pipe->ep.bInterval * RT_TICK_PER_SECOND / 1000) > 0 ? (pipe->ep.bInterval * RT_TICK_PER_SECOND / 1000) : 1);
             }
             /* Get the speed of the connected device */
-            devspeed = (uint8_t)host_driver_getcurrentspd(&_hc32_usbh);
+            devspeed = _hc32_usbh.host.devspeed;
             usb_hchstop(&_hc32_usbh.regs, pipe->pipe_index);
-            usb_host_chopen(&_hc32_usbh,
-                            pipe->pipe_index,
-                            pipe->ep.bEndpointAddress,
-                            pipe->inst->address,
-                            devspeed,
-                            pipe->ep.bmAttributes,
-                            pipe->ep.wMaxPacketSize);
+            usb_host_ch_init(&_hc32_usbh,
+                             pipe->pipe_index,
+                             pipe->ep.bEndpointAddress,
+                             pipe->inst->address,
+                             devspeed,
+                             pipe->ep.bmAttributes,
+                             pipe->ep.wMaxPacketSize);
+
+
             continue;
         }
         else if (usb_hsot_get_ch_state(&_hc32_usbh, pipe->pipe_index) == HOST_CH_STALL)
         {
-            RT_DEBUG_LOG(RT_DEBUG_USB, ("stall\n"));
+            LOG_D("stall");
             pipe->status = UPIPE_STATUS_STALL;
             if (pipe->callback != RT_NULL)
             {
@@ -760,7 +894,7 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
         }
         else if (usb_hsot_get_ch_urbstate(&_hc32_usbh, pipe->pipe_index) == HOST_CH_XFER_ERROR)
         {
-            RT_DEBUG_LOG(RT_DEBUG_USB, ("error\n"));
+            LOG_D("error");
             pipe->status = UPIPE_STATUS_ERROR;
             if (pipe->callback != RT_NULL)
             {
@@ -768,9 +902,9 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
             }
             return -1;
         }
-        else if(HOST_CH_XFER_DONE == usb_hsot_get_ch_urbstate(&_hc32_usbh, pipe->pipe_index))
+        else if (HOST_CH_XFER_DONE == usb_hsot_get_ch_urbstate(&_hc32_usbh, pipe->pipe_index))
         {
-            RT_DEBUG_LOG(RT_DEBUG_USB, ("ok\n"));
+            LOG_D("done");
             pipe->status = UPIPE_STATUS_OK;
             if (pipe->callback != RT_NULL)
             {
@@ -781,11 +915,11 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
             {
                 return size;
             }
-            else if (pipe->ep.bEndpointAddress & 0x00)
-            {
-                return size;
-            }
             return nbytes;
+        }
+        else
+        {
+            LOG_D("other");
         }
 
         continue;
@@ -820,7 +954,7 @@ static rt_err_t drv_open_pipe(upipe_t pipe)
     pipe->pipe_index = drv_get_free_pipe_index();
 
     /* Get the speed of the connected device */
-    devspeed = (uint8_t)host_driver_getcurrentspd(&_hc32_usbh);
+    devspeed = _hc32_usbh.host.devspeed;
 
     usb_host_chopen(&_hc32_usbh,
                     pipe->pipe_index,
@@ -862,7 +996,8 @@ static void _host_driver_init(usb_core_instance *pdev, stc_usb_port_identify *ps
     uint8_t i;
 
     pdev->host.is_dev_connect = 0U;
-    for (i = 0U; i < USB_MAX_TX_FIFOS; i++) {
+    for (i = 0U; i < USB_MAX_TX_FIFOS; i++)
+    {
         pdev->host.ErrCnt[i] = 0U;
         pdev->host.XferCnt[i] = 0U;
         pdev->host.HC_Status[i] = HOST_CH_IDLE;

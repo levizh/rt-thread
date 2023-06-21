@@ -35,6 +35,17 @@
     #define USART6_TX_PIN                   (GPIO_PIN_06)
 #endif
 
+/************************ I2C port **********************/
+#if defined(BSP_USING_I2C1)
+    #define I2C1_SDA_PORT                   (GPIO_PORT_F)
+    #define I2C1_SDA_PIN                    (GPIO_PIN_10)
+    #define I2C1_SDA_FUNC                   (GPIO_FUNC_48)
+
+    #define I2C1_SCL_PORT                   (GPIO_PORT_D)
+    #define I2C1_SCL_PIN                    (GPIO_PIN_03)
+    #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
+#endif
+
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
     #define ADC1_CH_PORT                    (GPIO_PORT_C)
@@ -680,7 +691,6 @@
 
 #endif
 
-
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
 #if defined(BSP_USING_USBFS)
     /* USBFS Core*/
@@ -729,14 +739,39 @@
     #define USBH_ULPI_D6_PIN                (GPIO_PIN_13)
     #define USBH_ULPI_D7_PORT               (GPIO_PORT_E)
     #define USBH_ULPI_D7_PIN                (GPIO_PIN_11)
-    /* 3300 reset */                      
+    /* 3300 reset */
     #define USB_3300_RESET_PORT             (EIO_PORT1)
     #define USB_3300_RESET_PIN              (EIO_USB3300_RST)
 #endif
 #endif
 #endif
 
+#if defined(BSP_USING_QSPI)
+    /* QSSN */
+    #define QSPI_FLASH_CS_PORT              (GPIO_PORT_C)
+    #define QSPI_FLASH_CS_PIN               (GPIO_PIN_07)
+    #define QSPI_FLASH_CS_FUNC              (GPIO_FUNC_18)
+    /* QSCK */
+    #define QSPI_FLASH_SCK_PORT             (GPIO_PORT_C)
+    #define QSPI_FLASH_SCK_PIN              (GPIO_PIN_06)
+    #define QSPI_FLASH_SCK_FUNC             (GPIO_FUNC_18)
+    /* QSIO0 */
+    #define QSPI_FLASH_IO0_PORT             (GPIO_PORT_B)
+    #define QSPI_FLASH_IO0_PIN              (GPIO_PIN_13)
+    #define QSPI_FLASH_IO0_FUNC             (GPIO_FUNC_18)
+    /* QSIO1 */
+    #define QSPI_FLASH_IO1_PORT             (GPIO_PORT_B)
+    #define QSPI_FLASH_IO1_PIN              (GPIO_PIN_12)
+    #define QSPI_FLASH_IO1_FUNC             (GPIO_FUNC_18)
+    /* QSIO2 */
+    #define QSPI_FLASH_IO2_PORT             (GPIO_PORT_B)
+    #define QSPI_FLASH_IO2_PIN              (GPIO_PIN_10)
+    #define QSPI_FLASH_IO2_FUNC             (GPIO_FUNC_18)
+    /* QSIO3 */
+    #define QSPI_FLASH_IO3_PORT             (GPIO_PORT_B)
+    #define QSPI_FLASH_IO3_PIN              (GPIO_PIN_02)
+    #define QSPI_FLASH_IO3_FUNC             (GPIO_FUNC_18)
 #endif
 
 
-
+#endif

@@ -341,6 +341,10 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
         DMA_Cmd(spi_dma->Instance, ENABLE);
     }
 
+    /* Enable error interrupt */
+    NVIC_EnableIRQ(spi_drv->config->err_irq.irq_config.irq_num);
+    SPI_IntCmd(spi_instance, SPI_INT_ERR, ENABLE);
+
     LOG_D("%s init done", spi_drv->config->bus_name);
     return RT_EOK;
 }
@@ -449,7 +453,7 @@ static rt_uint32_t hc32_spi_xfer(struct rt_spi_device *device, struct rt_spi_mes
         {
             recv_buf = (rt_uint8_t *)message->recv_buf + already_send_length;
         }
-        
+
         if (message->send_buf && message->recv_buf)
         {
             if ((spi_drv->spi_dma_flag & RT_DEVICE_FLAG_DMA_TX) && (spi_drv->spi_dma_flag & RT_DEVICE_FLAG_DMA_RX))
@@ -497,7 +501,7 @@ static rt_uint32_t hc32_spi_xfer(struct rt_spi_device *device, struct rt_spi_mes
         while (RESET != SPI_GetStatus(spi_instance, SPI_FLAG_IDLE));
     }
     /* clear error flag */
-    SPI_ClearStatus(spi_instance, SPI_FLAG_CLR_ALL | SPI_FLAG_RX_BUF_FULL);
+    SPI_ClearStatus(spi_instance, SPI_FLAG_CLR_ALL);
 
     if (message->cs_release && !(device->config.mode & RT_SPI_NO_CS))
     {
@@ -555,6 +559,97 @@ rt_err_t rt_hw_spi_device_attach(const char *bus_name, const char *device_name, 
 
     return result;
 }
+
+static void hc32_spi_err_irq_handle(struct hc32_spi *spi)
+{
+    __UNUSED uint32_t UnusedData;
+    CM_SPI_TypeDef *spi_instance = spi->config->Instance;
+
+    if (RESET != SPI_GetStatus(spi_instance, SPI_FLAG_OVERLOAD))
+    {
+        UnusedData = SPI_ReadData(spi_instance);
+        SPI_ClearStatus(spi_instance, SPI_FLAG_OVERLOAD);
+    }
+    if (RESET != SPI_GetStatus(spi_instance, SPI_FLAG_UNDERLOAD))
+    {
+        SPI_ClearStatus(spi_instance, SPI_FLAG_UNDERLOAD);
+    }
+    if (RESET != SPI_GetStatus(spi_instance, SPI_FLAG_MD_FAULT))
+    {
+        SPI_ClearStatus(spi_instance, SPI_FLAG_MD_FAULT);
+    }
+
+    if (RESET != SPI_GetStatus(spi_instance, SPI_FLAG_PARITY_ERR))
+    {
+        SPI_ClearStatus(spi_instance, SPI_FLAG_PARITY_ERR);
+    }
+}
+
+#if defined(BSP_USING_SPI1)
+static void hc32_spi1_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI1_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
+
+#if defined(BSP_USING_SPI2)
+static void hc32_spi2_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI2_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
+
+#if defined(BSP_USING_SPI3)
+static void hc32_spi3_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI3_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
+
+#if defined(BSP_USING_SPI4)
+static void hc32_spi4_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI4_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
+
+#if defined(BSP_USING_SPI5)
+static void hc32_spi5_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI5_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
+
+#if defined(BSP_USING_SPI6)
+static void hc32_spi6_err_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+    hc32_spi_err_irq_handle(&spi_bus_obj[SPI6_INDEX]);
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif
 
 #if defined(BSP_SPI1_TX_USING_DMA) || defined(BSP_SPI2_TX_USING_DMA) || defined(BSP_SPI4_TX_USING_DMA) || \
     defined(BSP_SPI4_TX_USING_DMA) || defined(BSP_SPI5_TX_USING_DMA) || defined(BSP_SPI6_TX_USING_DMA)
@@ -762,6 +857,33 @@ static void spi6_tx_dma_irq_handle(void)
 #endif
 
 /**
+  * @brief  This function gets spi irq handle.
+  * @param  None
+  * @retval None
+  */
+static void hc32_get_spi_callback(void)
+{
+#ifdef BSP_USING_SPI1
+    spi_config[SPI1_INDEX].err_irq.irq_callback = hc32_spi1_err_irq_handler;
+#endif
+#ifdef BSP_USING_SPI2
+    spi_config[SPI2_INDEX].err_irq.irq_callback = hc32_spi2_err_irq_handler;
+#endif
+#ifdef BSP_USING_SPI3
+    spi_config[SPI3_INDEX].err_irq.irq_callback = hc32_spi3_err_irq_handler;
+#endif
+#ifdef BSP_USING_SPI4
+    spi_config[SPI4_INDEX].err_irq.irq_callback = hc32_spi4_err_irq_handler;
+#endif
+#ifdef BSP_USING_SPI5
+    spi_config[SPI5_INDEX].err_irq.irq_callback = hc32_spi5_err_irq_handler;
+#endif
+#ifdef BSP_USING_SPI6
+    spi_config[SPI6_INDEX].err_irq.irq_callback = hc32_spi6_err_irq_handler;
+#endif
+}
+
+/**
   * @brief  This function gets dma witch spi used infomation include unit,
   *         channel, interrupt etc.
   * @param  None
@@ -852,11 +974,14 @@ static int hc32_hw_spi_bus_init(void)
 {
     rt_err_t result;
 
+    hc32_get_spi_callback();
     for (int i = 0; i < sizeof(spi_config) / sizeof(spi_config[0]); i++)
     {
         spi_bus_obj[i].config = &spi_config[i];
         spi_bus_obj[i].spi_bus.parent.user_data = &spi_config[i];
 
+        /* register the handle */
+        hc32_install_irq_handler(&spi_config[i].err_irq.irq_config, spi_config[i].err_irq.irq_callback, RT_FALSE);
         if (spi_bus_obj[i].spi_dma_flag & RT_DEVICE_FLAG_DMA_RX)
         {
             /* Configure the DMA handler */

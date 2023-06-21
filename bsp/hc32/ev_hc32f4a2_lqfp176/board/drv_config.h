@@ -29,6 +29,7 @@ extern "C" {
 #include "can_config.h"
 #include "sdio_config.h"
 #include "pm_config.h"
+#include "i2c_config.h"
 
 #ifdef __cplusplus
 }

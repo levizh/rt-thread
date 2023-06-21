@@ -103,6 +103,14 @@ extern "C" {
 #define SDIO2_TX_DMA_IRQn               BSP_DMA1_CH3_IRQ_NUM
 #define SDIO2_TX_DMA_INT_PRIO           BSP_DMA1_CH3_IRQ_PRIO
 #define SDIO2_TX_DMA_INT_SRC            INT_SRC_DMA1_TC3
+#elif defined(BSP_USING_QSPI) && !defined(QSPI_DMA_INSTANCE)
+#define QSPI_DMA_INSTANCE               CM_DMA1
+#define QSPI_DMA_CHANNEL                DMA_CH3
+#define QSPI_DMA_CLOCK                  (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define QSPI_DMA_TRIG_SELECT            AOS_DMA1_3
+#define QSPI_DMA_IRQn                   BSP_DMA1_CH3_IRQ_NUM
+#define QSPI_DMA_INT_PRIO               BSP_DMA1_CH3_IRQ_PRIO
+#define QSPI_DMA_INT_SRC                INT_SRC_DMA1_TC3
 #endif
 
 /* DMA1 ch4 */

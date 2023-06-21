@@ -138,7 +138,11 @@ __STATIC_INLINE uint32_t LL_GetPrintTimeout(void)
  * @param [in] u32Count                   ms
  * @retval None
  */
-void DDL_DelayMS(uint32_t u32Count)
+#if defined (__CC_ARM)  /*!< ARM Compiler */
+#pragma push
+#pragma O0
+#endif
+__NO_OPTIMIZE void DDL_DelayMS(uint32_t u32Count)
 {
     __IO uint32_t i;
     const uint32_t u32Cyc = (HCLK_VALUE + 10000UL - 1UL) / 10000UL;
@@ -155,7 +159,7 @@ void DDL_DelayMS(uint32_t u32Count)
  * @param [in] u32Count                   us
  * @retval None
  */
-void DDL_DelayUS(uint32_t u32Count)
+__NO_OPTIMIZE void DDL_DelayUS(uint32_t u32Count)
 {
     __IO uint32_t i;
     const uint32_t u32Cyc = (HCLK_VALUE + 10000000UL - 1UL) / 10000000UL;
@@ -166,6 +170,9 @@ void DDL_DelayUS(uint32_t u32Count)
         }
     }
 }
+#if defined (__CC_ARM)  /*!< ARM Compiler */
+#pragma pop
+#endif
 
 /**
  * @brief This function Initializes the interrupt frequency of the SysTick.

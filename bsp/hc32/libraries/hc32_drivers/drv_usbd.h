@@ -27,8 +27,6 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define MAX_DATA_LENGTH      (0x200U)
-
 
 /* The bit of the diepint/doepint */
 #define XFER_COMPL           (1UL)
@@ -72,34 +70,6 @@ extern "C"
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
-
-/* status of the host channel */
-typedef enum
-{
-    HOST_CH_IDLE = 0U,
-    HOST_CH_XFERCOMPL,
-    HOST_CH_CHHLTD,
-    HOST_CH_NAK,
-    HOST_CH_NYET,
-    HOST_CH_STALL,
-    HOST_CH_XACTERR,
-    HOST_CH_BBLERR,
-    HOST_CH_DATATGLERR,
-    HOST_CH_AHBERR,
-    HOST_CH_FRMOVRUN,
-    HOST_CH_BNAINTR,
-    HOST_CH_XCS_XACT_ERR,
-    HOST_CH_DESC_LST_ROLLINTR
-} HOST_CH_STATUS;
-
-typedef enum
-{
-    HOST_CH_XFER_IDLE = 0U,
-    HOST_CH_XFER_DONE,
-    HOST_CH_XFER_UNREADY,
-    HOST_CH_XFER_ERROR,
-    HOST_CH_XFER_STALL
-} HOST_CH_XFER_STATE;
 
 typedef enum
 {
@@ -177,18 +147,6 @@ typedef struct
     usb_dev_user_func      *user_callback;
     usb_dev_desc_func      *desc_callback;
 } USB_DEV_PARAM;
-
-typedef struct
-{
-    uint16_t                 channel[USB_MAX_TX_FIFOS];
-    USB_HOST_CH              hc[USB_MAX_TX_FIFOS];
-    __IO uint32_t            is_dev_connect;
-    uint8_t                  Rx_Buffer[MAX_DATA_LENGTH];
-    __IO uint32_t            ErrCnt[USB_MAX_TX_FIFOS];
-    __IO uint32_t            XferCnt[USB_MAX_TX_FIFOS];
-    __IO HOST_CH_STATUS      HC_Status[USB_MAX_TX_FIFOS];
-    __IO HOST_CH_XFER_STATE  URB_State[USB_MAX_TX_FIFOS];
-} USB_HOST_PARAM;
 
 typedef struct
 {
