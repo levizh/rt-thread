@@ -38,6 +38,7 @@ struct hc32_qspi_config
     struct hc32_qspi_irq_config err_irq;
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config           *dma_qspi;
+    __IO rt_uint8_t             dma_flag;
 #endif
 };
 
