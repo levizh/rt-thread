@@ -32,13 +32,37 @@
 #define FS_PARTITION_NAME              "filesystem"
 
 #ifdef RT_USING_SFUD
+static void rt_hw_spi_flash_reset(char *spi_dev_name)
+{
+    struct rt_spi_device *spi_dev_w25;
+    rt_uint8_t w25_en_reset = 0x66;
+    rt_uint8_t w25_reset_dev = 0x99;
+
+    spi_dev_w25 = (struct rt_spi_device *)rt_device_find(spi_dev_name);
+    if (!spi_dev_w25)
+    {
+        rt_kprintf("Can't find %s device!\n", spi_dev_name);
+    }
+    else
+    {
+        rt_spi_send(spi_dev_w25, &w25_en_reset, 1U);
+        rt_spi_send(spi_dev_w25, &w25_reset_dev, 1U);
+        DDL_DelayMS(1U);
+        rt_kprintf("Reset ext flash!\n");
+    }
+}
+
 static int rt_hw_spi_flash_with_sfud_init(void)
 {
     rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, SPI_FLASH_SS_PORT, SPI_FLASH_SS_PIN);
 
     if (RT_NULL == rt_sfud_flash_probe(SPI_FLASH_CHIP, SPI_FLASH_DEVICE_NAME))
     {
-        return RT_ERROR;
+        rt_hw_spi_flash_reset(SPI_FLASH_DEVICE_NAME);
+        if (RT_NULL == rt_sfud_flash_probe(SPI_FLASH_CHIP, SPI_FLASH_DEVICE_NAME))
+        {
+            return RT_ERROR;
+        }
     }
 
     return RT_EOK;
