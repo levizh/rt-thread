@@ -448,7 +448,7 @@ static rt_err_t _can_get_bit_timing(CM_CAN_TypeDef *CANx, int option, uint32_t b
 #else
 static rt_err_t _can20_config_baud(can_device *p_can_dev, void *arg)
 {
-    rt_uint32_t argval = (rt_uint32_t)arg;
+    rt_uint32_t argval = *(rt_uint32_t *)arg;
     rt_uint32_t baud_index;
     rt_err_t rt_ret = RT_EOK;
 
@@ -469,7 +469,7 @@ static rt_err_t _can20_config_baud(can_device *p_can_dev, void *arg)
         return rt_ret;
     }
 
-    baud_index = _get_can_baud_index(baud);
+    baud_index = _get_can_baud_index(argval);
     p_can_dev->ll_init.stcBitCfg = g_baudrate_tab[baud_index].ll_sbt;
 
     /* init can */
@@ -526,7 +526,9 @@ static rt_err_t _can_config(struct rt_can_device *can, struct can_configure *cfg
     {
         rt_ret = -RT_EINVAL;
     }
+#ifdef RT_CAN_USING_CANFD
     p_can_dev->rt_can.config.baud_rate_fd = cfg->baud_rate_fd;
+#endif
     p_can_dev->rt_can.config.baud_rate = cfg->baud_rate;
 
     return rt_ret;
@@ -1232,6 +1234,10 @@ int rt_hw_can_init(void)
         g_can_dev_array[i].ll_init.pstcFilter[0].u32IDMask = 0x1FFFFFFF;
         g_can_dev_array[i].ll_init.pstcFilter[0].u32IDType = CAN_ID_STD_EXT;
         g_can_dev_array[i].ll_init.u16FilterSelect = CAN_FILTER1;
+        if(g_can_dev_array[i].init.single_trans_mode)
+        {
+            g_can_dev_array[i].ll_init.u8PTBSingleShotTx = CAN_PTB_SINGLESHOT_TX_ENABLE;
+        }
         g_can_dev_array[i].rt_can.config = rt_can_config;
 #ifdef RT_CAN_USING_CANFD
         _canfd_init(i);

@@ -46,6 +46,7 @@ extern "C" {
 struct can_dev_init_params
 {
     char *name;
+    rt_bool_t single_trans_mode;
 };
 
 int rt_hw_can_init(void);
