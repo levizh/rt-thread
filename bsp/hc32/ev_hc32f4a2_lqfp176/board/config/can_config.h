@@ -29,7 +29,7 @@ extern "C" {
 #define CAN1_INIT_PARAMS                                    \
     {                                                       \
        .name = CAN1_NAME,                                   \
-       .single_trans_mode = RT_TRUE                         \
+       .single_trans_mode = RT_FALSE                        \
     }
 #endif /* CAN1_INIT_PARAMS */
 #endif /* BSP_USING_CAN1 */
@@ -44,7 +44,7 @@ extern "C" {
 #define CAN2_INIT_PARAMS                                    \
     {                                                       \
        .name = CAN2_NAME,                                   \
-       .single_trans_mode = RT_TRUE                         \
+       .single_trans_mode = RT_FALSE                        \
     }
 #endif /* CAN2_INIT_PARAMS */
 #endif /* BSP_USING_CAN2 */
