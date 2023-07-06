@@ -191,7 +191,7 @@ SECTIONS
     } >RAMB
 
     __bss_start = .;
-    .bss (NOLOAD):
+    .bss __StackTop (NOLOAD):
     {
         . = ALIGN(4);
         _sbss = .;

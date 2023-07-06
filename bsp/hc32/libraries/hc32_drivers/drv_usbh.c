@@ -378,11 +378,11 @@ static void usb_host_sof_isr(usb_core_instance *pdev)
 static void usb_host_disconn_isr(usb_core_instance *pdev)
 {
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_DISCINT);
-    
+
     /* flush all the txFIFOs and the whole rxFIFO */
     usb_rxfifoflush(&pdev->regs);
     usb_txfifoflush(&pdev->regs, 0x10UL);
-    
+
     pdev->host.is_dev_connect = 0U;
     usb_device_disconnect_callback(pdev);
 }
@@ -829,6 +829,12 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
     uint8_t  devspeed;
     uint32_t u32NakCnt = 0;
 
+    if (pipe->pipe_index >= USB_MAX_CH_NUM)
+    {
+        rt_kprintf("Error: pipe_index %d, Exceeded the max number of host channels\r\n", pipe->pipe_index);
+        return -1;
+    }
+
     while (1)
     {
         if (!connect_status)
@@ -932,7 +938,7 @@ static rt_uint16_t pipe_index = 0;
 static rt_uint8_t  drv_get_free_pipe_index(void)
 {
     rt_uint8_t idx;
-    for (idx = 1; idx < 16; idx++)
+    for (idx = 0; idx < USB_MAX_CH_NUM; idx++)
     {
         if (!(pipe_index & (0x01 << idx)))
         {
@@ -940,7 +946,8 @@ static rt_uint8_t  drv_get_free_pipe_index(void)
             return idx;
         }
     }
-    return 0xff;
+    rt_kprintf("Error: Exceeded the max number of host channels\r\n");
+    return USB_MAX_CH_NUM;
 }
 
 static void drv_free_pipe_index(rt_uint8_t index)
@@ -952,6 +959,12 @@ static rt_err_t drv_open_pipe(upipe_t pipe)
 {
     uint8_t  devspeed;
     pipe->pipe_index = drv_get_free_pipe_index();
+
+    if (pipe->pipe_index >= USB_MAX_CH_NUM)
+    {
+        rt_kprintf("Error: pipe_index %d, Exceeded the max number of host channels\r\n", pipe->pipe_index);
+        return -RT_ERROR;
+    }
 
     /* Get the speed of the connected device */
     devspeed = _hc32_usbh.host.devspeed;
@@ -977,6 +990,11 @@ static rt_err_t drv_open_pipe(upipe_t pipe)
 
 static rt_err_t drv_close_pipe(upipe_t pipe)
 {
+    if (pipe->pipe_index >= USB_MAX_CH_NUM)
+    {
+        rt_kprintf("Error: pipe_index %d, Exceeded the max number of host channels\r\n", pipe->pipe_index);
+        return -RT_ERROR;
+    }
     usb_hchstop(&_hc32_usbh.regs, pipe->pipe_index);
     drv_free_pipe_index(pipe->pipe_index);
     return RT_EOK;
