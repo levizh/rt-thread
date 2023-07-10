@@ -206,9 +206,9 @@
     #define SDRAM_DATA15_PIN                (GPIO_PIN_10)
 #endif
 
-/************************ RTC *****************************/
-#if defined(BSP_USING_RTC)
-#if defined(BSP_RTC_USING_XTAL32)
+/************************ RTC/PM *****************************/
+#if defined(BSP_USING_RTC) || defined(RT_USING_PM)
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     #define XTAL32_PORT                     (GPIO_PORT_C)
     #define XTAL32_IN_PIN                   (GPIO_PIN_15)
     #define XTAL32_OUT_PIN                  (GPIO_PIN_14)
