@@ -21,17 +21,10 @@
 #define LOG_TAG             "drv.rtc"
 #include <drv_log.h>
 
+#if defined(HC32F4A0) || defined(HC32F4A2)
 /* BACKUP REG: 96~127 for RTC used */
 #define RTC_BACKUP_DATA_SIZE        (32U)
 #define RTC_BACKUP_REG_OFFSET       (128U - RTC_BACKUP_DATA_SIZE)
-
-#ifdef RT_USING_ALARM
-struct stc_hc32_alarm_irq
-{
-    struct hc32_irq_config  irq_config;
-    func_ptr_t              irq_callback;
-};
-#endif
 
 static const uint8_t m_au8BackupWriteData[RTC_BACKUP_DATA_SIZE] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                                                                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -39,10 +32,17 @@ static const uint8_t m_au8BackupWriteData[RTC_BACKUP_DATA_SIZE] = {0, 1, 2, 3, 4
                                                                    31
                                                                   };
 static uint8_t m_au8BackupReadData[RTC_BACKUP_DATA_SIZE];
+#endif
 
 static rt_rtc_dev_t rtc_dev;
 
 #ifdef RT_USING_ALARM
+struct stc_hc32_alarm_irq
+{
+    struct hc32_irq_config  irq_config;
+    func_ptr_t              irq_callback;
+};
+
 static void _rtc_alarm_irq_handler(void);
 
 #define RTC_ALARM_IRQ_CONFIG                                \
@@ -59,6 +59,7 @@ static struct stc_hc32_alarm_irq hc32_alarm_irq =
 };
 #endif
 
+#if defined(HC32F4A0) || defined(HC32F4A2)
 static void _bakup_reg_write(void)
 {
     uint8_t u8Num;
@@ -89,6 +90,7 @@ static int32_t _bakup_reg_check(void)
 
     return i32Ret;
 }
+#endif
 
 static rt_err_t hc32_rtc_get_timeval(struct timeval *tv)
 {
@@ -156,7 +158,11 @@ static rt_err_t hc32_rtc_init(void)
 {
     stc_rtc_init_t stcRtcInit;
 
+#if defined(HC32F4A0) || defined(HC32F4A2)
     if (LL_OK != _bakup_reg_check())
+#elif  defined(HC32F460)
+    if (DISABLE == RTC_GetCounterState())
+#endif
     {
         /* Reset RTC counter */
         if (LL_ERR_TIMEOUT == RTC_DeInit())
@@ -180,8 +186,12 @@ static rt_err_t hc32_rtc_init(void)
 
             /* Startup RTC count */
             RTC_Cmd(ENABLE);
+
+#if defined(HC32F4A0) || defined(HC32F4A2)
+            /* Write sequence flag to backup register  */
+            _bakup_reg_write();
+#endif
         }
-        _bakup_reg_write();
     }
 
     LOG_D("rtc init success");
