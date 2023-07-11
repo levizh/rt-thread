@@ -34,12 +34,12 @@ extern "C" {
 #endif /* QSPI_BUS_CONFIG */
 
 #ifndef QSPI_INIT_PARAMS
-#define QSPI_INIT_PARAMS                                                        \
-    {                                                                           \
-        .u32PrefetchMode   = QSPI_PREFETCH_MD_INVD;                             \
-        .u32SetupTime      = QSPI_QSSN_SETUP_ADVANCE_QSCK0P5;                   \
-        .u32ReleaseTime    = QSPI_QSSN_RELEASE_DELAY_QSCK0P5;                   \
-        .u32IntervalTime   = QSPI_QSSN_INTERVAL_QSCK1;                          \
+#define QSPI_INIT_PARAMS                                        \
+    {                                                           \
+        .u32PrefetchMode   = QSPI_PREFETCH_MD_INVD,             \
+        .u32SetupTime      = QSPI_QSSN_SETUP_ADVANCE_QSCK0P5,   \
+        .u32ReleaseTime    = QSPI_QSSN_RELEASE_DELAY_QSCK0P5,   \
+        .u32IntervalTime   = QSPI_QSSN_INTERVAL_QSCK1,          \
     }
 #endif /* QSPI_INIT_PARAMS */
 

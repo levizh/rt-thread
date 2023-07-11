@@ -65,6 +65,7 @@ menu "Onboard Peripheral Drivers"
         bool "Enable QSPI FLASH (w25q64)"
         select BSP_USING_QSPI
         select RT_USING_SFUD
+        select RT_SFUD_USING_QSPI
         default n
 
 endmenu
@@ -623,10 +624,16 @@ menu "On-chip Peripheral Drivers"
             endif
         endif
 
-    config BSP_USING_QSPI
+    menuconfig BSP_USING_QSPI
         bool "Enable QSPI BUS"
         select RT_USING_QSPI
+        select RT_USING_SPI
         default n
+        if BSP_USING_QSPI
+            config BSP_QSPI_USING_DMA
+                bool "Enable QSPI DMA support"
+                default n
+        endif
 
 endmenu
 
