@@ -14,7 +14,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#ifdef RT_USING_QSPI
+#if defined(RT_USING_QSPI)
 
 #if defined(BSP_USING_QSPI)
 
@@ -73,6 +73,7 @@ static void qspi_err_irq_handler(void);
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+#ifndef BSP_QSPI_USING_SOFT_CS
 static const uint8_t qspi_rom_cmd_list[] =
 {
     QSPI_3LINE_STD_RD, QSPI_3LINE_FAST_RD, QSPI_3LINE_DUAL_OUTPUT_FAST_RD,
@@ -80,6 +81,7 @@ static const uint8_t qspi_rom_cmd_list[] =
     QSPI_4LINE_STD_RD, QSPI_4LINE_FAST_RD, QSPI_4LINE_DUAL_OUTPUT_FAST_RD,
     QSPI_4LINE_DUAL_IO_FAST_RD, QSPI_4LINE_QUAD_OUTPUT_FAST_RD, QSPI_4LINE_QUAD_IO_FAST_RD,
 };
+#endif
 
 struct rt_spi_bus spi_bus_obj;
 struct hc32_qspi_bus qspi_bus_obj;
@@ -155,6 +157,7 @@ static int hc32_qspi_init(struct rt_qspi_device *device, struct rt_qspi_configur
     return result;
 }
 
+#ifndef BSP_QSPI_USING_SOFT_CS
 static int32_t hc32_qspi_search_rom_cmd(uint8_t u8Cmd)
 {
     uint32_t u32Cnt, u32ListLen;
@@ -170,17 +173,21 @@ static int32_t hc32_qspi_search_rom_cmd(uint8_t u8Cmd)
 
     return LL_ERR;
 }
+#endif
 
 static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message, uint8_t u8Func)
 {
+#ifndef BSP_QSPI_USING_SOFT_CS
     uint32_t u32ReadMode = QSPI_RD_MD_STD_RD;
     uint32_t u32DummyCycle = 0U;
     uint32_t u32AddrWidth;
-    uint8_t u8Instr;
+    uint8_t u8Instr, u8CalcDummy = 0U;
+#endif
 
     RT_ASSERT(qspi_bus != RT_NULL);
     RT_ASSERT(message != RT_NULL);
 
+#ifndef BSP_QSPI_USING_SOFT_CS
     CM_QSPI_TypeDef *qspi_instance = qspi_bus->config->Instance;
     u8Instr = message->instruction.content;
     if ((QSPI_READ_FUNC == u8Func) && (LL_OK == hc32_qspi_search_rom_cmd(u8Instr)))
@@ -196,27 +203,33 @@ static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi
         {
             return LL_ERR_INVD_PARAM;
         }
-        if ((message->dummy_cycles < 3) || (message->dummy_cycles > 18))
-        {
-            return LL_ERR_INVD_PARAM;
-        }
 
-        u32DummyCycle = message->dummy_cycles << QSPI_FCR_DMCYCN_POS;
         if ((message->instruction.qspi_lines == 1) && (message->address.qspi_lines == 1) && (message->qspi_data_lines == 1))
         {
             if (message->dummy_cycles != 0)
             {
                 u32ReadMode += 1U;
+                u8CalcDummy = 1U;
             }
         }
         else
         {
+            u8CalcDummy = 1U;
             u32ReadMode = message->qspi_data_lines;
             if (message->address.qspi_lines == message->qspi_data_lines)
             {
                 u32ReadMode += 1U;
             }
         }
+        if (0U != u8CalcDummy)
+        {
+            if ((message->dummy_cycles < 3) || (message->dummy_cycles > 18))
+            {
+                return LL_ERR_INVD_PARAM;
+            }
+            u32DummyCycle = (message->dummy_cycles - 3) << QSPI_FCR_DMCYCN_POS;
+        }
+
         if (message->address.size == 24)
         {
             u32AddrWidth = QSPI_ADDR_WIDTH_24BIT;
@@ -231,10 +244,21 @@ static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi
         QSPI_SetReadMode(u32ReadMode);
     }
     else
+#endif
     {
-        if ((message->instruction.qspi_lines != 1) ||
-            (message->address.qspi_lines != 1) ||
-            (message->qspi_data_lines != 1))
+        if ((message->instruction.qspi_lines != 0) && (message->instruction.qspi_lines != 1))
+        {
+            return LL_ERR_INVD_PARAM;
+        }
+        if ((message->address.qspi_lines != 0) && ((message->address.qspi_lines != 1) && (message->address.size != 0)))
+        {
+            return LL_ERR_INVD_PARAM;
+        }
+        if ((message->address.size % 8) != 0)
+        {
+            return LL_ERR_INVD_PARAM;
+        }
+        if ((message->qspi_data_lines != 0) && (message->qspi_data_lines != 1))
         {
             return LL_ERR_INVD_PARAM;
         }
@@ -242,17 +266,6 @@ static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi
         {
             return LL_ERR_INVD_PARAM;
         }
-
-        if (message->address.size == 24)
-        {
-            u32AddrWidth = QSPI_ADDR_WIDTH_24BIT;
-        }
-        else
-        {
-            u32AddrWidth = QSPI_ADDR_WIDTH_32BIT_INSTR_32BIT;
-        }
-        /* configure register */
-        MODIFY_REG32(qspi_instance->FCR, (QSPI_FCR_FOUR_BIC | QSPI_FCR_AWSL), u32AddrWidth);
     }
 
     return LL_OK;
@@ -270,7 +283,7 @@ static void hc32_qspi_word_to_byte(uint32_t u32Word, uint8_t *pu8Byte, uint8_t u
     while ((u32ByteNum--) != 0UL);
 }
 
-static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr,
+static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
                                   uint8_t *pu8Addr, uint32_t u32AddrLen, const uint8_t *pu8WriteBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
@@ -282,7 +295,10 @@ static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Inst
 #endif
 
     QSPI_EnterDirectCommMode();
-    QSPI_WriteDirectCommValue(u8Instr);
+    if (0UL != u32InstrLen)
+    {
+        QSPI_WriteDirectCommValue(u8Instr);
+    }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
         for (u32Count = 0UL; u32Count < u32AddrLen; u32Count++)
@@ -337,7 +353,7 @@ static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Inst
     QSPI_ExitDirectCommMode();
 }
 
-static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr,
+static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
                                  uint8_t *pu8Addr, uint32_t u32AddrLen, uint8_t *pu8ReadBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
@@ -349,7 +365,10 @@ static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr
 #endif
 
     QSPI_EnterDirectCommMode();
-    QSPI_WriteDirectCommValue(u8Instr);
+    if (0UL != u32InstrLen)
+    {
+        QSPI_WriteDirectCommValue(u8Instr);
+    }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
         for (u32Count = 0UL; u32Count < u32AddrLen; u32Count++)
@@ -412,26 +431,27 @@ static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_me
     uint32_t u32Addr = message->address.content;
     uint8_t u8Instr = message->instruction.content;
     uint8_t u8AddrBuf[10];
-    uint32_t u32AddrLen;
+    uint32_t u32AddrLen = 0U;
+    uint32_t u32InstrLen = 0U;
 
     RT_ASSERT(qspi_bus != RT_NULL);
     RT_ASSERT(message != RT_NULL);
 
-    if (message->address.size == 24)
+    if (message->instruction.qspi_lines != 0)
     {
-        u32AddrLen = 3;
+        u32InstrLen = 1U;
     }
-    else
+    if (message->address.size != 0)
     {
-        u32AddrLen = 4;
+        u32AddrLen = message->address.size / 8;
+        hc32_qspi_word_to_byte(u32Addr, u8AddrBuf, u32AddrLen);
     }
-    hc32_qspi_word_to_byte(u32Addr, u8AddrBuf, u32AddrLen);
     for (u32Count = 0; u32Count < (message->dummy_cycles / 8); u32Count++)
     {
         u8AddrBuf[u32AddrLen] = 0xFF;
         u32AddrLen += 1;
     }
-    hc32_qspi_write_instr(qspi_bus, u8Instr, u8AddrBuf, u32AddrLen, tx_buf, length);
+    hc32_qspi_write_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, tx_buf, length);
 
     return LL_OK;
 }
@@ -439,22 +459,27 @@ static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_me
 static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message)
 {
     uint32_t u32Count = 0U;
-#ifndef BSP_QSPI_USING_DMA
-    __IO uint8_t *pu8Read;
-#endif
+
     rt_uint8_t *rx_buf = message->parent.recv_buf;
     rt_int32_t length = message->parent.length;
     uint32_t u32Addr = message->address.content;
     uint8_t u8Instr = message->instruction.content;
     uint8_t u8AddrBuf[10];
-    uint32_t u32AddrLen;
+    uint32_t u32AddrLen = 0U;
+    uint32_t u32InstrLen = 0U;
 
+#ifndef BSP_QSPI_USING_SOFT_CS
+#ifndef BSP_QSPI_USING_DMA
+    __IO uint8_t *pu8Read;
+#endif
     uint32_t u32ExtBlkStartNum = 0U;
     uint32_t u32GetSize, u32RxIndex = 0U;
+
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config *qspi_dma;
     stc_dma_init_t stcDmaInit;
     uint32_t u32DmaTransSize;
+#endif
 #endif
 
     RT_ASSERT(qspi_bus != RT_NULL);
@@ -464,8 +489,10 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
     {
         return LL_ERR_INVD_PARAM;
     }
-    u32ExtBlkStartNum = u32Addr / QSPI_BASE_BLK_SIZE;
     u32Addr = (u32Addr % QSPI_BASE_BLK_SIZE) + QSPI_ROM_BASE;
+
+#ifndef BSP_QSPI_USING_SOFT_CS
+    u32ExtBlkStartNum = u32Addr / QSPI_BASE_BLK_SIZE;
     if (LL_OK == hc32_qspi_search_rom_cmd(u8Instr))
     {
 #ifdef BSP_QSPI_USING_DMA
@@ -554,22 +581,23 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
 #endif
     }
     else
+#endif
     {
-        if (message->address.size == 24)
+        if (message->instruction.qspi_lines != 0)
         {
-            u32AddrLen = 3;
+            u32InstrLen = 1U;
         }
-        else
+        if (message->address.size != 0)
         {
-            u32AddrLen = 4;
+            u32AddrLen = message->address.size / 8;
+            hc32_qspi_word_to_byte(u32Addr, u8AddrBuf, u32AddrLen);
         }
-        hc32_qspi_word_to_byte(u32Addr, u8AddrBuf, u32AddrLen);
         for (u32Count = 0; u32Count < (message->dummy_cycles / 8); u32Count++)
         {
             u8AddrBuf[u32AddrLen] = 0xFF;
             u32AddrLen += 1;
         }
-        hc32_qspi_read_instr(qspi_bus, u8Instr, u8AddrBuf, u32AddrLen, rx_buf, length);
+        hc32_qspi_read_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, rx_buf, length);
     }
 
     return LL_OK;
@@ -601,21 +629,21 @@ static rt_uint32_t qspixfer(struct rt_spi_device *device, struct rt_spi_message 
             LOG_E("QSPI rt_qspi_message format error!");
             goto __exit;
         }
-        if (qspi_message->parent.length != 0)
+        if (LL_OK == hc32_qspi_write(qspi_bus, qspi_message))
         {
-            if (LL_OK == hc32_qspi_write(qspi_bus, qspi_message))
+            if (qspi_message->parent.length != 0)
             {
                 len = length;
             }
             else
             {
-                LOG_E("QSPI send data failed!");
-                goto __exit;
+                len = 1;
             }
         }
         else
         {
-            len = 1;
+            LOG_E("QSPI send data failed!");
+            goto __exit;
         }
     }
     else if (message->recv_buf != NULL)     /* recv data */

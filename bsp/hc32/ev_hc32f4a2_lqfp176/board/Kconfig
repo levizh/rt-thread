@@ -633,6 +633,9 @@ menu "On-chip Peripheral Drivers"
             config BSP_QSPI_USING_DMA
                 bool "Enable QSPI DMA support"
                 default n
+            config BSP_QSPI_USING_SOFT_CS
+                bool "Enable QSPI Soft CS Pin"
+                default n
         endif
 
 endmenu

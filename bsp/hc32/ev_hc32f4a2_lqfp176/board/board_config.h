@@ -747,10 +747,12 @@
 #endif
 
 #if defined(BSP_USING_QSPI)
+#ifndef BSP_QSPI_USING_SOFT_CS
     /* QSSN */
     #define QSPI_FLASH_CS_PORT              (GPIO_PORT_C)
     #define QSPI_FLASH_CS_PIN               (GPIO_PIN_07)
     #define QSPI_FLASH_CS_FUNC              (GPIO_FUNC_18)
+#endif
     /* QSCK */
     #define QSPI_FLASH_SCK_PORT             (GPIO_PORT_C)
     #define QSPI_FLASH_SCK_PIN              (GPIO_PIN_06)
