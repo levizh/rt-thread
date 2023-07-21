@@ -1001,11 +1001,14 @@ en_flag_status_t I2S_GetStatus(const CM_I2S_TypeDef *I2Sx, uint32_t u32Flag)
  */
 void I2S_ClearStatus(CM_I2S_TypeDef *I2Sx, uint32_t u32Flag)
 {
+    uint32_t u32ErrorFlag;
+
     /* Check parameters */
     DDL_ASSERT(IS_I2S_UNIT(I2Sx));
     DDL_ASSERT(IS_I2S_CLR_FLAG(u32Flag));
 
-    CLR_REG32_BIT(I2Sx->ER, u32Flag);
+    u32ErrorFlag  = u32Flag >> 16U;
+    SET_REG32_BIT(I2Sx->ER, u32ErrorFlag);
 }
 
 /**

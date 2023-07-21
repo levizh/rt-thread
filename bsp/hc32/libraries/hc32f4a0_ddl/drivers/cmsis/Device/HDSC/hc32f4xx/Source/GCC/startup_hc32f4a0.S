@@ -271,7 +271,7 @@ StackInitLoop:
 
 ClrSramSR:
                 ldr         r0, =0x40050810
-                mov         r1, #0x1FF
+                movw        r1, #0x1FF
                 str         r1, [r0]
 
                 /* Copy data from read only memory to RAM. */
@@ -341,7 +341,7 @@ ClearLoop1:
                 /* Call the clock system initialization function. */
                 bl          SystemInit
                 /* Call the application's entry point. */
-                bl          main
+                bl          entry
                 bx          lr
                 .size       Reset_Handler, . - Reset_Handler
 /*

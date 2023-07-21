@@ -27,6 +27,12 @@ extern "C" {
         .Instance = CM_SPI1,                                \
         .bus_name = "spi1",                                 \
         .clock    = FCG1_PERIPH_SPI1,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI1_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI1_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI1_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI1_BUS_CONFIG */
 #endif /* BSP_USING_SPI1 */
@@ -76,6 +82,12 @@ extern "C" {
         .Instance = CM_SPI2,                                \
         .bus_name = "spi2",                                 \
         .clock    = FCG1_PERIPH_SPI2,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI2_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI2_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI2_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI2_BUS_CONFIG */
 #endif /* BSP_USING_SPI2 */
@@ -125,6 +137,12 @@ extern "C" {
         .Instance = CM_SPI3,                                \
         .bus_name = "spi3",                                 \
         .clock    = FCG1_PERIPH_SPI3,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI3_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI3_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI3_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI3_BUS_CONFIG */
 #endif /* BSP_USING_SPI3 */
@@ -175,6 +193,12 @@ extern "C" {
         .Instance = CM_SPI4,                                \
         .bus_name = "spi4",                                 \
         .clock    = FCG1_PERIPH_SPI4,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI4_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI4_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI4_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI4_BUS_CONFIG */
 #endif /* BSP_USING_SPI4 */
@@ -224,6 +248,12 @@ extern "C" {
         .Instance = CM_SPI5,                                \
         .bus_name = "spi5",                                 \
         .clock    = FCG1_PERIPH_SPI5,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI5_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI5_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI5_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI5_BUS_CONFIG */
 #endif /* BSP_USING_SPI5 */
@@ -273,6 +303,12 @@ extern "C" {
         .Instance = CM_SPI6,                                \
         .bus_name = "spi6",                                 \
         .clock    = FCG1_PERIPH_SPI6,                       \
+        .err_irq.irq_config =                               \
+        {                                                   \
+            .irq_num    = BSP_SPI6_ERR_IRQ_NUM,             \
+            .irq_prio   = BSP_SPI6_ERR_IRQ_PRIO,            \
+            .int_src    = INT_SRC_SPI6_SPEI,                \
+        },                                                  \
     }
 #endif /* SPI6_BUS_CONFIG */
 #endif /* BSP_USING_SPI6 */

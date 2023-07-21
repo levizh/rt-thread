@@ -23,6 +23,7 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
+#include <rtconfig.h>
 
 /* C binding of definitions if building with C++ compiler */
 #ifdef __cplusplus
@@ -153,15 +154,6 @@ extern "C"
 #define ETH_MAC_ADDR4                               (0x00U)
 #define ETH_MAC_ADDR5                               (0x00U)
 
-/* PHY(RTL8201F) Address*/
-#define ETH_PHY_ADDR                                (0x00U)
-
-/* PHY Configuration delay(ms) */
-#define ETH_PHY_RST_DELAY                           (0x0080UL)
-#define ETH_PHY_CONFIG_DELAY                        (0x0040UL)
-#define ETH_PHY_RD_TIMEOUT                          (0x0005UL)
-#define ETH_PHY_WR_TIMEOUT                          (0x0005UL)
-
 /* Common PHY Registers */
 #define PHY_BCR                                     (0x00U)     /*!< Basic Control Register               */
 #define PHY_BSR                                     (0x01U)     /*!< Basic Status Register                */
@@ -184,6 +176,40 @@ extern "C"
 #define PHY_AUTONEGO_COMPLETE                       (0x0020U)   /*!< Auto-Negotiation process completed   */
 #define PHY_LINK_STATUS                             (0x0004U)   /*!< Valid link established               */
 #define PHY_JABBER_DETECTION                        (0x0002U)   /*!< Jabber condition detected            */
+
+#if defined (ETH_PHY_USING_RTL8201F)
+/* PHY(RTL8201F) Address*/
+#define ETH_PHY_ADDR                                (0x00U)
+
+/* PHY Configuration delay(ms) */
+#define ETH_PHY_RST_DELAY                           (0x0080UL)
+#define ETH_PHY_CONFIG_DELAY                        (0x0800UL)
+#define ETH_PHY_RD_TIMEOUT                          (0x0005UL)
+#define ETH_PHY_WR_TIMEOUT                          (0x0005UL)
+
+/* PHY Status Register */
+#define PHY_SR                                      (PHY_BCR)   /*!< PHY status register            */
+
+#define PHY_DUPLEX_STATUS                           (PHY_FULLDUPLEX_10M)    /*!< PHY Duplex mask    */
+#define PHY_SPEED_STATUS                            (PHY_HALFDUPLEX_100M)   /*!< PHY Speed mask     */
+
+#elif defined(ETH_PHY_USING_JL11X1)
+/* PHY(JL11X1) Address*/
+#define ETH_PHY_ADDR                                (0x00U)
+
+/* PHY Configuration delay(ms) */
+#define ETH_PHY_RST_DELAY                           (0x0080UL)
+#define ETH_PHY_CONFIG_DELAY                        (0x0800UL)
+#define ETH_PHY_RD_TIMEOUT                          (0x0005UL)
+#define ETH_PHY_WR_TIMEOUT                          (0x0005UL)
+
+/* PHY Status Register */
+#define PHY_SR                                      (PHY_BCR)   /*!< PHY status register            */
+
+#define PHY_DUPLEX_STATUS                           (PHY_FULLDUPLEX_10M)    /*!< PHY Duplex mask    */
+#define PHY_SPEED_STATUS                            (PHY_HALFDUPLEX_100M)   /*!< PHY Speed mask     */
+
+#endif
 
 /**
  * @brief The macro is used to re-define main function in system_device.c(eg. device=hc32f4a0).

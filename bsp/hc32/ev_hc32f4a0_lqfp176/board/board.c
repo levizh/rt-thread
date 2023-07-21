@@ -16,6 +16,32 @@
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
+extern rt_err_t rt_hw_xtal32_board_init(void);
+#endif
+
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
+/**
+ * @brief Switch clock stable time
+ * @note Approx. 30us
+ */
+#define CLK_SYSCLK_SW_STB               (HCLK_VALUE / 50000UL)
+/**
+ * @brief Clk delay function
+ * @param [in] u32Delay         count
+ * @retval when switch clock source, should be delay some time to wait stable.
+ */
+static void CLK_Delay(uint32_t u32Delay)
+{
+    __IO uint32_t u32Timeout = 0UL;
+
+    while (u32Timeout < u32Delay)
+    {
+        u32Timeout++;
+    }
+}
+#endif
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
@@ -24,6 +50,9 @@ void SystemClock_Config(void)
     stc_clock_pll_init_t stcPLLHInit;
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
     stc_clock_pllx_init_t stcPLLAInit;
+#endif
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
+    stc_clock_xtal32_init_t stcXtal32Init;
 #endif
 
     /* PCLK0, HCLK  Max 240MHz */
@@ -82,6 +111,19 @@ void SystemClock_Config(void)
     stcPLLAInit.PLLCFGR_f.PLLR = 4UL - 1UL;
     (void)CLK_PLLxInit(&stcPLLAInit);
 #endif
+
+    /* Reset the VBAT area */
+    PWC_VBAT_Reset();
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
+    /* Xtal32 config */
+    rt_hw_xtal32_board_init();
+    (void)CLK_Xtal32StructInit(&stcXtal32Init);
+    stcXtal32Init.u8State  = CLK_XTAL32_ON;
+    stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_HIGH;
+    stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_RUN_MD;
+    (void)CLK_Xtal32Init(&stcXtal32Init);
+#endif
+
 }
 
 /** Peripheral Clock Configuration
@@ -102,6 +144,8 @@ void PeripheralClock_Config(void)
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
     CLK_SetUSBClockSrc(CLK_USBCLK_PLLXP);
+    /* Wait stable here, since the current DDL API does not include this */
+    CLK_Delay(CLK_SYSCLK_SW_STB);
 #endif
 #endif
 }

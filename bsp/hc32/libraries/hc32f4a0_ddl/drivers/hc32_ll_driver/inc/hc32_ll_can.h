@@ -388,7 +388,7 @@ typedef struct {
 #define CAN_INT_RX_BUF_FULL             (1UL << 5U)             /*!< Register bit RTIE.RFIE. The FIFO of receive buffer is full. */
 #define CAN_INT_RX_OVERRUN              (1UL << 6U)             /*!< Register bit RTIE.ROIE. Receive buffers are full and there is a further message to be stored. */
 #define CAN_INT_RX                      (1UL << 7U)             /*!< Register bit RTIE.RIE. Received a valid data frame or remote frame. */
-#define CAN_INT_BUS_ERR                 (1UL << 9U)             /*!< Register bit ERRINT.BEIE. Each of the error defined by EALCAP.KOER can cause bus-error inetrrupt. */
+#define CAN_INT_BUS_ERR                 (1UL << 9U)             /*!< Register bit ERRINT.BEIE. Each of the error defined by EALCAP.KOER can cause bus-error interrupt. */
 #define CAN_INT_ARBITR_LOST             (1UL << 11U)            /*!< Register bit ERRINT.ALIE. Arbitration lost. */
 #define CAN_INT_ERR_PASSIVE             (1UL << 13U)            /*!< Register bit ERRINT.EPIE. A change from error-passive to error-active or error-active to error-passive has occurred. */
 

@@ -31,14 +31,20 @@ struct hc32_hw_spi_cs
     rt_uint16_t pin;
 };
 
+struct hc32_spi_irq_config
+{
+    struct hc32_irq_config irq_config;
+    func_ptr_t             irq_callback;
+};
+
 struct hc32_spi_config
 {
-    CM_SPI_TypeDef          *Instance;
-    char                    *bus_name;
-    rt_uint32_t             clock;
-    // struct hc32_irq_config  irq_config;
-    struct dma_config       *dma_rx;
-    struct dma_config       *dma_tx;
+    CM_SPI_TypeDef              *Instance;
+    char                        *bus_name;
+    rt_uint32_t                 clock;
+    struct hc32_spi_irq_config  err_irq;
+    struct dma_config           *dma_rx;
+    struct dma_config           *dma_tx;
 };
 
 struct hc32_spi

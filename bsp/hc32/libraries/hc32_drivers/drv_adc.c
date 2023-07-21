@@ -224,7 +224,7 @@ static void _adc_clock_enable(void)
 }
 
 extern rt_err_t rt_hw_board_adc_init(CM_ADC_TypeDef *ADCx);
-static int rt_hw_adc_init(void)
+int rt_hw_adc_init(void)
 {
     int ret, i = 0;
     stc_adc_init_t stcAdcInit = {0};
@@ -267,4 +267,4 @@ static int rt_hw_adc_init(void)
     return ret;
 }
 INIT_DEVICE_EXPORT(rt_hw_adc_init);
-#endif /* BSP_USING_ADC */
+#endif

@@ -21,9 +21,76 @@
 #define LOG_TAG             "drv.rtc"
 #include <drv_log.h>
 
-extern rt_err_t rt_hw_xtal32_board_init(void);
+#if defined(HC32F4A0)
+/* BACKUP REG: 96~127 for RTC used */
+#define RTC_BACKUP_DATA_SIZE        (32U)
+#define RTC_BACKUP_REG_OFFSET       (128U - RTC_BACKUP_DATA_SIZE)
+
+static const uint8_t m_au8BackupWriteData[RTC_BACKUP_DATA_SIZE] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                                                   11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                                                   21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                                                                   31
+                                                                  };
+static uint8_t m_au8BackupReadData[RTC_BACKUP_DATA_SIZE];
+#endif
 
 static rt_rtc_dev_t rtc_dev;
+
+#ifdef RT_USING_ALARM
+struct stc_hc32_alarm_irq
+{
+    struct hc32_irq_config  irq_config;
+    func_ptr_t              irq_callback;
+};
+
+static void _rtc_alarm_irq_handler(void);
+
+#define RTC_ALARM_IRQ_CONFIG                                \
+    {                                                       \
+        .irq_num    = BSP_RTC_ALARM_IRQ_NUM,                \
+        .irq_prio   = BSP_RTC_ALARM_IRQ_PRIO,               \
+        .int_src    = INT_SRC_RTC_ALM,                      \
+    }
+
+static struct stc_hc32_alarm_irq hc32_alarm_irq =
+{
+    .irq_config     = RTC_ALARM_IRQ_CONFIG,
+    .irq_callback   = _rtc_alarm_irq_handler,
+};
+#endif
+
+#if defined(HC32F4A0)
+static void _bakup_reg_write(void)
+{
+    uint8_t u8Num;
+    for (u8Num = 0U; u8Num < RTC_BACKUP_DATA_SIZE; u8Num++)
+    {
+        PWC_BKR_Write(u8Num + RTC_BACKUP_REG_OFFSET, m_au8BackupWriteData[u8Num]);
+    }
+}
+
+static int32_t _bakup_reg_check(void)
+{
+    uint8_t u8Num;
+    int32_t i32Ret = LL_OK;
+
+    for (u8Num = 0U; u8Num < RTC_BACKUP_DATA_SIZE; u8Num++)
+    {
+        m_au8BackupReadData[u8Num] = PWC_BKR_Read(u8Num + RTC_BACKUP_REG_OFFSET);
+    }
+
+    for (u8Num = 0U; u8Num < RTC_BACKUP_DATA_SIZE; u8Num++)
+    {
+        if (m_au8BackupWriteData[u8Num] != m_au8BackupReadData[u8Num])
+        {
+            i32Ret = LL_ERR;
+            break;
+        }
+    }
+
+    return i32Ret;
+}
+#endif
 
 static rt_err_t hc32_rtc_get_timeval(struct timeval *tv)
 {
@@ -91,43 +158,42 @@ static rt_err_t hc32_rtc_init(void)
 {
     stc_rtc_init_t stcRtcInit;
 
-#ifdef BSP_RTC_USING_XTAL32
-    stc_clock_xtal32_init_t stcXtal32Init;
-    /* Xtal32 config */
-    rt_hw_xtal32_board_init();
-    (void)CLK_Xtal32StructInit(&stcXtal32Init);
-    stcXtal32Init.u8State  = CLK_XTAL32_ON;
-    stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_HIGH;
-    stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_RUN_MD;
-    (void)CLK_Xtal32Init(&stcXtal32Init);
-    /* Waiting for XTAL32 stabilization */
-    rt_thread_delay(1000);
-#endif
-
-    /* RTC stopped */
+#if defined(HC32F4A0)
+    if (LL_OK != _bakup_reg_check())
+#elif  defined(HC32F460)
     if (DISABLE == RTC_GetCounterState())
+#endif
     {
         /* Reset RTC counter */
         if (LL_ERR_TIMEOUT == RTC_DeInit())
         {
+            LOG_E("Reset RTC failed!");
             return -RT_ERROR;
         }
         else
         {
             /* Configure structure initialization */
             (void)RTC_StructInit(&stcRtcInit);
+
             /* Configuration RTC structure */
 #ifdef BSP_RTC_USING_XTAL32
             stcRtcInit.u8ClockSrc = RTC_CLK_SRC_XTAL32;
 #else
             stcRtcInit.u8ClockSrc = RTC_CLK_SRC_LRC;
 #endif
-            stcRtcInit.u8HourFormat  = RTC_HOUR_FMT_24H;
+            stcRtcInit.u8HourFormat = RTC_HOUR_FMT_24H;
             (void)RTC_Init(&stcRtcInit);
+
             /* Startup RTC count */
             RTC_Cmd(ENABLE);
+
+#if defined(HC32F4A0)
+            /* Write sequence flag to backup register  */
+            _bakup_reg_write();
+#endif
         }
     }
+
     LOG_D("rtc init success");
     return RT_EOK;
 }
@@ -170,35 +236,20 @@ void _rtc_alarm_irq_handler(void)
 
 static void hc32_rtc_alarm_enable(void)
 {
-    struct hc32_irq_config irq_config;
+    NVIC_EnableIRQ(hc32_alarm_irq.irq_config.irq_num);
 
-    RTC_AlarmCmd(ENABLE);
     RTC_IntCmd(RTC_INT_ALARM, ENABLE);
-
-    irq_config.irq_num = BSP_RTC_ALARM_IRQ_NUM;
-    irq_config.int_src = INT_SRC_RTC_ALM;
-    irq_config.irq_prio = BSP_RTC_ALARM_IRQ_PRIO;
-    /* register interrupt */
-    hc32_install_irq_handler(&irq_config,
-                             _rtc_alarm_irq_handler,
-                             RT_TRUE);
+    RTC_AlarmCmd(ENABLE);
+    LOG_D("hc32 alarm enable");
 }
 
 static void hc32_rtc_alarm_disable(void)
 {
-    struct hc32_irq_config irq_config;
-
     RTC_AlarmCmd(DISABLE);
     RTC_IntCmd(RTC_INT_ALARM, DISABLE);
 
-    irq_config.irq_num = BSP_RTC_ALARM_IRQ_NUM;
-    irq_config.int_src = INT_SRC_RTC_ALM;
-    irq_config.irq_prio = BSP_RTC_ALARM_IRQ_PRIO;
-    /* register interrupt */
-    hc32_install_irq_handler(&irq_config,
-                             _rtc_alarm_irq_handler,
-                             RT_FALSE);
-
+    NVIC_DisableIRQ(hc32_alarm_irq.irq_config.irq_num);
+    LOG_D("hc32 alarm disable");
 }
 #endif
 
@@ -228,6 +279,7 @@ static rt_err_t hc32_rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
     {
         if (alarm->enable)
         {
+            RTC_AlarmCmd(DISABLE);
             /* Configuration alarm time: precision is 1 minute */
             stcRtcAlarm.u8AlarmHour    = alarm->tm_hour;
             stcRtcAlarm.u8AlarmMinute  = alarm->tm_min;
@@ -236,14 +288,12 @@ static rt_err_t hc32_rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
             RTC_ClearStatus(RTC_FLAG_ALARM);
             (void)RTC_SetAlarm(RTC_DATA_FMT_DEC, &stcRtcAlarm);
             hc32_rtc_alarm_enable();
-            LOG_D("hc32 alarm enable");
             LOG_D("SET_ALARM %d:%d:%d", alarm->tm_hour,
                   alarm->tm_min, 0);
         }
         else
         {
             hc32_rtc_alarm_disable();
-            LOG_D("hc32 alarm disable");
         }
 
     }
@@ -273,6 +323,11 @@ const static struct rt_rtc_ops hc32_rtc_ops =
 int rt_hw_rtc_init(void)
 {
     rt_err_t result;
+
+#ifdef RT_USING_ALARM
+    /* register interrupt */
+    hc32_install_irq_handler(&hc32_alarm_irq.irq_config, hc32_alarm_irq.irq_callback, RT_FALSE);
+#endif
 
     rtc_dev.ops = &hc32_rtc_ops;
     result = rt_hw_rtc_register(&rtc_dev, "rtc", RT_DEVICE_FLAG_RDWR, RT_NULL);

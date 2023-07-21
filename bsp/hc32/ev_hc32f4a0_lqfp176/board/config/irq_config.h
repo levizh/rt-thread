@@ -118,7 +118,11 @@ extern "C" {
 #define BSP_UART1_RXTO_IRQ_NUM          INT006_IRQn
 #define BSP_UART1_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif
-#if defined(BSP_UART1_TX_USING_DMA)
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART1_TX_USING_DMA)
+#define BSP_UART1_TX_CPLT_IRQ_NUM       INT086_IRQn
+#define BSP_UART1_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#elif defined(RT_USING_SERIAL_V2)
 #define BSP_UART1_TX_CPLT_IRQ_NUM       INT086_IRQn
 #define BSP_UART1_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -136,7 +140,11 @@ extern "C" {
 #define BSP_UART2_RXTO_IRQ_NUM          INT007_IRQn
 #define BSP_UART2_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif
-#if defined(BSP_UART2_TX_USING_DMA)
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART2_TX_USING_DMA)
+#define BSP_UART2_TX_CPLT_IRQ_NUM       INT087_IRQn
+#define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#elif defined(RT_USING_SERIAL_V2)
 #define BSP_UART2_TX_CPLT_IRQ_NUM       INT087_IRQn
 #define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -181,7 +189,11 @@ extern "C" {
 #define BSP_UART6_RXTO_IRQ_NUM          INT008_IRQn
 #define BSP_UART6_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif
-#if defined(BSP_UART6_TX_USING_DMA)
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART6_TX_USING_DMA)
+#define BSP_UART6_TX_CPLT_IRQ_NUM       INT099_IRQn
+#define BSP_UART6_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#elif defined(RT_USING_SERIAL_V2)
 #define BSP_UART6_TX_CPLT_IRQ_NUM       INT099_IRQn
 #define BSP_UART6_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -199,11 +211,30 @@ extern "C" {
 #define BSP_UART7_RXTO_IRQ_NUM          INT009_IRQn
 #define BSP_UART7_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif
-#if defined(BSP_UART7_TX_USING_DMA)
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART7_TX_USING_DMA)
+#define BSP_UART7_TX_CPLT_IRQ_NUM       INT105_IRQn
+#define BSP_UART7_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#elif defined(RT_USING_SERIAL_V2)
 #define BSP_UART7_TX_CPLT_IRQ_NUM       INT105_IRQn
 #define BSP_UART7_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
+#elif defined(BSP_USING_SPI1) || defined(BSP_USING_SPI2)
+#define BSP_SPI1_ERR_IRQ_NUM            INT009_IRQn
+#define BSP_SPI1_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_SPI2_ERR_IRQ_NUM            INT016_IRQn
+#define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif /* BSP_USING_UART7 */
+
+#if defined(BSP_USING_SPI3)
+#define BSP_SPI3_ERR_IRQ_NUM            INT092_IRQn
+#define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
+
+#if defined(BSP_USING_SPI4)
+#define BSP_SPI4_ERR_IRQ_NUM            INT093_IRQn
+#define BSP_SPI4_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
 
 #if defined(BSP_USING_UART8)
 #define BSP_UART8_RXERR_IRQ_NUM         INT017_IRQn
@@ -262,6 +293,11 @@ extern "C" {
 #define BSP_USB_GLB_IRQ_NUM             INT003_IRQn
 #define BSP_USB_GLB_IRQ_PRIO            DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_USBD */
+
+#if defined (BSP_USING_QSPI)
+#define BSP_QSPI_ERR_IRQ_NUM            INT002_IRQn
+#define BSP_QSPI_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif /* BSP_USING_QSPI */
 
 #if defined(BSP_USING_PULSE_ENCODER_TIMA_1)
 #define BSP_PULSE_ENCODER_TIMA_1_OVF_IRQ_NUM   INT074_IRQn

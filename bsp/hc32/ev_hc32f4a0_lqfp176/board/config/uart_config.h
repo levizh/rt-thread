@@ -83,7 +83,7 @@ extern "C" {
 #endif /* UART1_RXTO_CONFIG */
 #endif /* BSP_UART1_RX_USING_DMA */
 
-#if defined(BSP_UART1_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART1_TX_USING_DMA)
 #ifndef UART1_TX_CPLT_CONFIG
 #define UART1_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -94,8 +94,22 @@ extern "C" {
             .int_src    = INT_SRC_USART1_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART1_TX_CPLT_CONFIG
+#define UART1_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART1_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART1_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART1_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART1_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART1_TX_USING_DMA)
 #ifndef UART1_DMA_TX_CONFIG
 #define UART1_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -178,7 +192,7 @@ extern "C" {
 #endif /* UART2_RXTO_CONFIG */
 #endif /* BSP_UART2_RX_USING_DMA */
 
-#if defined(BSP_UART2_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART2_TX_USING_DMA)
 #ifndef UART2_TX_CPLT_CONFIG
 #define UART2_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -189,8 +203,22 @@ extern "C" {
             .int_src    = INT_SRC_USART2_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART2_TX_CPLT_CONFIG
+#define UART2_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART2_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART2_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART2_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART2_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART2_TX_USING_DMA)
 #ifndef UART2_DMA_TX_CONFIG
 #define UART2_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -237,6 +265,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART3_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART3_TX_CPLT_CONFIG
+#define UART3_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART3_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART3_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART3_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART3_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART3 */
 
 #if defined(BSP_USING_UART4)
@@ -266,6 +308,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART4_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART4_TX_CPLT_CONFIG
+#define UART4_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART4_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART4_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART4_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART4_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART4 */
 
 #if defined(BSP_USING_UART5)
@@ -295,6 +351,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART5_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART5_TX_CPLT_CONFIG
+#define UART5_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART5_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART5_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART5_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART5_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART5 */
 
 #if defined(BSP_USING_UART6)
@@ -360,7 +430,7 @@ extern "C" {
 #endif /* UART6_RXTO_CONFIG */
 #endif /* BSP_UART6_RX_USING_DMA */
 
-#if defined(BSP_UART6_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART6_TX_USING_DMA)
 #ifndef UART6_TX_CPLT_CONFIG
 #define UART6_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -371,8 +441,22 @@ extern "C" {
             .int_src    = INT_SRC_USART6_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART6_TX_CPLT_CONFIG
+#define UART6_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART6_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART6_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART6_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART6_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART6_TX_USING_DMA)
 #ifndef UART6_DMA_TX_CONFIG
 #define UART6_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -455,7 +539,7 @@ extern "C" {
 #endif /* UART7_RXTO_CONFIG */
 #endif /* BSP_UART7_RX_USING_DMA */
 
-#if defined(BSP_UART7_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART7_TX_USING_DMA)
 #ifndef UART7_TX_CPLT_CONFIG
 #define UART7_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -466,8 +550,22 @@ extern "C" {
             .int_src    = INT_SRC_USART7_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART7_TX_CPLT_CONFIG
+#define UART7_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART7_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART7_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART7_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART7_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART7_TX_USING_DMA)
 #ifndef UART7_DMA_TX_CONFIG
 #define UART7_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -484,7 +582,7 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART7_DMA_TX_CONFIG */
-#endif /* BSP_UART7_RX_USING_DMA */
+#endif /* BSP_UART7_TX_USING_DMA */
 #endif /* BSP_USING_UART7 */
 
 #if defined(BSP_USING_UART8)
@@ -514,6 +612,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART8_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART8_TX_CPLT_CONFIG
+#define UART8_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART8_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART8_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART8_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART8_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART8 */
 
 #if defined(BSP_USING_UART9)
@@ -543,6 +655,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART9_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART9_TX_CPLT_CONFIG
+#define UART9_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART9_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART9_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART9_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART9_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART9 */
 
 #if defined(BSP_USING_UART10)
@@ -572,6 +698,20 @@ extern "C" {
         },                                                      \
     }
 #endif /* UART10_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART10_TX_CPLT_CONFIG
+#define UART10_TX_CPLT_CONFIG                                   \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART10_TX_CPLT_IRQ_NUM,           \
+            .irq_prio   = BSP_UART10_TX_CPLT_IRQ_PRIO,          \
+            .int_src    = INT_SRC_USART10_TCI,                  \
+        },                                                      \
+    }
+#endif
+#endif /* UART10_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART10 */
 
 #ifdef __cplusplus
