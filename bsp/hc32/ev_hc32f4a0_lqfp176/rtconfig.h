@@ -37,7 +37,6 @@
 
 /* Memory Management */
 
-#define RT_PAGE_MAX_ORDER 11
 #define RT_USING_MEMPOOL
 #define RT_USING_SMALL_MEM
 #define RT_USING_SMALL_MEM_AS_HEAP
@@ -49,10 +48,8 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart1"
-#define RT_VER_NUM 0x50000
+#define RT_VER_NUM 0x50001
 #define RT_USING_HW_ATOMIC
-#define RT_USING_CPU_FFS
-#define ARCH_ARM
 #define RT_USING_CPU_FFS
 #define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
@@ -77,13 +74,9 @@
 #define MSH_USING_BUILT_IN_COMMANDS
 #define FINSH_USING_DESCRIPTION
 #define FINSH_ARG_MAX 10
-#define RT_USING_DFS
-#define DFS_USING_POSIX
-#define DFS_USING_WORKDIR
-#define DFS_FILESYSTEMS_MAX 4
-#define DFS_FILESYSTEM_TYPES_MAX 4
-#define DFS_FD_MAX 16
-#define RT_USING_DFS_DEVFS
+
+/* DFS: device virtual file system */
+
 
 /* Device Drivers */
 
@@ -96,29 +89,7 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
-#define RT_USING_I2C
-#define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
-#define RT_USING_PWM
-#define RT_USING_RTC
-#define RT_USING_SDIO
-#define RT_SDIO_STACK_SIZE 512
-#define RT_SDIO_THREAD_PRIORITY 15
-#define RT_MMCSD_STACK_SIZE 1024
-#define RT_MMCSD_THREAD_PREORITY 22
-#define RT_MMCSD_MAX_PARTITION 16
-#define RT_SDIO_DEBUG
-#define RT_USING_HWCRYPTO
-#define RT_HWCRYPTO_DEFAULT_NAME "hwcryto"
-#define RT_HWCRYPTO_IV_MAX_SIZE 16
-#define RT_HWCRYPTO_KEYBIT_MAX_SIZE 256
-#define RT_HWCRYPTO_USING_AES
-#define RT_HWCRYPTO_USING_AES_ECB
-#define RT_HWCRYPTO_USING_SHA2
-#define RT_HWCRYPTO_USING_SHA2_256
-#define RT_HWCRYPTO_USING_RNG
-#define RT_HWCRYPTO_USING_CRC
-#define RT_HWCRYPTO_USING_CRC_04C11DB7
 
 /* Using USB */
 
@@ -211,6 +182,9 @@
 /* AI packages */
 
 
+/* Signal Processing and Control Algorithm Packages */
+
+
 /* miscellaneous packages */
 
 /* project laboratory */
@@ -224,7 +198,7 @@
 /* Arduino libraries */
 
 
-/* Projects */
+/* Projects and Demos */
 
 
 /* Sensors */
@@ -249,6 +223,7 @@
 
 /* Other */
 
+
 /* Signal IO */
 
 
@@ -269,29 +244,6 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
-#define BSP_USING_HWCRYPTO
-#define BSP_USING_UQID
-#define BSP_USING_RNG
-#define BSP_USING_CRC
-#define BSP_USING_CRC32
-#define BSP_USING_AES
-#define BSP_USING_AES_ECB
-#define BSP_USING_HASH
-#define BSP_USING_SHA2_256
-#define BSP_HASH_USING_DMA
-#define BSP_USING_PWM
-#define BSP_USING_PWM_TIMA
-#define BSP_USING_PWM_TIMA_4
-#define BSP_USING_PWM_TIMA_4_CH1
-#define BSP_USING_PWM_TIMA_4_CH2
-#define BSP_USING_PWM_TIM4
-#define BSP_USING_PWM_TIM4_1
-#define BSP_USING_PWM_TIM4_1_OUH
-#define BSP_USING_PWM_TIM4_1_OUL
-#define BSP_USING_PWM_TIM6
-#define BSP_USING_PWM_TIM6_1
-#define BSP_USING_PWM_TIM6_1_A
-#define BSP_USING_PWM_TIM6_1_B
 
 /* Board extended module Drivers */
 
