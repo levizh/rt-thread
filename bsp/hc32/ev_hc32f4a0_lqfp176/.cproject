@@ -206,7 +206,7 @@
   <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders" />
   <storageModule moduleId="refreshScope" versionNumber="2">
     <configuration configurationName="Debug">
-      <resource resourceType="PROJECT" workspacePath="/f429_tmp" />
+      <resource resourceType="PROJECT" workspacePath="/project" />
     </configuration>
   </storageModule>
   <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets" />

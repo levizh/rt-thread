@@ -161,9 +161,9 @@ static int hc32_i2c_read(struct hc32_i2c *i2c_obj,
     return ret;
 }
 
-static rt_size_t hc32_i2c_master_xfer(struct rt_i2c_bus_device *bus,
-                                      struct rt_i2c_msg msgs[],
-                                      rt_uint32_t num)
+static rt_ssize_t hc32_i2c_master_xfer(struct rt_i2c_bus_device *bus,
+                                       struct rt_i2c_msg msgs[],
+                                       rt_uint32_t num)
 {
     rt_int32_t i, ret;
     rt_uint16_t ignore_nack;
