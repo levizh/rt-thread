@@ -18,13 +18,13 @@
  * 2021-11-14     Meco Man     add rtlegacy.h for compatibility
  * 2022-06-04     Meco Man     remove strnlen
  * 2023-05-20     Bernard      add rtatomic.h header file to included files.
+ * 2023-06-30     ChuShicheng  Move RT_DEBUG_CONTEXT_CHECK from the rtdebug.h
  */
 
 #ifndef __RT_THREAD_H__
 #define __RT_THREAD_H__
 
 #include <rtconfig.h>
-#include <rtdebug.h>
 #include <rtdef.h>
 #include <rtservice.h>
 #include <rtm.h>
@@ -458,6 +458,19 @@ rt_err_t rt_mb_control(rt_mailbox_t mb, int cmd, void *arg);
 #endif
 
 #ifdef RT_USING_MESSAGEQUEUE
+
+struct rt_mq_message
+{
+    struct rt_mq_message *next;
+    rt_ssize_t length;
+#ifdef RT_USING_MESSAGEQUEUE_PRIORITY
+    rt_int32_t prio;
+#endif
+};
+
+#define RT_MQ_BUF_SIZE(msg_size, max_msgs) \
+((RT_ALIGN((msg_size), RT_ALIGN_SIZE) + sizeof(struct rt_mq_message)) * (max_msgs))
+
 /*
  * message queue interface
  */
@@ -492,19 +505,34 @@ rt_err_t rt_mq_send_wait_killable(rt_mq_t     mq,
                          rt_size_t   size,
                          rt_int32_t  timeout);
 rt_err_t rt_mq_urgent(rt_mq_t mq, const void *buffer, rt_size_t size);
-rt_err_t rt_mq_recv(rt_mq_t    mq,
+rt_ssize_t rt_mq_recv(rt_mq_t    mq,
                     void      *buffer,
                     rt_size_t  size,
                     rt_int32_t timeout);
-rt_err_t rt_mq_recv_interruptible(rt_mq_t    mq,
+rt_ssize_t rt_mq_recv_interruptible(rt_mq_t    mq,
                     void      *buffer,
                     rt_size_t  size,
                     rt_int32_t timeout);
-rt_err_t rt_mq_recv_killable(rt_mq_t    mq,
+rt_ssize_t rt_mq_recv_killable(rt_mq_t    mq,
                     void      *buffer,
                     rt_size_t  size,
                     rt_int32_t timeout);
 rt_err_t rt_mq_control(rt_mq_t mq, int cmd, void *arg);
+
+#ifdef RT_USING_MESSAGEQUEUE_PRIORITY
+rt_err_t rt_mq_send_wait_prio(rt_mq_t mq,
+                              const void *buffer,
+                              rt_size_t size,
+                              rt_int32_t prio,
+                              rt_int32_t timeout,
+                              int suspend_flag);
+rt_err_t rt_mq_recv_prio(rt_mq_t mq,
+                         void *buffer,
+                         rt_size_t size,
+                         rt_int32_t *prio,
+                         rt_int32_t timeout,
+                         int suspend_flag);
+#endif
 #endif
 
 /* defunct */
@@ -574,14 +602,7 @@ rt_ssize_t rt_device_write(rt_device_t dev,
                           const void *buffer,
                           rt_size_t   size);
 rt_err_t  rt_device_control(rt_device_t dev, int cmd, void *arg);
-#ifdef RT_USING_DM
-rt_err_t rt_device_bind_driver(rt_device_t device, rt_driver_t driver, void *node);
-rt_device_t rt_device_create_since_driver(rt_driver_t drv,int device_id);
-rt_err_t rt_device_probe_and_init(rt_device_t device);
 
-rt_err_t rt_driver_match_with_id(const rt_driver_t drv,int device_id);
-rt_err_t rt_driver_match_with_dtb(const rt_driver_t drv,void *from_node,int max_dev_num);
-#endif
 /**@}*/
 #endif
 
@@ -700,8 +721,99 @@ void rt_show_version(void);
 #ifdef RT_DEBUG
 extern void (*rt_assert_hook)(const char *ex, const char *func, rt_size_t line);
 void rt_assert_set_hook(void (*hook)(const char *ex, const char *func, rt_size_t line));
-
 void rt_assert_handler(const char *ex, const char *func, rt_size_t line);
+
+/* Turn on this to enable context check */
+#ifndef RT_DEBUG_CONTEXT_CHECK
+#define RT_DEBUG_CONTEXT_CHECK         1
+#endif
+
+#define RT_ASSERT(EX)                                                         \
+if (!(EX))                                                                    \
+{                                                                             \
+    rt_assert_handler(#EX, __FUNCTION__, __LINE__);                           \
+}
+
+/* Macro to check current context */
+#if RT_DEBUG_CONTEXT_CHECK
+#define RT_DEBUG_NOT_IN_INTERRUPT                                             \
+do                                                                            \
+{                                                                             \
+    rt_base_t level;                                                          \
+    level = rt_hw_interrupt_disable();                                        \
+    if (rt_interrupt_get_nest() != 0)                                         \
+    {                                                                         \
+        rt_kprintf("Function[%s] shall not be used in ISR\n", __FUNCTION__);  \
+        RT_ASSERT(0)                                                          \
+    }                                                                         \
+    rt_hw_interrupt_enable(level);                                            \
+}                                                                             \
+while (0)
+
+/* "In thread context" means:
+ *     1) the scheduler has been started
+ *     2) not in interrupt context.
+ */
+#define RT_DEBUG_IN_THREAD_CONTEXT                                            \
+do                                                                            \
+{                                                                             \
+    rt_base_t level;                                                          \
+    level = rt_hw_interrupt_disable();                                        \
+    if (rt_thread_self() == RT_NULL)                                          \
+    {                                                                         \
+        rt_kprintf("Function[%s] shall not be used before scheduler start\n", \
+                   __FUNCTION__);                                             \
+        RT_ASSERT(0)                                                          \
+    }                                                                         \
+    RT_DEBUG_NOT_IN_INTERRUPT;                                                \
+    rt_hw_interrupt_enable(level);                                            \
+}                                                                             \
+while (0)
+
+/* "scheduler available" means:
+ *     1) the scheduler has been started.
+ *     2) not in interrupt context.
+ *     3) scheduler is not locked.
+ *     4) interrupt is not disabled.
+ */
+#define RT_DEBUG_SCHEDULER_AVAILABLE(need_check)                              \
+do                                                                            \
+{                                                                             \
+    if (need_check)                                                           \
+    {                                                                         \
+        rt_bool_t interrupt_disabled;                                         \
+        rt_base_t level;                                                      \
+        interrupt_disabled = rt_hw_interrupt_is_disabled();                   \
+        level = rt_hw_interrupt_disable();                                    \
+        if (rt_critical_level() != 0)                                         \
+        {                                                                     \
+            rt_kprintf("Function[%s]: scheduler is not available\n",          \
+                    __FUNCTION__);                                            \
+            RT_ASSERT(0)                                                      \
+        }                                                                     \
+        if (interrupt_disabled == RT_TRUE)                                    \
+        {                                                                     \
+            rt_kprintf("Function[%s]: interrupt is disabled\n",               \
+                    __FUNCTION__);                                            \
+            RT_ASSERT(0)                                                      \
+        }                                                                     \
+        RT_DEBUG_IN_THREAD_CONTEXT;                                           \
+        rt_hw_interrupt_enable(level);                                        \
+    }                                                                         \
+}                                                                             \
+while (0)
+#else
+#define RT_DEBUG_NOT_IN_INTERRUPT
+#define RT_DEBUG_IN_THREAD_CONTEXT
+#define RT_DEBUG_SCHEDULER_AVAILABLE(need_check)
+#endif
+
+#else /* RT_DEBUG */
+
+#define RT_ASSERT(EX)
+#define RT_DEBUG_NOT_IN_INTERRUPT
+#define RT_DEBUG_IN_THREAD_CONTEXT
+#define RT_DEBUG_SCHEDULER_AVAILABLE(need_check)
 #endif /* RT_DEBUG */
 
 #ifdef RT_USING_FINSH

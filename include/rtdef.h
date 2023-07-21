@@ -132,7 +132,7 @@ typedef rt_base_t                       rt_off_t;       /**< Type for offset */
     #include <stdatomic.h>
     typedef atomic_size_t rt_atomic_t;
 #elif defined(RT_USING_HW_ATOMIC)
-    typedef volatile rt_base_t rt_atomic_t;
+    typedef rt_base_t rt_atomic_t;
 #else
 
     /* To detect std atomic */
@@ -140,7 +140,7 @@ typedef rt_base_t                       rt_off_t;       /**< Type for offset */
         #include <stdatomic.h>
         typedef atomic_size_t rt_atomic_t;
     #else
-        typedef volatile rt_base_t rt_atomic_t;
+        typedef rt_base_t rt_atomic_t;
     #endif /* __GNUC__ && !__STDC_NO_ATOMICS__ */
 
 #endif /* RT_USING_STDC_ATOMIC */
@@ -218,6 +218,7 @@ typedef __gnuc_va_list              va_list;
 #define rt_used                     __attribute__((used))
 #define rt_align(n)                 __attribute__((aligned(n)))
 #define rt_weak                     __attribute__((weak))
+#define rt_noreturn                 __attribute__ ((noreturn))
 #define rt_inline                   static __inline
 #define RTT_API
 #elif defined (__ADSPBLACKFIN__)        /* for VisualDSP++ Compiler */
@@ -270,7 +271,7 @@ typedef __gnuc_va_list              va_list;
 typedef int (*init_fn_t)(void);
 #ifdef _MSC_VER
 #pragma section("rti_fn$f",read)
-    #if RT_DEBUG_INIT
+    #ifdef RT_DEBUG_INIT
         struct rt_init_desc
         {
             const char* level;
@@ -296,7 +297,7 @@ typedef int (*init_fn_t)(void);
                                 {__rti_level_##fn, fn };
     #endif
 #else
-    #if RT_DEBUG_INIT
+    #ifdef RT_DEBUG_INIT
         struct rt_init_desc
         {
             const char* fn_name;
@@ -318,6 +319,17 @@ typedef int (*init_fn_t)(void);
 /* board init routines will be called in board_init() function */
 #define INIT_BOARD_EXPORT(fn)           INIT_EXPORT(fn, "1")
 
+/* init cpu, memory, interrupt-controller, bus... */
+#define INIT_CORE_EXPORT(fn)            INIT_EXPORT(fn, "1.0")
+/* init pci/pcie, usb platform driver... */
+#define INIT_FRAMEWORK_EXPORT(fn)       INIT_EXPORT(fn, "1.1")
+/* init platform, user code... */
+#define INIT_PLATFORM_EXPORT(fn)        INIT_EXPORT(fn, "1.2")
+/* init sys-timer, clk, pinctrl... */
+#define INIT_SUBSYS_EXPORT(fn)          INIT_EXPORT(fn, "1.3")
+/* init early drivers */
+#define INIT_DRIVER_EARLY_EXPORT(fn)    INIT_EXPORT(fn, "1.4")
+
 /* pre/device/component/env/app init routines will be called in init_thread */
 /* components pre-initialization (pure software initialization) */
 #define INIT_PREV_EXPORT(fn)            INIT_EXPORT(fn, "2")
@@ -329,6 +341,11 @@ typedef int (*init_fn_t)(void);
 #define INIT_ENV_EXPORT(fn)             INIT_EXPORT(fn, "5")
 /* application initialization (rtgui application etc ...) */
 #define INIT_APP_EXPORT(fn)             INIT_EXPORT(fn, "6")
+
+/* init after mount fs */
+#define INIT_FS_EXPORT(fn)              INIT_EXPORT(fn, "6.0")
+/* init in secondary_cpu_c_start */
+#define INIT_SECONDARY_CPU_EXPORT(fn)   INIT_EXPORT(fn, "7")
 
 #if !defined(RT_USING_FINSH)
 /* define these to empty, even if not include finsh.h file */
@@ -383,8 +400,20 @@ typedef int (*init_fn_t)(void);
 #define RT_ETRAP                        11              /**< Trap event */
 #define RT_ENOENT                       12              /**< No entry */
 #define RT_ENOSPC                       13              /**< No space left */
+#define RT_EPERM                        14              /**< Operation not permitted */
 
 /**@}*/
+
+/**
+ * @ingroup BasicDef
+ *
+ * @def RT_IS_ALIGN(addr, align)
+ * Return true(1) or false(0).
+ *     RT_IS_ALIGN(128, 4) is judging whether 128 aligns with 4.
+ *     The result is 1, which means 128 aligns with 4.
+ * @note If the address is NULL, false(0) will be returned
+ */
+#define RT_IS_ALIGN(addr, align) ((!(addr & (align - 1))) && (addr != RT_NULL))
 
 /**
  * @ingroup BasicDef
@@ -726,13 +755,19 @@ struct rt_wakeup
 #define _LWP_NSIG_BPW   32
 #endif
 
-#define _LWP_NSIG_WORDS (_LWP_NSIG / _LWP_NSIG_BPW)
+#define _LWP_NSIG_WORDS (RT_ALIGN(_LWP_NSIG, _LWP_NSIG_BPW) / _LWP_NSIG_BPW)
 
 typedef void (*lwp_sighandler_t)(int);
+typedef void (*lwp_sigaction_t)(int signo, siginfo_t *info, void *context);
 
 typedef struct {
     unsigned long sig[_LWP_NSIG_WORDS];
 } lwp_sigset_t;
+
+#if _LWP_NSIG <= 64
+#define lwp_sigmask(signo)      ((lwp_sigset_t){.sig = {[0] = ((long)(1u << ((signo)-1)))}})
+#define lwp_sigset_init(mask)   ((lwp_sigset_t){.sig = {[0] = (long)(mask)}})
+#endif
 
 struct lwp_sigaction {
     union {
@@ -744,6 +779,29 @@ struct lwp_sigaction {
     void (*sa_restorer)(void);
 };
 
+typedef struct lwp_siginfo {
+    rt_list_t node;
+
+    struct {
+        int signo;
+        int code;
+        long value;
+
+        int from_tid;
+        pid_t from_pid;
+    } ksiginfo;
+} *lwp_siginfo_t;
+
+typedef struct lwp_sigqueue {
+    rt_list_t siginfo_list;
+    lwp_sigset_t sigset_pending;
+} *lwp_sigqueue_t;
+
+struct lwp_thread_signal {
+    lwp_sigset_t sigset_mask;
+    struct lwp_sigqueue sig_queue;
+};
+
 struct rt_user_context
 {
     void *sp;
@@ -752,120 +810,116 @@ struct rt_user_context
 };
 #endif
 
+typedef void (*rt_thread_cleanup_t)(struct rt_thread *tid);
+
 /**
  * Thread structure
  */
 struct rt_thread
 {
-    struct rt_object parent;
-    rt_list_t   tlist;                                  /**< the thread list */
+    struct rt_object            parent;
+    rt_list_t                   tlist;                  /**< the thread list */
 
     /* stack point and entry */
-    void       *sp;                                     /**< stack point */
-    void       *entry;                                  /**< entry */
-    void       *parameter;                              /**< parameter */
-    void       *stack_addr;                             /**< stack address */
-    rt_uint32_t stack_size;                             /**< stack size */
+    void                        *sp;                    /**< stack point */
+    void                        *entry;                 /**< entry */
+    void                        *parameter;             /**< parameter */
+    void                        *stack_addr;            /**< stack address */
+    rt_uint32_t                 stack_size;             /**< stack size */
 
     /* error code */
-    rt_err_t    error;                                  /**< error code */
+    rt_err_t                    error;                  /**< error code */
 
-    rt_uint8_t  stat;                                   /**< thread status */
+    rt_uint8_t                  stat;                   /**< thread status */
 
 #ifdef RT_USING_SMP
-    rt_uint8_t  bind_cpu;                               /**< thread is bind to cpu */
-    rt_uint8_t  oncpu;                                  /**< process on cpu */
+    rt_uint8_t                  bind_cpu;               /**< thread is bind to cpu */
+    rt_uint8_t                  oncpu;                  /**< process on cpu */
 
-    rt_uint16_t scheduler_lock_nest;                    /**< scheduler lock count */
-    rt_uint16_t cpus_lock_nest;                         /**< cpus lock count */
-    rt_uint16_t critical_lock_nest;                     /**< critical lock count */
+    rt_uint16_t                 scheduler_lock_nest;    /**< scheduler lock count */
+    rt_int16_t                  cpus_lock_nest;         /**< cpus lock count */
+    rt_uint16_t                 critical_lock_nest;     /**< critical lock count */
 #endif /*RT_USING_SMP*/
 
     /* priority */
-    rt_uint8_t  current_priority;                       /**< current priority */
-    rt_uint8_t  init_priority;                          /**< initialized priority */
+    rt_uint8_t                  current_priority;       /**< current priority */
+    rt_uint8_t                  init_priority;          /**< initialized priority */
 #if RT_THREAD_PRIORITY_MAX > 32
-    rt_uint8_t  number;
-    rt_uint8_t  high_mask;
+    rt_uint8_t                  number;
+    rt_uint8_t                  high_mask;
 #endif /* RT_THREAD_PRIORITY_MAX > 32 */
-    rt_uint32_t number_mask;                            /**< priority number mask */
+    rt_uint32_t                 number_mask;            /**< priority number mask */
 
 #ifdef RT_USING_MUTEX
     /* object for IPC */
-    rt_list_t taken_object_list;
-    rt_object_t pending_object;
+    rt_list_t                   taken_object_list;
+    rt_object_t                 pending_object;
 #endif
 
 #ifdef RT_USING_EVENT
     /* thread event */
-    rt_uint32_t event_set;
-    rt_uint8_t  event_info;
+    rt_uint32_t                 event_set;
+    rt_uint8_t                  event_info;
 #endif /* RT_USING_EVENT */
 
 #ifdef RT_USING_SIGNALS
-    rt_sigset_t     sig_pending;                        /**< the pending signals */
-    rt_sigset_t     sig_mask;                           /**< the mask bits of signal */
+    rt_sigset_t                 sig_pending;            /**< the pending signals */
+    rt_sigset_t                 sig_mask;               /**< the mask bits of signal */
 
 #ifndef RT_USING_SMP
-    void            *sig_ret;                           /**< the return stack pointer from signal */
+    void                        *sig_ret;               /**< the return stack pointer from signal */
 #endif /* RT_USING_SMP */
-    rt_sighandler_t *sig_vectors;                       /**< vectors of signal handler */
-    void            *si_list;                           /**< the signal infor list */
+    rt_sighandler_t             *sig_vectors;           /**< vectors of signal handler */
+    void                        *si_list;               /**< the signal infor list */
 #endif /* RT_USING_SIGNALS */
 
-#ifdef RT_USING_SMART
-    void            *msg_ret;                           /**< the return msg */
-#endif
-
-    rt_ubase_t  init_tick;                              /**< thread's initialized tick */
-    rt_ubase_t  remaining_tick;                         /**< remaining tick */
+    rt_ubase_t                  init_tick;              /**< thread's initialized tick */
+    rt_ubase_t                  remaining_tick;         /**< remaining tick */
 
 #ifdef RT_USING_CPU_USAGE
-    rt_uint64_t  duration_tick;                         /**< cpu usage tick */
+    rt_uint64_t                 duration_tick;          /**< cpu usage tick */
 #endif /* RT_USING_CPU_USAGE */
 
 #ifdef RT_USING_PTHREADS
-    void  *pthread_data;                                /**< the handle of pthread data, adapt 32/64bit */
+    void                        *pthread_data;          /**< the handle of pthread data, adapt 32/64bit */
 #endif /* RT_USING_PTHREADS */
 
-    struct rt_timer thread_timer;                       /**< built-in thread timer */
+    struct rt_timer             thread_timer;           /**< built-in thread timer */
 
-    void (*cleanup)(struct rt_thread *tid);             /**< cleanup function when thread exit */
+    rt_thread_cleanup_t         cleanup;                /**< cleanup function when thread exit */
 
     /* light weight process if present */
 #ifdef RT_USING_SMART
-    void        *lwp;
+    void                        *msg_ret;               /**< the return msg */
+
+    void                        *lwp;                   /**< the lwp reference */
     /* for user create */
-    void        *user_entry;
-    void        *user_stack;
-    rt_uint32_t user_stack_size;
-    rt_uint32_t *kernel_sp;                             /**< kernel stack point */
-    rt_list_t   sibling;                                /**< next thread of same process */
+    void                        *user_entry;
+    void                        *user_stack;
+    rt_uint32_t                 user_stack_size;
+    rt_uint32_t                 *kernel_sp;             /**< kernel stack point */
+    rt_list_t                   sibling;                /**< next thread of same process */
 
-    lwp_sigset_t signal;
-    lwp_sigset_t signal_mask;
-    int signal_mask_bak;
-    rt_uint32_t signal_in_process;
+    struct lwp_thread_signal    signal;                 /**< lwp signal for user-space thread */
+    struct rt_user_context      user_ctx;               /**< user space context */
+    struct rt_wakeup            wakeup;                 /**< wakeup data */
+    int                         exit_request;
+    int                         tid;
+
 #ifndef ARCH_MM_MMU
-    lwp_sighandler_t signal_handler[32];
-#endif
-    struct rt_user_context user_ctx;
+    lwp_sighandler_t            signal_handler[32];
+#else
+    int                         step_exec;
+    int                         debug_attach_req;
+    int                         debug_ret_user;
+    int                         debug_suspend;
+    struct rt_hw_exp_stack      *regs;
+    void                        *thread_idr;            /** lwp thread indicator */
+    int                         *clear_child_tid;
+#endif /* ARCH_MM_MMU */
+#endif /* RT_USING_SMART */
 
-    struct rt_wakeup wakeup;                            /**< wakeup data */
-    int exit_request;
-#if defined(ARCH_MM_MMU)
-    int step_exec;
-    int debug_attach_req;
-    int debug_ret_user;
-    int debug_suspend;
-    struct rt_hw_exp_stack *regs;
-    void * thread_idr;                                 /** lwp thread indicator */
-    int *clear_child_tid;
-#endif
-    int tid;
-#endif
-
-    rt_ubase_t user_data;                             /**< private user data beyond this thread */
+    rt_ubase_t                  user_data;              /**< private user data beyond this thread */
 };
 typedef struct rt_thread *rt_thread_t;
 

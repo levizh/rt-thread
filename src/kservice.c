@@ -29,6 +29,14 @@
 #include <rtthread.h>
 #include <rthw.h>
 
+#define DBG_TAG           "kernel.device"
+#ifdef RT_DEBUG_DEVICE
+#define DBG_LVL           DBG_LOG
+#else
+#define DBG_LVL           DBG_WARNING
+#endif /* defined (RT_DEBUG_DEVICE) */
+#include <rtdbg.h>
+
 #ifdef RT_USING_MODULE
 #include <dlmodule.h>
 #endif /* RT_USING_MODULE */
@@ -58,8 +66,8 @@ static rt_device_t _console_device = RT_NULL;
 rt_weak void rt_hw_us_delay(rt_uint32_t us)
 {
     (void) us;
-    RT_DEBUG_LOG(RT_DEBUG_DEVICE, ("rt_hw_us_delay() doesn't support for this board."
-        "Please consider implementing rt_hw_us_delay() in another file.\n"));
+    LOG_D("rt_hw_us_delay() doesn't support for this board."
+        "Please consider implementing rt_hw_us_delay() in another file.");
 }
 
 rt_weak const char *rt_hw_cpu_arch(void)
@@ -1574,8 +1582,13 @@ rt_inline void _heap_unlock(rt_base_t level)
 
 #ifdef RT_USING_UTESTCASES
 /* export to utest to observe the inner statements */
+#ifdef _MSC_VER
+#define rt_heap_lock() _heap_lock()
+#define rt_heap_unlock() _heap_unlock()
+#else
 rt_base_t rt_heap_lock(void) __attribute__((alias("_heap_lock")));
 void rt_heap_unlock(rt_base_t level) __attribute__((alias("_heap_unlock")));
+#endif /* _MSC_VER */
 #endif
 
 #if defined(RT_USING_SMALL_MEM_AS_HEAP)

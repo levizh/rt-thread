@@ -69,8 +69,10 @@ jobs:
                 - "hc32l196"
                 #- "tae32f5300"
                 - "mm32/mm32f3270-100ask-pitaya"
-                - "sam7x"   
+                - "sam7x"
                 - "hk32/hk32f030c8-mini"
+                - "acm32/acm32f0x0-nucleo"
+                - "acm32/acm32f4xx-nucleo"
          -  RTT_BSP: "stm32l4_f0_f1" 
             RTT_TOOL_CHAIN: "sourcery-arm"
             SUB_RTT_BSP: 
@@ -112,6 +114,7 @@ jobs:
             SUB_RTT_BSP: 
                 - "stm32/stm32f207-st-nucleo"
                 - "stm32/stm32f302-st-nucleo"
+                - "stm32/stm32f334-st-nucleo"
                 - "stm32/stm32f401-st-nucleo"
                 - "stm32/stm32f401-weact-blackpill"
                 - "stm32/stm32f405-smdz-breadfruit"
@@ -157,6 +160,7 @@ jobs:
                 - "stm32/stm32mp157a-st-discovery"
                 - "stm32/stm32mp157a-st-ev1"
                 - "stm32/stm32u575-st-nucleo"
+                - "stm32/stm32u585-iot02a"
                 - "stm32/stm32wb55-st-nucleo"
          -  RTT_BSP: "nxp_renesas" 
             RTT_TOOL_CHAIN: "sourcery-arm"
@@ -180,13 +184,16 @@ jobs:
                 - "imxrt/imxrt1052-seeed-ArchMix"
                 - "imxrt/imxrt1060-nxp-evk"
                 - "imxrt/imxrt1064-nxp-evk"
+                - "imxrt/imxrt1021-nxp-evk"
                 - "frdm-k64f"
                 - "lpc176x"
                 - "xplorer4330/M4"
                 #- "lpc43xx/M4"
                 - "renesas/ra6m3-ek"
                 - "renesas/ra6m4-cpk"
-                - "renesas/ra6m3-hmi-board"  
+                - "renesas/ra6m3-hmi-board"
+                - "renesas/ra4m2-eco"
+                - "renesas/ra2l1-cpk"
          -  RTT_BSP: "gd32_n32_apm32"   
             RTT_TOOL_CHAIN: "sourcery-arm"
             SUB_RTT_BSP:             
@@ -256,6 +263,7 @@ jobs:
                 - "lm4f232"
                 - "tm4c123bsp"
                 - "tm4c129x"
+                - "msp432e401y-LaunchPad"
                 - "microchip/samc21"
                 - "microchip/same54"
                 - "microchip/same70"
@@ -290,6 +298,12 @@ jobs:
             RTT_TOOL_CHAIN: "llvm-arm"
             SUB_RTT_BSP:  
                 - "stm32/stm32l475-atk-pandora"
+                - "renesas/ra6m3-hmi-board"
+         -  RTT_BSP: "simulator" 
+            RTT_TOOL_CHAIN: "gcc"
+            SUB_RTT_BSP:  
+                - "simulator"
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -362,6 +376,11 @@ jobs:
           /opt/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin/riscv-none-embed-gcc --version
           echo "RTT_EXEC_PATH=/opt/xpack-riscv-none-embed-gcc-8.3.0-2.3/bin" >> $GITHUB_ENV
 
+      - name: Install Simulator Tools
+        if: ${{ matrix.legs.RTT_TOOL_CHAIN == 'gcc' && success() }}
+        run: |
+          sudo apt-get -qq install libsdl2-dev
+
       - name: Bsp Scons Compile
         if: ${{ success() }}
         shell: bash
@@ -377,6 +396,7 @@ jobs:
             count=$((count+1))
             echo "::group::Compiling BSP: ==$count=== $bsp ===="
             echo bsp/$bsp
+            ls bsp/$bsp/Kconfig && scons -C bsp/$bsp --pyconfig-silent
             pushd bsp/$bsp && pkgs --update && popd
             scons -C bsp/$bsp -j$(nproc) --debug=time | tee output.log || \
             { total_time=$(grep "Total command execution time" output.log | awk '{print $5}'); \

@@ -9,7 +9,6 @@
  * 2021-11-28     GuEe-GUI     first version
  * 2022-12-10     WangXiaoyao  porting to MM
  */
-#include <board.h>
 #include <rthw.h>
 #include <rtthread.h>
 #include <stddef.h>
@@ -529,20 +528,18 @@ struct page_table
     unsigned long page[512];
 };
 
-static struct page_table *__init_page_array;
-static unsigned long __page_off = 0UL;
+/*  */
+static struct page_table __init_page_array[6] rt_align(0x1000);
+static unsigned long __page_off = 2UL; /* 0, 1 for ttbr0, ttrb1 */
+unsigned long get_ttbrn_base(void)
+{
+    return (unsigned long) __init_page_array;
+}
+
 unsigned long get_free_page(void)
 {
-    if (!__init_page_array)
-    {
-        unsigned long temp_page_start;
-        asm volatile("mov %0, sp" : "=r"(temp_page_start));
-        __init_page_array =
-            (struct page_table *)(temp_page_start & ~(ARCH_SECTION_MASK));
-        __page_off = 2; /* 0, 1 for ttbr0, ttrb1 */
-    }
     __page_off++;
-    return (unsigned long)(__init_page_array[__page_off - 1].page);
+    return (unsigned long) (__init_page_array[__page_off - 1].page);
 }
 
 static int _map_single_page_2M(unsigned long *lv0_tbl, unsigned long va,
@@ -774,13 +771,19 @@ void rt_hw_mem_setup_early(unsigned long *tbl0, unsigned long *tbl1,
                            unsigned long size, unsigned long pv_off)
 {
     int ret;
+    unsigned long count = (size + ARCH_SECTION_MASK) >> ARCH_SECTION_SHIFT;
+    unsigned long normal_attr = MMU_MAP_CUSTOM(MMU_AP_KAUN, NORMAL_MEM);
+
+#ifdef RT_USING_SMART
+    unsigned long va = KERNEL_VADDR_START;
+#else
+    extern unsigned char __start;
+    unsigned long va = (unsigned long) &__start;
+    va = RT_ALIGN_DOWN(va, 0x200000);
+#endif
 
     /* setup pv off */
     rt_kmem_pvoff_set(pv_off);
-
-    unsigned long va = KERNEL_VADDR_START;
-    unsigned long count = (size + ARCH_SECTION_MASK) >> ARCH_SECTION_SHIFT;
-    unsigned long normal_attr = MMU_MAP_CUSTOM(MMU_AP_KAUN, NORMAL_MEM);
 
     /* clean the first two pages */
     rt_memset((char *)tbl0, 0, ARCH_PAGE_SIZE);
