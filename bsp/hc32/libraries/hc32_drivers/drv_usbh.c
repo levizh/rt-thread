@@ -868,7 +868,11 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
             u32NakCnt ++;
             if (u32NakCnt > MAX_NAK_CNT)
             {
+#if defined(RT_USBH_MSTORAGE) || defined (RT_USBH_HID)
+                /* Do not limit the number of Naks */
+#else
                 return -1;
+#endif
             }
             if (pipe->ep.bmAttributes == USB_EP_ATTR_INT)
             {
@@ -1033,7 +1037,8 @@ static void _host_driver_init(usb_core_instance *pdev, stc_usb_port_identify *ps
     /* enable or disable the external charge pump */
     usb_bsp_drivevbus(pdev, 1U);
     usb_vbusctrl(&pdev->regs, 1U);
-    usb_mdelay(50UL);
+    /* Wait some time for power stable */
+    usb_mdelay(100UL);
 
     usb_hostmodeinit(&pdev->regs, &pdev->basic_cfgs);
     usb_ginten(&pdev->regs);

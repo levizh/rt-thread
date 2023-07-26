@@ -711,8 +711,8 @@
     #define USBH_DM_PIN                     (GPIO_PIN_14)
     #define USBH_VBUS_PORT                  (GPIO_PORT_B)
     #define USBH_VBUS_PIN                   (GPIO_PIN_13)
-    #define USBF_DRVVBUS_PORT               (GPIO_PORT_B)
-    #define USBF_DRVVBUS_PIN                (GPIO_PIN_11)
+    #define USBH_DRVVBUS_PORT               (GPIO_PORT_B)
+    #define USBH_DRVVBUS_PIN                (GPIO_PIN_11)
 #else
     /* USBHS Core, external PHY */
     #define USBH_ULPI_CLK_PORT              (GPIO_PORT_E)

@@ -981,7 +981,8 @@ rt_err_t rt_hw_usb_board_init(void)
     GPIO_SetFunc(USBH_VBUS_PORT, USBH_VBUS_PIN, GPIO_FUNC_12);
 #endif
 #if defined(BSP_USING_USBH)
-    GPIO_SetFunc(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN, GPIO_FUNC_10); /* DRV VBUS */
+    GPIO_OutputCmd(USBH_DRVVBUS_PORT, USBH_DRVVBUS_PIN, ENABLE);
+    GPIO_SetPins(USBH_DRVVBUS_PORT, USBH_DRVVBUS_PIN); /* DRV VBUS with GPIO funciton */
 #endif
 #else
     /* Reset 3300 */

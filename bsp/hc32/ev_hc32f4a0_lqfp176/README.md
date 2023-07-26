@@ -50,6 +50,8 @@ EV_F4A0_LQ176 开发板常用 **板载资源** 如下：
 | UART          |     支持     |              UART1~10                 |
 | SPI           |     支持     |              SPI1~6                   |
 | I2C           |     支持     |              软件 I2C                 |
+| USB | 支持 | USBFS/HS Core， device/host模式 |
+| RTC | 支持 | 闹钟精度为1分钟 |
 
 
 ## 使用说明
@@ -106,6 +108,17 @@ msh >
 4. 输入`scons --target=mdk5/iar` 命令重新生成工程。
 
 ## 注意事项
+
+| 板载外设 |  模式  | 注意事项                                                     |
+| :------: | :----: | :----------------------------------------------------------- |
+|   USB    | device | 由于RTT抽象层的设计，当配置为CDC设备时，打开USB虚拟串口，需使能流控的DTR信号。（如使用SSCOM串口助手打开USB虚拟串口时，勾选DTR选框） |
+|   USB    | device | 由于外部PHY管脚复用的原因，当配置使用USBHS Core并且使用外部PHY时，需先通过J14连接到主机（如PC），再复位MCU运行程序；或者将J24跳帽先短接，再复位MCU运行程序。 |
+|   USB    |  host  | 由于main()函数中的LED闪烁示例，使用的是USBFS主机口的供电控制管脚，因而当配置为使用USBFS Core的主机模式时，需要将main()函数中的LED示例代码手动屏蔽。 |
+|   USB    |  host  | 为确保USB主机对外供电充足，建议通过J35外接5V电源供电，并短接J32的EXT跳帽。 |
+|   USB    |  host  | 由于外部PHY管脚复用的原因，当配置使用USBHS Core并且使用外部PHY时，需通过J14先连接好OTG线，再复位MCU运行程序；或者将J24跳帽先短接，再复位MCU运行程序。 |
+|   USB    |  host  | 目前仅实现并测试了对U盘的支持。                              |
+|   USB    |  host  | 若配置为U盘主机模式，出现部分U盘无法识别或者写入失败时，可以尝试将RTT抽象层中rt_udisk_run()函数的rt_usbh_storage_reset()操作注释掉，测试是否可以获得更好的兼容性。 |
+|   USB    |  ALL   | 由于管脚复用的原因，当配置使用USBHS Core时，无法同时使用板载SPI FLASH。 |
 
 ## 联系人信息
 
