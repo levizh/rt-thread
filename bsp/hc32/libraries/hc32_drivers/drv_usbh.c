@@ -1033,7 +1033,8 @@ static void _host_driver_init(usb_core_instance *pdev, stc_usb_port_identify *ps
     /* enable or disable the external charge pump */
     usb_bsp_drivevbus(pdev, 1U);
     usb_vbusctrl(&pdev->regs, 1U);
-    usb_mdelay(50UL);
+    /* Wait some time for power stable */
+    usb_mdelay(100UL);
 
     usb_hostmodeinit(&pdev->regs, &pdev->basic_cfgs);
     usb_ginten(&pdev->regs);

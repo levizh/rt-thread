@@ -67,6 +67,7 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #endif
 #endif
 
+#if defined(BSP_USING_USBD)
 /* USB DEVICE FIFO CONFIGURATION */
 #ifdef USB_FS_MODE
 #define RX_FIFO_FS_SIZE                         (128U)
@@ -127,8 +128,9 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 #if defined(BSP_USING_USBD_VBUS_SENSING)
 #define VBUS_SENSING_ENABLED
 #endif
+#endif
 
-
+#if defined(BSP_USING_USBH)
 /* USB HOST FIFO CONFIGURATION */
 #ifdef USB_FS_MODE
 #define RX_FIFO_FS_SIZE                          (128U)
@@ -147,6 +149,7 @@ USB_FS_MODE, USB_HS_MODE, USB_HS_EXTERNAL_PHY defined comment
 
 #if ((RX_FIFO_FS_SIZE + TXH_NP_FS_FIFOSIZ + TXH_P_FS_FIFOSIZ) > 2048U)
 #error  "The USB max FIFO size is 2048 x 4 Bytes!"
+#endif
 #endif
 #endif
 
