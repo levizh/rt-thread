@@ -7,6 +7,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
+ * 2023-07-27     CDT          add xtal32 init for rtc
  */
 
 #include "board.h"
@@ -16,12 +17,19 @@
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
+#if defined(BSP_RTC_USING_XTAL32)
+extern rt_err_t rt_hw_xtal32_board_init(void);
+#endif
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
 {
     stc_clock_xtal_init_t     stcXtalInit;
     stc_clock_pll_init_t      stcMpllInit;
+#if defined(BSP_RTC_USING_XTAL32)
+    stc_clock_xtal32_init_t stcXtal32Init;
+#endif
 
     (void)CLK_XtalStructInit(&stcXtalInit);
     (void)CLK_PLLStructInit(&stcMpllInit);
@@ -65,6 +73,16 @@ void SystemClock_Config(void)
     (void)PWC_HighSpeedToHighPerformance();
     /* Switch system clock source to MPLL. */
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
+
+#if defined(BSP_RTC_USING_XTAL32)
+    /* Xtal32 config */
+    rt_hw_xtal32_board_init();
+    (void)CLK_Xtal32StructInit(&stcXtal32Init);
+    stcXtal32Init.u8State  = CLK_XTAL32_ON;
+    stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_HIGH;
+    stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_RUN_MD;
+    (void)CLK_Xtal32Init(&stcXtal32Init);
+#endif
 }
 
 /** Peripheral Clock Configuration
