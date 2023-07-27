@@ -32,6 +32,7 @@ extern "C" {
 #include "i2c_config.h"
 #include "qspi_config.h"
 #include "pulse_encoder_config.h"
+#include "timer_config.h"
 
 #ifdef __cplusplus
 }
