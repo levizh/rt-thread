@@ -135,21 +135,60 @@ menu "On-chip Peripheral Drivers"
                         default 256
                 endif
 
-            config BSP_USING_UART3
+            menuconfig BSP_USING_UART3
                 bool "Enable UART3"
                 default n
+                if BSP_USING_UART3
+                    config BSP_UART3_RX_BUFSIZE
+                        int "Set UART3 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART4
+                    config BSP_UART3_TX_BUFSIZE
+                        int "Set UART3 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART4
                 bool "Enable UART4"
                 default n
+                if BSP_USING_UART4
+                    config BSP_UART4_RX_BUFSIZE
+                        int "Set UART4 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART5
+                    config BSP_UART4_TX_BUFSIZE
+                        int "Set UART4 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART5
                 bool "Enable UART5"
                 default n
+                if BSP_USING_UART5
+                    config BSP_UART5_RX_BUFSIZE
+                        int "Set UART5 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART5_TX_BUFSIZE
+                        int "Set UART5 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
 
             menuconfig BSP_USING_UART6
                 bool "Enable UART6"
-                default y
+                default n
                 if BSP_USING_UART6
                     config BSP_UART6_RX_USING_DMA
                         bool "Enable UART6 RX DMA"
@@ -171,36 +210,87 @@ menu "On-chip Peripheral Drivers"
                         int "Set UART6 TX buffer size"
                         range 0 65535
                         depends on RT_USING_SERIAL_V2
+                        default 256
+                endif
+
+            menuconfig BSP_USING_UART7
+                bool "Enable UART7"
+                default n
+                if BSP_USING_UART7
+                    config BSP_UART7_RX_USING_DMA
+                        bool "Enable UART7 RX DMA"
+                        depends on BSP_USING_UART7 && RT_SERIAL_USING_DMA
+                        default n
+
+                    config BSP_UART7_TX_USING_DMA
+                        bool "Enable UART7 TX DMA"
+                        depends on BSP_USING_UART7 && RT_SERIAL_USING_DMA
+                        default n
+
+                    config BSP_UART7_RX_BUFSIZE
+                        int "Set UART7 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART7_TX_BUFSIZE
+                        int "Set UART7 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+                endif
+
+
+            menuconfig BSP_USING_UART8
+                bool "Enable UART8"
+                default n
+                if BSP_USING_UART8
+                    config BSP_UART8_RX_BUFSIZE
+                        int "Set UART8 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART8_TX_BUFSIZE
+                        int "Set UART8 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
                         default 0
                 endif
 
-            config BSP_USING_UART7
-                bool "Enable UART7"
-                default n
-
-            config BSP_UART7_RX_USING_DMA
-                bool "Enable UART7 RX DMA"
-                depends on BSP_USING_UART7
-                select RT_SERIAL_USING_DMA
-                default n
-
-            config BSP_UART7_TX_USING_DMA
-                bool "Enable UART7 TX DMA"
-                depends on BSP_USING_UART7
-                select RT_SERIAL_USING_DMA
-                default n
-
-            config BSP_USING_UART8
-                bool "Enable UART8"
-                default n
-
-            config BSP_USING_UART9
+            menuconfig BSP_USING_UART9
                 bool "Enable UART9"
                 default n
+                if BSP_USING_UART9
+                    config BSP_UART9_RX_BUFSIZE
+                        int "Set UART9 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART10
+                    config BSP_UART9_TX_BUFSIZE
+                        int "Set UART9 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART10
                 bool "Enable UART10"
                 default n
+                if BSP_USING_UART10
+                    config BSP_UART10_RX_BUFSIZE
+                        int "Set UART10 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART10_TX_BUFSIZE
+                        int "Set UART10 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
         endif
 
     menuconfig BSP_USING_I2C

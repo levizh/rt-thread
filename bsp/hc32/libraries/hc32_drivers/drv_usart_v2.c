@@ -158,10 +158,10 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     uart_init.u32ClockSrc = USART_CLK_SRC_INTERNCLK;
 #if defined(HC32F4A0) || defined(HC32F4A2)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-            (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
+        (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
 #elif defined (HC32F460)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-            (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
+        (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
 #endif
     {
         uart_init.u32CKOutput = USART_CK_OUTPUT_ENABLE;
@@ -251,7 +251,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     {
         USART_SetClockDiv(uart->config->Instance, u32Div);
         if ((LL_OK == USART_SetBaudrate(uart->config->Instance, uart_init.u32Baudrate, &f32Error)) &&
-                ((-UART_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= UART_BAUDRATE_ERR_MAX)))
+            ((-UART_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= UART_BAUDRATE_ERR_MAX)))
         {
             i32Ret = LL_OK;
             break;
@@ -1414,6 +1414,13 @@ static void hc32_uart_get_info(void)
 #endif
 #endif
 
+#ifdef BSP_USING_UART5
+    uart_obj[UART5_INDEX].uart_dma_flag = 0;
+    uart_obj[UART5_INDEX].serial.config = config;
+    uart_obj[UART5_INDEX].serial.config.rx_bufsz = BSP_UART5_RX_BUFSIZE;
+    uart_obj[UART5_INDEX].serial.config.tx_bufsz = BSP_UART5_TX_BUFSIZE;
+#endif
+
 #ifdef BSP_USING_UART6
     uart_obj[UART6_INDEX].uart_dma_flag = 0;
     uart_obj[UART6_INDEX].serial.config = config;
@@ -1454,6 +1461,27 @@ static void hc32_uart_get_info(void)
     static struct dma_config uart7_dma_tx = UART7_DMA_TX_CONFIG;
     uart_config[UART7_INDEX].dma_tx = &uart7_dma_tx;
 #endif
+#endif
+
+#ifdef BSP_USING_UART8
+    uart_obj[UART8_INDEX].uart_dma_flag = 0;
+    uart_obj[UART8_INDEX].serial.config = config;
+    uart_obj[UART8_INDEX].serial.config.rx_bufsz = BSP_UART8_RX_BUFSIZE;
+    uart_obj[UART8_INDEX].serial.config.tx_bufsz = BSP_UART8_TX_BUFSIZE;
+#endif
+
+#ifdef BSP_USING_UART9
+    uart_obj[UART9_INDEX].uart_dma_flag = 0;
+    uart_obj[UART9_INDEX].serial.config = config;
+    uart_obj[UART9_INDEX].serial.config.rx_bufsz = BSP_UART9_RX_BUFSIZE;
+    uart_obj[UART9_INDEX].serial.config.tx_bufsz = BSP_UART9_TX_BUFSIZE;
+#endif
+
+#ifdef BSP_USING_UART10
+    uart_obj[UART10_INDEX].uart_dma_flag = 0;
+    uart_obj[UART10_INDEX].serial.config = config;
+    uart_obj[UART10_INDEX].serial.config.rx_bufsz = BSP_UART10_RX_BUFSIZE;
+    uart_obj[UART10_INDEX].serial.config.tx_bufsz = BSP_UART10_TX_BUFSIZE;
 #endif
 }
 

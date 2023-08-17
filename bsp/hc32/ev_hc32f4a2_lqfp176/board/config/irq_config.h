@@ -243,6 +243,10 @@ extern "C" {
 #define BSP_UART8_RX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #define BSP_UART8_TX_IRQ_NUM            INT108_IRQn
 #define BSP_UART8_TX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#if defined(RT_USING_SERIAL_V2)
+#define BSP_UART8_TX_CPLT_IRQ_NUM       INT001_IRQn
+#define BSP_UART8_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#endif
 #endif /* BSP_USING_UART8 */
 
 #if defined(BSP_USING_UART9)
