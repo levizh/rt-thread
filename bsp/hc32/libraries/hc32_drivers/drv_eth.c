@@ -531,7 +531,6 @@ static void hc32_phy_monitor_thread(void *parameter)
     rt_pin_irq_enable(ETH_PHY_INTERRUPT_PIN, PIN_IRQ_ENABLE);
 
 #if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
-    uint16_t u16RegVal;
     /* Configure PHY to generate an interrupt when Eth Link state changes */
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);

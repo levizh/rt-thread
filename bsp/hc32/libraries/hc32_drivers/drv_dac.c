@@ -109,7 +109,7 @@ static rt_err_t _dac_set_value(struct rt_dac_device *device, rt_uint32_t channel
     RT_ASSERT(channel <= DAC_CHANNEL_ID_MAX);
     CM_DAC_TypeDef *p_ll_instance = device->parent.user_data;
 
-    if (READ_REG16_BIT(p_ll_instance->DACR, DAC_DACR_ALIGN) == DAC_DATA_ALIGN_L)
+    if (READ_REG16_BIT(p_ll_instance->DACR, DAC_DACR_DPSEL) == DAC_DATA_ALIGN_LEFT)
     {
         RT_ASSERT(0U == (*value & ~DAC_LEFT_ALIGNED_DATA_MASK));
     }
