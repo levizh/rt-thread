@@ -651,7 +651,7 @@ static void hc32_spi6_err_irq_handler(void)
 }
 #endif
 
-#if defined(BSP_SPI1_TX_USING_DMA) || defined(BSP_SPI2_TX_USING_DMA) || defined(BSP_SPI4_TX_USING_DMA) || \
+#if defined(BSP_SPI1_TX_USING_DMA) || defined(BSP_SPI2_TX_USING_DMA) || defined(BSP_SPI3_TX_USING_DMA) || \
     defined(BSP_SPI4_TX_USING_DMA) || defined(BSP_SPI5_TX_USING_DMA) || defined(BSP_SPI6_TX_USING_DMA)
 /**
   * @brief  Clear DMA transfer complete flag.
