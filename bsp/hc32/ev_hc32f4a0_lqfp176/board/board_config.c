@@ -1144,3 +1144,81 @@ rt_err_t rt_hw_board_pulse_encoder_tmr6_init(void)
     return RT_EOK;
 }
 #endif
+
+#if defined (BSP_USING_NAND)
+rt_err_t rt_hw_board_nand_init(void)
+{
+    rt_err_t result = RT_EOK;
+    stc_gpio_init_t stcGpioInit;
+
+    /************************* Set pin drive capacity *************************/
+    (void)GPIO_StructInit(&stcGpioInit);
+    stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
+
+    /* NFC_CE */
+    (void)GPIO_Init(NAND_CE_PORT, NAND_CE_PIN, &stcGpioInit);
+
+    /* NFC_RE */
+    (void)GPIO_Init(NAND_RE_PORT, NAND_RE_PIN, &stcGpioInit);
+
+    /* NFC_WE */
+    (void)GPIO_Init(NAND_WE_PORT, NAND_WE_PIN, &stcGpioInit);
+
+    /* NFC_CLE */
+    (void)GPIO_Init(NAND_CLE_PORT, NAND_CLE_PIN, &stcGpioInit);
+
+    /* NFC_ALE */
+    (void)GPIO_Init(NAND_ALE_PORT, NAND_ALE_PIN, &stcGpioInit);
+
+    /* NFC_WP */
+    (void)GPIO_Init(NAND_WP_PORT, NAND_WP_PIN, &stcGpioInit);
+    GPIO_SetPins(NAND_WP_PORT, NAND_WP_PIN);
+
+    /* NFC_DATA[0:7] */
+    (void)GPIO_Init(NAND_DATA0_PORT, NAND_DATA0_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA1_PORT, NAND_DATA1_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA2_PORT, NAND_DATA2_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA3_PORT, NAND_DATA3_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA4_PORT, NAND_DATA4_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA5_PORT, NAND_DATA5_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA6_PORT, NAND_DATA6_PIN, &stcGpioInit);
+    (void)GPIO_Init(NAND_DATA7_PORT, NAND_DATA7_PIN, &stcGpioInit);
+
+    /* NFC_RB */
+    (void)GPIO_Init(NAND_RB_PORT, NAND_RB_PIN, &stcGpioInit);
+
+    /************************** Set EXMC pin function *************************/
+    /* NFC_CE */
+    GPIO_SetFunc(NAND_CE_PORT, NAND_CE_PIN, GPIO_FUNC_12);
+
+    /* NFC_RE */
+    GPIO_SetFunc(NAND_RE_PORT, NAND_RE_PIN, GPIO_FUNC_12);
+
+    /* NFC_WE */
+    GPIO_SetFunc(NAND_WE_PORT, NAND_WE_PIN, GPIO_FUNC_12);
+
+    /* NFC_CLE */
+    GPIO_SetFunc(NAND_CLE_PORT, NAND_CLE_PIN, GPIO_FUNC_12);
+
+    /* NFC_ALE */
+    GPIO_SetFunc(NAND_ALE_PORT, NAND_ALE_PIN, GPIO_FUNC_12);
+
+    /* NFC_WP */
+    GPIO_SetFunc(NAND_WP_PORT, NAND_WP_PIN, GPIO_FUNC_12);
+
+    /* NFC_RB */
+    GPIO_SetFunc(NAND_RB_PORT, NAND_RB_PIN, GPIO_FUNC_12);
+
+    /* NFC_DATA[0:7] */
+    GPIO_SetFunc(NAND_DATA0_PORT, NAND_DATA0_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA1_PORT, NAND_DATA1_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA2_PORT, NAND_DATA2_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA3_PORT, NAND_DATA3_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA4_PORT, NAND_DATA4_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA5_PORT, NAND_DATA5_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA6_PORT, NAND_DATA6_PIN, GPIO_FUNC_12);
+    GPIO_SetFunc(NAND_DATA7_PORT, NAND_DATA7_PIN, GPIO_FUNC_12);
+
+    return result;
+}
+#endif

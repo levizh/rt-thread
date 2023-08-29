@@ -96,6 +96,47 @@
     #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_63)
 #endif
 
+/************************ NAND port **********************/
+#if defined(BSP_USING_NAND)
+    #define NAND_CE_PORT                    (GPIO_PORT_C)   /* PC02 - EXMC_CE0 */
+    #define NAND_CE_PIN                     (GPIO_PIN_02)
+
+    #define NAND_RE_PORT                    (GPIO_PORT_F)   /* PF11 - EXMC_OE */
+    #define NAND_RE_PIN                     (GPIO_PIN_11)
+
+    #define NAND_WE_PORT                    (GPIO_PORT_C)   /* PC00 - EXMC_WE */
+    #define NAND_WE_PIN                     (GPIO_PIN_00)
+
+    #define NAND_CLE_PORT                   (GPIO_PORT_I)   /* PI12 - EXMC_CLE */
+    #define NAND_CLE_PIN                    (GPIO_PIN_12)
+
+    #define NAND_ALE_PORT                   (GPIO_PORT_C)   /* PC03 - EXMC_ALE */
+    #define NAND_ALE_PIN                    (GPIO_PIN_03)
+
+    #define NAND_WP_PORT                    (GPIO_PORT_G)   /* PG15 - EXMC_BAA */
+    #define NAND_WP_PIN                     (GPIO_PIN_15)
+
+    #define NAND_RB_PORT                    (GPIO_PORT_G)   /* PG06 - EXMC_RB0 */
+    #define NAND_RB_PIN                     (GPIO_PIN_06)
+
+    #define NAND_DATA0_PORT                 (GPIO_PORT_D)   /* PD14 - EXMC_DATA0 */
+    #define NAND_DATA0_PIN                  (GPIO_PIN_14)
+    #define NAND_DATA1_PORT                 (GPIO_PORT_D)   /* PD15 - EXMC_DATA1 */
+    #define NAND_DATA1_PIN                  (GPIO_PIN_15)
+    #define NAND_DATA2_PORT                 (GPIO_PORT_D)   /* PD0 - EXMC_DATA2 */
+    #define NAND_DATA2_PIN                  (GPIO_PIN_00)
+    #define NAND_DATA3_PORT                 (GPIO_PORT_D)   /* PD1 - EXMC_DATA3 */
+    #define NAND_DATA3_PIN                  (GPIO_PIN_01)
+    #define NAND_DATA4_PORT                 (GPIO_PORT_E)   /* PE7 - EXMC_DATA4 */
+    #define NAND_DATA4_PIN                  (GPIO_PIN_07)
+    #define NAND_DATA5_PORT                 (GPIO_PORT_E)   /* PE8 - EXMC_DATA5 */
+    #define NAND_DATA5_PIN                  (GPIO_PIN_08)
+    #define NAND_DATA6_PORT                 (GPIO_PORT_E)   /* PE9 - EXMC_DATA6 */
+    #define NAND_DATA6_PIN                  (GPIO_PIN_09)
+    #define NAND_DATA7_PORT                 (GPIO_PORT_E)   /* PE10 - EXMC_DATA7 */
+    #define NAND_DATA7_PIN                  (GPIO_PIN_10)
+#endif
+
 /************************ SDIOC port **********************/
 #if defined(BSP_USING_SDIO1)
     #define SDIOC1_CK_PORT                  (GPIO_PORT_C)

@@ -68,6 +68,13 @@ menu "Onboard Peripheral Drivers"
         select RT_SFUD_USING_QSPI
         default n
 
+    config BSP_USING_MT29F2G08AB
+        bool "Enable NAND FLASH (MT29F2G08AB)"
+        select BSP_USING_EXMC
+        select BSP_USING_NAND
+        select PKG_USING_LPM
+        default n
+
 endmenu
 
 menu "On-chip Peripheral Drivers"
@@ -416,14 +423,16 @@ menu "On-chip Peripheral Drivers"
         select BSP_USING_EXMC
         if BSP_USING_EXMC
             choice
-                prompt "Using SDRAM or Nandflash"
+                prompt "Using SDRAM or Nand"
                 default BSP_USING_SDRAM
 
                 config BSP_USING_SDRAM
                     bool "Using SDRAM"
 
-                config BSP_USING_NANDFLASH
-                    bool "Using Nandflash"
+                config BSP_USING_NAND
+                    bool "Using Nand"
+                    select RT_USING_MTD_NAND
+                    select PKG_USING_LPM
             endchoice
         endif
 
