@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
+ * 2023-08-31     CDT          Fixed a bug for dma transmit
  */
 
 
@@ -363,19 +364,19 @@ static rt_err_t hc32_spi_configure(struct rt_spi_device *device,
 
 static int32_t hc32_spi_dma_trans(struct hc32_spi_config *spi_config, const uint8_t *pvTxBuf, void *pvRxBuf, uint32_t u32Length)
 {
-    if ((spi_config == RT_NULL) || (pvTxBuf == RT_NULL) || (pvRxBuf == RT_NULL))
+    if ((spi_config == RT_NULL) || ((pvTxBuf == RT_NULL) && (pvRxBuf == RT_NULL)))
     {
         return LL_ERR;
     }
 
     SPI_Cmd(spi_config->Instance, DISABLE);
-    if (RT_NULL == pvTxBuf)
+    if (RT_NULL != pvTxBuf)
     {
         DMA_SetSrcAddr(spi_config->dma_tx->Instance, spi_config->dma_tx->channel, (uint32_t)pvTxBuf);
         DMA_SetTransCount(spi_config->dma_tx->Instance, spi_config->dma_tx->channel, u32Length);
         DMA_ChCmd(spi_config->dma_tx->Instance, spi_config->dma_tx->channel, ENABLE);
     }
-    if (RT_NULL == pvRxBuf)
+    if (RT_NULL != pvRxBuf)
     {
         DMA_SetDestAddr(spi_config->dma_rx->Instance, spi_config->dma_rx->channel, (uint32_t)pvRxBuf);
         DMA_SetTransCount(spi_config->dma_rx->Instance, spi_config->dma_rx->channel, u32Length);
