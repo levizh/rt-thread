@@ -554,6 +554,12 @@ int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
 int32_t EXMC_NFC_GetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
                             uint32_t au32Data[], uint8_t u8NumWords, uint32_t u32Timeout);
 int32_t EXMC_NFC_EraseBlock(uint32_t u32Bank, uint32_t u32RowAddr, uint32_t u32Timeout);
+int32_t EXMC_NFC_Read(uint32_t u32Bank, uint32_t u32Page, uint32_t u32Col,
+                      uint32_t au32Data[], uint32_t u32NumWords,
+                      en_functional_state_t enEccState, uint32_t u32Timeout);
+int32_t EXMC_NFC_Write(uint32_t u32Bank, uint32_t u32Page, uint32_t u32Col,
+                        const uint32_t au32Data[], uint32_t u32NumWords,
+                        en_functional_state_t enEccState, uint32_t u32Timeout);
 int32_t EXMC_NFC_ReadPageMeta(uint32_t u32Bank, uint32_t u32Page, uint8_t *pu8Data,
                               uint32_t u32NumBytes, uint32_t u32Timeout);
 int32_t EXMC_NFC_WritePageMeta(uint32_t u32Bank, uint32_t u32Page,

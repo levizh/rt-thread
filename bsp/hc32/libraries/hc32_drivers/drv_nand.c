@@ -18,10 +18,6 @@
 #if defined (BSP_USING_EXMC)
 #if defined (BSP_USING_NAND)
 
-#if defined (PKG_USING_LPM)
-#include <lpm.h>
-#endif
-
 #include "drv_nand.h"
 #include "board_config.h"
 #include "nand_port.h"
@@ -29,11 +25,20 @@
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
+/* rthw nand */
+struct rthw_nand
+{
+    struct rt_mtd_nand_device nand_dev;
+
+    rt_uint32_t nfc_bank;
+    rt_uint32_t id;
+    struct rt_mutex lock;
+};
 
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
-//#define DRV_DEBUG
+#define DRV_DEBUG
 #define LOG_TAG "drv.nand"
 #include <drv_log.h>
 
@@ -64,6 +69,7 @@ extern rt_err_t rt_hw_board_nand_init(void);
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+struct rthw_nand _hw_nand;
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
@@ -84,11 +90,16 @@ static rt_err_t _nand_verify_clock_frequency(void)
     return ret;
 }
 
-static rt_err_t _nand_init(void)
+static rt_err_t _nand_init(struct rt_mtd_nand_device *device)
 {
     rt_uint8_t au8DevId[4];
     rt_err_t ret = -RT_ERROR;
     stc_exmc_nfc_init_t nfc_init_params;
+    struct rthw_nand *hw_nand = (struct rthw_nand *)device;
+
+    RT_ASSERT(device != RT_NULL);
+
+    hw_nand->nfc_bank = NAND_EXMC_NFC_BANK;
 
     /* verify nand clock frequency */
     if (_nand_verify_clock_frequency() != RT_EOK)
@@ -115,7 +126,7 @@ static rt_err_t _nand_init(void)
     nfc_init_params.stcBaseConfig.u32WriteProtect = EXMC_NFC_WR_PROTECT_DISABLE;
     nfc_init_params.stcBaseConfig.u32EccMode = EXMC_NFC_1BIT_ECC;
     nfc_init_params.stcBaseConfig.u32RowAddrCycle = NAND_EXMC_NFC_ROW_ADDR_CYCLE;
-    nfc_init_params.stcBaseConfig.u8SpareSizeForUserData = 0U;
+    nfc_init_params.stcBaseConfig.u8SpareSizeForUserData = 0;
 
     /* Configure NFC timing */
     nfc_init_params.stcTimingReg0.u32TS = NAND_TS;
@@ -135,8 +146,10 @@ static rt_err_t _nand_init(void)
     nfc_init_params.stcTimingReg2.u32TADL = NAND_TADL;
     if (LL_OK == EXMC_NFC_Init(&nfc_init_params)) {
         /* Reset NFC device. */
-        if (LL_OK == EXMC_NFC_Reset(NAND_EXMC_NFC_BANK, NAND_RESET_TIMEOUT)) {
-            EXMC_NFC_ReadId(NAND_EXMC_NFC_BANK, 0UL, au8DevId, sizeof(au8DevId), NAND_READ_TIMEOUT);
+        if (LL_OK == EXMC_NFC_Reset(hw_nand->nfc_bank, NAND_RESET_TIMEOUT)) {
+            EXMC_NFC_ReadId(hw_nand->nfc_bank, 0UL, au8DevId, sizeof(au8DevId), NAND_READ_TIMEOUT);
+            hw_nand->id = (((rt_uint32_t)au8DevId[3]) << 24 | ((rt_uint32_t)au8DevId[2]) << 16 | \
+                           ((rt_uint32_t)au8DevId[1]) << 8  | (rt_uint32_t)au8DevId[0]);
 
             LOG_D("Nand Flash ID = 0x%02X,0x%02X,0x%02X,0x%02X",
                   au8DevId[0], au8DevId[1], au8DevId[2], au8DevId[3]);
@@ -148,7 +161,7 @@ static rt_err_t _nand_init(void)
     return ret;
 }
 
-static rt_err_t _nand_get_status(rt_uint32_t nfc_bank, rt_uint32_t timeout)
+static rt_err_t _nand_wait_ready(rt_uint32_t nfc_bank, rt_uint32_t timeout)
 {
     rt_err_t ret = RT_EOK;
     rt_uint32_t to = 0UL;
@@ -175,126 +188,224 @@ static rt_err_t _nand_get_status(rt_uint32_t nfc_bank, rt_uint32_t timeout)
     return ret;
 }
 
-static rt_err_t _nand_erase_block(rt_uint32_t bank, rt_uint32_t row_addr, rt_uint32_t timeout)
+rt_err_t _nand_erase_block(struct rt_mtd_nand_device *device, rt_uint32_t block)
 {
     rt_err_t ret = -RT_ERROR;
+    rt_uint32_t block_num;
+    struct rthw_nand *hw_nand = (struct rthw_nand *)device;
 
-    if (LL_OK == EXMC_NFC_EraseBlock(bank,  row_addr, timeout)) {
-        ret = _nand_get_status(bank, timeout);
+    RT_ASSERT(device != RT_NULL);
+
+    block = block + device->block_start;
+    block_num = block << 6;
+
+    rt_mutex_take(&hw_nand->lock, RT_WAITING_FOREVER);
+
+    if (LL_OK == EXMC_NFC_EraseBlock(hw_nand->nfc_bank,  block_num, NAND_ERASE_TIMEOUT)) {
+        if (_nand_wait_ready(hw_nand->nfc_bank, NAND_ERASE_TIMEOUT) == RT_EOK)
+        {
+            ret = RT_MTD_EOK;
+        }
     }
+
+    rt_mutex_release(&hw_nand->lock);
 
     return ret;
 }
 
-rt_err_t  _nand_open(rt_device_t dev, rt_uint16_t oflag)
+static rt_err_t _nand_check_block(struct rt_mtd_nand_device *device, rt_uint32_t block)
 {
+    RT_ASSERT(device != RT_NULL);
+    return (RT_MTD_EOK);
+}
+
+static rt_err_t _nand_mark_badblock(struct rt_mtd_nand_device *device, rt_uint32_t block)
+{
+    RT_ASSERT(device != RT_NULL);
+    return (RT_MTD_EOK);
+}
+
+/* read nand flash id */
+static rt_err_t _nand_read_id(struct rt_mtd_nand_device *device)
+{
+    rt_uint8_t device_id[4];
+    struct rthw_nand *hw_nand = (struct rthw_nand *)device;
+
+    RT_ASSERT(device != RT_NULL);
+
+    EXMC_NFC_ReadId(hw_nand->nfc_bank, 0UL, device_id, sizeof(device_id), NAND_READ_TIMEOUT);
+    hw_nand->id = (((rt_uint32_t)device_id[3]) << 24 | ((rt_uint32_t)device_id[2]) << 16 | \
+                    ((rt_uint32_t)device_id[1]) << 8  | (rt_uint32_t)device_id[0]);
+
+    LOG_D("Nand Flash ID: Manufacturer ID = 0x%02X, Device ID=[0x%02X,0x%02X,0x%02X]",
+                  device_id[0], device_id[1], device_id[2], device_id[3]);
+
     return RT_EOK;
 }
 
-rt_err_t _nand_control(rt_device_t dev, int cmd, void *args)
+static rt_ssize_t _nand_read_page(struct rt_mtd_nand_device *device,
+                                    rt_off_t page,
+                                    rt_uint8_t *data,
+                                    rt_uint32_t data_len,
+                                    rt_uint8_t *spare,
+                                    rt_uint32_t spare_len)
 {
-    if(RT_DEVICE_CTRL_BLK_GETGEOME == cmd)
+    rt_err_t result = RT_EOK;
+    struct rthw_nand *hw_nand = (struct rthw_nand *)device;
+
+    RT_ASSERT(device != RT_NULL);
+
+    page = page + device->block_start * device->pages_per_block;
+    if (page / device->pages_per_block > device->block_end)
     {
-        struct rt_device_blk_geometry *geometry = (struct rt_device_blk_geometry *)args;
-        geometry->bytes_per_sector = NAND_BYTES_PER_PAGE;
-        geometry->sector_count = NAND_DEVICE_PAGES;
-        geometry->block_size = NAND_BYTES_PER_BLOCK;
-        return RT_EOK;
-    }
-    else if(RT_DEVICE_CTRL_BLK_ERASE == cmd)
-    {
-        uint32_t *blk = (uint32_t *)args;
-        _nand_erase_block(NAND_EXMC_NFC_BANK, *blk, NAND_ERASE_TIMEOUT);
-        return RT_EOK;
-    }
-    else
-    {
-        LOG_E("unsupport command!");
+        return -RT_EIO;
     }
 
-    return -RT_ERROR;
-}
+    rt_mutex_take(&hw_nand->lock, RT_WAITING_FOREVER);
 
-/* pos: sector offset   size: page count */
-rt_ssize_t _nand_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
-{
-    int32_t nfc_ret;
-    rt_ssize_t i;
-    rt_uint32_t read_page = pos;
-    rt_uint8_t *read_buf = (rt_uint8_t *)buffer;
-
-    for (i = 0; i < size; i++)
+    if (data && data_len)
     {
-        nfc_ret = EXMC_NFC_ReadPageMeta(NAND_EXMC_NFC_BANK, read_page, read_buf, NAND_BYTES_PER_PAGE, NAND_READ_TIMEOUT);
-        if (LL_OK != nfc_ret)
+        /* not an integer multiple of NAND ECC SECTOR SIZE, no ECC checks */
+        if (data_len % NAND_ECC_SECTOR_SIZE)
         {
-            LOG_E("nand read error!");
-            break;
-        }
-
-        read_page ++;
-        read_buf += NAND_BYTES_PER_PAGE;
-    }
-
-    return i;
-}
-
-/* pos: sector offset   size: page count */
-rt_ssize_t _nand_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
-{
-    rt_ssize_t i;
-    rt_int32_t nfc_ret;
-    rt_uint32_t write_page = pos;
-    rt_uint8_t *write_buf = (rt_uint8_t *)buffer;
-
-    for (i = 0; i < size; i++)
-    {
-        nfc_ret = EXMC_NFC_WritePageMeta(NAND_EXMC_NFC_BANK, write_page, write_buf, NAND_BYTES_PER_PAGE, NAND_WRITE_TIMEOUT);
-        if (LL_OK != nfc_ret)
-        {
-            LOG_E("nand write error!");
-            break;
+            EXMC_NFC_ReadPageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT);
         }
         else
         {
-            nfc_ret = _nand_get_status(NAND_EXMC_NFC_BANK, NAND_WRITE_TIMEOUT);
-            if (nfc_ret != RT_EOK)
+            if (LL_OK == EXMC_NFC_ReadPageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT))
             {
-                break;
+                if (EXMC_NFC_GetStatus(EXMC_NFC_FLAG_ECC_UNCORRECTABLE_ERR) == SET)
+                {
+                    EXMC_NFC_ClearStatus(EXMC_NFC_FLAG_ECC_UNCORRECTABLE_ERR);
+                    result = RT_MTD_EECC;
+                    goto _exit;
+                }
+                else
+                {
+                    _nand_wait_ready(hw_nand->nfc_bank, NAND_READ_TIMEOUT);
+                }
+            }
+            else
+            {
+                result = -RT_ETIMEOUT;
+                goto _exit;
             }
         }
-
-        write_page ++;
-        write_buf += NAND_BYTES_PER_PAGE;
     }
 
-    return i;
+    if (spare && spare_len)
+    {
+        EXMC_NFC_Read(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare, (spare_len >> 2), DISABLE, NAND_READ_TIMEOUT);
+    }
+
+_exit:
+    rt_mutex_release(&hw_nand->lock);
+
+    return result;
 }
+
+static rt_ssize_t _nand_write_page(struct rt_mtd_nand_device *device,
+                                    rt_off_t page,
+                                    const rt_uint8_t *data,
+                                    rt_uint32_t data_len,
+                                    const rt_uint8_t *spare,
+                                    rt_uint32_t spare_len)
+{
+    rt_err_t result = RT_EOK;
+    struct rthw_nand *hw_nand = (struct rthw_nand *)device;
+
+    RT_ASSERT(device != RT_NULL);
+
+    page = page + device->block_start * device->pages_per_block;
+    if (page / device->pages_per_block > device->block_end)
+    {
+        return -RT_EIO;
+    }
+
+    rt_mutex_take(&hw_nand->lock, RT_WAITING_FOREVER);
+
+    if (data && data_len)
+    {
+        if (data_len % NAND_ECC_SECTOR_SIZE)
+        {
+            EXMC_NFC_WritePageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_WRITE_TIMEOUT);
+        }
+        else
+        {
+            EXMC_NFC_WritePageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT);
+        }
+
+        if (_nand_wait_ready(hw_nand->nfc_bank, NAND_ERASE_TIMEOUT) != RT_EOK)
+        {
+            result = -RT_EIO;
+            goto _exit;
+        }
+    }
+
+    if (spare && spare_len)
+    {
+        EXMC_NFC_Write(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare, (spare_len >> 2), DISABLE, NAND_WRITE_TIMEOUT);
+       if (_nand_wait_ready(hw_nand->nfc_bank, NAND_ERASE_TIMEOUT) != RT_EOK)
+        {
+            result = -RT_EIO;
+            goto _exit;
+        }
+    }
+
+_exit:
+    rt_mutex_release(&hw_nand->lock);
+
+    return result;
+}
+
+rt_err_t _nand_move_page(struct rt_mtd_nand_device *device, rt_off_t src_page, rt_off_t dst_page)
+{
+    RT_ASSERT(device != RT_NULL);
+    return (RT_MTD_EOK);
+}
+
+static const struct rt_mtd_nand_driver_ops ops =
+{
+        _nand_read_id,
+        _nand_read_page,
+        _nand_write_page,
+        _nand_move_page,
+        _nand_erase_block,
+        _nand_check_block,
+        _nand_mark_badblock,
+};
 
 int rt_hw_nand_init(void)
 {
-    static struct rt_device _hw_nand;
+    rt_err_t result = RT_EOK;
+    struct rt_mtd_nand_device *nand_dev = &_hw_nand.nand_dev;
 
-    _nand_init();
+    result = _nand_init(nand_dev);
+    if (result != RT_EOK)
+    {
+        LOG_D("nand flash init error!");
+        return -RT_ERROR;
+    }
+    rt_mutex_init(&_hw_nand.lock, "nand", RT_IPC_FLAG_PRIO);
 
-    _hw_nand.type      = RT_Device_Class_MTD;
-    _hw_nand.init      = RT_NULL;
-    _hw_nand.open      = _nand_open;
-    _hw_nand.close     = RT_NULL;
-    _hw_nand.read      = _nand_read;
-    _hw_nand.write     = _nand_write;
-    _hw_nand.control   = _nand_control;
-    _hw_nand.user_data = RT_NULL;
+    nand_dev->page_size       = NAND_BYTES_PER_PAGE;
+    nand_dev->pages_per_block = NAND_PAGES_PER_BLOCK;
+    nand_dev->plane_num       = NAND_PLANE_PER_DEVICE;
+    nand_dev->oob_size        = NAND_SPARE_AREA_SIZE;
+    nand_dev->oob_free        = NAND_SPARE_FREE_SIZE;
+    nand_dev->block_total     = NAND_DEVICE_BLOCKS;
+    nand_dev->block_start     = 0;
+    nand_dev->block_end       = nand_dev->block_total - 1UL;
+    nand_dev->ops = &ops;
 
-    rt_device_register(&_hw_nand, "nand1", RT_DEVICE_FLAG_RDWR);
-    LOG_D("nand1 init done\n");
+    result = rt_mtd_nand_register_device("nand", nand_dev);
+    if (result != RT_EOK)
+    {
+        rt_device_unregister(&nand_dev->parent);
+        return -RT_ERROR;
+    }
 
-#ifdef PKG_USING_LPM
-    lpm_init();
-    lpm_dev_blk_append(&_hw_nand);
-#endif
-
-    return 0;
+    return RT_EOK;
 }
 INIT_BOARD_EXPORT(rt_hw_nand_init);
 
@@ -304,20 +415,18 @@ static int _nand_test(void)
 {
     rt_err_t ret;
     rt_uint32_t i = 0;
-    rt_off_t page_offset;
-    rt_off_t block_offset;
-    rt_size_t page_count;
     static uint8_t read_buffer [NAND_BYTES_PER_PAGE];
     static uint8_t write_buffer [NAND_BYTES_PER_PAGE];
     static rt_device_t nand;
+    static struct rt_mtd_nand_device *mtd_nand;
 
-    nand = rt_device_find("nand1");
+    nand = rt_device_find("nand");
     if (RT_NULL == nand)
     {
         LOG_E("nand device not found\r\n");
         return -RT_ERROR;
     }
-    
+
     ret = rt_device_open(nand, RT_DEVICE_FLAG_RDWR);
     if (ret != RT_EOK)
     {
@@ -325,9 +434,7 @@ static int _nand_test(void)
         return -RT_ERROR;
     }
 
-    page_offset = 1;
-    block_offset = 0;
-    page_count = sizeof(write_buffer) / NAND_BYTES_PER_PAGE;
+    mtd_nand = (struct rt_mtd_nand_device *)nand;
 
     /* Fill the buffer to send */
     for (i = 0; i < sizeof(write_buffer); i++ )
@@ -336,14 +443,14 @@ static int _nand_test(void)
     }
 
     /* Erase the NAND first Block */
-    _nand_control(nand, RT_DEVICE_CTRL_BLK_ERASE, &block_offset);
+    _nand_erase_block(mtd_nand, 0);
 
-    /* Write data to NAND memory */
-    _nand_write(nand, page_offset, write_buffer, page_count);
+    /* Write data to NAND memory page 0 */
+    _nand_write_page(mtd_nand, 0, write_buffer, NAND_BYTES_PER_PAGE, NULL, 0);
     LOG_D("write data to nand\r\n");
 
-    /* Read data from NAND memory */
-    _nand_read(nand, page_offset, read_buffer, page_count);
+    /* Read data from NAND memory page 0 */
+    _nand_read_page(mtd_nand, 0, read_buffer, NAND_BYTES_PER_PAGE, NULL, 0);
     LOG_D("read data from nand\r\n");
 
     if (rt_memcmp(read_buffer, write_buffer, sizeof(read_buffer)) == 0)

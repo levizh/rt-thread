@@ -30,12 +30,16 @@
 
 /* nand information */
 #define NAND_BYTES_PER_PAGE             2048UL
+#define NAND_SPARE_AREA_SIZE            64UL
+#define NAND_ECC_SECTOR_SIZE            512UL
+#define NAND_ECC_CODE_SIZE              3UL
+#define NAND_SPARE_FREE_SIZE            (NAND_SPARE_AREA_SIZE - (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE)
 #define NAND_PAGES_PER_BLOCK            64UL
 #define NAND_BYTES_PER_BLOCK            (NAND_PAGES_PER_BLOCK * NAND_BYTES_PER_PAGE)
 #define NAND_BLOCKS_PER_PLANE           1024UL
 #define NAND_PLANE_PER_DEVICE           2UL
-#define NAND_DEVICE_PAGES               (NAND_PLANE_PER_DEVICE * NAND_BLOCKS_PER_PLANE * NAND_PAGES_PER_BLOCK)
-#define NAND_PAGE_ADDR_WIDTH            6UL
+#define NAND_DEVICE_BLOCKS              (NAND_BLOCKS_PER_PLANE * NAND_PLANE_PER_DEVICE)
+#define NAND_DEVICE_PAGES               (NAND_DEVICE_BLOCKS * NAND_PAGES_PER_BLOCK)
 
 /* timing configuration(EXCLK clock frequency: 60MHz@3.3V) for MT29F2G08AB */
 /* TS: ALE/CLE/CE setup time(min=10ns) */
