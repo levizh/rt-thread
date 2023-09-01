@@ -126,7 +126,7 @@ static rt_err_t _nand_init(struct rt_mtd_nand_device *device)
     nfc_init_params.stcBaseConfig.u32WriteProtect = EXMC_NFC_WR_PROTECT_DISABLE;
     nfc_init_params.stcBaseConfig.u32EccMode = EXMC_NFC_1BIT_ECC;
     nfc_init_params.stcBaseConfig.u32RowAddrCycle = NAND_EXMC_NFC_ROW_ADDR_CYCLE;
-    nfc_init_params.stcBaseConfig.u8SpareSizeForUserData = 0;
+    nfc_init_params.stcBaseConfig.u8SpareSizeForUserData = (NAND_SPARE_FREE_SIZE >> 2);
 
     /* Configure NFC timing */
     nfc_init_params.stcTimingReg0.u32TS = NAND_TS;
@@ -263,39 +263,50 @@ static rt_ssize_t _nand_read_page(struct rt_mtd_nand_device *device,
 
     rt_mutex_take(&hw_nand->lock, RT_WAITING_FOREVER);
 
-    if (data && data_len)
+    if ((spare != RT_NULL) && (spare_len != 0UL))
+    {
+        if (LL_OK != EXMC_NFC_Read(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare,
+                                  (spare_len >> 2), DISABLE, NAND_READ_TIMEOUT))
+        {
+            result = -RT_EIO;
+            goto _exit;
+        }
+    }
+
+    if ((data != RT_NULL) && (data_len != 0UL))
     {
         /* not an integer multiple of NAND ECC SECTOR SIZE, no ECC checks */
-        if (data_len % NAND_ECC_SECTOR_SIZE)
+        if ((data_len % NAND_ECC_SECTOR_SIZE) != 0UL)
         {
-            EXMC_NFC_ReadPageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT);
+            if (LL_OK != EXMC_NFC_ReadPageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT))
+            {
+                result = -RT_EIO;
+                goto _exit;
+            }
         }
         else
         {
-            if (LL_OK == EXMC_NFC_ReadPageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT))
+            if (LL_OK != EXMC_NFC_ReadPageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT))
             {
-                if (EXMC_NFC_GetStatus(EXMC_NFC_FLAG_ECC_UNCORRECTABLE_ERR) == SET)
+                result = -RT_EIO;
+                goto _exit;
+            }
+            else
+            {
+                if (SET == EXMC_NFC_GetStatus(EXMC_NFC_FLAG_ECC_UNCORRECTABLE_ERR))
                 {
                     EXMC_NFC_ClearStatus(EXMC_NFC_FLAG_ECC_UNCORRECTABLE_ERR);
                     result = RT_MTD_EECC;
                     goto _exit;
                 }
-                else
-                {
-                    _nand_wait_ready(hw_nand->nfc_bank, NAND_READ_TIMEOUT);
-                }
-            }
-            else
-            {
-                result = -RT_ETIMEOUT;
-                goto _exit;
             }
         }
-    }
 
-    if (spare && spare_len)
-    {
-        EXMC_NFC_Read(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare, (spare_len >> 2), DISABLE, NAND_READ_TIMEOUT);
+        result = _nand_wait_ready(hw_nand->nfc_bank, NAND_READ_TIMEOUT);
+        if (result != RT_EOK)
+        {
+            goto _exit;
+        }
     }
 
 _exit:
@@ -324,28 +335,41 @@ static rt_ssize_t _nand_write_page(struct rt_mtd_nand_device *device,
 
     rt_mutex_take(&hw_nand->lock, RT_WAITING_FOREVER);
 
-    if (data && data_len)
+    if ((data != RT_NULL) && (data_len != 0UL))
     {
-        if (data_len % NAND_ECC_SECTOR_SIZE)
+        if ((data_len % NAND_ECC_SECTOR_SIZE) != 0UL)
         {
-            EXMC_NFC_WritePageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_WRITE_TIMEOUT);
+            if (LL_OK != EXMC_NFC_WritePageMeta(hw_nand->nfc_bank, page, data, data_len, NAND_WRITE_TIMEOUT))
+            {
+                result = -RT_EIO;
+                goto _exit;
+            }
         }
         else
         {
-            EXMC_NFC_WritePageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_READ_TIMEOUT);
+            if (LL_OK != EXMC_NFC_WritePageHwEcc(hw_nand->nfc_bank, page, data, data_len, NAND_WRITE_TIMEOUT))
+            {
+                result = -RT_EIO;
+                goto _exit;
+            }
         }
 
-        if (_nand_wait_ready(hw_nand->nfc_bank, NAND_ERASE_TIMEOUT) != RT_EOK)
+        if (RT_EOK != _nand_wait_ready(hw_nand->nfc_bank, NAND_WRITE_TIMEOUT))
         {
             result = -RT_EIO;
             goto _exit;
         }
     }
 
-    if (spare && spare_len)
+    if ((spare != RT_NULL) && (spare_len != 0UL))
     {
-        EXMC_NFC_Write(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare, (spare_len >> 2), DISABLE, NAND_WRITE_TIMEOUT);
-       if (_nand_wait_ready(hw_nand->nfc_bank, NAND_ERASE_TIMEOUT) != RT_EOK)
+        if (LL_OK != EXMC_NFC_Write(hw_nand->nfc_bank, page, 0x0800UL, (rt_uint32_t *)spare, (spare_len >> 2), DISABLE, NAND_WRITE_TIMEOUT))
+        {
+            result = -RT_EIO;
+            goto _exit;
+        }
+
+        if (RT_EOK != _nand_wait_ready(hw_nand->nfc_bank, NAND_WRITE_TIMEOUT))
         {
             result = -RT_EIO;
             goto _exit;
@@ -366,13 +390,13 @@ rt_err_t _nand_move_page(struct rt_mtd_nand_device *device, rt_off_t src_page, r
 
 static const struct rt_mtd_nand_driver_ops ops =
 {
-        _nand_read_id,
-        _nand_read_page,
-        _nand_write_page,
-        _nand_move_page,
-        _nand_erase_block,
-        _nand_check_block,
-        _nand_mark_badblock,
+    _nand_read_id,
+    _nand_read_page,
+    _nand_write_page,
+    _nand_move_page,
+    _nand_erase_block,
+    _nand_check_block,
+    _nand_mark_badblock,
 };
 
 int rt_hw_nand_init(void)
@@ -415,22 +439,27 @@ static int _nand_test(void)
 {
     rt_err_t ret;
     rt_uint32_t i = 0;
-    static uint8_t read_buffer [NAND_BYTES_PER_PAGE];
-    static uint8_t write_buffer [NAND_BYTES_PER_PAGE];
+    rt_uint32_t err_count = 0;
+    rt_uint32_t page;
+    rt_uint32_t block;
     static rt_device_t nand;
     static struct rt_mtd_nand_device *mtd_nand;
+    static uint8_t read_buffer [NAND_BYTES_PER_PAGE + NAND_SPARE_AREA_SIZE];
+    static uint8_t write_buffer [NAND_BYTES_PER_PAGE];
+    static uint8_t spare_buffer [NAND_SPARE_AREA_SIZE];
+    static uint8_t expect_spare_value [NAND_SPARE_AREA_SIZE];
 
     nand = rt_device_find("nand");
     if (RT_NULL == nand)
     {
-        LOG_E("nand device not found\r\n");
+        LOG_E("nand device not found");
         return -RT_ERROR;
     }
 
     ret = rt_device_open(nand, RT_DEVICE_FLAG_RDWR);
     if (ret != RT_EOK)
     {
-        LOG_E("nand device failed to open \r\n");
+        LOG_E("nand device failed to open");
         return -RT_ERROR;
     }
 
@@ -442,27 +471,101 @@ static int _nand_test(void)
         write_buffer[i] = i;
     }
 
-    /* Erase the NAND first Block */
-    _nand_erase_block(mtd_nand, 0);
-
-    /* Write data to NAND memory page 0 */
-    _nand_write_page(mtd_nand, 0, write_buffer, NAND_BYTES_PER_PAGE, NULL, 0);
-    LOG_D("write data to nand\r\n");
-
-    /* Read data from NAND memory page 0 */
-    _nand_read_page(mtd_nand, 0, read_buffer, NAND_BYTES_PER_PAGE, NULL, 0);
-    LOG_D("read data from nand\r\n");
-
-    if (rt_memcmp(read_buffer, write_buffer, sizeof(read_buffer)) == 0)
+    /* Fill the expect spare value */
+    for (i = 0; i < NAND_SPARE_AREA_SIZE; i++)
     {
-        LOG_D("compare w/r data: consistency \r\n");
-        return RT_EOK;
+        expect_spare_value[i] = 0xFFU;
+    }
+
+    /* read ID */
+    _nand_read_id(mtd_nand);
+
+    /* test page */
+    page = 0UL;
+
+    /* erase the NAND Block */
+    block = page >> 6;
+    ret = _nand_erase_block(mtd_nand, block);
+    if (ret == RT_EOK)
+    {
+        LOG_D("erase block%d: ok", block);
     }
     else
     {
-        LOG_D("compare w/r data: inconsistency \r\n");
-        return -RT_ERROR;
+        LOG_D("erase block%d: error", block);
+        err_count++;
     }
+
+    /* Write data to NAND memory page 0 */
+    ret = _nand_write_page(mtd_nand, page, write_buffer, NAND_BYTES_PER_PAGE, RT_NULL, 0UL);
+    if (ret == RT_EOK)
+    {
+        LOG_D("write page%d: ok", page);
+    }
+    else
+    {
+        LOG_D("write page%d: error", page);
+        err_count++;
+    }
+
+    /* Read data from NAND memory page 0 */
+    ret = _nand_read_page(mtd_nand, page, &read_buffer[0], NAND_BYTES_PER_PAGE, \
+                    &read_buffer[NAND_BYTES_PER_PAGE], NAND_SPARE_AREA_SIZE);
+    if (ret == RT_EOK)
+    {
+        LOG_D("read page%d(include spare): ok", page);
+    }
+    else if (ret == -RT_MTD_EECC)
+    {
+        LOG_E("read page%d(include spare): ECC error", page);
+        err_count++;
+    }
+    else
+    {
+        LOG_E("read page%d(include spare): error", page);
+        err_count++;
+    }
+
+    if ((rt_memcmp(&read_buffer, &write_buffer, sizeof(write_buffer)) == 0) && \
+        (rt_memcmp(&read_buffer[NAND_BYTES_PER_PAGE], expect_spare_value, NAND_SPARE_AREA_SIZE) == 0))
+    {
+        LOG_D("compare w/r page%d(include spare) content: ok", page);
+    }
+    else
+    {
+        LOG_E("compare w/r page%d(include spare) content: inconsistency", page);
+        err_count++;
+    }
+
+    _nand_read_page(mtd_nand, page, RT_NULL, 0UL, spare_buffer, NAND_SPARE_AREA_SIZE);
+    if (ret == RT_EOK)
+    {
+        LOG_D("read page%d spare: ok", page);
+    }
+    else
+    {
+        LOG_E("read page%d spare: error", page);
+        err_count++;
+    }
+
+    if (rt_memcmp(expect_spare_value, spare_buffer, sizeof(spare_buffer)) == 0)
+    {
+        LOG_D("verify spare area content: ok");
+    }
+    else
+    {
+        LOG_E("verify spare area content: don't meet the expected");
+        err_count++;
+    }
+
+    ret = rt_device_close(nand);
+    if (ret != RT_EOK)
+    {
+        LOG_E("nand device failed to close");
+        err_count++;
+    }
+
+    return (err_count == 0UL) ? RT_EOK : -RT_ERROR;
 }
 MSH_CMD_EXPORT(_nand_test, nand test)
 #endif /* FINSH_USING_MSH */
