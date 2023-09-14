@@ -156,6 +156,10 @@ static int hc32_i2c_read(struct hc32_i2c *i2c_obj,
 {
     int ret;
 
+    if (msg->len == 1UL)
+    {
+        I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
+    }
     ret = I2C_ReceiveData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
 
     return ret;
