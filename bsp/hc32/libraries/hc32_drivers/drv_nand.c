@@ -537,7 +537,7 @@ static int _nand_test(void)
         err_count++;
     }
 
-    _nand_read_page(mtd_nand, page, RT_NULL, 0UL, spare_buffer, NAND_SPARE_AREA_SIZE);
+    ret = _nand_read_page(mtd_nand, page, RT_NULL, 0UL, spare_buffer, NAND_SPARE_AREA_SIZE);
     if (ret == RT_EOK)
     {
         LOG_D("read page%d spare: ok", page);
