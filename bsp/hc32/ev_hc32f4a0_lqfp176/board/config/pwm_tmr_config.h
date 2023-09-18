@@ -405,7 +405,7 @@ extern "C" {
         .stcTmr4Init =                                          \
         {                                                       \
             .u16ClockDiv                = TMR4_CLK_DIV1,        \
-            .u16PeriodValue             = 0xFFFF,               \
+            .u16PeriodValue             = 0xFFFFU,              \
             .u16CountMode               = TMR4_MD_SAWTOOTH,     \
             .u16ClockSrc               = TMR4_CLK_SRC_INTERNCLK,\
         },                                                      \
@@ -414,7 +414,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED,\
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -437,7 +437,7 @@ extern "C" {
         .stcTmr4Init =                                          \
         {                                                       \
             .u16ClockDiv                = TMR4_CLK_DIV1,        \
-            .u16PeriodValue             = 0xFFFF,               \
+            .u16PeriodValue             = 0xFFFFU,              \
             .u16CountMode               = TMR4_MD_SAWTOOTH,     \
             .u16ClockSrc               = TMR4_CLK_SRC_INTERNCLK,\
         },                                                      \
@@ -446,7 +446,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED,\
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -469,7 +469,7 @@ extern "C" {
         .stcTmr4Init =                                          \
         {                                                       \
             .u16ClockDiv                = TMR4_CLK_DIV1,        \
-            .u16PeriodValue             = 0xFFFF,               \
+            .u16PeriodValue             = 0xFFFFU,              \
             .u16CountMode               = TMR4_MD_SAWTOOTH,     \
             .u16ClockSrc               = TMR4_CLK_SRC_INTERNCLK,\
         },                                                      \
@@ -478,7 +478,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED,\
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \

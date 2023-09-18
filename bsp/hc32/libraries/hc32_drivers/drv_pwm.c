@@ -966,32 +966,19 @@ static rt_err_t tmr4_pwm_set_period(CM_TMR4_TypeDef *TMR4x, uint32_t channel, ui
     return RT_EOK;
 }
 
-static void tmr4_pwm_set_cmpmode(CM_TMR4_TypeDef *TMR4x, uint32_t channel, uint32_t pulse)
+static void tmr4_pwm_set_cmpmode(CM_TMR4_TypeDef *TMR4x, uint32_t channel)
 {
     un_tmr4_oc_ocmrh_t unTmr4OcOcmrh;
     un_tmr4_oc_ocmrl_t unTmr4OcOcmrl;
     uint32_t ch = channel % TMR4_CHANNEL_NUM_MAX;
-    if (pulse) {
-        if(ch % 2) {
-            /* TMR4 OC low channel: compare mode OCMR[31:0] 0x000 124F = b 0101 1010 0100 0000   0101 1010 0100 1111 */
-            unTmr4OcOcmrl.OCMRx = 0x5A405A4FU;
-            TMR4_OC_SetLowChCompareMode(TMR4x, ch, unTmr4OcOcmrl);
-        } else {
-            /* TMR4 OC high channel: compare mode OCMR[15:0] = 0x5A4F = b 0101 1010 0100 1111 */
-            unTmr4OcOcmrh.OCMRx = 0x5A4FU;
-            TMR4_OC_SetHighChCompareMode(TMR4x, ch, unTmr4OcOcmrh);
-        }
+    if(ch % 2) {
+        /* TMR4 OC low channel: compare mode OCMR[31:0] 0x2370 237F = b 0100 1010 0110 0000   0100 1010 0110 1111 */
+        unTmr4OcOcmrl.OCMRx = 0x4A604A6FU;
+        TMR4_OC_SetLowChCompareMode(TMR4x, ch, unTmr4OcOcmrl);
     } else {
-        /* Realize 0% duty output */
-        if(ch % 2) {
-            /* TMR4 OC low channel: compare mode OCMR[31:0] 0x000 124F = b 1010 1010 1000 0000   1010 1010 1000 1111 */
-            unTmr4OcOcmrl.OCMRx = 0xAA80AA8FU;
-            TMR4_OC_SetLowChCompareMode(TMR4x, ch, unTmr4OcOcmrl);
-        } else {
-            /* TMR4 OC high channel: compare mode OCMR[15:0] = 0x5A4F = b 1010 1010 1000 1111 */
-            unTmr4OcOcmrh.OCMRx = 0xAA8FU;
-            TMR4_OC_SetHighChCompareMode(TMR4x, ch, unTmr4OcOcmrh);
-        }
+        /* TMR4 OC high channel: compare mode OCMR[15:0] = 0x4A6F = b 0100 1010 0110 1111 */
+        unTmr4OcOcmrh.OCMRx = 0x4A6F;
+        TMR4_OC_SetHighChCompareMode(TMR4x, ch, unTmr4OcOcmrh);
     }
 }
 
@@ -1009,7 +996,6 @@ static rt_err_t tmr4_pwm_set_pulse(CM_TMR4_TypeDef *TMR4x, uint32_t channel, uin
         if (g_pwm_tmr4_array[i].instance == TMR4x)
         {
             g_pwm_tmr4_array[i].CompareValue[ch] = pulse;
-            tmr4_pwm_set_cmpmode(TMR4x, ch, pulse);
             break;
         }
     }
@@ -1052,8 +1038,8 @@ static rt_err_t pwm_tmr4_init(struct hc32_pwm_tmr4 *device)
             TMR4_OC_Init(TMR4x, i, &device->stcTmr4OcInit);
             TMR4_PWM_Init(TMR4x, i, &device->stcTmr4PwmInit);
             TMR4_PWM_SetPortOutputMode(TMR4x, i, TMR4_PWM_PIN_OUTPUT_NORMAL);
+            tmr4_pwm_set_cmpmode(TMR4x, i);
         }
-        tmr4_pwm_set_cmpmode(TMR4x, i, device->CompareValue[i]);
     }
     TMR4_PWM_MainOutputCmd(TMR4x, ENABLE);
     TMR4_Start(TMR4x);
