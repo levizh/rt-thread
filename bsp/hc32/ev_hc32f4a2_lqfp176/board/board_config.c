@@ -63,6 +63,41 @@ rt_err_t rt_hw_board_i2c_init(CM_I2C_TypeDef *I2Cx)
         GPIO_SetFunc(I2C1_SCL_PORT, I2C1_SCL_PIN, I2C1_SCL_FUNC);
         break;
 #endif
+#if defined(BSP_USING_I2C2)
+    case (rt_uint32_t)CM_I2C2:
+        /* Configure I2C2 SDA/SCL pin. */
+        GPIO_SetFunc(I2C2_SDA_PORT, I2C2_SDA_PIN, I2C2_SDA_FUNC);
+        GPIO_SetFunc(I2C2_SCL_PORT, I2C2_SCL_PIN, I2C2_SCL_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_I2C3)
+    case (rt_uint32_t)CM_I2C3:
+        /* Configure I2C3 SDA/SCL pin. */
+        GPIO_SetFunc(I2C3_SDA_PORT, I2C3_SDA_PIN, I2C3_SDA_FUNC);
+        GPIO_SetFunc(I2C3_SCL_PORT, I2C3_SCL_PIN, I2C3_SCL_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_I2C4)
+    case (rt_uint32_t)CM_I2C4:
+        /* Configure I2C4 SDA/SCL pin. */
+        GPIO_SetFunc(I2C4_SDA_PORT, I2C4_SDA_PIN, I2C4_SDA_FUNC);
+        GPIO_SetFunc(I2C4_SCL_PORT, I2C4_SCL_PIN, I2C4_SCL_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_I2C5)
+    case (rt_uint32_t)CM_I2C5:
+        /* Configure I2C5 SDA/SCL pin. */
+        GPIO_SetFunc(I2C5_SDA_PORT, I2C5_SDA_PIN, I2C5_SDA_FUNC);
+        GPIO_SetFunc(I2C5_SCL_PORT, I2C5_SCL_PIN, I2C5_SCL_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_I2C6)
+    case (rt_uint32_t)CM_I2C6:
+        /* Configure I2C6 SDA/SCL pin. */
+        GPIO_SetFunc(I2C6_SDA_PORT, I2C6_SDA_PIN, I2C6_SDA_FUNC);
+        GPIO_SetFunc(I2C6_SCL_PORT, I2C6_SCL_PIN, I2C6_SCL_FUNC);
+        break;
+#endif
     default:
         result = -RT_ERROR;
         break;

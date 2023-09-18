@@ -50,6 +50,56 @@
     #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
 #endif
 
+#if defined(BSP_USING_I2C2)
+    #define I2C2_SDA_PORT                   (GPIO_PORT_F)
+    #define I2C2_SDA_PIN                    (GPIO_PIN_10)
+    #define I2C2_SDA_FUNC                   (GPIO_FUNC_50)
+
+    #define I2C2_SCL_PORT                   (GPIO_PORT_D)
+    #define I2C2_SCL_PIN                    (GPIO_PIN_03)
+    #define I2C2_SCL_FUNC                   (GPIO_FUNC_51)
+#endif
+
+#if defined(BSP_USING_I2C3)
+    #define I2C3_SDA_PORT                   (GPIO_PORT_B)
+    #define I2C3_SDA_PIN                    (GPIO_PIN_12)
+    #define I2C3_SDA_FUNC                   (GPIO_FUNC_52)
+
+    #define I2C3_SCL_PORT                   (GPIO_PORT_B)
+    #define I2C3_SCL_PIN                    (GPIO_PIN_13)
+    #define I2C3_SCL_FUNC                   (GPIO_FUNC_53)
+#endif
+
+#if defined(BSP_USING_I2C4)
+    #define I2C4_SDA_PORT                   (GPIO_PORT_E)
+    #define I2C4_SDA_PIN                    (GPIO_PIN_06)
+    #define I2C4_SDA_FUNC                   (GPIO_FUNC_52)
+
+    #define I2C4_SCL_PORT                   (GPIO_PORT_H)
+    #define I2C4_SCL_PIN                    (GPIO_PIN_06)
+    #define I2C4_SCL_FUNC                   (GPIO_FUNC_53)
+#endif
+
+#if defined(BSP_USING_I2C5)
+    #define I2C5_SDA_PORT                   (GPIO_PORT_E)
+    #define I2C5_SDA_PIN                    (GPIO_PIN_06)
+    #define I2C5_SDA_FUNC                   (GPIO_FUNC_54)
+
+    #define I2C5_SCL_PORT                   (GPIO_PORT_H)
+    #define I2C5_SCL_PIN                    (GPIO_PIN_06)
+    #define I2C5_SCL_FUNC                   (GPIO_FUNC_55)
+#endif
+
+#if defined(BSP_USING_I2C6)
+    #define I2C6_SDA_PORT                   (GPIO_PORT_F)
+    #define I2C6_SDA_PIN                    (GPIO_PIN_10)
+    #define I2C6_SDA_FUNC                   (GPIO_FUNC_52)
+
+    #define I2C6_SCL_PORT                   (GPIO_PORT_D)
+    #define I2C6_SCL_PIN                    (GPIO_PIN_03)
+    #define I2C6_SCL_FUNC                   (GPIO_FUNC_53)
+#endif
+
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
     #define ADC1_CH_PORT                    (GPIO_PORT_C)

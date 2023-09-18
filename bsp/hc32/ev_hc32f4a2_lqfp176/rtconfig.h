@@ -84,7 +84,10 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_I2C
 #define RT_USING_PIN
+#define RT_USING_ADC
+#define RT_USING_SPI
 
 /* Using USB */
 
@@ -122,6 +125,9 @@
 
 
 /* Wiced WiFi */
+
+
+/* CYW43012 WiFi */
 
 
 /* IoT Cloud */
@@ -239,6 +245,19 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_USING_I2C
+#define BSP_USING_I2C1
+#define BSP_USING_I2C_HW
+#define BSP_I2C1_TX_USING_DMA
+#define RT_I2C_USING_DMA
+#define BSP_I2C1_USING_DMA
+#define BSP_I2C1_RX_USING_DMA
+#define BSP_USING_I2C3
+#define BSP_I2C3_TX_USING_DMA
+#define BSP_I2C3_USING_DMA
+#define BSP_I2C3_RX_USING_DMA
+#define BSP_USING_ADC
+#define BSP_USING_ADC1
 
 /* Board extended module Drivers */
 
