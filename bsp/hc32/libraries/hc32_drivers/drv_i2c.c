@@ -91,7 +91,9 @@ static struct hc32_i2c_config i2c_config[] =
 #endif
 };
 
+#ifdef RT_I2C_USING_DMA
 static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus);
+#endif
 static struct hc32_i2c i2c_objs[sizeof(i2c_config) / sizeof(i2c_config[0])] = {0};
 
 /*******************************************************************************
@@ -273,7 +275,7 @@ static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus)
     AOS_SetTriggerEventSrc(i2c_obj->config->i2c_tx_dma->trigger_select, i2c_obj->config->i2c_tx_dma->trigger_event);
     /* Enable DMA unit */
     DMA_Cmd(i2c_obj->config->i2c_tx_dma->Instance, ENABLE);
-#endif /* BSP_I2C1_TX_USING_DMA */
+#endif /* BSP_I2Cn_TX_USING_DMA */
 
 #if defined (BSP_I2C1_RX_USING_DMA) || defined (BSP_I2C2_RX_USING_DMA) || defined (BSP_I2C3_RX_USING_DMA) ||    \
     defined (BSP_I2C4_RX_USING_DMA) || defined (BSP_I2C5_RX_USING_DMA) || defined (BSP_I2C6_RX_USING_DMA)
@@ -292,7 +294,7 @@ static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus)
     AOS_SetTriggerEventSrc(i2c_obj->config->i2c_rx_dma->trigger_select, i2c_obj->config->i2c_rx_dma->trigger_event);
     /* Enable DMA unit */
     DMA_Cmd(i2c_obj->config->i2c_rx_dma->Instance, ENABLE);
-#endif /* BSP_I2C1_RX_USING_DMA */
+#endif /* BSP_I2Cn_RX_USING_DMA */
 }
 
 static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *msg)
@@ -412,12 +414,23 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     I2C_AckConfig(i2c_obj->config->Instance, I2C_ACK);
     return RT_EOK;
 }
-#endif
-
-static int I2C_Master_Transmit(i2c_obj, msg)
+#else
+static int I2C_Master_Transmit(struct hc32_i2c *i2c_obj,
+                               struct rt_i2c_msg *msg)
 {
     return I2C_TransData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
 }
+
+static int I2C_Master_Receive(struct hc32_i2c *i2c_obj,
+                              struct rt_i2c_msg *msg)
+{
+    if (msg->len == 1UL)
+    {
+        I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
+    }
+    return I2C_ReceiveData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
+}
+#endif /* RT_I2C_USING_DMA */
 
 static int hc32_i2c_write(struct hc32_i2c *i2c_obj,
                           struct rt_i2c_msg *msg)
@@ -429,15 +442,6 @@ static int hc32_i2c_write(struct hc32_i2c *i2c_obj,
     ret = I2C_Master_Transmit(i2c_obj, msg);
 #endif
     return ret;
-}
-
-static int I2C_Master_Receive(i2c_obj, msg)
-{
-    if (msg->len == 1UL)
-    {
-        I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
-    }
-    return = I2C_ReceiveData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
 }
 
 static int hc32_i2c_read(struct hc32_i2c *i2c_obj,
