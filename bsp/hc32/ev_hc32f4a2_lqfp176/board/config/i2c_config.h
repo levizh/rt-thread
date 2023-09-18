@@ -32,6 +32,44 @@ extern "C" {
 #endif /* I2C1_CONFIG */
 #endif
 
+#if defined(BSP_I2C1_USING_DMA)
+#ifndef I2C1_TX_DMA_CONFIG
+#define I2C1_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C1_TX_DMA_INSTANCE,                 \
+        .channel        = I2C1_TX_DMA_CHANNEL,                  \
+        .clock          = I2C1_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C1_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C1_TEI,                     \
+        .flag           = I2C1_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C1_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C1_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C1_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C1_TX_DMA_CONFIG */
+
+#ifndef I2C1_RX_DMA_CONFIG
+#define I2C1_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C1_RX_DMA_INSTANCE,                 \
+        .channel        = I2C1_RX_DMA_CHANNEL,                  \
+        .clock          = I2C1_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C1_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C1_RXI,                     \
+        .flag           = I2C1_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C1_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C1_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C1_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C1_RX_DMA_CONFIG */
+#endif /* BSP_I2C1_USING_DMA */
+
 #if defined(BSP_USING_I2C2)
 #ifndef I2C2_CONFIG
 #define I2C2_CONFIG                                             \
@@ -43,6 +81,44 @@ extern "C" {
         .timeout  = 10000UL,                                    \
     }
 #endif /* I2C2_CONFIG */
+
+#if defined(BSP_I2C2_USING_DMA)
+#ifndef I2C2_TX_DMA_CONFIG
+#define I2C2_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C2_TX_DMA_INSTANCE,                 \
+        .channel        = I2C2_TX_DMA_CHANNEL,                  \
+        .clock          = I2C2_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C2_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C2_TEI,                     \
+        .flag           = I2C2_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C2_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C2_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C2_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C2_TX_DMA_CONFIG */
+
+#ifndef I2C2_RX_DMA_CONFIG
+#define I2C2_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C2_RX_DMA_INSTANCE,                 \
+        .channel        = I2C2_RX_DMA_CHANNEL,                  \
+        .clock          = I2C2_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C2_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C2_RXI,                     \
+        .flag           = I2C2_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C2_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C2_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C2_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C2_RX_DMA_CONFIG */
+#endif /* BSP_I2C2_USING_DMA */
 #endif
 
 #if defined(BSP_USING_I2C3)
@@ -56,6 +132,44 @@ extern "C" {
         .timeout  = 10000UL,                                    \
     }
 #endif /* I2C3_CONFIG */
+
+#if defined(BSP_I2C3_USING_DMA)
+#ifndef I2C3_TX_DMA_CONFIG
+#define I2C3_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C3_TX_DMA_INSTANCE,                 \
+        .channel        = I2C3_TX_DMA_CHANNEL,                  \
+        .clock          = I2C3_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C3_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C3_TEI,                     \
+        .flag           = I2C3_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C3_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C3_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C3_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C3_TX_DMA_CONFIG */
+
+#ifndef I2C3_RX_DMA_CONFIG
+#define I2C3_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C3_RX_DMA_INSTANCE,                 \
+        .channel        = I2C3_RX_DMA_CHANNEL,                  \
+        .clock          = I2C3_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C3_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C3_RXI,                     \
+        .flag           = I2C3_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C3_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C3_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C3_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C3_RX_DMA_CONFIG */
+#endif /* BSP_I2C3_USING_DMA */
 #endif
 
 #if defined(BSP_USING_I2C4)
@@ -69,6 +183,44 @@ extern "C" {
         .timeout  = 10000UL,                                    \
     }
 #endif /* I2C4_CONFIG */
+
+#if defined(BSP_I2C4_USING_DMA)
+#ifndef I2C4_TX_DMA_CONFIG
+#define I2C4_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C4_TX_DMA_INSTANCE,                 \
+        .channel        = I2C4_TX_DMA_CHANNEL,                  \
+        .clock          = I2C4_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C4_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C4_TEI,                     \
+        .flag           = I2C4_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C4_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C4_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C4_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C4_TX_DMA_CONFIG */
+
+#ifndef I2C4_RX_DMA_CONFIG
+#define I2C4_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C4_RX_DMA_INSTANCE,                 \
+        .channel        = I2C4_RX_DMA_CHANNEL,                  \
+        .clock          = I2C4_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C4_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C4_RXI,                     \
+        .flag           = I2C4_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C4_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C4_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C4_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C4_RX_DMA_CONFIG */
+#endif /* BSP_I2C4_USING_DMA */
 #endif
 
 #if defined(BSP_USING_I2C5)
@@ -82,6 +234,44 @@ extern "C" {
         .timeout  = 10000UL,                                    \
     }
 #endif /* I2C5_CONFIG */
+
+#if defined(BSP_I2C5_USING_DMA)
+#ifndef I2C5_TX_DMA_CONFIG
+#define I2C5_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C5_TX_DMA_INSTANCE,                 \
+        .channel        = I2C5_TX_DMA_CHANNEL,                  \
+        .clock          = I2C5_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C5_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C5_TEI,                     \
+        .flag           = I2C5_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C5_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C5_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C5_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C5_TX_DMA_CONFIG */
+
+#ifndef I2C5_RX_DMA_CONFIG
+#define I2C5_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C5_RX_DMA_INSTANCE,                 \
+        .channel        = I2C5_RX_DMA_CHANNEL,                  \
+        .clock          = I2C5_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C5_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C5_RXI,                     \
+        .flag           = I2C5_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C5_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C5_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C5_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C5_RX_DMA_CONFIG */
+#endif /* BSP_I2C5_USING_DMA */
 #endif
 
 #if defined(BSP_USING_I2C6)
@@ -95,6 +285,44 @@ extern "C" {
         .timeout  = 10000UL,                                    \
     }
 #endif /* I2C6_CONFIG */
+
+#if defined(BSP_I2C6_USING_DMA)
+#ifndef I2C6_TX_DMA_CONFIG
+#define I2C6_TX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C6_TX_DMA_INSTANCE,                 \
+        .channel        = I2C6_TX_DMA_CHANNEL,                  \
+        .clock          = I2C6_TX_DMA_CLOCK,                    \
+        .trigger_select = I2C6_TX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C6_TEI,                     \
+        .flag           = I2C6_TX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C6_TX_DMA_IRQn,                     \
+            .irq_prio   = I2C6_TX_DMA_INT_PRIO,                 \
+            .int_src    = I2C6_TX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C6_TX_DMA_CONFIG */
+
+#ifndef I2C6_RX_DMA_CONFIG
+#define I2C6_RX_DMA_CONFIG                                      \
+    {                                                           \
+        .Instance       = I2C6_RX_DMA_INSTANCE,                 \
+        .channel        = I2C6_RX_DMA_CHANNEL,                  \
+        .clock          = I2C6_RX_DMA_CLOCK,                    \
+        .trigger_select = I2C6_RX_DMA_TRIG_SELECT,              \
+        .trigger_event  = EVT_SRC_I2C6_RXI,                     \
+        .flag           = I2C6_RX_DMA_TRANS_FLAG,               \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = I2C6_RX_DMA_IRQn,                     \
+            .irq_prio   = I2C6_RX_DMA_INT_PRIO,                 \
+            .int_src    = I2C6_RX_DMA_INT_SRC,                  \
+        },                                                      \
+    }
+#endif /* I2C6_RX_DMA_CONFIG */
+#endif /* BSP_I2C6_USING_DMA */
 #endif
 
 #ifdef __cplusplus

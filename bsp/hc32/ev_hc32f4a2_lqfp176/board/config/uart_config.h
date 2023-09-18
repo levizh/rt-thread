@@ -57,6 +57,7 @@ extern "C" {
         .clock          = UART1_RX_DMA_CLOCK,                   \
         .trigger_select = UART1_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART1_RI,                    \
+        .flag           = UART1_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART1_RX_DMA_IRQn,                    \
@@ -118,6 +119,7 @@ extern "C" {
         .clock          = UART1_TX_DMA_CLOCK,                   \
         .trigger_select = UART1_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART1_TI,                    \
+        .flag           = UART1_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART1_TX_DMA_IRQn,                    \
@@ -166,6 +168,7 @@ extern "C" {
         .clock          = UART2_RX_DMA_CLOCK,                   \
         .trigger_select = UART2_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART2_RI,                    \
+        .flag           = UART2_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART2_RX_DMA_IRQn,                    \
@@ -227,6 +230,7 @@ extern "C" {
         .clock          = UART2_TX_DMA_CLOCK,                   \
         .trigger_select = UART2_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART2_TI,                    \
+        .flag           = UART2_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num     = UART2_TX_DMA_IRQn,                   \
@@ -404,6 +408,7 @@ extern "C" {
         .clock          = UART6_RX_DMA_CLOCK,                   \
         .trigger_select = UART6_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART6_RI,                    \
+        .flag           = UART6_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART6_RX_DMA_IRQn,                    \
@@ -465,6 +470,7 @@ extern "C" {
         .clock          = UART6_TX_DMA_CLOCK,                   \
         .trigger_select = UART6_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART6_TI,                    \
+        .flag           = UART6_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART6_TX_DMA_IRQn,                    \
@@ -513,6 +519,7 @@ extern "C" {
         .clock          = UART7_RX_DMA_CLOCK,                   \
         .trigger_select = UART7_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART7_RI,                    \
+        .flag           = UART7_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART7_RX_DMA_IRQn,                    \
@@ -574,6 +581,7 @@ extern "C" {
         .clock          = UART7_TX_DMA_CLOCK,                   \
         .trigger_select = UART7_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART7_TI,                    \
+        .flag           = UART1_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART7_TX_DMA_IRQn,                    \

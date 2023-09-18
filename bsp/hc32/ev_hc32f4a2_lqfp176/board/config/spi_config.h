@@ -46,6 +46,7 @@ extern "C" {
         .clock          = SPI1_TX_DMA_CLOCK,                \
         .trigger_select = SPI1_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI1_SPTI,                \
+        .flag           = SPI1_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI1_TX_DMA_IRQn,                 \
@@ -65,6 +66,7 @@ extern "C" {
         .clock          = SPI1_RX_DMA_CLOCK,                \
         .trigger_select = SPI1_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI1_SPRI,                \
+        .flag           = SPI1_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI1_RX_DMA_IRQn,                 \
@@ -101,6 +103,7 @@ extern "C" {
         .clock          = SPI2_TX_DMA_CLOCK,                \
         .trigger_select = SPI2_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI2_SPTI,                \
+        .flag           = SPI2_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI2_TX_DMA_IRQn,                 \
@@ -120,6 +123,7 @@ extern "C" {
         .clock          = SPI2_RX_DMA_CLOCK,                \
         .trigger_select = SPI2_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI2_SPRI,                \
+        .flag           = SPI2_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI2_RX_DMA_IRQn,                 \
@@ -157,6 +161,7 @@ extern "C" {
         .clock          = SPI3_TX_DMA_CLOCK,                \
         .trigger_select = SPI3_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI3_SPTI,                \
+        .flag           = SPI3_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI3_TX_DMA_IRQn,                 \
@@ -176,6 +181,7 @@ extern "C" {
         .clock          = SPI3_RX_DMA_CLOCK,                \
         .trigger_select = SPI3_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI3_SPRI,                \
+        .flag           = SPI3_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI3_RX_DMA_IRQn,                 \
@@ -212,6 +218,7 @@ extern "C" {
         .clock          = SPI4_TX_DMA_CLOCK,                \
         .trigger_select = SPI4_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI4_SPTI,                \
+        .flag           = SPI4_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI4_TX_DMA_IRQn,                 \
@@ -231,6 +238,7 @@ extern "C" {
         .clock          = SPI4_RX_DMA_CLOCK,                \
         .trigger_select = SPI4_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI4_SPRI,                \
+        .flag           = SPI4_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI4_RX_DMA_IRQn,                 \
@@ -267,6 +275,7 @@ extern "C" {
         .clock          = SPI5_TX_DMA_CLOCK,                \
         .trigger_select = SPI5_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI5_SPTI,                \
+        .flag           = 0,                                \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI5_TX_DMA_IRQn,                 \
@@ -286,6 +295,7 @@ extern "C" {
         .clock          = SPI5_RX_DMA_CLOCK,                \
         .trigger_select = SPI5_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI5_SPRI,                \
+        .flag           = 0,                                \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI5_RX_DMA_IRQn,                 \
@@ -322,6 +332,7 @@ extern "C" {
         .clock          = SPI6_TX_DMA_CLOCK,                \
         .trigger_select = SPI6_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI6_SPTI,                \
+        .flag           = 0,                                \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI6_TX_DMA_IRQn,                 \
@@ -341,6 +352,7 @@ extern "C" {
         .clock          = SPI6_RX_DMA_CLOCK,                \
         .trigger_select = SPI6_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI6_SPRI,                \
+        .flag           = 0,                                \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI6_RX_DMA_IRQn,                 \
