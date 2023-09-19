@@ -328,7 +328,13 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
             usb_host_int_unmskchhltd(pdev, chnum);
             usb_hchstop(&pdev->regs, chnum);
         }
-        else if ((u32eptypetmp == EP_TYPE_CTRL) || (u32eptypetmp == EP_TYPE_BULK))
+        else if (u32eptypetmp == EP_TYPE_CTRL)
+        {
+            u32hcchar |= USBFS_HCCHAR_CHENA;
+            u32hcchar &= ~USBFS_HCCHAR_CHDIS;
+            WRITE_REG32(pdev->regs.HC_REGS[chnum]->HCCHAR, u32hcchar);
+        }
+        else if (u32eptypetmp == EP_TYPE_BULK)
         {
             usb_host_int_unmskchhltd(pdev, chnum);
             usb_hchstop(&pdev->regs, chnum);/* stop hc avoid block */
