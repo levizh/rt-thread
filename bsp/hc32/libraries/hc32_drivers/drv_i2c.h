@@ -44,7 +44,14 @@ struct hc32_i2c
 {
     struct hc32_i2c_config      *config;
     struct rt_i2c_bus_device    i2c_bus;
+    rt_uint8_t                  i2c_dma_flag;
 };
+
+/*******************************************************************************
+ * Global pre-processor symbols/macros ('#define')
+ ******************************************************************************/
+#define I2C_USING_TX_DMA_FLAG       (1UL)
+#define I2C_USING_RX_DMA_FLAG       (1UL << 1)
 
 // int hc32_hw_i2c_init(void);
 
