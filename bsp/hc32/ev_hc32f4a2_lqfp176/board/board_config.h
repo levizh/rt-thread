@@ -60,7 +60,7 @@
     #define I2C2_SCL_FUNC                   (GPIO_FUNC_51)
 #endif
 
-#if defined(BSP_USING_I2C3)
+#if defined(BSP_USING_I2C3)                  // use external pull-up resistor circuit
     #define I2C3_SDA_PORT                   (GPIO_PORT_B)
     #define I2C3_SDA_PIN                    (GPIO_PIN_12)
     #define I2C3_SDA_FUNC                   (GPIO_FUNC_52)

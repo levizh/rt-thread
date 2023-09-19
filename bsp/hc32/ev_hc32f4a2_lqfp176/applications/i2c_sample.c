@@ -131,7 +131,7 @@ static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
     uint8_t TxBuf[EE_PAGE_SIZE + EE_WORD_ADR_SIZE] = {0};
     struct rt_i2c_msg msg[1];
     /* write byte */
-    if (EE_PAGE_SIZE == 2)
+    if (EE_WORD_ADR_SIZE == 2)
     {
       TxBuf[0] = (page * EE_PAGE_SIZE) / 256;           // addrH
       TxBuf[1] = page * EE_PAGE_SIZE;                   // addrL
@@ -158,7 +158,7 @@ static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
     struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
     struct rt_i2c_msg msg[2];
     uint8_t readAddr[EE_WORD_ADR_SIZE];
-    if (EE_PAGE_SIZE == 2)
+    if (EE_WORD_ADR_SIZE == 2)
     {
       readAddr[0] = (page * EE_PAGE_SIZE) / 256;        // addrH
       readAddr[1] = page * EE_PAGE_SIZE;                // addrL
