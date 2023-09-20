@@ -90,6 +90,23 @@ static int32_t _bakup_reg_check(void)
 
     return i32Ret;
 }
+
+static int32_t _hc32_rtc_rw_check(void)
+{
+    int32_t i32Ret = LL_ERR;
+
+    /* Enter read/write mode */
+    if (LL_OK == RTC_EnterRwMode())
+    {
+        /* Exit read/write mode */
+        if (LL_OK == RTC_ExitRwMode())
+        {
+            i32Ret = LL_OK;
+        }
+    }
+
+    return i32Ret;
+}
 #endif
 
 static rt_err_t hc32_rtc_get_timeval(struct timeval *tv)
@@ -159,7 +176,7 @@ static rt_err_t hc32_rtc_init(void)
     stc_rtc_init_t stcRtcInit;
 
 #if defined(HC32F4A0)
-    if (LL_OK != _bakup_reg_check())
+    if ((LL_OK != _bakup_reg_check()) || (LL_OK != _hc32_rtc_rw_check()))
 #elif  defined(HC32F460)
     if (DISABLE == RTC_GetCounterState())
 #endif
@@ -172,6 +189,8 @@ static rt_err_t hc32_rtc_init(void)
         }
         else
         {
+            /* Stop RTC */
+            RTC_Cmd(DISABLE);
             /* Configure structure initialization */
             (void)RTC_StructInit(&stcRtcInit);
 
@@ -183,7 +202,9 @@ static rt_err_t hc32_rtc_init(void)
 #endif
             stcRtcInit.u8HourFormat = RTC_HOUR_FMT_24H;
             (void)RTC_Init(&stcRtcInit);
-
+            
+            /* Clear all status */
+            RTC_ClearStatus(RTC_FLAG_CLR_ALL);
             /* Startup RTC count */
             RTC_Cmd(ENABLE);
 
@@ -191,10 +212,14 @@ static rt_err_t hc32_rtc_init(void)
             /* Write sequence flag to backup register  */
             _bakup_reg_write();
 #endif
+            LOG_D("rtc init success");
         }
     }
+    else
+    {
+        LOG_D("rtc does not need to init");
+    }
 
-    LOG_D("rtc init success");
     return RT_EOK;
 }
 
