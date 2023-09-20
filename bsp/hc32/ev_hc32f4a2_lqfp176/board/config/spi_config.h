@@ -27,6 +27,7 @@ extern "C" {
         .Instance = CM_SPI1,                                \
         .bus_name = "spi1",                                 \
         .clock    = FCG1_PERIPH_SPI1,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI1_ERR_IRQ_NUM,             \
@@ -84,6 +85,7 @@ extern "C" {
         .Instance = CM_SPI2,                                \
         .bus_name = "spi2",                                 \
         .clock    = FCG1_PERIPH_SPI2,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI2_ERR_IRQ_NUM,             \
@@ -141,6 +143,7 @@ extern "C" {
         .Instance = CM_SPI3,                                \
         .bus_name = "spi3",                                 \
         .clock    = FCG1_PERIPH_SPI3,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI3_ERR_IRQ_NUM,             \
@@ -199,6 +202,7 @@ extern "C" {
         .Instance = CM_SPI4,                                \
         .bus_name = "spi4",                                 \
         .clock    = FCG1_PERIPH_SPI4,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI4_ERR_IRQ_NUM,             \
@@ -256,6 +260,7 @@ extern "C" {
         .Instance = CM_SPI5,                                \
         .bus_name = "spi5",                                 \
         .clock    = FCG1_PERIPH_SPI5,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI5_ERR_IRQ_NUM,             \
@@ -275,7 +280,7 @@ extern "C" {
         .clock          = SPI5_TX_DMA_CLOCK,                \
         .trigger_select = SPI5_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI5_SPTI,                \
-        .flag           = 0,                                \
+        .flag           = SPI5_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI5_TX_DMA_IRQn,                 \
@@ -295,7 +300,7 @@ extern "C" {
         .clock          = SPI5_RX_DMA_CLOCK,                \
         .trigger_select = SPI5_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI5_SPRI,                \
-        .flag           = 0,                                \
+        .flag           = SPI5_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI5_RX_DMA_IRQn,                 \
@@ -313,6 +318,7 @@ extern "C" {
         .Instance = CM_SPI6,                                \
         .bus_name = "spi6",                                 \
         .clock    = FCG1_PERIPH_SPI6,                       \
+        .timeout  = 10000UL,                                \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI6_ERR_IRQ_NUM,             \
@@ -332,7 +338,7 @@ extern "C" {
         .clock          = SPI6_TX_DMA_CLOCK,                \
         .trigger_select = SPI6_TX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI6_SPTI,                \
-        .flag           = 0,                                \
+        .flag           = SPI6_TX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI6_TX_DMA_IRQn,                 \
@@ -352,7 +358,7 @@ extern "C" {
         .clock          = SPI6_RX_DMA_CLOCK,                \
         .trigger_select = SPI6_RX_DMA_TRIG_SELECT,          \
         .trigger_event  = EVT_SRC_SPI6_SPRI,                \
-        .flag           = 0,                                \
+        .flag           = SPI6_RX_DMA_TRANS_FLAG,           \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = SPI6_RX_DMA_IRQn,                 \

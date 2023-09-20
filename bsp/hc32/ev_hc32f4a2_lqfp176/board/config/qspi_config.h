@@ -54,6 +54,7 @@ extern "C" {
         .clock          = QSPI_DMA_CLOCK,                   \
         .trigger_select = QSPI_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_AOS_STRG,                 \
+        .flag           = QSPI_DMA_TRANS_FLAG,              \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = QSPI_DMA_IRQn,                    \

@@ -8,7 +8,9 @@
  * 2023-xx-xx     CDT                  first version
  */
 #include <board.h>
+
 #if defined(BSP_USING_DAC1) || defined(BSP_USING_DAC2)
+
 #include <drivers/dac.h>
 #include <drv_dac.h>
 #include <drv_config.h>
@@ -29,10 +31,6 @@ typedef struct
     CM_DAC_TypeDef *instance;
     struct dac_dev_init_params init;
 } dac_device;
-
-#if !defined(BSP_USING_DAC1) && !defined(BSP_USING_DAC2)
-    #error "Please define at least one BSP_USING_DACx"
-#endif
 
 static dac_device g_dac_dev_array[] =
 {

@@ -13,7 +13,9 @@
 #include "drv_gpio.h"
 #include "board_config.h"
 
-#ifdef RT_USING_PIN
+#if defined(RT_USING_PIN)
+
+#if defined(BSP_USING_GPIO)
 
 #define GPIO_PIN_INDEX(pin)             ((uint8_t)((pin) & 0x0F))
 #define PIN_NUM(port, pin)              (((((port) & 0x0F) << 4) | ((pin) & 0x0F)))
@@ -503,5 +505,7 @@ int rt_hw_pin_init(void)
     return rt_device_pin_register("pin", &hc32_pin_ops, RT_NULL);
 }
 INIT_BOARD_EXPORT(rt_hw_pin_init);
+
+#endif
 
 #endif  /* RT_USING_PIN */

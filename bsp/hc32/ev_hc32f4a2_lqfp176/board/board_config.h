@@ -102,6 +102,9 @@
 
 /************************* SPI port ***********************/
 #if defined(BSP_USING_SPI1)
+    #define SPI1_CS_PORT                (GPIO_PORT_C)
+    #define SPI1_CS_PIN                 (GPIO_PIN_07)
+
     #define SPI1_SCK_PORT               (GPIO_PORT_C)
     #define SPI1_SCK_PIN                (GPIO_PIN_06)
     #define SPI1_SCK_FUNC               (GPIO_FUNC_40)
