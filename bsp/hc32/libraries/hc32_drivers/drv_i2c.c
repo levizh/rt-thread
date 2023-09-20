@@ -91,7 +91,7 @@ static struct hc32_i2c_config i2c_config[] =
 #endif
 };
 
-#ifdef RT_I2C_USING_DMA
+#ifdef BSP_I2C_USING_DMA
 static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus);
 #endif
 static struct hc32_i2c i2c_objs[sizeof(i2c_config) / sizeof(i2c_config[0])] = {0};
@@ -138,7 +138,7 @@ static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
         I2C_BusWaitCmd(i2c_obj->config->Instance, ENABLE);
         I2C_Cmd(i2c_obj->config->Instance, ENABLE);
     }
-    if ((i2c_obj->i2c_dma_flag & I2C_USING_TX_DMA_FLAG   ) || (i2c_obj->i2c_dma_flag & I2C_USING_RX_DMA_FLAG   ))
+    if ((i2c_obj->i2c_dma_flag & I2C_USING_TX_DMA_FLAG) || (i2c_obj->i2c_dma_flag & I2C_USING_RX_DMA_FLAG))
     {
         hc32_i2c_dma_configure(bus);
     }
@@ -266,29 +266,30 @@ static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus)
 
     struct hc32_i2c *i2c_obj = rt_container_of(bus, struct hc32_i2c, i2c_bus);
 
-    if (i2c_obj->i2c_dma_flag & I2C_USING_TX_DMA_FLAG   )
+    if (i2c_obj->i2c_dma_flag & I2C_USING_TX_DMA_FLAG)
     {
-      /* DMA/AOS FCG enable */
-      FCG_Fcg0PeriphClockCmd(i2c_obj->config->i2c_tx_dma->clock, ENABLE);
+        /* DMA/AOS FCG enable */
+        FCG_Fcg0PeriphClockCmd(i2c_obj->config->i2c_tx_dma->clock, ENABLE);
 
-      (void)DMA_StructInit(&stcDmaInit);
-      stcDmaInit.u32BlockSize  = 1UL;
-      stcDmaInit.u32TransCount = 0UL;
-      stcDmaInit.u32DataWidth  = DMA_DATAWIDTH_8BIT;
-      /* Configure TX */
-      stcDmaInit.u32SrcAddrInc  = DMA_SRC_ADDR_INC;
-      stcDmaInit.u32DestAddrInc = DMA_DEST_ADDR_FIX;
-      stcDmaInit.u32SrcAddr     = (uint32_t)NULL;
-      stcDmaInit.u32DestAddr    = (uint32_t)(&i2c_obj->config->Instance->DTR);
-      if (LL_OK != DMA_Init(i2c_obj->config->i2c_tx_dma->Instance, i2c_obj->config->i2c_tx_dma->channel, &stcDmaInit)) {
-          I2C_PRINT_ERR("[%s:%d]I2C TX DMA init error!\n", __func__, __LINE__);
-      }
-      AOS_SetTriggerEventSrc(i2c_obj->config->i2c_tx_dma->trigger_select, i2c_obj->config->i2c_tx_dma->trigger_event);
-      /* Enable DMA unit */
-      DMA_Cmd(i2c_obj->config->i2c_tx_dma->Instance, ENABLE);
+        (void)DMA_StructInit(&stcDmaInit);
+        stcDmaInit.u32BlockSize  = 1UL;
+        stcDmaInit.u32TransCount = 0UL;
+        stcDmaInit.u32DataWidth  = DMA_DATAWIDTH_8BIT;
+        /* Configure TX */
+        stcDmaInit.u32SrcAddrInc  = DMA_SRC_ADDR_INC;
+        stcDmaInit.u32DestAddrInc = DMA_DEST_ADDR_FIX;
+        stcDmaInit.u32SrcAddr     = (uint32_t)NULL;
+        stcDmaInit.u32DestAddr    = (uint32_t)(&i2c_obj->config->Instance->DTR);
+        if (LL_OK != DMA_Init(i2c_obj->config->i2c_tx_dma->Instance, i2c_obj->config->i2c_tx_dma->channel, &stcDmaInit))
+        {
+            I2C_PRINT_ERR("[%s:%d]I2C TX DMA init error!\n", __func__, __LINE__);
+        }
+        AOS_SetTriggerEventSrc(i2c_obj->config->i2c_tx_dma->trigger_select, i2c_obj->config->i2c_tx_dma->trigger_event);
+        /* Enable DMA unit */
+        DMA_Cmd(i2c_obj->config->i2c_tx_dma->Instance, ENABLE);
     }
 
-    if (i2c_obj->i2c_dma_flag & I2C_USING_RX_DMA_FLAG   )
+    if (i2c_obj->i2c_dma_flag & I2C_USING_RX_DMA_FLAG)
     {
         /* DMA/AOS FCG enable */
         FCG_Fcg0PeriphClockCmd(i2c_obj->config->i2c_rx_dma->clock, ENABLE);
@@ -297,12 +298,12 @@ static void hc32_i2c_dma_configure(struct rt_i2c_bus_device *bus)
         stcDmaInit.u32TransCount = 0UL;
         stcDmaInit.u32DataWidth  = DMA_DATAWIDTH_8BIT;
         /* Configure RX */
-//        stcDmaInit.u32IntEn       = DMA_INT_ENABLE;
         stcDmaInit.u32SrcAddrInc  = DMA_SRC_ADDR_FIX;
         stcDmaInit.u32DestAddrInc = DMA_DEST_ADDR_INC;
         stcDmaInit.u32SrcAddr     = (uint32_t)(&i2c_obj->config->Instance->DRR);
         stcDmaInit.u32DestAddr    = (uint32_t)NULL;
-        if (LL_OK != DMA_Init(i2c_obj->config->i2c_rx_dma->Instance, i2c_obj->config->i2c_rx_dma->channel, &stcDmaInit)) {
+        if (LL_OK != DMA_Init(i2c_obj->config->i2c_rx_dma->Instance, i2c_obj->config->i2c_rx_dma->channel, &stcDmaInit))
+        {
             I2C_PRINT_ERR("[%s:%d]I2C RX DMA init error!\n", __func__, __LINE__);
         }
         AOS_SetTriggerEventSrc(i2c_obj->config->i2c_rx_dma->trigger_select, i2c_obj->config->i2c_rx_dma->trigger_event);
@@ -416,7 +417,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     /* read data from register */
     msg->buf[msg->len - 1U] = I2C_ReadData(i2c_obj->config->Instance);
     timeCnt = 0;
-    while ((LL_OK !=I2C_WaitStatus(i2c_obj->config->Instance, I2C_FLAG_STOP, SET, 1)) && (timeCnt < i2c_obj->config->timeout))
+    while ((LL_OK != I2C_WaitStatus(i2c_obj->config->Instance, I2C_FLAG_STOP, SET, 1)) && (timeCnt < i2c_obj->config->timeout))
     {
         rt_thread_mdelay(1);
         timeCnt++;
@@ -470,7 +471,7 @@ static int hc32_i2c_read(struct hc32_i2c *i2c_obj,
     }
     else
     {
-      ret = I2C_Master_Receive(i2c_obj, msg);
+        ret = I2C_Master_Receive(i2c_obj, msg);
     }
     return ret;
 }
@@ -565,11 +566,11 @@ int hc32_hw_i2c_init(void)
         i2c_objs[i].config = &i2c_config[i];
         i2c_objs[i].i2c_bus.timeout = i2c_config[i].timeout;
         hc32_i2c_get_dma_info();
-        if (i2c_objs[i].i2c_dma_flag & I2C_USING_TX_DMA_FLAG   )
+        if (i2c_objs[i].i2c_dma_flag & I2C_USING_TX_DMA_FLAG)
         {
             i2c_objs[i].config->i2c_tx_dma = i2c_config[i].i2c_tx_dma;
         }
-        if ((i2c_objs[i].i2c_dma_flag & I2C_USING_RX_DMA_FLAG   ))
+        if ((i2c_objs[i].i2c_dma_flag & I2C_USING_RX_DMA_FLAG))
         {
             i2c_objs[i].config->i2c_rx_dma = i2c_config[i].i2c_rx_dma;
         }

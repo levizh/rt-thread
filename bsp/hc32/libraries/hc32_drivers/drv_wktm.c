@@ -12,7 +12,9 @@
 #include <board.h>
 #include <drv_wktm.h>
 
-#ifdef RT_USING_PM
+#if defined(RT_USING_PM)
+
+#if defined(BSP_USING_PM)
 
 // #define DRV_DEBUG
 #define LOG_TAG             "drv_wktm"
@@ -130,3 +132,5 @@ int hc32_hw_wktm_init(void)
 INIT_DEVICE_EXPORT(hc32_hw_wktm_init);
 
 #endif
+
+#endif  /* RT_USING_PM */

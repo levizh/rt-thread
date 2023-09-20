@@ -15,14 +15,14 @@
 #include <drv_config.h>
 #include <board_config.h>
 
-#ifdef BSP_USING_CAN
+#if defined(BSP_USING_CAN)
 #define LOG_TAG    "drv_can"
 
-#if !defined(BSP_USING_CAN1) && !defined(BSP_USING_CAN2)
-    #error "Please define at least one BSP_USING_CANx"
-#endif
+#if defined(BSP_USING_CAN1) || defined(BSP_USING_CAN2)
+
+
 #if defined(RT_CAN_USING_CANFD) && defined(HC32F460)
-    #error "Selected mcu does not support canfd"
+    #error "Selected mcu does not support canfd!"
 #endif
 
 #define TSEG1_MIN_FOR_CAN2_0                                (2U)
@@ -1254,6 +1254,7 @@ int rt_hw_can_init(void)
 }
 
 INIT_DEVICE_EXPORT(rt_hw_can_init);
+#endif
 
 #endif /* BSP_USING_CAN */
 

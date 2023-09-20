@@ -34,7 +34,7 @@ struct hc32_i2c_config
     rt_uint32_t             clock;
     rt_uint32_t             baudrate;
     rt_uint32_t             timeout;
-#ifdef RT_I2C_USING_DMA
+#ifdef BSP_I2C_USING_DMA
     struct dma_config       *i2c_tx_dma;
     struct dma_config       *i2c_rx_dma;
 #endif

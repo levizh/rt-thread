@@ -27,9 +27,7 @@ typedef struct
     struct adc_dev_init_params init;
 } adc_device;
 
-#if !defined(BSP_USING_ADC1) && !defined(BSP_USING_ADC2) && !defined(BSP_USING_ADC3)
-    #error "Please define at least one BSP_USING_ADCx"
-#endif
+#if defined(BSP_USING_ADC1) || defined(BSP_USING_ADC2) || defined(BSP_USING_ADC3)
 
 static adc_device g_adc_dev_array[] =
 {
@@ -268,3 +266,5 @@ int rt_hw_adc_init(void)
 }
 INIT_DEVICE_EXPORT(rt_hw_adc_init);
 #endif
+
+#endif  /* RT_USING_ADC */
