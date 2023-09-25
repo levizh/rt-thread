@@ -27,7 +27,7 @@ extern "C" {
         .Instance = CM_SPI1,                                \
         .bus_name = "spi1",                                 \
         .clock    = FCG1_PERIPH_SPI1,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI1_ERR_IRQ_NUM,             \
@@ -85,7 +85,7 @@ extern "C" {
         .Instance = CM_SPI2,                                \
         .bus_name = "spi2",                                 \
         .clock    = FCG1_PERIPH_SPI2,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI2_ERR_IRQ_NUM,             \
@@ -143,7 +143,7 @@ extern "C" {
         .Instance = CM_SPI3,                                \
         .bus_name = "spi3",                                 \
         .clock    = FCG1_PERIPH_SPI3,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI3_ERR_IRQ_NUM,             \
@@ -202,7 +202,7 @@ extern "C" {
         .Instance = CM_SPI4,                                \
         .bus_name = "spi4",                                 \
         .clock    = FCG1_PERIPH_SPI4,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI4_ERR_IRQ_NUM,             \
@@ -260,7 +260,7 @@ extern "C" {
         .Instance = CM_SPI5,                                \
         .bus_name = "spi5",                                 \
         .clock    = FCG1_PERIPH_SPI5,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI5_ERR_IRQ_NUM,             \
@@ -318,7 +318,7 @@ extern "C" {
         .Instance = CM_SPI6,                                \
         .bus_name = "spi6",                                 \
         .clock    = FCG1_PERIPH_SPI6,                       \
-        .timeout  = 10000UL,                                \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_SPI6_ERR_IRQ_NUM,             \
