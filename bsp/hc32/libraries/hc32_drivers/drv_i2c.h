@@ -34,10 +34,8 @@ struct hc32_i2c_config
     rt_uint32_t             clock;
     rt_uint32_t             baudrate;
     rt_uint32_t             timeout;
-#ifdef RT_I2C_USING_DMA
     struct dma_config       *i2c_tx_dma;
     struct dma_config       *i2c_rx_dma;
-#endif
 };
 
 struct hc32_i2c
@@ -50,8 +48,8 @@ struct hc32_i2c
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define I2C_USING_TX_DMA_FLAG       (1UL)
-#define I2C_USING_RX_DMA_FLAG       (1UL << 1)
+#define I2C_USING_TX_DMA_FLAG       (1U)
+#define I2C_USING_RX_DMA_FLAG       (1U << 1)
 
 // int hc32_hw_i2c_init(void);
 
