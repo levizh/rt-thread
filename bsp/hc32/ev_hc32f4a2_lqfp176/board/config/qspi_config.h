@@ -24,6 +24,7 @@ extern "C" {
     {                                                       \
         .Instance = CM_QSPI,                                \
         .clock    = FCG1_PERIPH_QSPI,                       \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_QSPI_ERR_IRQ_NUM,             \

@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2023-06-15     CDT          first version
+ * 2023-09-30     CDT          Delete dma transmit interrupt
  */
 
 /*******************************************************************************
@@ -66,9 +67,6 @@ extern rt_err_t rt_hw_qspi_board_init(void);
  * Local function prototypes ('static')
  ******************************************************************************/
 static void qspi_err_irq_handler(void);
-#ifdef BSP_QSPI_USING_DMA
-    static void qspi_dma_irq_handler(void);
-#endif
 
 /*******************************************************************************
  * Local variable definitions ('static')
@@ -105,7 +103,7 @@ static int hc32_qspi_init(struct rt_qspi_device *device, struct rt_qspi_configur
     u32BusFreq = CLK_GetBusClockFreq(CLK_BUS_HCLK);
     while (cfg->max_hz < u32BusFreq / (u32Cnt + 1U))
     {
-        if (++u32Cnt == QSPI_MAX_DIV_VAL) /* Div64 */
+        if (++u32Cnt == QSPI_MAX_DIV_VAL)   /* Div64 */
         {
             break;
         }
@@ -143,7 +141,6 @@ static int hc32_qspi_init(struct rt_qspi_device *device, struct rt_qspi_configur
     FCG_Fcg0PeriphClockCmd(qspi_dma->clock, ENABLE);
     /* Config Dma */
     DMA_StructInit(&stcDmaInit);
-    stcDmaInit.u32IntEn         = DMA_INT_ENABLE;
     stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
     /* Init Dma */
     if (LL_OK != DMA_Init(qspi_dma->Instance, qspi_dma->channel, &stcDmaInit))
@@ -151,7 +148,6 @@ static int hc32_qspi_init(struct rt_qspi_device *device, struct rt_qspi_configur
         return -RT_ERROR;
     }
     DMA_Cmd(qspi_dma->Instance, ENABLE);
-    NVIC_EnableIRQ(qspi_dma->irq_config.irq_num);
 #endif /* BSP_QSPI_USING_DMA */
 
     return result;
@@ -283,15 +279,17 @@ static void hc32_qspi_word_to_byte(uint32_t u32Word, uint8_t *pu8Byte, uint8_t u
     while ((u32ByteNum--) != 0UL);
 }
 
-static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
-                                  uint8_t *pu8Addr, uint32_t u32AddrLen, const uint8_t *pu8WriteBuf, uint32_t u32BufLen)
+static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
+                                     uint8_t *pu8Addr, uint32_t u32AddrLen, const uint8_t *pu8WriteBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
+    int32_t i32Ret = LL_OK;
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config *qspi_dma;
     stc_dma_init_t stcDmaInit;
     uint32_t u32DmaTransSize;
     uint32_t u32TxIndex = 0U;
+    rt_uint32_t u32TimeoutCnt;
 #endif
 
     QSPI_EnterDirectCommMode();
@@ -309,14 +307,10 @@ static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Inst
     if ((NULL != pu8WriteBuf) && (0UL != u32BufLen))
     {
 #ifdef BSP_QSPI_USING_DMA
-        qspi_bus->config->dma_flag = RT_FALSE;
         qspi_dma = qspi_bus->config->dma_qspi;
-
         AOS_SetTriggerEventSrc(qspi_dma->trigger_select, qspi_dma->trigger_event);
-        DMA_ClearTransCompleteStatus(qspi_dma->Instance, (1U << qspi_dma->channel));
         /* Config Dma */
         DMA_StructInit(&stcDmaInit);
-        stcDmaInit.u32IntEn         = DMA_INT_ENABLE;
         stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
         stcDmaInit.u32SrcAddrInc    = DMA_SRC_ADDR_INC;
         stcDmaInit.u32DestAddrInc   = DMA_DEST_ADDR_FIX;
@@ -333,16 +327,28 @@ static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Inst
                 u32DmaTransSize = u32BufLen;
                 u32BufLen = 0U;
             }
+            DMA_ClearTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag);
             DMA_SetSrcAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&pu8WriteBuf[u32TxIndex]);
             DMA_SetDestAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&qspi_bus->config->Instance->DCOM);
             DMA_SetTransCount(qspi_dma->Instance, qspi_dma->channel, 1UL);
             DMA_SetBlockSize(qspi_dma->Instance, qspi_dma->channel, (uint16_t)u32DmaTransSize);
             (void)DMA_ChCmd(qspi_dma->Instance, qspi_dma->channel, ENABLE);
             AOS_SW_Trigger();   /* 1st trigger for DMA */
-            while (RT_FALSE == qspi_bus->config->dma_flag);
+            u32TimeoutCnt = 0U;
+            /* Wait DMA transfer completed */
+            while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
+                   (u32TimeoutCnt < qspi_bus->config->timeout))
+            {
+                rt_thread_mdelay(1);
+                u32TimeoutCnt++;
+            }
+            if (u32TimeoutCnt >= qspi_bus->config->timeout)
+            {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
             u32TxIndex += u32DmaTransSize;
         }
-        AOS_SetTriggerEventSrc(qspi_dma->trigger_select, EVT_SRC_MAX);
 #else
         for (u32Count = 0UL; u32Count < u32BufLen; u32Count++)
         {
@@ -351,17 +357,21 @@ static void hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Inst
 #endif
     }
     QSPI_ExitDirectCommMode();
+
+    return i32Ret;
 }
 
-static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
-                                 uint8_t *pu8Addr, uint32_t u32AddrLen, uint8_t *pu8ReadBuf, uint32_t u32BufLen)
+static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
+                                    uint8_t *pu8Addr, uint32_t u32AddrLen, uint8_t *pu8ReadBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
+    int32_t i32Ret = LL_OK;
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config *qspi_dma;
     stc_dma_init_t stcDmaInit;
     uint32_t u32DmaTransSize;
     uint32_t u32RxIndex = 0U;
+    rt_uint32_t u32TimeoutCnt;
 #endif
 
     QSPI_EnterDirectCommMode();
@@ -379,14 +389,10 @@ static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr
     if ((NULL != pu8ReadBuf) && (0UL != u32BufLen))
     {
 #ifdef BSP_QSPI_USING_DMA
-        qspi_bus->config->dma_flag = RT_FALSE;
         qspi_dma = qspi_bus->config->dma_qspi;
-
         AOS_SetTriggerEventSrc(qspi_dma->trigger_select, qspi_dma->trigger_event);
-        DMA_ClearTransCompleteStatus(qspi_dma->Instance, (1U << qspi_dma->channel));
         /* Config Dma */
         DMA_StructInit(&stcDmaInit);
-        stcDmaInit.u32IntEn         = DMA_INT_ENABLE;
         stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
         stcDmaInit.u32SrcAddrInc    = DMA_SRC_ADDR_FIX;
         stcDmaInit.u32DestAddrInc   = DMA_DEST_ADDR_INC;
@@ -403,16 +409,28 @@ static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr
                 u32DmaTransSize = u32BufLen;
                 u32BufLen = 0U;
             }
+            DMA_ClearTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag);
             DMA_SetSrcAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&qspi_bus->config->Instance->DCOM);
             DMA_SetDestAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&pu8ReadBuf[u32RxIndex]);
             DMA_SetTransCount(qspi_dma->Instance, qspi_dma->channel, 1UL);
             DMA_SetBlockSize(qspi_dma->Instance, qspi_dma->channel, (uint16_t)u32DmaTransSize);
             (void)DMA_ChCmd(qspi_dma->Instance, qspi_dma->channel, ENABLE);
             AOS_SW_Trigger();   /* 1st trigger for DMA */
-            while (RT_FALSE == qspi_bus->config->dma_flag);
+            u32TimeoutCnt = 0U;
+            /* Wait DMA transfer completed */
+            while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
+                   (u32TimeoutCnt < qspi_bus->config->timeout))
+            {
+                rt_thread_mdelay(1);
+                u32TimeoutCnt++;
+            }
+            if (u32TimeoutCnt >= qspi_bus->config->timeout)
+            {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
             u32RxIndex += u32DmaTransSize;
         }
-        AOS_SetTriggerEventSrc(qspi_dma->trigger_select, EVT_SRC_MAX);
 #else
         for (u32Count = 0UL; u32Count < u32BufLen; u32Count++)
         {
@@ -421,6 +439,8 @@ static void hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr
 #endif
     }
     QSPI_ExitDirectCommMode();
+
+    return i32Ret;
 }
 
 static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message)
@@ -433,6 +453,7 @@ static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_me
     uint8_t u8AddrBuf[10];
     uint32_t u32AddrLen = 0U;
     uint32_t u32InstrLen = 0U;
+    int32_t i32Ret;
 
     RT_ASSERT(qspi_bus != RT_NULL);
     RT_ASSERT(message != RT_NULL);
@@ -451,9 +472,9 @@ static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_me
         u8AddrBuf[u32AddrLen] = 0xFF;
         u32AddrLen += 1;
     }
-    hc32_qspi_write_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, tx_buf, length);
+    i32Ret = hc32_qspi_write_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, tx_buf, length);
 
-    return LL_OK;
+    return i32Ret;
 }
 
 static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message)
@@ -467,43 +488,38 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
     uint8_t u8AddrBuf[10];
     uint32_t u32AddrLen = 0U;
     uint32_t u32InstrLen = 0U;
+    int32_t i32Ret = LL_OK;
 
 #ifndef BSP_QSPI_USING_SOFT_CS
-#ifndef BSP_QSPI_USING_DMA
-    __IO uint8_t *pu8Read;
-#endif
     uint32_t u32ExtBlkStartNum = 0U;
     uint32_t u32GetSize, u32RxIndex = 0U;
-
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config *qspi_dma;
     stc_dma_init_t stcDmaInit;
     uint32_t u32DmaTransSize;
+    rt_uint32_t u32TimeoutCnt;
+#else
+    __IO uint8_t *pu8Read;
 #endif
 #endif
 
     RT_ASSERT(qspi_bus != RT_NULL);
     RT_ASSERT(message != RT_NULL);
 
-    if ((u32Addr + length) > QSPI_MAX_FLASH_ADDR)
-    {
-        return LL_ERR_INVD_PARAM;
-    }
-    u32Addr = (u32Addr % QSPI_BASE_BLK_SIZE) + QSPI_ROM_BASE;
-
 #ifndef BSP_QSPI_USING_SOFT_CS
-    u32ExtBlkStartNum = u32Addr / QSPI_BASE_BLK_SIZE;
     if (LL_OK == hc32_qspi_search_rom_cmd(u8Instr))
     {
+        u32ExtBlkStartNum = u32Addr / QSPI_BASE_BLK_SIZE;
+        if ((u32Addr + length) > QSPI_MAX_FLASH_ADDR)
+        {
+            return LL_ERR_INVD_PARAM;
+        }
+        u32Addr = (u32Addr % QSPI_BASE_BLK_SIZE) + QSPI_ROM_BASE;
 #ifdef BSP_QSPI_USING_DMA
-        qspi_bus->config->dma_flag = RT_FALSE;
         qspi_dma = qspi_bus->config->dma_qspi;
-
         AOS_SetTriggerEventSrc(qspi_dma->trigger_select, qspi_dma->trigger_event);
-        DMA_ClearTransCompleteStatus(qspi_dma->Instance, (1U << qspi_dma->channel));
         /* Config Dma */
         DMA_StructInit(&stcDmaInit);
-        stcDmaInit.u32IntEn         = DMA_INT_ENABLE;
         stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
         stcDmaInit.u32SrcAddrInc    = DMA_SRC_ADDR_INC;
         stcDmaInit.u32DestAddrInc   = DMA_DEST_ADDR_INC;
@@ -533,14 +549,25 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
                     u32DmaTransSize = u32GetSize;
                     u32GetSize = 0U;
                 }
-
+                DMA_ClearTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag);
                 DMA_SetSrcAddr(qspi_dma->Instance, qspi_dma->channel, u32Addr);
                 DMA_SetDestAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&rx_buf[u32RxIndex]);
                 DMA_SetTransCount(qspi_dma->Instance, qspi_dma->channel, 1UL);
                 DMA_SetBlockSize(qspi_dma->Instance, qspi_dma->channel, (uint16_t)u32DmaTransSize);
                 (void)DMA_ChCmd(qspi_dma->Instance, qspi_dma->channel, ENABLE);
                 AOS_SW_Trigger();   /* 1st trigger for DMA */
-                while (RT_FALSE == qspi_bus->config->dma_flag);
+                u32TimeoutCnt = 0U;
+                /* Wait DMA transfer completed */
+                while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
+                       (u32TimeoutCnt < qspi_bus->config->timeout))
+                {
+                    rt_thread_mdelay(1);
+                    u32TimeoutCnt++;
+                }
+                if (u32TimeoutCnt >= qspi_bus->config->timeout)
+                {
+                    return LL_ERR_TIMEOUT;
+                }
                 u32Addr += u32DmaTransSize;
                 u32RxIndex += u32DmaTransSize;
             }
@@ -550,7 +577,6 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
                 u32Addr = QSPI_ROM_BASE;
             }
         }
-        AOS_SetTriggerEventSrc(qspi_dma->trigger_select, EVT_SRC_MAX);
 #else
         while (length != 0)
         {
@@ -597,10 +623,10 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
             u8AddrBuf[u32AddrLen] = 0xFF;
             u32AddrLen += 1;
         }
-        hc32_qspi_read_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, rx_buf, length);
+        i32Ret = hc32_qspi_read_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, rx_buf, length);
     }
 
-    return LL_OK;
+    return i32Ret;
 }
 
 static rt_uint32_t qspixfer(struct rt_spi_device *device, struct rt_spi_message *message)
@@ -707,21 +733,6 @@ static void qspi_err_irq_handler(void)
     rt_interrupt_leave();
 }
 
-#ifdef BSP_QSPI_USING_DMA
-static void qspi_dma_irq_handler(void)
-{
-    struct dma_config *qspi_dma;
-
-    qspi_dma = qspi_bus_obj.config->dma_qspi;
-    /* enter interrupt */
-    rt_interrupt_enter();
-    DMA_ClearTransCompleteStatus(qspi_dma->Instance, (1U << qspi_dma->channel));
-    qspi_bus_obj.config->dma_flag = RT_TRUE;
-    /* leave interrupt */
-    rt_interrupt_leave();
-}
-#endif /* BSP_QSPI_USING_DMA */
-
 /**
   * @brief  This function attach device to QSPI bus.
   * @param  bus_name                    QSPI bus name
@@ -790,7 +801,6 @@ static void hc32_get_qspi_info(void)
     qspi_config.err_irq.irq_callback = qspi_err_irq_handler;
 #ifdef BSP_QSPI_USING_DMA
     static struct dma_config qspi_dma = QSPI_DMA_CONFIG;
-    qspi_dma.irq_callback   = qspi_dma_irq_handler;
     qspi_config.dma_qspi    = &qspi_dma;
 #endif
     qspi_bus_obj.config = &qspi_config;
@@ -801,12 +811,10 @@ static int rt_hw_qspi_bus_init(void)
     hc32_get_qspi_info();
     /* register the handle */
     hc32_install_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, qspi_bus_obj.config->err_irq.irq_callback, RT_FALSE);
-#ifdef BSP_QSPI_USING_DMA
-    hc32_install_irq_handler(&qspi_bus_obj.config->dma_qspi->irq_config, qspi_bus_obj.config->dma_qspi->irq_callback, RT_FALSE);
-#endif
     return hc32_qspi_register_bus(&qspi_bus_obj, "qspi1");
 }
 INIT_BOARD_EXPORT(rt_hw_qspi_bus_init);
 
 #endif /* BSP_USING_QSPI */
+
 #endif /* RT_USING_QSPI */

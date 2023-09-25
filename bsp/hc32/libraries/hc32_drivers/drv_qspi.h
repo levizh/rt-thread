@@ -35,10 +35,10 @@ struct hc32_qspi_config
 {
     CM_QSPI_TypeDef             *Instance;
     rt_uint32_t                 clock;
+    rt_uint32_t                 timeout;
     struct hc32_qspi_irq_config err_irq;
 #ifdef BSP_QSPI_USING_DMA
     struct dma_config           *dma_qspi;
-    __IO rt_uint8_t             dma_flag;
 #endif
 };
 
