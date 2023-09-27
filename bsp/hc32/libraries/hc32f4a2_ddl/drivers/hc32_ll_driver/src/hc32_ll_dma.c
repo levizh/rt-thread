@@ -602,6 +602,48 @@ int32_t DMA_SetNonSeqDestOffset(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32
 }
 
 /**
+ * @brief  Config DMA source address increment mode.
+ * @param  [in] DMAx DMA unit instance.
+ *   @arg  CM_DMAx or CM_DMA
+ * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
+ * @param  [in] u32IncMode DMA source address increment mode @ref DMA_SrcAddr_Incremented_Mode
+ * @retval int32_t
+ */
+int32_t DMA_SetSrcAddrIncMode(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32IncMode)
+{
+    __IO uint32_t *CHCTLx;
+    DDL_ASSERT(IS_DMA_UNIT(DMAx));
+    DDL_ASSERT(IS_DMA_CH(u8Ch));
+    DDL_ASSERT(IS_DMA_SADDR_MD(u32IncMode));
+
+    CHCTLx = &DMA_CH_REG(DMAx->CHCTL0, u8Ch);
+    MODIFY_REG32(*CHCTLx, DMA_CHCTL_SINC, u32IncMode);
+
+    return LL_OK;
+}
+
+/**
+ * @brief  Config DMA destination address increment mode.
+ * @param  [in] DMAx DMA unit instance.
+ *   @arg  CM_DMAx or CM_DMA
+ * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
+ * @param  [in] u16Count DMA destination address increment mode @ref DMA_DesAddr_Incremented_Mode
+ * @retval int32_t
+ */
+int32_t DMA_SetDestAddrIncMode(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32IncMode)
+{
+    __IO uint32_t *CHCTLx;
+    DDL_ASSERT(IS_DMA_UNIT(DMAx));
+    DDL_ASSERT(IS_DMA_CH(u8Ch));
+    DDL_ASSERT(IS_DMA_DADDR_MD(u32IncMode));
+
+    CHCTLx = &DMA_CH_REG(DMAx->CHCTL0, u8Ch);
+    MODIFY_REG32(*CHCTLx, DMA_CHCTL_DINC, u32IncMode);
+
+    return LL_OK;
+}
+
+/**
  * @brief  De-Initialize DMA function.
  * @param  [in] DMAx DMA unit instance.
  *   @arg  CM_DMAx or CM_DMA
@@ -824,9 +866,9 @@ int32_t DMA_NonSeqInit(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_nonseq_
         MODIFY_REG32(*CHCTLx, (DMA_CHCTL_SNSEQEN | DMA_CHCTL_DNSEQEN), pstcDmaNonSeqInit->u32Mode);
 
         WRITE_REG32(DMA_CH_REG(DMAx->SNSEQCTL0, u8Ch), ((pstcDmaNonSeqInit->u32SrcCount << DMA_SNSEQCTL_SNSCNT_POS) | \
-                    pstcDmaNonSeqInit->u32SrcOffset));
+                                                        pstcDmaNonSeqInit->u32SrcOffset));
         WRITE_REG32(DMA_CH_REG(DMAx->DNSEQCTL0, u8Ch), ((pstcDmaNonSeqInit->u32DestCount << DMA_DNSEQCTL_DNSCNT_POS) | \
-                    pstcDmaNonSeqInit->u32DestOffset));
+                                                        pstcDmaNonSeqInit->u32DestOffset));
 
     }
     return i32Ret;

@@ -42,9 +42,12 @@ struct hc32_spi_config
     CM_SPI_TypeDef              *Instance;
     char                        *bus_name;
     rt_uint32_t                 clock;
+    rt_uint32_t                 timeout;
     struct hc32_spi_irq_config  err_irq;
+#ifdef BSP_SPI_USING_DMA
     struct dma_config           *dma_rx;
     struct dma_config           *dma_tx;
+#endif
 };
 
 struct hc32_spi
