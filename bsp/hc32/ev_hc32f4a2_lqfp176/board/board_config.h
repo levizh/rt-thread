@@ -166,6 +166,12 @@
     #define SPI1_MISO_PORT              (GPIO_PORT_B)
     #define SPI1_MISO_PIN               (GPIO_PIN_12)
     #define SPI1_MISO_FUNC              (GPIO_FUNC_42)
+
+    #define SPI1_WP_PORT                (GPIO_PORT_B)
+    #define SPI1_WP_PIN                 (GPIO_PIN_10)
+
+    #define SPI1_HOLD_PORT              (GPIO_PORT_B)
+    #define SPI1_HOLD_PIN               (GPIO_PIN_02)
 #endif
 
 /************************* ETH port ***********************/

@@ -605,10 +605,19 @@ uint32_t SPI_ReadData(const CM_SPI_TypeDef *SPIx)
 en_flag_status_t SPI_GetStatus(const CM_SPI_TypeDef *SPIx, uint32_t u32Flag)
 {
     en_flag_status_t enFlag = RESET;
+    uint32_t u32Status;
+
     DDL_ASSERT(IS_VALID_SPI_UNIT(SPIx));
     DDL_ASSERT(IS_SPI_STD_FLAG(u32Flag));
 
-    if (0U != READ_REG32_BIT(SPIx->SR, u32Flag)) {
+    u32Status = READ_REG32(SPIx->SR);
+    if (SPI_FLAG_IDLE == (SPI_FLAG_IDLE & u32Flag)) {
+        CLR_REG32_BIT(u32Flag, SPI_FLAG_IDLE);
+        if (0U == (u32Status & SPI_FLAG_IDLE)) {
+            enFlag = SET;
+        }
+    }
+    if (0U != READ_REG32_BIT(u32Status, u32Flag)) {
         enFlag = SET;
     }
 

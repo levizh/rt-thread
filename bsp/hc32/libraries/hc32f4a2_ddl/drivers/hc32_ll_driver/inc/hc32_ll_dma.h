@@ -529,6 +529,8 @@ int32_t DMA_SetNonSeqSrcCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Co
 int32_t DMA_SetNonSeqDestCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Count);
 int32_t DMA_SetNonSeqSrcOffset(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Offset);
 int32_t DMA_SetNonSeqDestOffset(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Offset);
+int32_t DMA_SetSrcAddrIncMode(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32IncMode);
+int32_t DMA_SetDestAddrIncMode(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32IncMode);
 
 void DMA_SetLlpAddr(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Addr);
 

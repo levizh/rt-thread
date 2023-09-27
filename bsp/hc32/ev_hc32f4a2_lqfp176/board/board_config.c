@@ -208,11 +208,19 @@ rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
 rt_err_t rt_hw_spi_board_init(CM_SPI_TypeDef *CM_SPIx)
 {
     rt_err_t result = RT_EOK;
+#if defined(BSP_USING_SPI1)
+    stc_gpio_init_t stcGpioInit;
+#endif
 
     switch ((rt_uint32_t)CM_SPIx)
     {
 #if defined(BSP_USING_SPI1)
     case (rt_uint32_t)CM_SPI1:
+        GPIO_StructInit(&stcGpioInit);
+        stcGpioInit.u16PinState = PIN_STAT_SET;
+        stcGpioInit.u16PinDir   = PIN_DIR_OUT;
+        GPIO_Init(SPI1_WP_PORT, SPI1_WP_PIN, &stcGpioInit);
+        GPIO_Init(SPI1_HOLD_PORT, SPI1_HOLD_PIN, &stcGpioInit);
         GPIO_SetFunc(SPI1_SCK_PORT,  SPI1_SCK_PIN,  SPI1_SCK_FUNC);
         GPIO_SetFunc(SPI1_MOSI_PORT, SPI1_MOSI_PIN, SPI1_MOSI_FUNC);
         GPIO_SetFunc(SPI1_MISO_PORT, SPI1_MISO_PIN, SPI1_MISO_FUNC);
