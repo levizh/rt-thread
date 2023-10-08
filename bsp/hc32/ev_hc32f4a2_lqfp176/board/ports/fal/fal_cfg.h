@@ -19,12 +19,6 @@
 /* enable SFUD flash driver sample */
 #define FAL_FLASH_PORT_DRIVER_SFUD
 
-/* on chip flash information */
-#define HC32_FLASH_SIZE_GRANULARITY     (8 * 1024)
-#define HC32_FLASH_LENGTH               (2 * 1024 * 1024)
-#define HC32_FLASH_START_ADDRESS        (0)
-#define HC32_FLASH_END_ADDRESS          (HC32_FLASH_START_ADDRESS + HC32_FLASH_LENGTH)
-
 extern const struct fal_flash_dev hc32_onchip_flash;
 extern struct fal_flash_dev ext_nor_flash0;
 

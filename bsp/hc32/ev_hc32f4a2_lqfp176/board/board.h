@@ -20,6 +20,12 @@
 extern "C" {
 #endif
 
+
+#define HC32_FLASH_SIZE_GRANULARITY     (8 * 1024)
+#define HC32_FLASH_LENGTH               (2 * 1024 * 1024)
+#define HC32_FLASH_START_ADDRESS        (0)
+#define HC32_FLASH_END_ADDRESS          (HC32_FLASH_START_ADDRESS + HC32_FLASH_LENGTH)
+
 #define HC32_SRAM_SIZE                  (512)
 #define HC32_SRAM_END                   (0x1FFE0000 + HC32_SRAM_SIZE * 1024)
 
