@@ -61,6 +61,7 @@ extern "C"
 #define LL_CRC_ENABLE                               (DDL_ON)
 #define LL_CTC_ENABLE                               (DDL_ON)
 #define LL_DAC_ENABLE                               (DDL_ON)
+#define LL_DBGC_ENABLE                              (DDL_OFF)
 #define LL_DCU_ENABLE                               (DDL_ON)
 #define LL_DMA_ENABLE                               (DDL_ON)
 #define LL_DMC_ENABLE                               (DDL_ON)
@@ -81,11 +82,9 @@ extern "C"
 #define LL_INTERRUPTS_SHARE_ENABLE                  (DDL_ON)
 #define LL_KEYSCAN_ENABLE                           (DDL_ON)
 #define LL_MAU_ENABLE                               (DDL_ON)
-#define LL_MDIO_ENABLE                              (DDL_OFF)
 #define LL_MPU_ENABLE                               (DDL_ON)
 #define LL_NFC_ENABLE                               (DDL_ON)
 #define LL_OTS_ENABLE                               (DDL_ON)
-#define LL_PLA_ENABLE                               (DDL_OFF)
 #define LL_PWC_ENABLE                               (DDL_ON)
 #define LL_QSPI_ENABLE                              (DDL_ON)
 #define LL_RMU_ENABLE                               (DDL_ON)
@@ -103,20 +102,12 @@ extern "C"
 #define LL_TRNG_ENABLE                              (DDL_ON)
 #define LL_USART_ENABLE                             (DDL_ON)
 #define LL_USB_ENABLE                               (DDL_ON)
-#define LL_VREF_ENABLE                              (DDL_OFF)
 #define LL_WDT_ENABLE                               (DDL_ON)
 
 /**
  * @brief The following is a list of currently supported BSP boards.
  */
 #define BSP_EV_HC32F4A0_LQFP176                     (1U)
-#define BSP_EV_HC32F4A0_LQFP176_MEM                 (2U)
-#define BSP_EV_HC32F460_LQFP100_V1                  (3U)
-#define BSP_EV_HC32F460_LQFP100_V2                  (4U)
-#define BSP_EV_HC32F451_LQFP100                     (5U)
-#define BSP_EV_HC32F452_LQFP100                     (6U)
-#define BSP_EV_HC32F472_LQFP100                     (7U)
-#define BSP_SK_HC32F4A0_LQFP100                     (8U)
 
 /**
  * @brief The macro BSP_EV_HC32F4XX is used to specify the BSP board currently
