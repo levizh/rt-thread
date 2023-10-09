@@ -124,4 +124,4 @@ msh >
 
 维护人:
 
--  [小华半导体MCU](http://www.xhsc.com.cn)，邮箱：<mcu_eco@xhsc.com.cn>
+-  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<mcu_eco@xhsc.com.cn>
