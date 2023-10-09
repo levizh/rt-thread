@@ -28,6 +28,7 @@ struct dma_config
     rt_uint32_t             clock;
     rt_uint32_t             trigger_select;
     en_event_src_t          trigger_event;
+    rt_uint32_t             flag;
     struct hc32_irq_config  irq_config;
     func_ptr_t              irq_callback;
 };

@@ -161,14 +161,14 @@ static rt_err_t rt_hc32_eth_close(rt_device_t dev)
     return RT_EOK;
 }
 
-static rt_ssize_t rt_hc32_eth_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
+static rt_size_t rt_hc32_eth_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
     LOG_D("eth read");
     rt_set_errno(-RT_ENOSYS);
     return 0;
 }
 
-static rt_ssize_t rt_hc32_eth_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
+static rt_size_t rt_hc32_eth_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
     LOG_D("eth write");
     rt_set_errno(-RT_ENOSYS);
@@ -531,7 +531,6 @@ static void hc32_phy_monitor_thread(void *parameter)
     rt_pin_irq_enable(ETH_PHY_INTERRUPT_PIN, PIN_IRQ_ENABLE);
 
 #if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
-    uint16_t u16RegVal;
     /* Configure PHY to generate an interrupt when Eth Link state changes */
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);

@@ -37,7 +37,7 @@
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
 #if defined (BSP_USING_SDRAM)
-extern rt_err_t rt_hw_board_sdram_init(void);
+rt_err_t rt_hw_board_sdram_init(void);
 #endif
 
 /*******************************************************************************
@@ -77,15 +77,15 @@ static void _sdram_initialization_sequence(rt_uint32_t chip, rt_uint32_t md_reg_
  * @brief  verify clock frequency.
  * @retval result
  */
-static rt_err_t _sdram_verify_clock_frequency(void)
+static rt_int32_t _sdram_verify_clock_frequency(void)
 {
-    rt_err_t ret = RT_EOK;
+    rt_int32_t ret = RT_EOK;
 
 #if defined (HC32F4A0)
     /* EXCLK max frequency for SDRAM: 60MHz */
     if (CLK_GetBusClockFreq(CLK_BUS_EXCLK) > (60 * 1000000))
     {
-        ret = -RT_ERROR;
+        ret = RT_ERROR;
     }
 #endif
 
@@ -97,7 +97,7 @@ static rt_err_t _sdram_verify_clock_frequency(void)
  * @param  None
  * @retval result
  */
-static rt_err_t _sdram_init(void)
+static rt_int32_t _sdram_init(void)
 {
     rt_uint32_t md_reg_value;
     stc_exmc_dmc_init_t stcDmcInit;
@@ -191,7 +191,7 @@ static rt_err_t _sdram_init(void)
 
 int rt_hw_sdram_init(void)
 {
-    rt_err_t ret;
+    rt_int32_t ret;
 
     ret = _sdram_init();
     if (RT_EOK != ret)

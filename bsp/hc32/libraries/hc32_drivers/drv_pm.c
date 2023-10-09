@@ -15,6 +15,10 @@
 #include <drv_wktm.h>
 #include <drv_config.h>
 
+#if defined(RT_USING_PM)
+
+#if defined(BSP_USING_PM)
+
 #define LOG_TAG             "drv_pm"
 #include <drv_log.h>
 
@@ -241,3 +245,7 @@ int drv_pm_hw_init(void)
 }
 
 INIT_DEVICE_EXPORT(drv_pm_hw_init);
+
+#endif
+
+#endif  /* RT_USING_PM */

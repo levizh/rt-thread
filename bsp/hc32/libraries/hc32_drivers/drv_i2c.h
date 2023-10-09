@@ -13,6 +13,8 @@
 
 #include <rtdevice.h>
 #include "board_config.h"
+#include "drv_irq.h"
+#include "drv_dma.h"
 
 #ifdef BSP_USING_I2C
 
@@ -27,18 +29,27 @@ extern "C"
  ******************************************************************************/
 struct hc32_i2c_config
 {
-    const char      *name;
-    CM_I2C_TypeDef  *Instance;
-    rt_uint32_t     clock;
-    rt_uint32_t     baudrate;
-    rt_uint32_t     timeout;
+    const char              *name;
+    CM_I2C_TypeDef          *Instance;
+    rt_uint32_t             clock;
+    rt_uint32_t             baudrate;
+    rt_uint32_t             timeout;
+    struct dma_config       *i2c_tx_dma;
+    struct dma_config       *i2c_rx_dma;
 };
 
 struct hc32_i2c
 {
     struct hc32_i2c_config      *config;
-    struct rt_i2c_bus_device    bus;
+    struct rt_i2c_bus_device    i2c_bus;
+    rt_uint8_t                  i2c_dma_flag;
 };
+
+/*******************************************************************************
+ * Global pre-processor symbols/macros ('#define')
+ ******************************************************************************/
+#define I2C_USING_TX_DMA_FLAG       (1U)
+#define I2C_USING_RX_DMA_FLAG       (1U << 1)
 
 // int hc32_hw_i2c_init(void);
 

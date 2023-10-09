@@ -27,9 +27,7 @@ typedef struct
     struct adc_dev_init_params init;
 } adc_device;
 
-#if !defined(BSP_USING_ADC1) && !defined(BSP_USING_ADC2) && !defined(BSP_USING_ADC3)
-    #error "Please define at least one BSP_USING_ADCx"
-#endif
+#if defined(BSP_USING_ADC1) || defined(BSP_USING_ADC2) || defined(BSP_USING_ADC3)
 
 static adc_device g_adc_dev_array[] =
 {
@@ -150,16 +148,16 @@ static void _adc_internal_trigger1_set(adc_device *p_adc_dev)
     AOS_SetTriggerEventSrc(u32TriggerSel, p_adc_dev->init.internal_trig1_sel);
 }
 
-static rt_err_t _adc_enable(struct rt_adc_device *device, rt_int8_t channel, rt_bool_t enabled)
+static rt_err_t _adc_enable(struct rt_adc_device *device, rt_uint32_t channel, rt_bool_t enabled)
 {
     adc_device *p_adc_dev = rt_container_of(device, adc_device, rt_adc);
     ADC_ChCmd(p_adc_dev->instance, ADC_SEQ_A, channel, (en_functional_state_t)enabled);
     return 0;
 }
 
-static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt_uint32_t *value)
+static rt_err_t _adc_convert(struct rt_adc_device *device, rt_uint32_t channel, rt_uint32_t *value)
 {
-    rt_err_t rt_ret = -RT_ERROR;
+    rt_err_t rt_ret = RT_ERROR;
 
     if (!value)
     {
@@ -268,3 +266,5 @@ int rt_hw_adc_init(void)
 }
 INIT_DEVICE_EXPORT(rt_hw_adc_init);
 #endif
+
+#endif  /* RT_USING_ADC */

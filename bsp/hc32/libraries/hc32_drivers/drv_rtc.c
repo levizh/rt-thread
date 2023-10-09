@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include "board_config.h"
 
-#ifdef BSP_USING_RTC
+#if defined(BSP_USING_RTC)
 
 //#define DRV_DEBUG
 #define LOG_TAG             "drv.rtc"

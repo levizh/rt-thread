@@ -110,12 +110,12 @@ static const func_ptr_t _sdio_irq_handler[] =
 };
 
 #ifdef BSP_USING_SDIO1
-rt_align(SDIO_ALIGN_LEN)
+ALIGN(SDIO_ALIGN_LEN)
 static rt_uint8_t _sdio1_cache_buf[SDIO_BUFF_SIZE];
 #endif
 
 #ifdef BSP_USING_SDIO2
-rt_align(SDIO_ALIGN_LEN)
+ALIGN(SDIO_ALIGN_LEN)
 static rt_uint8_t _sdio2_cache_buf[SDIO_BUFF_SIZE];
 #endif
 

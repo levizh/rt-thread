@@ -42,9 +42,12 @@ struct hc32_spi_config
     CM_SPI_TypeDef              *Instance;
     char                        *bus_name;
     rt_uint32_t                 clock;
+    rt_uint32_t                 timeout;
     struct hc32_spi_irq_config  err_irq;
+#ifdef BSP_SPI_USING_DMA
     struct dma_config           *dma_rx;
     struct dma_config           *dma_tx;
+#endif
 };
 
 struct hc32_spi
@@ -52,7 +55,7 @@ struct hc32_spi
     struct hc32_spi_config      *config;
     struct rt_spi_configuration *cfg;
     struct rt_spi_bus           spi_bus;
-    rt_uint8_t                  spi_dma_flag;
+    rt_uint16_t                 spi_dma_flag;
 };
 
 rt_err_t rt_hw_spi_device_attach(const char *bus_name, const char *device_name, uint8_t cs_gpio_port, uint16_t cs_gpio_pin);
