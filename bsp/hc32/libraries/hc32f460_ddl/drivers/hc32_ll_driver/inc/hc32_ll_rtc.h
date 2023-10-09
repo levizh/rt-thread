@@ -153,8 +153,8 @@ typedef struct {
  * @defgroup RTC_Clock_Source RTC Clock Source
  * @{
  */
-#define RTC_CLK_SRC_XTAL32                      (0U)                              /*!< XTAL32 Clock   */
-#define RTC_CLK_SRC_LRC                         (RTC_CR3_RCKSEL | RTC_CR3_LRCEN)  /*!< RTC LRC Clock  */
+#define RTC_CLK_SRC_XTAL32                      (0U)                                    /*!< XTAL32 Clock   */
+#define RTC_CLK_SRC_LRC                         (RTC_CR3_RCKSEL | RTC_CR3_LRCEN)        /*!< RTC LRC Clock  */
 /**
  * @}
  */

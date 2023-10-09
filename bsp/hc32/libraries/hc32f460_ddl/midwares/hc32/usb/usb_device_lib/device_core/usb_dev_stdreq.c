@@ -7,7 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Modify for MISRAC
-   2022-10-31       CDT             Fix bug for USB endpoint GET_STATUS request.
+                                    Fix bug for USB endpoint GET_STATUS request
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -315,7 +315,7 @@ void usb_setaddr(usb_core_instance  *pdev, const USB_SETUP_REQ *req)
     uint8_t  dev_addr;
 
     if ((req->wIndex == 0U) && (req->wLength == 0U)) {
-        dev_addr = (uint8_t)(req->wValue) & 0x7Fu;
+        dev_addr = (uint8_t)(req->wValue) & 0x7FU;
 
         if (pdev->dev.device_cur_status == USB_DEV_CONFIGURED) {
             usb_ctrlerr(pdev);

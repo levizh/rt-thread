@@ -1,13 +1,15 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_usb.c
- * @brief USB core driver
+ * @brief USB core driver.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add USB core ID select function
    2022-10-31       CDT             Add USB DMA function
+   2023-09-30       CDT             Fix bug for function usb_clearepstall()
+                                    Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -117,7 +119,7 @@ void usb_coresoftrst(LL_USB_TypeDef *USBx)
  * @brief  Writes a packet whose byte number is len into the Tx FIFO associated
  *         with the EP
  * @param  [in] USBx        usb instance
- * @param  [in] src         source pointer used to hold the transmited data
+ * @param  [in] src         source pointer used to hold the transmitted data
  * @param  [in] ch_ep_num   end point index
  * @param  [in] len         length in bytes
  * @param  [in] u8DmaEn     USB DMA status
@@ -643,8 +645,8 @@ void  usb_ep0activate(LL_USB_TypeDef *USBx)
     u32DiepctlTmp = READ_REG32(USBx->INEP_REGS[0]->DIEPCTL);
     /* Set the MPS of the DIEPCTL0 based on the enumeration speed */
     if ((DSTS_ENUMSPD_HS_PHY_30MHZ_OR_60MHZ == u32EnumSpeed)
-            || (DSTS_ENUMSPD_FS_PHY_30MHZ_OR_60MHZ == u32EnumSpeed)
-            || (DSTS_ENUMSPD_FS_PHY_48MHZ == u32EnumSpeed)) {
+        || (DSTS_ENUMSPD_FS_PHY_30MHZ_OR_60MHZ == u32EnumSpeed)
+        || (DSTS_ENUMSPD_FS_PHY_48MHZ == u32EnumSpeed)) {
         u32DiepctlTmp &= (~USBFS_DIEPCTL_MPSIZ);
     } else if (DSTS_ENUMSPD_LS_PHY_6MHZ == u32EnumSpeed) {
         u32DiepctlTmp &= (~USBFS_DIEPCTL_MPSIZ);
@@ -904,13 +906,12 @@ void usb_clearepstall(LL_USB_TypeDef *USBx, USB_DEV_EP *ep)
 {
     uint32_t tmp_depctl_addr;
     uint32_t u32depctl;
-
     if (ep->ep_dir == 1U) {
         tmp_depctl_addr = (uint32_t)(&(USBx->INEP_REGS[ep->epidx]->DIEPCTL));
     } else {
         tmp_depctl_addr = (uint32_t)(&(USBx->OUTEP_REGS[ep->epidx]->DOEPCTL));
     }
-    u32depctl = READ_REG32(tmp_depctl_addr);
+    u32depctl = READ_REG32(*(__IO uint32_t *)tmp_depctl_addr);
 
     u32depctl &= (~USBFS_DIEPCTL_STALL);
     if ((ep->trans_type == EP_TYPE_INTR) || (ep->trans_type == EP_TYPE_BULK)) {
@@ -1280,7 +1281,7 @@ void usb_hchstop(LL_USB_TypeDef *USBx, uint8_t hc_num)
     u32hcchar |= USBFS_HCCHAR_CHDIS;
     /* Check for space in the request queue to issue the halt. */
     if ((EP_TYPE_CTRL == ((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS))
-            || (EP_TYPE_BULK == ((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS))) {
+        || (EP_TYPE_BULK == ((u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS))) {
         if (0UL == (READ_REG32(USBx->GREGS->HNPTXSTS) & USBFS_HNPTXSTS_NPTQXSAV)) {
             u32hcchar &= (~USBFS_HCCHAR_CHENA);
             WRITE_REG32(USBx->HC_REGS[hc_num]->HCCHAR, u32hcchar);
@@ -1308,8 +1309,8 @@ void usb_hchstop(LL_USB_TypeDef *USBx, uint8_t hc_num)
 */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

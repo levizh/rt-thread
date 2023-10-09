@@ -74,7 +74,7 @@ static CDC_LineCodingTypeDef             CDC_GetLineCode;
 HOST_STATUS usb_host_cdc_getlinecoding(usb_core_instance *pdev, USBH_HOST *phost)
 {
     phost->ctrlparam.setup.b.bmRequestType = USB_D2H | USB_REQ_TYPE_CLASS | \
-            USB_REQ_RECIPIENT_INTERFACE;
+                                             USB_REQ_RECIPIENT_INTERFACE;
 
     phost->ctrlparam.setup.b.bRequest = CDC_GET_LINE_CODING;
     phost->ctrlparam.setup.b.wValue.w = 0;
@@ -95,7 +95,7 @@ HOST_STATUS usb_host_cdc_setlinecoding(usb_core_instance *pdev, USBH_HOST *phost
 {
 
     phost->ctrlparam.setup.b.bmRequestType = USB_H2D | USB_REQ_TYPE_CLASS | \
-            USB_REQ_RECIPIENT_INTERFACE;
+                                             USB_REQ_RECIPIENT_INTERFACE;
 
     phost->ctrlparam.setup.b.bRequest = CDC_SET_LINE_CODING;
     phost->ctrlparam.setup.b.wValue.w = 0;
@@ -116,7 +116,7 @@ HOST_STATUS usb_host_cdc_setlinecoding(usb_core_instance *pdev, USBH_HOST *phost
 HOST_STATUS usb_host_cdc_setcontrollinestate(usb_core_instance *pdev, USBH_HOST *phost)
 {
     phost->ctrlparam.setup.b.bmRequestType = USB_H2D | USB_REQ_TYPE_CLASS | \
-            USB_REQ_RECIPIENT_INTERFACE;
+                                             USB_REQ_RECIPIENT_INTERFACE;
 
     phost->ctrlparam.setup.b.bRequest = CDC_SET_CONTROL_LINE_STATE;
 

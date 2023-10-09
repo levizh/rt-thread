@@ -8,6 +8,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Modify parameter check for reference clock source
+   2023-06-30       CDT             Modify API FCM_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -232,9 +233,10 @@ int32_t FCM_StructInit(stc_fcm_init_t *pstcFcmInit)
 /**
  * @brief  De-Initialize FCM.
  * @param  None
- * @retval None
+ * @retval int32_t:
+ *           - LL_OK:                   De-Initialize success.
  */
-void FCM_DeInit(void)
+int32_t FCM_DeInit(void)
 {
     WRITE_REG32(CM_FCM->STR, FCM_REG_RST_VALUE);
     WRITE_REG32(CM_FCM->CLR, FCM_FLAG_MASK);
@@ -243,6 +245,7 @@ void FCM_DeInit(void)
     WRITE_REG32(CM_FCM->MCCR, FCM_REG_RST_VALUE);
     WRITE_REG32(CM_FCM->RCCR, FCM_REG_RST_VALUE);
     WRITE_REG32(CM_FCM->RIER, FCM_REG_RST_VALUE);
+    return LL_OK;
 }
 
 /**
@@ -377,8 +380,8 @@ void FCM_Cmd(en_functional_state_t enNewState)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

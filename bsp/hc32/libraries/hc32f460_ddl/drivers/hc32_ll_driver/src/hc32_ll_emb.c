@@ -8,7 +8,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Optimize function: EMB_TMR4_Init
-   2022-06-30       CDT             Optimize function: EMB_TMR6_Init
+                                    Optimize function: EMB_TMR6_Init
+   2023-06-30       CDT             Function EMB_TMR4_Init don't call EMB_DeInit
+                                    Function EMB_TMR6_Init don't call EMB_DeInit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -274,8 +276,6 @@ int32_t EMB_TMR4_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr4_init_t *pstcEmbIn
         u32Reg1Value |= (pstcEmbInit->stcPort.stcPort1.u32PortState     | pstcEmbInit->stcPort.stcPort1.u32PortLevel | \
                          pstcEmbInit->stcPort.stcPort1.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort1.u32PortFilterState);
 
-        EMB_DeInit(EMBx);
-
         WRITE_REG32(EMBx->PWMLV, u32Reg2Value);
         WRITE_REG32(EMBx->CTL, u32Reg1Value);
         i32Ret = LL_OK;
@@ -374,8 +374,6 @@ int32_t EMB_TMR6_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr6_init_t *pstcEmbIn
         /* PORT */
         u32Reg1Value |= (pstcEmbInit->stcPort.stcPort1.u32PortState | pstcEmbInit->stcPort.stcPort1.u32PortFilterDiv | \
                          pstcEmbInit->stcPort.stcPort1.u32PortLevel | pstcEmbInit->stcPort.stcPort1.u32PortFilterState);
-
-        EMB_DeInit(EMBx);
 
         WRITE_REG32(EMBx->PWMLV, u32Reg2Value);
         WRITE_REG32(EMBx->CTL, u32Reg1Value);
@@ -487,8 +485,8 @@ void EMB_SWBrake(CM_EMB_TypeDef *EMBx, en_functional_state_t enNewState)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

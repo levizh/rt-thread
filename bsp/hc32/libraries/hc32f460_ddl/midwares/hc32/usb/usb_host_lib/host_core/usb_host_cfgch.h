@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Delete micro define MAX_CHNUM
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -48,9 +49,6 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-
-/* USBH_HCS_Exported_Defines */
-#define MAX_CHNUM           (12U)
 
 #define HC_OK               (0x0000U)
 #define HC_USED             (0x8000U)

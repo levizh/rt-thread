@@ -7,6 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add bot xfer error processing
+                                    Modify for variable alignment
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -56,14 +57,9 @@
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
-#ifdef USB_INTERNAL_DMA_ENABLED
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-#pragma data_alignment=4
-#endif
-#endif /* USB_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN HOST_CSW_PACKET_TypeDef USBH_MSC_CSWData;
 
-USB_HOST_BOTXFER_TypeDef USBH_MSC_BOTXferParam;
+__USB_ALIGN_BEGIN USB_HOST_BOTXFER_TypeDef USBH_MSC_BOTXferParam;
 
 /*******************************************************************************
  * Local function prototypes ('static')
@@ -72,11 +68,6 @@ USB_HOST_BOTXFER_TypeDef USBH_MSC_BOTXferParam;
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
-#ifdef USB_INTERNAL_DMA_ENABLED
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-#pragma data_alignment=4
-#endif
-#endif /* USB_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN HostCBWPkt_TypeDef USBH_MSC_CBWData;
 
 static uint32_t BOTStallErrorCount;   /* Keeps count of STALL Error Cases*/
@@ -179,7 +170,7 @@ void usb_host_msc_botxferprocess(usb_core_instance *pdev, USBH_HOST *phost)
             case HOST_MSC_BOT_DATAIN_STATE:
                 URB_Status = host_driver_getxferstate(pdev, MSC_Machine.hc_num_in);
                 if ((URB_Status == HOST_CH_XFER_DONE) \
-                        || (USBH_MSC_BOTXferParam.BOTStateBkp != HOST_MSC_BOT_DATAIN_STATE)) {
+                    || (USBH_MSC_BOTXferParam.BOTStateBkp != HOST_MSC_BOT_DATAIN_STATE)) {
                     BOTStallErrorCount = 0U;
                     USBH_MSC_BOTXferParam.BOTStateBkp = HOST_MSC_BOT_DATAIN_STATE;
 

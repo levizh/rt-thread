@@ -9,6 +9,8 @@
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify macro define for API
    2023-01-15       CDT             Code refine for scan function
+   2023-06-30       CDT             Modify typo
+   2023-09-30       CDT             Add assert for IEN bit in GetCmpFuncStatusAndDisFunc function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -204,6 +206,9 @@ static void CMP_DelayUS(uint32_t u32Count)
 static uint16_t GetCmpFuncStatusAndDisFunc(CM_CMP_TypeDef *CMPx)
 {
     uint16_t u16temp;
+    /* It is possible that the interrupt may occurs after CMP status switch. */
+    DDL_ASSERT(READ_REG8_BIT(CMPx->CTRL, CMP_CTRL_IEN) == 0U);
+
     /* Read CMP status */
     u16temp = READ_REG16_BIT(CMPx->CTRL, CMP_CTRL_CMPON);
     /* Stop CMP function */
@@ -212,7 +217,7 @@ static uint16_t GetCmpFuncStatusAndDisFunc(CM_CMP_TypeDef *CMPx)
 }
 
 /**
- * @brief  Revcover CMP function status
+ * @brief  Recover CMP function status
  * @param  [in] CMPx                Pointer to CMP instance register base
  *   @arg  CM_CMPx
  * @param  [in] u16CmpFuncStatus    CMP function status backup value
@@ -577,11 +582,11 @@ uint32_t CMP_GetScanInpSrc(CM_CMP_TypeDef *CMPx)
  *         - LL_OK:                 Success
  *         - LL_ERR_INVD_PARAM:     Parameter error
  * @note   1. u16Period > (u16Stable + u16OutFilter * 4 + CMP_SCAN_PERIOD_IMME)
- *            u16OutFilter is configurate in CMP_NormalModeInit() function.
+ *            u16OutFilter is configured in CMP_NormalModeInit() function.
  */
 int32_t CMP_ScanTimeConfig(CM_CMP_TypeDef *CMPx, uint16_t u16Stable, uint16_t u16Period)
 {
-    uint16_t u16Flts;
+    uint16_t u16Fltsl;
     uint16_t u16FltslDiv;
     int32_t i32Ret = LL_OK;
     /* Check parameters */
@@ -589,9 +594,9 @@ int32_t CMP_ScanTimeConfig(CM_CMP_TypeDef *CMPx, uint16_t u16Stable, uint16_t u1
     DDL_ASSERT(IS_CMP_SCAN_STABLE(u16Stable));
     DDL_ASSERT(IS_CMP_SCAN_PERIOD(u16Period));
 
-    u16Flts = READ_REG16_BIT(CMPx->CTRL, CMP_CTRL_FLTSL);
-    if (0U != u16Flts) {
-        u16FltslDiv = ((uint16_t)1U << (u16Flts - 1U));
+    u16Fltsl = READ_REG16_BIT(CMPx->CTRL, CMP_CTRL_FLTSL);
+    if (0U != u16Fltsl) {
+        u16FltslDiv = ((uint16_t)1U << (u16Fltsl - 1U));
     } else {
         u16FltslDiv = 0U;
     }
@@ -690,8 +695,8 @@ void CMP_8BitDAC_WriteData(uint8_t u8Ch, uint16_t u16DACData)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

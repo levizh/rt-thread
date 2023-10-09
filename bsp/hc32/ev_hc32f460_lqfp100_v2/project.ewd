@@ -44,7 +44,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HDSC_HC32F460.svd</state>
+                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HC32F460.svd</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
@@ -1525,7 +1525,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HDSC_HC32F460.svd</state>
+                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HC32F460.svd</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>

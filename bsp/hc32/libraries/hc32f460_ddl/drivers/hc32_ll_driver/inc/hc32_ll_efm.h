@@ -7,8 +7,9 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Add Flash protect level define.
-   2023-01-15       CDT             Code refine.
+   2022-10-31       CDT             Add Flash protect level define
+   2023-01-15       CDT             Code refine
+   2023-09-30       CDT             Add FLASH security addr define
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -91,6 +92,8 @@ typedef struct {
 #define EFM_OTP_END_ADDR                (0x03000FFBUL)    /*!< OTP end address */
 #define EFM_OTP_LOCK_ADDR_START         (0x03000FC0UL)    /*!< OTP lock start address */
 #define EFM_OTP_LOCK_ADDR_END           (0x03000FFCUL)    /*!< OTP lock end address */
+#define EFM_SECURITY_START_ADDR         (0x0317FFE0UL)    /*!< Flash security start address */
+#define EFM_SECURITY_END_ADDR           (0x0317FFFFUL)    /*!< Flash security end address */
 
 /**
  * @}

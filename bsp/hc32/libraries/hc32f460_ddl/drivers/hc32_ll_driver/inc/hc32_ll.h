@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-01-15       CDT             Modify version as 3.1.0
+   2023-09-30       CDT             Modify version as 3.2.0
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -90,7 +92,7 @@ extern "C"
 * @{
 */
 #define HC32_DDL_REV_MAIN               0x03U  /*!< [31:24] main version  */
-#define HC32_DDL_REV_SUB1               0x01U  /*!< [23:16] sub1 version  */
+#define HC32_DDL_REV_SUB1               0x02U  /*!< [23:16] sub1 version  */
 #define HC32_DDL_REV_SUB2               0x00U  /*!< [15:8]  sub2 version  */
 #define HC32_DDL_REV_PATCH              0x00U  /*!< [7:0]   patch version */
 #define HC32_DDL_REV                    ((HC32_DDL_REV_MAIN << 24) | (HC32_DDL_REV_SUB1 << 16) | \
@@ -136,6 +138,10 @@ extern "C"
 #if (LL_CRC_ENABLE == DDL_ON)
 #include "hc32_ll_crc.h"
 #endif /* LL_CRC_ENABLE */
+
+#if (LL_DBGC_ENABLE == DDL_ON)
+#include "hc32_ll_dbgc.h"
+#endif /* LL_DBGC_ENABLE */
 
 #if (LL_DCU_ENABLE == DDL_ON)
 #include "hc32_ll_dcu.h"

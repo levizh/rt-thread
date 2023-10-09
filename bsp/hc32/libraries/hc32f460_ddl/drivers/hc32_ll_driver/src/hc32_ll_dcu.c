@@ -8,7 +8,11 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Synchronize register: DCU_INTSEL -> DCU_INTEVTSEL
-   2022-06-30       CDT             Modify function comments: DCU_IntCmd
+                                    Modify function comments: DCU_IntCmd
+   2023-06-30       CDT             Modify typo
+                                    Modify API DCU_DeInit()
+                                    Add CM_DCU4
+                                    Modify function DCU_IntCmd() for misra
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -60,7 +64,8 @@
 #define IS_DCU_BASE_FUNC_UNIT(x)                                               \
 (   ((x) == CM_DCU1)                    ||                                     \
     ((x) == CM_DCU2)                    ||                                     \
-    ((x) == CM_DCU3))
+    ((x) == CM_DCU3)                    ||                                     \
+    ((x) == CM_DCU4))
 
 #define IS_DCU_UNIT(x)                  (IS_DCU_BASE_FUNC_UNIT(x))
 
@@ -222,7 +227,8 @@ int32_t DCU_Init(CM_DCU_TypeDef *DCUx, const stc_dcu_init_t *pstcDcuInit)
  * @param [in] DCUx                     Pointer to DCU instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_DCU or CM_DCUx:    DCU instance register base
- * @retval None
+ * @retval int32_t:
+ *           - LL_OK:                   De-Initialize success.
  */
 int32_t DCU_DeInit(CM_DCU_TypeDef *DCUx)
 {
@@ -289,7 +295,7 @@ void DCU_SetCompareCond(CM_DCU_TypeDef *DCUx, uint32_t u32Cond)
     DDL_ASSERT(IS_DCU_UNIT(DCUx));
     DDL_ASSERT(IS_DCU_CMP_COND(u32Cond));
 
-    MODIFY_REG32(DCUx->CTL, DCU_CTL_COMP_TRG, u32Cond);
+    MODIFY_REG32(DCUx->CTL, DCU_CTL_COMPTRG, u32Cond);
 }
 
 /**
@@ -325,7 +331,7 @@ void DCU_ClearStatus(CM_DCU_TypeDef *DCUx, uint32_t u32Flag)
 }
 
 /**
- * @brief  Enable or disable DCU interupt function.
+ * @brief  Enable or disable DCU interrupt function.
  * @param  [in] DCUx                    Pointer to DCU instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_DCU or CM_DCUx: DCU instance register base
@@ -349,7 +355,7 @@ void DCU_GlobalIntCmd(CM_DCU_TypeDef *DCUx, en_functional_state_t enNewState)
  * @param  [in] DCUx                    Pointer to DCU instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_DCU or CM_DCUx:    DCU instance register base
- * @param  [in] u32IntCategory          DCU interrupt categorye
+ * @param  [in] u32IntCategory          DCU interrupt category
  *         This parameter can be one of the macros group @ref DCU_Category.
  * @param  [in] u32IntType              DCU interrupt type
  *         This parameter can be one of the macros group @ref DCU_Interrupt_Type.
@@ -370,11 +376,9 @@ void DCU_IntCmd(CM_DCU_TypeDef *DCUx, uint32_t u32IntCategory, uint32_t u32IntTy
     } else if (DCU_CATEGORY_CMP_WIN == u32IntCategory) {
         DDL_ASSERT(IS_DCU_INT_CMP_WIN(u32IntType));
         u32Type = (u32IntType & DCU_INT_CMP_WIN_ALL);
-    } else if (DCU_CATEGORY_CMP_NON_WIN == u32IntCategory) {
+    } else {
         DDL_ASSERT(IS_DCU_INT_CMP_NON_WIN(u32IntType));
         u32Type = (u32IntType & DCU_INT_CMP_NON_WIN_ALL);
-    } else {
-        u32Type = 0UL;
     }
 
     if (ENABLE == enNewState) {
@@ -527,8 +531,8 @@ void DCU_WriteData32(CM_DCU_TypeDef *DCUx, uint32_t u32DataIndex, uint32_t u32Da
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

@@ -8,8 +8,12 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify DMA_StructInit() default value
-   2022-10-31       CDT             Modify DMA config API.
-   2023-01-15       CDT             Modify API DMA_DeInit and add LLP address assert.
+   2022-10-31       CDT             Modify DMA config API
+   2023-01-15       CDT             Modify API DMA_DeInit and add LLP address assert
+   2023-06-30       CDT             Modify typo
+                                    Modify blocksize assert, 1024U is valid
+                                    Add API DMA_SetDataWidth()
+                                    Optimize set blocksize & repeat count process
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -78,7 +82,7 @@
     (((x) | DMA_MX_CH_ALL) == DMA_MX_CH_ALL))
 
 /* Parameter valid check for DMA block size. */
-#define IS_DMA_BLOCK_SIZE(x)            ((x) < 1024U)
+#define IS_DMA_BLOCK_SIZE(x)            ((x) <= 1024U)
 
 /* Parameter valid check for DMA non-sequence transfer count. */
 #define IS_DMA_NON_SEQ_TRANS_CNT(x)     ((x) < 4096U)
@@ -567,7 +571,7 @@ int32_t DMA_SetTransCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Count)
  * @param  [in] DMAx DMA unit instance.
  *   @arg  CM_DMAx or CM_DMA
  * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
- * @param  [in] u16Size DMA block size (range: 0~1023, 0 is for 1024).
+ * @param  [in] u16Size DMA block size (range: 0~1024, 0 is for 1024).
  * @retval int32_t
  */
 int32_t DMA_SetBlockSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Size)
@@ -592,6 +596,27 @@ int32_t DMA_SetBlockSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Size)
             MODIFY_REG32(*DTCTLx, DMA_DTCTL_BLKSIZE, u16Size);
         }
     }
+
+    return LL_OK;
+}
+
+/**
+ * @brief  Config DMA data width per transfer.
+ * @param  [in] DMAx DMA unit instance.
+ *   @arg  CM_DMAx or CM_DMA
+ * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
+ * @param  [in] u32DataWidth DMA data width. @ref DMA_DataWidth_Sel
+ * @retval int32_t
+ */
+int32_t DMA_SetDataWidth(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32DataWidth)
+{
+    __IO uint32_t *CHxCTL0;
+    DDL_ASSERT(IS_DMA_UNIT(DMAx));
+    DDL_ASSERT(IS_DMA_CH(u8Ch));
+    DDL_ASSERT(IS_DMA_DATA_WIDTH(u32DataWidth));
+
+    CHxCTL0 = &DMA_CH_REG(DMAx->CHCTL0, u8Ch);
+    MODIFY_REG32(*CHxCTL0, DMA_CHCTL_HSIZE, u32DataWidth);
 
     return LL_OK;
 }
@@ -665,7 +690,7 @@ int32_t DMA_SetDestRepeatSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Si
 }
 
 /**
- * @brief  Config DMA source transfter count under non-sequence mode.
+ * @brief  Config DMA source transfer count under non-sequence mode.
  * @param  [in] DMAx DMA unit instance.
  *   @arg  CM_DMAx or CM_DMA
  * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
@@ -699,7 +724,7 @@ int32_t DMA_SetNonSeqSrcCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Co
 }
 
 /**
- * @brief  Config DMA destination transfter count under non-sequence mode.
+ * @brief  Config DMA destination transfer count under non-sequence mode.
  * @param  [in] DMAx DMA unit instance.
  *   @arg  CM_DMAx or CM_DMA
  * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
@@ -801,7 +826,7 @@ int32_t DMA_SetNonSeqDestOffset(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32
 }
 
 /**
- * @brief  De-Initialize DMA function.
+ * @brief  De-Initialize DMA channel function.
  * @param  [in] DMAx DMA unit instance.
  *   @arg  CM_DMAx or CM_DMA
  * @param  [in] u8Ch DMA channel. @ref DMA_Channel_selection
@@ -897,8 +922,8 @@ int32_t DMA_Init(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_init_t *pstcD
         WRITE_REG32(DMA_CH_REG(DMAx->SAR0, u8Ch), pstcDmaInit->u32SrcAddr);
         WRITE_REG32(DMA_CH_REG(DMAx->DAR0, u8Ch), pstcDmaInit->u32DestAddr);
 
-        WRITE_REG32(DMA_CH_REG(DMAx->DTCTL0, u8Ch), \
-                    (pstcDmaInit->u32BlockSize | (pstcDmaInit->u32TransCount << DMA_DTCTL_CNT_POS)));
+        WRITE_REG32(DMA_CH_REG(DMAx->DTCTL0, u8Ch), ((pstcDmaInit->u32BlockSize & DMA_DTCTL_BLKSIZE) | \
+                                                     (pstcDmaInit->u32TransCount << DMA_DTCTL_CNT_POS)));
 
         CHCTLx = &DMA_CH_REG(DMAx->CHCTL0, u8Ch);
         MODIFY_REG32(*CHCTLx, (DMA_CHCTL_SINC | DMA_CHCTL_DINC | DMA_CHCTL_HSIZE | DMA_CHCTL_IE),       \
@@ -959,7 +984,8 @@ int32_t DMA_RepeatInit(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_repeat_
         MODIFY_REG32(*CHCTLx, (DMA_CHCTL_SRPTEN | DMA_CHCTL_DRPTEN), pstcDmaRepeatInit->u32Mode);
 
         WRITE_REG32(DMA_CH_REG(DMAx->RPT0, u8Ch), \
-                    ((pstcDmaRepeatInit->u32DestCount << DMA_RPT_DRPT_POS) | pstcDmaRepeatInit->u32SrcCount));
+                    ((pstcDmaRepeatInit->u32DestCount << DMA_RPT_DRPT_POS) | pstcDmaRepeatInit->u32SrcCount) & \
+                    (DMA_RPT_DRPT | DMA_RPT_SRPT));
 
     }
     return i32Ret;
@@ -1023,9 +1049,9 @@ int32_t DMA_NonSeqInit(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_nonseq_
         MODIFY_REG32(*CHCTLx, (DMA_CHCTL_SNSEQEN | DMA_CHCTL_DNSEQEN), pstcDmaNonSeqInit->u32Mode);
 
         WRITE_REG32(DMA_CH_REG(DMAx->SNSEQCTL0, u8Ch), ((pstcDmaNonSeqInit->u32SrcCount << DMA_SNSEQCTL_SNSCNT_POS) | \
-                    pstcDmaNonSeqInit->u32SrcOffset));
+                                                        pstcDmaNonSeqInit->u32SrcOffset));
         WRITE_REG32(DMA_CH_REG(DMAx->DNSEQCTL0, u8Ch), ((pstcDmaNonSeqInit->u32DestCount << DMA_DNSEQCTL_DNSCNT_POS) | \
-                    pstcDmaNonSeqInit->u32DestOffset));
+                                                        pstcDmaNonSeqInit->u32DestOffset));
 
     }
     return i32Ret;
@@ -1392,8 +1418,8 @@ uint32_t DMA_GetNonSeqDestOffset(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

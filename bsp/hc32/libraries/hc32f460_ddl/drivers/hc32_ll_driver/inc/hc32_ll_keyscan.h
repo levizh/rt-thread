@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Add function KEYSCAN_DeInit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -213,6 +214,7 @@ __STATIC_INLINE uint32_t KEYSCAN_GetKeyoutIdx(void)
 int32_t KEYSCAN_StructInit(stc_keyscan_init_t *pstcKeyscanInit);
 int32_t KEYSCAN_Init(const stc_keyscan_init_t *pstcKeyscanInit);
 void KEYSCAN_Cmd(en_functional_state_t enNewState);
+int32_t KEYSCAN_DeInit(void);
 
 /**
  * @}

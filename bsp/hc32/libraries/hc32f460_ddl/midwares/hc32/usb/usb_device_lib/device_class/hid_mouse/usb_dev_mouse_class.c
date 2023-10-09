@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Modify for variable alignment
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -186,7 +187,7 @@ __USB_ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[MOUSE_REPORT_DESC_SIZE] = 
     0x01,   0xC0
 };
 
-static uint8_t u8HidRevBuf[4];
+__USB_ALIGN_BEGIN static uint8_t u8HidRevBuf[4];
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')

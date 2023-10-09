@@ -7,7 +7,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify for MISRAC
-   2022-06-30       CDT             Delete comment
+                                    Delete comment
+   2023-09-30       CDT             Modify function usb_susp_isr()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -145,9 +146,9 @@ static void usb_susp_isr(usb_core_instance *pdev)
     u32dsts = READ_REG32(pdev->regs.DREGS->DSTS);
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_USBSUSP);
 
-    u8PrevStatus = pdev->dev.device_cur_status;
+    u8PrevStatus = pdev->dev.device_old_status;
     if ((pdev->dev.connection_status == 1U) && (u8PrevStatus == USB_DEV_CONFIGURED) &&
-            (0U != pdev->basic_cfgs.low_power) && ((u32dsts & 1UL) != 0UL)) {
+        (0U != pdev->basic_cfgs.low_power) && ((u32dsts & 1UL) != 0UL)) {
         SET_REG32_BIT(*pdev->regs.GCCTL, USBFS_GCCTL_STPPCLK);
         SET_REG32_BIT(*pdev->regs.GCCTL, USBFS_GCCTL_GATEHCLK);
     }

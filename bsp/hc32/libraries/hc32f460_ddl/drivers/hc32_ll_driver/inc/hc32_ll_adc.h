@@ -8,6 +8,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Modify macro group definition: ADC_Scan_Mode, ADC_Sync_Unit, ADC_Sync_Mode
+   2023-06-30       CDT             Modify typo
+                                    API fixed: ADC_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -112,13 +114,13 @@ typedef struct {
 #define ADC_CH6                         (6U)        /*!< Default input pin: PA6 for ADC1, PC0 for ADC2. */
 #define ADC_CH7                         (7U)        /*!< Default input pin: PA7 for ADC1, PC1 for ADC2. */
 #define ADC_CH8                         (8U)        /*!< Default input pin: PB0 for ADC1, internal analog signal for ADC2. */
-#define ADC_CH9                         (9U)        /*!< Default input pin: PB1 for ADC1, NOT supprot ADC2. */
-#define ADC_CH10                        (10U)       /*!< Default input pin: PC0 for ADC1, NOT supprot ADC2. */
-#define ADC_CH11                        (11U)       /*!< Default input pin: PC1 for ADC1, NOT supprot ADC2. */
-#define ADC_CH12                        (12U)       /*!< Default input pin: PC2 for ADC1, NOT supprot ADC2. */
-#define ADC_CH13                        (13U)       /*!< Default input pin: PC3 for ADC1, NOT supprot ADC2. */
-#define ADC_CH14                        (14U)       /*!< Default input pin: PC4 for ADC1, NOT supprot ADC2. */
-#define ADC_CH15                        (15U)       /*!< Default input pin: PC5 for ADC1, NOT supprot ADC2. */
+#define ADC_CH9                         (9U)        /*!< Default input pin: PB1 for ADC1, NOT support ADC2. */
+#define ADC_CH10                        (10U)       /*!< Default input pin: PC0 for ADC1, NOT support ADC2. */
+#define ADC_CH11                        (11U)       /*!< Default input pin: PC1 for ADC1, NOT support ADC2. */
+#define ADC_CH12                        (12U)       /*!< Default input pin: PC2 for ADC1, NOT support ADC2. */
+#define ADC_CH13                        (13U)       /*!< Default input pin: PC3 for ADC1, NOT support ADC2. */
+#define ADC_CH14                        (14U)       /*!< Default input pin: PC4 for ADC1, NOT support ADC2. */
+#define ADC_CH15                        (15U)       /*!< Default input pin: PC5 for ADC1, NOT support ADC2. */
 #define ADC_CH16                        (16U)       /*!< ADC1 extended channel, input source is internal analog signal */
 
 #define ADC1_EXT_CH                     (ADC_CH16)  /*!< ADC1 extended channel, input source is internal analog signal:
@@ -195,11 +197,11 @@ typedef struct {
  */
 #define ADC_HARDTRIG_ADTRG_PIN          (0x0U)                      /*!< Selects the following edge of pin ADTRG as the trigger of ADC sequence. */
 #define ADC_HARDTRIG_EVT0               (ADC_TRGSR_TRGSELA_0)       /*!< Selects an internal event as the trigger of ADC sequence.
-                                                                         This event is specified by register ADCx_ITRGSELR0(x=(null), 1, 2, 3). */
+                                                                         This event is specified by register ADCx_TRGSEL0(x=(null), 1, 2, 3). */
 #define ADC_HARDTRIG_EVT1               (ADC_TRGSR_TRGSELA_1)       /*!< Selects an internal event as the trigger of ADC sequence.
-                                                                         This event is specified by register ADCx_ITRGSELR1(x=(null), 1, 2, 3). */
+                                                                         This event is specified by register ADCx_TRGSEL1(x=(null), 1, 2, 3). */
 #define ADC_HARDTRIG_EVT0_EVT1          (ADC_TRGSR_TRGSELA)         /*!< Selects two internal events as the trigger of ADC sequence.
-                                                                         The two events are specified by register ADCx_ITRGSELR0 and register ADCx_ITRGSELR1. */
+                                                                         The two events are specified by register ADCx_TRGSEL0 and register ADCx_TRGSEL1. */
 /**
  * @}
  */
@@ -247,10 +249,10 @@ typedef struct {
                                                                              All ADCs scan once. */
 #define ADC_SYNC_CYCLIC_DELAY_TRIG      (0x4U << ADC_SYNCCR_SYNCMD_POS) /*!< Cyclic delayed trigger mode.
                                                                              When the trigger condition occurs, ADC1 starts first, then ADC2, last ADC3(if has).
-                                                                             All ADCs scan cyclicly(keep scaning till you stop them). */
+                                                                             All ADCs scan cyclicly(keep scanning till you stop them). */
 #define ADC_SYNC_CYCLIC_PARALLEL_TRIG   (0x6U << ADC_SYNCCR_SYNCMD_POS) /*!< Single shot parallel trigger mode.
                                                                              When the trigger condition occurs, all ADCs start at the same time.
-                                                                             All ADCs scan cyclicly(keep scaning till you stop them). */
+                                                                             All ADCs scan cyclicly(keep scanning till you stop them). */
 /**
  * @}
  */
@@ -423,7 +425,7 @@ typedef struct {
   Basic features
  ******************************************************************************/
 int32_t ADC_Init(CM_ADC_TypeDef *ADCx, const stc_adc_init_t *pstcAdcInit);
-void ADC_DeInit(CM_ADC_TypeDef *ADCx);
+int32_t ADC_DeInit(CM_ADC_TypeDef *ADCx);
 int32_t ADC_StructInit(stc_adc_init_t *pstcAdcInit);
 void ADC_ChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint8_t u8Ch, en_functional_state_t enNewState);
 void ADC_SetSampleTime(CM_ADC_TypeDef *ADCx, uint8_t u8Ch, uint8_t u8SampleTime);

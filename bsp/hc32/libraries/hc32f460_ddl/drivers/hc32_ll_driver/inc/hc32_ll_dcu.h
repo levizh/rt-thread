@@ -8,6 +8,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify macro group comments: DCU_Interrupt_Type
+   2023-06-30       CDT             Modify macro-definition according to RM:DCU_CTL_COMP_TRG->DCU_CTL_COMPTRG
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -94,7 +95,7 @@ typedef struct {
  * @{
  */
 #define DCU_CMP_TRIG_DATA0                  (0UL)               /*!< DCU compare triggered by DATA0 */
-#define DCU_CMP_TRIG_DATA0_DATA1_DATA2      (DCU_CTL_COMP_TRG)  /*!< DCU compare triggered by DATA0 or DATA1 or DATA2 */
+#define DCU_CMP_TRIG_DATA0_DATA1_DATA2      (DCU_CTL_COMPTRG)   /*!< DCU compare triggered by DATA0 or DATA1 or DATA2 */
 /**
  * @}
  */

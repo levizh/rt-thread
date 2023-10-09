@@ -8,6 +8,11 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Comments optimization
+   2023-06-30       CDT             Modify typo
+                                    Update about split 16bit register TMRA_BCSTR into two 8bit registers TMRA_BCSTRH and TMRA_BCSTRL
+                                    Delete union in stc_tmra_init_t structure
+   2023-09-30       CDT             Modify some of member type of struct stc_tmra_init_t and relate fuction about these member
+                                    Modify macro-definition value for group TMRA_Interrupt_Type/TMRA_Status_Flag
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -60,24 +65,20 @@ extern "C"
 typedef struct {
     uint8_t u8CountSrc;                     /*!< Specifies the count source of TMRA.
                                                  This parameter can be a value of @ref TMRA_Count_Src */
-    union {
-        struct {
-            uint16_t u16ClockDiv;           /*!< Specifies the divider of software clock source.
+    struct {
+        uint8_t u8ClockDiv;                 /*!< Specifies the divider of software clock source.
                                                  This parameter can be a value of @ref TMRA_Clock_Divider */
-            uint16_t u16CountMode;          /*!< Specifies count mode.
+        uint8_t u8CountMode;                /*!< Specifies count mode.
                                                  This parameter can be a value of @ref TMRA_Count_Mode */
-            uint16_t u16CountDir;           /*!< Specifies count direction.
-                                                 This parameter can be a value of @ref TMRA_Count_Dir */
-        } sw_count;
-        struct {
-
-            uint16_t u16CountUpCond;        /*!< Hardware count up condition.
+        uint8_t u8CountDir;                 /*!< Specifies count direction.
+                                                    This parameter can be a value of @ref TMRA_Count_Dir */
+    } sw_count;
+    struct {
+        uint16_t u16CountUpCond;            /*!< Hardware count up condition.
                                                  This parameter can be a value of @ref TMRA_Hard_Count_Up_Condition */
-            uint16_t u16CountDownCond;      /*!< Hardware count down condition.
+        uint16_t u16CountDownCond;          /*!< Hardware count down condition.
                                                  This parameter can be a value of @ref TMRA_Hard_Count_Down_Condition */
-            uint16_t u16Reserved;           /*!< Reserved, for future use. */
-        } hw_count;
-    };
+    } hw_count;
     uint32_t u32PeriodValue;                /*!< Specifies the period reference value.
                                                  This parameter can be a number between 0U and 0xFFFFU, inclusive. */
 } stc_tmra_init_t;
@@ -146,7 +147,7 @@ typedef struct {
  * @{
  */
 #define TMRA_DIR_DOWN                       (0x0U)                      /*!< TMRA count down. */
-#define TMRA_DIR_UP                         (TMRA_BCSTR_DIR)            /*!< TMRA count up. */
+#define TMRA_DIR_UP                         (TMRA_BCSTRL_DIR)           /*!< TMRA count up. */
 /**
  * @}
  */
@@ -156,7 +157,7 @@ typedef struct {
  * @{
  */
 #define TMRA_MD_SAWTOOTH                    (0x0U)                      /*!< Count mode is sawtooth wave. */
-#define TMRA_MD_TRIANGLE                    (TMRA_BCSTR_MODE)           /*!< Count mode is triangle wave. */
+#define TMRA_MD_TRIANGLE                    (TMRA_BCSTRL_MODE)          /*!< Count mode is triangle wave. */
 /**
  * @}
  */
@@ -176,16 +177,16 @@ typedef struct {
  * @{
  */
 #define TMRA_CLK_DIV1                       (0x0U)                              /*!< The clock source of TMRA is PCLK. */
-#define TMRA_CLK_DIV2                       (0x1U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 2. */
-#define TMRA_CLK_DIV4                       (0x2U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 4. */
-#define TMRA_CLK_DIV8                       (0x3U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 8. */
-#define TMRA_CLK_DIV16                      (0x4U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 16. */
-#define TMRA_CLK_DIV32                      (0x5U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 32. */
-#define TMRA_CLK_DIV64                      (0x6U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 64. */
-#define TMRA_CLK_DIV128                     (0x7U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 128. */
-#define TMRA_CLK_DIV256                     (0x8U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 256. */
-#define TMRA_CLK_DIV512                     (0x9U << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 512. */
-#define TMRA_CLK_DIV1024                    (0xAU << TMRA_BCSTR_CKDIV_POS)      /*!< The clock source of TMRA is PCLK / 1024. */
+#define TMRA_CLK_DIV2                       (0x1U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 2. */
+#define TMRA_CLK_DIV4                       (0x2U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 4. */
+#define TMRA_CLK_DIV8                       (0x3U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 8. */
+#define TMRA_CLK_DIV16                      (0x4U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 16. */
+#define TMRA_CLK_DIV32                      (0x5U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 32. */
+#define TMRA_CLK_DIV64                      (0x6U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 64. */
+#define TMRA_CLK_DIV128                     (0x7U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 128. */
+#define TMRA_CLK_DIV256                     (0x8U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 256. */
+#define TMRA_CLK_DIV512                     (0x9U << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 512. */
+#define TMRA_CLK_DIV1024                    (0xAU << TMRA_BCSTRL_CKDIV_POS)     /*!< The clock source of TMRA is PCLK / 1024. */
 /**
  * @}
  */
@@ -225,7 +226,7 @@ typedef struct {
 #define TMRA_CNT_UP_COND_CLKB_HIGH_CLKA_FALLING      (TMRA_HCUPR_HCUP7)      /*!< When CLKB is high, a falling edge is sampled on CLKA, the counter register counts up. */
 #define TMRA_CNT_UP_COND_TRIG_RISING                 (TMRA_HCUPR_HCUP8)      /*!< When a rising edge occurred on TRIG, the counter register counts up. */
 #define TMRA_CNT_UP_COND_TRIG_FALLING                (TMRA_HCUPR_HCUP9)      /*!< When a falling edge occurred on TRIG, the counter register counts up. */
-#define TMRA_CNT_UP_COND_EVT                         (TMRA_HCUPR_HCUP10)     /*!< When the event specified by TMRA_HTSSR occurred, the counter register counts up. */
+#define TMRA_CNT_UP_COND_EVT                         (TMRA_HCUPR_HCUP10)     /*!< When the TMRA common trigger event occurred, the counter register counts up. */
 #define TMRA_CNT_UP_COND_SYM_OVF                     (TMRA_HCUPR_HCUP11)     /*!< When the symmetric unit overflow, the counter register counts up. */
 #define TMRA_CNT_UP_COND_SYM_UDF                     (TMRA_HCUPR_HCUP12)     /*!< When the symmetric unit underflow, the counter register counts up. */
 #define TMRA_CNT_UP_COND_ALL                         (0x1FFFU)
@@ -249,7 +250,7 @@ typedef struct {
 #define TMRA_CNT_DOWN_COND_CLKB_HIGH_CLKA_FALLING    (TMRA_HCDOR_HCDO7)      /*!< When CLKB is high, a falling edge is sampled on CLKA, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_TRIG_RISING               (TMRA_HCDOR_HCDO8)      /*!< When a rising edge occurred on TRIG, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_TRIG_FALLING              (TMRA_HCDOR_HCDO9)      /*!< When a falling edge occurred on TRIG, the counter register counts down. */
-#define TMRA_CNT_DOWN_COND_EVT                       (TMRA_HCDOR_HCDO10)     /*!< When the event specified by TMRA_HTSSR occurred, the counter register counts down. */
+#define TMRA_CNT_DOWN_COND_EVT                       (TMRA_HCDOR_HCDO10)     /*!< When the TMRA common trigger event occurred, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_SYM_OVF                   (TMRA_HCDOR_HCDO11)     /*!< When the symmetric unit overflow, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_SYM_UDF                   (TMRA_HCDOR_HCDO12)     /*!< When the symmetric unit underflow, the counter register counts down. */
 #define TMRA_CNT_DOWN_COND_ALL                       (0x1FFFU)
@@ -261,8 +262,8 @@ typedef struct {
  * @defgroup TMRA_Interrupt_Type TMRA Interrupt Type
  * @{
  */
-#define TMRA_INT_OVF                        (1UL << 12U)                /*!< The interrupt of counting overflow. */
-#define TMRA_INT_UDF                        (1UL << 13U)                /*!< The interrupt of counting underflow. */
+#define TMRA_INT_OVF                        (1UL << 4U)                 /*!< The interrupt of counting overflow. */
+#define TMRA_INT_UDF                        (1UL << 5U)                 /*!< The interrupt of counting underflow. */
 #define TMRA_INT_CMP_CH1                    (1UL << 16U)                /*!< The interrupt of compare-match of channel 1. */
 #define TMRA_INT_CMP_CH2                    (1UL << 17U)                /*!< The interrupt of compare-match of channel 2. */
 #define TMRA_INT_CMP_CH3                    (1UL << 18U)                /*!< The interrupt of compare-match of channel 3. */
@@ -271,7 +272,7 @@ typedef struct {
 #define TMRA_INT_CMP_CH6                    (1UL << 21U)                /*!< The interrupt of compare-match of channel 6. */
 #define TMRA_INT_CMP_CH7                    (1UL << 22U)                /*!< The interrupt of compare-match of channel 7. */
 #define TMRA_INT_CMP_CH8                    (1UL << 23U)                /*!< The interrupt of compare-match of channel 8. */
-#define TMRA_INT_ALL                        (0xFF3000UL)
+#define TMRA_INT_ALL                        (0xFF0030UL)
 /**
  * @}
  */
@@ -299,8 +300,8 @@ typedef struct {
  * @defgroup TMRA_Status_Flag TMRA Status Flag
  * @{
  */
-#define TMRA_FLAG_OVF                       (1UL << 14U)                /*!< The flag of counting overflow. */
-#define TMRA_FLAG_UDF                       (1UL << 15U)                /*!< The flag of counting underflow. */
+#define TMRA_FLAG_OVF                       (1UL << 6U)                 /*!< The flag of counting overflow. */
+#define TMRA_FLAG_UDF                       (1UL << 7U)                 /*!< The flag of counting underflow. */
 #define TMRA_FLAG_CMP_CH1                   (1UL << 16U)                /*!< The flag of compare-match of channel 1. */
 #define TMRA_FLAG_CMP_CH2                   (1UL << 17U)                /*!< The flag of compare-match of channel 2. */
 #define TMRA_FLAG_CMP_CH3                   (1UL << 18U)                /*!< The flag of compare-match of channel 3. */
@@ -309,7 +310,7 @@ typedef struct {
 #define TMRA_FLAG_CMP_CH6                   (1UL << 21U)                /*!< The flag of compare-match of channel 6. */
 #define TMRA_FLAG_CMP_CH7                   (1UL << 22U)                /*!< The flag of compare-match of channel 7. */
 #define TMRA_FLAG_CMP_CH8                   (1UL << 23U)                /*!< The flag of compare-match of channel 8. */
-#define TMRA_FLAG_ALL                       (0xFFC000UL)
+#define TMRA_FLAG_ALL                       (0xFF00C0UL)
 /**
  * @}
  */
@@ -357,10 +358,10 @@ typedef struct {
  * @defgroup TMRA_Filter_Clock_Divider TMRA Filter Clock Divider
  * @{
  */
-#define TMRA_FILTER_CLK_DIV1                (0x0U)                      /*!< The filter clock is the clock of timerA / 1 */
-#define TMRA_FILTER_CLK_DIV4                (0x1U)                      /*!< The filter clock is the clock of timerA / 4 */
-#define TMRA_FILTER_CLK_DIV16               (0x2U)                      /*!< The filter clock is the clock of timerA / 16 */
-#define TMRA_FILTER_CLK_DIV64               (0x3U)                      /*!< The filter clock is the clock of timerA / 64 */
+#define TMRA_FILTER_CLK_DIV1                (0x0U)                      /*!< The filter clock is the clock of TimerA / 1 */
+#define TMRA_FILTER_CLK_DIV4                (0x1U)                      /*!< The filter clock is the clock of TimerA / 4 */
+#define TMRA_FILTER_CLK_DIV16               (0x2U)                      /*!< The filter clock is the clock of TimerA / 16 */
+#define TMRA_FILTER_CLK_DIV64               (0x3U)                      /*!< The filter clock is the clock of TimerA / 64 */
 /**
  * @}
  */
@@ -371,8 +372,8 @@ typedef struct {
  */
 #define TMRA_CNT_STAT_START                 (0U)                        /*!< Counter start counting. */
 #define TMRA_CNT_STAT_STOP                  (1U)                        /*!< Counter stop counting. */
-#define TMRA_CNT_STAT_MATCH_CMP             (2U)                        /*!< Counter value matchs the compare value. */
-#define TMRA_CNT_STAT_MATCH_PERIOD          (3U)                        /*!< Counter value matchs the period value. */
+#define TMRA_CNT_STAT_MATCH_CMP             (2U)                        /*!< Counter value matches the compare value. */
+#define TMRA_CNT_STAT_MATCH_PERIOD          (3U)                        /*!< Counter value matches the period value. */
 /**
  * @}
  */
@@ -413,7 +414,7 @@ typedef struct {
                                                                              2. Sync start is valid: The condition is that a rising edge is sampled on TRIG of the symmetric TMRA unit. */
 #define TMRA_START_COND_TRIG_FALLING        (TMRA_HCONR_HSTA1)          /*!< 1. Sync start is invalid: The condition is that a falling edge is sampled on TRIG of the current TMRA unit.
                                                                              2. Sync start is valid: The condition is that a falling edge is sampled on TRIG of the symmetric TMRA unit. */
-#define TMRA_START_COND_EVT                 (TMRA_HCONR_HSTA2)          /*!< The condition is that the event which is set in register TMRA_HTSSR0 has occurred. */
+#define TMRA_START_COND_EVT                 (TMRA_HCONR_HSTA2)          /*!< The condition is that the TMRA common trigger event has occurred. */
 #define TMRA_START_COND_ALL                 (TMRA_START_COND_TRIG_RISING | TMRA_START_COND_TRIG_FALLING | \
                                              TMRA_START_COND_EVT)
 /**
@@ -427,7 +428,7 @@ typedef struct {
 #define TMRA_STOP_COND_INVD                 (0x0U)                      /*!< The condition of stop is INVALID. */
 #define TMRA_STOP_COND_TRIG_RISING          (TMRA_HCONR_HSTP0)          /*!< The condition is that a rising edge is sampled on pin TRIG of the current TMRA unit. */
 #define TMRA_STOP_COND_TRIG_FALLING         (TMRA_HCONR_HSTP1)          /*!< The condition is that a falling edge is sampled on pin TRIG of the current TMRA unit. */
-#define TMRA_STOP_COND_EVT                  (TMRA_HCONR_HSTP2)          /*!< The condition is that the event which is set in register TMRA_HTSSR0 has occurred. */
+#define TMRA_STOP_COND_EVT                  (TMRA_HCONR_HSTP2)          /*!< The condition is that the TMRA common trigger event has occurred. */
 #define TMRA_STOP_COND_ALL                  (TMRA_STOP_COND_TRIG_RISING | TMRA_STOP_COND_TRIG_FALLING | \
                                              TMRA_STOP_COND_EVT)
 /**
@@ -442,7 +443,7 @@ typedef struct {
 #define TMRA_CLR_COND_INVD                  (0x0U)                      /*!< The condition of clear is INVALID. */
 #define TMRA_CLR_COND_TRIG_RISING           (TMRA_HCONR_HCLE0)          /*!< The condition is that a rising edge is sampled on TRIG of the current TMRA unit. */
 #define TMRA_CLR_COND_TRIG_FALLING          (TMRA_HCONR_HCLE1)          /*!< The condition is that a falling edge is sampled on TRIG of the current TMRA unit. */
-#define TMRA_CLR_COND_EVT                   (TMRA_HCONR_HCLE2)          /*!< The condition is that the event which is set in register TMRA_HTSSR0 has occurred. */
+#define TMRA_CLR_COND_EVT                   (TMRA_HCONR_HCLE2)          /*!< The condition is that the TMRA common trigger event has occurred. */
 #define TMRA_CLR_COND_SYM_TRIG_RISING       (TMRA_HCONR_HCLE3)          /*!< The condition is that a rising edge is sampled on TRIG of the symmetric unit. */
 #define TMRA_CLR_COND_SYM_TRIG_FALLING      (TMRA_HCONR_HCLE4)          /*!< The condition is that a falling edge is sampled on TRIG of the symmetric unit. */
 #define TMRA_CLR_COND_PWM3_RISING           (TMRA_HCONR_HCLE5)          /*!< The condition is that a rising edge is sampled on PWM3 of the current TMRA unit. */
@@ -473,9 +474,9 @@ typedef struct {
 /* Base count(use software clock PCLK/HCLK) */
 int32_t TMRA_Init(CM_TMRA_TypeDef *TMRAx, const stc_tmra_init_t *pstcTmraInit);
 int32_t TMRA_StructInit(stc_tmra_init_t *pstcTmraInit);
-void TMRA_SetCountMode(CM_TMRA_TypeDef *TMRAx, uint16_t u16Mode);
-void TMRA_SetCountDir(CM_TMRA_TypeDef *TMRAx, uint16_t u16Dir);
-void TMRA_SetClockDiv(CM_TMRA_TypeDef *TMRAx, uint16_t u16Div);
+void TMRA_SetCountMode(CM_TMRA_TypeDef *TMRAx, uint8_t u8Mode);
+void TMRA_SetCountDir(CM_TMRA_TypeDef *TMRAx, uint8_t u8Dir);
+void TMRA_SetClockDiv(CM_TMRA_TypeDef *TMRAx, uint8_t u8Div);
 
 /* Hardware count */
 void TMRA_HWCountUpCondCmd(CM_TMRA_TypeDef *TMRAx, uint16_t u16Cond, en_functional_state_t enNewState);
@@ -504,7 +505,7 @@ void TMRA_FilterCmd(CM_TMRA_TypeDef *TMRAx, uint32_t u32Pin, en_functional_state
 /* Global */
 void TMRA_DeInit(CM_TMRA_TypeDef *TMRAx);
 /* Counting direction, period value, counter value, compare value */
-uint16_t TMRA_GetCountDir(const CM_TMRA_TypeDef *TMRAx);
+uint8_t TMRA_GetCountDir(const CM_TMRA_TypeDef *TMRAx);
 
 void TMRA_SetPeriodValue(CM_TMRA_TypeDef *TMRAx, uint32_t u32Value);
 uint32_t TMRA_GetPeriodValue(const CM_TMRA_TypeDef *TMRAx);

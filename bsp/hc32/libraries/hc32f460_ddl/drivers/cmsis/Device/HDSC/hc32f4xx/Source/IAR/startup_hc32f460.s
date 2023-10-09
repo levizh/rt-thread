@@ -1,4 +1,13 @@
-;/*****************************************************************************
+;/**
+; ******************************************************************************
+;  @file  startup_hc32f460.s
+;  @brief Startup for IAR.
+; verbatim
+;  Change Logs:
+;  Date             Author          Notes
+;  2022-03-31       CDT             First version
+; endverbatim
+; *****************************************************************************
 ; * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
 ; *
 ; * This software component is licensed by XHSC under BSD 3-Clause license
@@ -6,13 +15,8 @@
 ; * License. You may obtain a copy of the License at:
 ; *                    opensource.org/licenses/BSD-3-Clause
 ; *
+; ******************************************************************************
 ; */
-;/****************************************************************************/
-;/*  Startup for IAR                                                         */
-;/*  Version     V1.0                                                        */
-;/*  Date        2022-03-31                                                  */
-;/*  Target-mcu  HC32F460                                                    */
-;/****************************************************************************/
 
 
                 MODULE  ?cstartup

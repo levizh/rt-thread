@@ -353,7 +353,7 @@ typedef struct {
  * @defgroup EXTINT_Trigger_Sel External Interrupt Trigger Edge Selection
  * @{
  */
-#define EXTINT_TRIG_FALLING         (0UL)
+#define EXTINT_TRIG_FALLING             (0UL)
 #define EXTINT_TRIG_RISING              INTC_EIRQCR_EIRQTRG_0
 #define EXTINT_TRIG_BOTH                INTC_EIRQCR_EIRQTRG_1
 #define EXTINT_TRIG_LOW                 INTC_EIRQCR_EIRQTRG

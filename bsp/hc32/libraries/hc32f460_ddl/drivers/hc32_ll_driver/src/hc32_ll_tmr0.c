@@ -617,8 +617,8 @@ void TMR0_ClearStatus(CM_TMR0_TypeDef *TMR0x, uint32_t u32Flag)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

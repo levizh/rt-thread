@@ -35,7 +35,7 @@
  */
 
 /**
- * @defgroup EV_HC32F460_LQFP100_V2_WM8731 HC32F460 EVB LQFP100 WM8731
+ * @defgroup EV_HC32F460_LQFP100_V2_WM8731 EV_HC32F460_LQFP100_V2 WM8731
  * @{
  */
 #if ((BSP_WM8731_ENABLE == DDL_ON) && (BSP_EV_HC32F460_LQFP100_V2 == BSP_EV_HC32F4XX))
@@ -59,13 +59,20 @@
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+/**
+ * @defgroup EV_HC32F460_LQFP100_V2_WM8731_Local_Variables EV_HC32F460_LQFP100_V2 WM8731 Local Variables
+ * @{
+ */
 static stc_wm8731_ll_t stcWm8731Config = {0};
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F460_LQFP100_V2_WM8731_Global_Functions HC32F460 LQFP100 EVB WM8731 Global Functions
+ * @defgroup EV_HC32F460_LQFP100_V2_WM8731_Local_Functions EV_HC32F460_LQFP100_V2 WM8731 Local Functions
  * @{
  */
 
@@ -100,6 +107,15 @@ static void BSP_WM8731_I2C_Write(const uint8_t *pu8Reg, const uint8_t *pu8Buf, u
 {
     (void)BSP_I2C_Write(BSP_WM8731_I2C_UNIT, BSP_WM8731_DEV_ADDR, pu8Reg, BSP_WM8731_REG_ADDR_LEN, pu8Buf, u32Len);
 }
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup EV_HC32F460_LQFP100_V2_WM8731_Global_Functions EV_HC32F460_LQFP100_V2 WM8731 Global Functions
+ * @{
+ */
 
 /**
  * @brief  De-initialize the WM8731.
@@ -375,8 +391,8 @@ __WEAKDEF int32_t BSP_I2S_Init(uint32_t u32AudioFreq)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

@@ -7,6 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify for MISRAC
+                                    Modify for variable alignment
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -79,18 +80,7 @@ usb_host_class_callback_func  USBH_HID_cb = {
  * Local variable definitions ('static')
  ******************************************************************************/
 
-#ifdef USB_INTERNAL_DMA_ENABLED
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-#pragma data_alignment=4
-#endif
-#endif /* USB_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN static HID_Machine_TypeDef        HID_Machine;
-
-#ifdef USB_INTERNAL_DMA_ENABLED
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-#pragma data_alignment=4
-#endif
-#endif /* USB_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN static USB_HOST_HIDDesc_TypeDef   HID_Desc;
 
 __IO static uint8_t start_toggle = 0U;
@@ -147,7 +137,7 @@ HOST_STATUS usb_host_hid_itfinit(usb_core_instance *pdev, void *phost)
             if (0U != (pphost->device_prop.devepdesc[0][epnum].bEndpointAddress & 0x80U)) {
                 HID_Machine.HIDIntInEp = (pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
                 HID_Machine.hc_num_in  = usb_host_distrch(pdev,
-                                         pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
+                                                          pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
                 usb_host_chopen(pdev,
                                 HID_Machine.hc_num_in,
                                 pphost->device_prop.devaddr,
@@ -157,7 +147,7 @@ HOST_STATUS usb_host_hid_itfinit(usb_core_instance *pdev, void *phost)
             } else {
                 HID_Machine.HIDIntOutEp = (pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
                 HID_Machine.hc_num_out  = usb_host_distrch(pdev,
-                                          pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
+                                                           pphost->device_prop.devepdesc[0][epnum].bEndpointAddress);
                 usb_host_chopen(pdev,
                                 HID_Machine.hc_num_out,
                                 pphost->device_prop.devaddr,

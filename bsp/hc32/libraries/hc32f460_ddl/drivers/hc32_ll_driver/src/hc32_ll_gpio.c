@@ -7,7 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-06-30       CDT             Add API GPIO_AnalogCmd() and GPIO_ExIntCmd().
+   2022-06-30       CDT             Add API GPIO_AnalogCmd() and GPIO_ExIntCmd()
+   2023-06-30       CDT             Modify GPIO_SetFunc()
+                                    Rename GPIO_ExIntCmd() as GPIO_ExtIntCmd
+                                    Optimize API: GPIO_Init(), GPIO_SetFunc(), GPIO_SubFuncCmd(), GPIO_InputMOSCmd(), GPIO_AnalogCmd(), GPIO_ExtIntCmd()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -260,8 +263,9 @@ int32_t GPIO_Init(uint8_t u8Port, uint16_t u16Pin, const stc_gpio_init_t *pstcGp
         DDL_ASSERT(IS_GPIO_PIN_INVERT(pstcGpioInit->u16Invert));
         DDL_ASSERT(IS_GPIO_EXTINT(pstcGpioInit->u16ExtInt));
         DDL_ASSERT(IS_GPIO_ATTR(pstcGpioInit->u16PinAttr));
+
         for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
-            if ((u16Pin & (1UL << u8PinPos)) != 0U) {
+            if ((u16Pin & 1U) != 0U) {
                 u16PCRVal = pstcGpioInit->u16PinState | pstcGpioInit->u16PinDir | pstcGpioInit->u16PinOutputType |  \
                             pstcGpioInit->u16PinDrv   | pstcGpioInit->u16PullUp | pstcGpioInit->u16Invert        |  \
                             pstcGpioInit->u16ExtInt   | pstcGpioInit->u16Latch;
@@ -274,6 +278,10 @@ int32_t GPIO_Init(uint8_t u8Port, uint16_t u16Pin, const stc_gpio_init_t *pstcGp
 
                 PCRx = &PCR_REG(u8Port, u8PinPos);
                 MODIFY_REG16(*PCRx, u16PCRMask, u16PCRVal);
+            }
+            u16Pin >>= 1U;
+            if (0U == u16Pin) {
+                break;
             }
         }
     }
@@ -374,9 +382,13 @@ void GPIO_SetFunc(uint8_t u8Port, uint16_t u16Pin, uint16_t u16Func)
     DDL_ASSERT(IS_GPIO_UNLOCK());
 
     for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
-        if ((u16Pin & (uint16_t)(1UL << u8PinPos)) != 0U) {
+        if ((u16Pin & 1U) != 0U) {
             PFSRx = &PFSR_REG(u8Port, u8PinPos);
-            WRITE_REG16(*PFSRx, u16Func);
+            MODIFY_REG16(*PFSRx, GPIO_PFSR_FSEL, u16Func);
+        }
+        u16Pin >>= 1U;
+        if (0U == u16Pin) {
+            break;
         }
     }
 }
@@ -399,13 +411,17 @@ void GPIO_SubFuncCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNe
     DDL_ASSERT(IS_GPIO_UNLOCK());
 
     for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
-        if ((u16Pin & (uint16_t)(1UL << u8PinPos)) != 0U) {
+        if ((u16Pin & 1U) != 0U) {
             PFSRx = &PFSR_REG(u8Port, u8PinPos);
             if (ENABLE == enNewState) {
                 SET_REG16_BIT(*PFSRx, PIN_SUBFUNC_ENABLE);
             } else {
                 CLR_REG16_BIT(*PFSRx, PIN_SUBFUNC_ENABLE);
             }
+        }
+        u16Pin >>= 1U;
+        if (0U == u16Pin) {
+            break;
         }
     }
 }
@@ -625,13 +641,17 @@ void GPIO_AnalogCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNew
     DDL_ASSERT(IS_GPIO_PIN(u16Pin));
 
     for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
-        if ((u16Pin & (1UL << u8PinPos)) != 0U) {
+        if ((u16Pin & 1U) != 0U) {
             PCRx = &PCR_REG(u8Port, u8PinPos);
             if (ENABLE == enNewState) {
                 SET_REG16_BIT(*PCRx, GPIO_PCR_DDIS);
             } else {
                 CLR_REG16_BIT(*PCRx, GPIO_PCR_DDIS);
             }
+        }
+        u16Pin >>= 1U;
+        if (0U == u16Pin) {
+            break;
         }
     }
 }
@@ -643,7 +663,7 @@ void GPIO_AnalogCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNew
  * @param  [in] enNewState: An @ref en_functional_state_t enumeration value.
  * @retval None
  */
-void GPIO_ExIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState)
+void GPIO_ExtIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState)
 {
     __IO uint16_t *PCRx;
     uint8_t u8PinPos;
@@ -653,13 +673,17 @@ void GPIO_ExIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewS
     DDL_ASSERT(IS_GPIO_PIN(u16Pin));
 
     for (u8PinPos = 0U; u8PinPos < GPIO_PIN_NUM_MAX; u8PinPos++) {
-        if ((u16Pin & (1UL << u8PinPos)) != 0U) {
+        if ((u16Pin & 1U) != 0U) {
             PCRx = &PCR_REG(u8Port, u8PinPos);
             if (ENABLE == enNewState) {
                 SET_REG16_BIT(*PCRx, GPIO_PCR_INTE);
             } else {
                 CLR_REG16_BIT(*PCRx, GPIO_PCR_INTE);
             }
+        }
+        u16Pin >>= 1U;
+        if (0U == u16Pin) {
+            break;
         }
     }
 }
@@ -674,8 +698,8 @@ void GPIO_ExIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewS
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

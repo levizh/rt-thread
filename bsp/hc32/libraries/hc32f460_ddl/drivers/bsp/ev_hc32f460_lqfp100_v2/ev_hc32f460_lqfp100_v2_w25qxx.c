@@ -7,6 +7,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Initialize CS state
+   2023-09-30       CDT             Modify for MISRAC2012
+                                    Modify SPI clock divide factor from DIV4 to DIV64
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -56,16 +58,27 @@
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
+/**
+ * @addtogroup EV_HC32F460_LQFP100_V2_W25QXX_Local_Functions
+ * @{
+ */
 static void BSP_SPI_Init(void);
 static void BSP_SPI_DeInit(void);
 static void BSP_SPI_Active(void);
 static void BSP_SPI_Inactive(void);
 static int32_t BSP_SPI_Trans(const uint8_t *pu8TxBuf, uint32_t u32Size);
 static int32_t BSP_SPI_Receive(uint8_t *pu8RxBuf, uint32_t u32Size);
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+/**
+ * @defgroup EV_HC32F460_LQFP100_V2_W25Qxx_Local_Variables EV_HC32F460_LQFP100_V2 W25QXX Local Variables
+ * @{
+ */
 static stc_w25qxx_ll_t m_stcW25qxxLL = {
     .Delay    = DDL_DelayMS,
     .Init     = BSP_SPI_Init,
@@ -75,6 +88,9 @@ static stc_w25qxx_ll_t m_stcW25qxxLL = {
     .Trans    = BSP_SPI_Trans,
     .Receive  = BSP_SPI_Receive,
 };
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
@@ -136,15 +152,15 @@ static void BSP_SPI_Init(void)
     FCG_Fcg1PeriphClockCmd(BSP_SPI_PERIPH_CLK, ENABLE);
 
     /* SPI De-initialize */
-    SPI_DeInit(BSP_SPI_UNIT);
+    (void)SPI_DeInit(BSP_SPI_UNIT);
     /* Configuration SPI structure */
     stcSpiInit.u32WireMode          = SPI_3_WIRE;
     stcSpiInit.u32TransMode         = SPI_FULL_DUPLEX;
     stcSpiInit.u32MasterSlave       = SPI_MASTER;
-    stcSpiInit.u32ModeFaultDetect             = SPI_MD_FAULT_DETECT_DISABLE;
+    stcSpiInit.u32ModeFaultDetect   = SPI_MD_FAULT_DETECT_DISABLE;
     stcSpiInit.u32Parity            = SPI_PARITY_INVD;
     stcSpiInit.u32SpiMode           = SPI_MD_0;
-    stcSpiInit.u32BaudRatePrescaler = SPI_BR_CLK_DIV4;
+    stcSpiInit.u32BaudRatePrescaler = SPI_BR_CLK_DIV64;
     stcSpiInit.u32DataBits          = SPI_DATA_SIZE_8BIT;
     stcSpiInit.u32FirstBit          = SPI_FIRST_MSB;
     (void)SPI_Init(BSP_SPI_UNIT, &stcSpiInit);
@@ -164,7 +180,7 @@ static void BSP_SPI_Init(void)
 static void BSP_SPI_DeInit(void)
 {
     /* SPI De-initialize */
-    SPI_DeInit(BSP_SPI_UNIT);
+    (void)SPI_DeInit(BSP_SPI_UNIT);
 }
 
 /**
@@ -317,8 +333,8 @@ int32_t BSP_W25QXX_EraseChip(void)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

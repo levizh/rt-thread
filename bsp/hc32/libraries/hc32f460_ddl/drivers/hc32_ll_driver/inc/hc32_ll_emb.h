@@ -8,6 +8,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify structure comments:stc_emb_monitor_tmr_pwm_t
+   2023-09-30       CDT             Update EMB_CTL_CMPEN0~2 to EMB_CTL_CMPEN1~3
+                                    Update EMB_INTEN_PORTINTEN to EMB_INTEN_PORTININTEN
+                                    Update EMB_INTEN_PWMINTEN to EMB_INTEN_PWMSINTEN
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -180,9 +183,9 @@ typedef struct {
 #define EMB_CMP2_DISABLE                    (0UL)
 #define EMB_CMP3_DISABLE                    (0UL)
 
-#define EMB_CMP1_ENABLE                     (EMB_CTL_CMPEN0)
-#define EMB_CMP2_ENABLE                     (EMB_CTL_CMPEN1)
-#define EMB_CMP3_ENABLE                     (EMB_CTL_CMPEN2)
+#define EMB_CMP1_ENABLE                     (EMB_CTL_CMPEN1)
+#define EMB_CMP2_ENABLE                     (EMB_CTL_CMPEN2)
+#define EMB_CMP3_ENABLE                     (EMB_CTL_CMPEN3)
 /**
  * @}
  */
@@ -330,10 +333,10 @@ typedef struct {
  * @defgroup EMB_Interrupt EMB Interrupt
  * @{
  */
-#define EMB_INT_PWMS                        (EMB_INTEN_PWMINTEN)
+#define EMB_INT_PWMS                        (EMB_INTEN_PWMSINTEN)
 #define EMB_INT_CMP                         (EMB_INTEN_CMPINTEN)
 #define EMB_INT_OSC                         (EMB_INTEN_OSINTEN)
-#define EMB_INT_PORT1                       (EMB_INTEN_PORTINTEN)
+#define EMB_INT_PORT1                       (EMB_INTEN_PORTININTEN)
 #define EMB_INT_ALL                         (EMB_INT_PWMS | EMB_INT_CMP | EMB_INT_OSC | EMB_INT_PORT1)
 /**
  * @}

@@ -1,8 +1,8 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_cmp.h
- * @brief Head file for CMP module.
- *
+ * @brief This file contains all the functions prototypes of the CMP driver
+ *        library.
  @verbatim
    Change Logs:
    Date             Author          Notes

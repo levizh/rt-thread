@@ -8,6 +8,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2023-01-15       CDT             Modified parameters name of API AOS_CommonTriggerCmd() and AOS_SetTriggerEventSrc()
+   2023-09-30       CDT             Modify for new head file
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -75,19 +76,19 @@ extern "C"
 #define AOS_DMA2_1              (uint32_t)(&CM_AOS->DMA2_TRGSEL1)
 #define AOS_DMA2_2              (uint32_t)(&CM_AOS->DMA2_TRGSEL2)
 #define AOS_DMA2_3              (uint32_t)(&CM_AOS->DMA2_TRGSEL3)
-#define AOS_DMA_RC              (uint32_t)(&CM_AOS->DMA_TRGSELRC)
-#define AOS_TMR6_0              (uint32_t)(&CM_AOS->TMR6_HTSSR0)
-#define AOS_TMR6_1              (uint32_t)(&CM_AOS->TMR6_HTSSR1)
-#define AOS_TMR0                (uint32_t)(&CM_AOS->TMR0_HTSSR)
-#define AOS_EVTPORT12           (uint32_t)(&CM_AOS->PEVNTTRGSR12)
-#define AOS_EVTPORT34           (uint32_t)(&CM_AOS->PEVNTTRGSR34)
-#define AOS_TMRA_0              (uint32_t)(&CM_AOS->TMRA_HTSSR0)
-#define AOS_TMRA_1              (uint32_t)(&CM_AOS->TMRA_HTSSR1)
-#define AOS_OTS                 (uint32_t)(&CM_AOS->OTS_TRG)
-#define AOS_ADC1_0              (uint32_t)(&CM_AOS->ADC1_ITRGSELR0)
-#define AOS_ADC1_1              (uint32_t)(&CM_AOS->ADC1_ITRGSELR1)
-#define AOS_ADC2_0              (uint32_t)(&CM_AOS->ADC2_ITRGSELR0)
-#define AOS_ADC2_1              (uint32_t)(&CM_AOS->ADC2_ITRGSELR1)
+#define AOS_DMA_RC              (uint32_t)(&CM_AOS->DMA_RC_TRGSEL)
+#define AOS_TMR6_0              (uint32_t)(&CM_AOS->TMR6_TRGSEL0)
+#define AOS_TMR6_1              (uint32_t)(&CM_AOS->TMR6_TRGSEL1)
+#define AOS_TMR0                (uint32_t)(&CM_AOS->TMR0_TRGSEL)
+#define AOS_EVTPORT12           (uint32_t)(&CM_AOS->PEVNT_TRGSEL12)
+#define AOS_EVTPORT34           (uint32_t)(&CM_AOS->PEVNT_TRGSEL34)
+#define AOS_TMRA_0              (uint32_t)(&CM_AOS->TMRA_TRGSEL0)
+#define AOS_TMRA_1              (uint32_t)(&CM_AOS->TMRA_TRGSEL1)
+#define AOS_OTS                 (uint32_t)(&CM_AOS->OTS_TRGSEL)
+#define AOS_ADC1_0              (uint32_t)(&CM_AOS->ADC1_TRGSEL0)
+#define AOS_ADC1_1              (uint32_t)(&CM_AOS->ADC1_TRGSEL1)
+#define AOS_ADC2_0              (uint32_t)(&CM_AOS->ADC2_TRGSEL0)
+#define AOS_ADC2_1              (uint32_t)(&CM_AOS->ADC2_TRGSEL1)
 #define AOS_COMM_1              (uint32_t)(&CM_AOS->COMTRG1)
 #define AOS_COMM_2              (uint32_t)(&CM_AOS->COMTRG2)
 

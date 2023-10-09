@@ -6,8 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Deleted redundant comments.
-   2022-10-31       CDT             API fixed: CAN_FillTxFrame(), CAN_GetStatus(), CAN_ClearStatus().
+   2022-10-31       CDT             Deleted redundant comments
+                                    API fixed: CAN_FillTxFrame(), CAN_GetStatus(), CAN_ClearStatus()
+   2023-06-30       CDT             Added 3 APIs for local-reset.Refine local function CAN_ReadRxBuf(), CAN_WriteTxBuf()
+                                    Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -134,8 +136,8 @@
     ((seg1) >= ((seg2) + 1U))                   &&                             \
     ((seg2) >= (sjw)))
 
-/* CAN Data Length Code(DLC) */
-#define IS_CAN20_DLC(fdf, dlc)                  (((fdf) == 0U) && ((dlc) <= CAN_DLC8))
+/* FDF bit check */
+#define IS_CAN20_FDF(x)                     ((x) == 0U)
 
 /**
  * @}
@@ -171,10 +173,15 @@
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+
 /**
  * @defgroup CAN_Local_Variables CAN Local Variables
  * @{
  */
+const static uint8_t m_au8DLC2WordSize[9U] = {
+    0U, 1U, 1U, 1U, 1U, 2U, 2U, 2U, 2U
+};
+
 /**
  * @}
  */
@@ -230,7 +237,7 @@ static void CAN_InitParameterCheck(CM_CAN_TypeDef *CANx, const stc_can_init_t *p
  *   @arg  CAN_WORK_MD_SILENT:          Silent work mode. Prohibit data transmission.
  *   @arg  CAN_WORK_MD_ILB:             Internal loop back mode, just for self-test while developing.
  *   @arg  CAN_WORK_MD_ELB:             External loop back mode, just for self-test while developing.
- *   @arg  CAN_WORK_MD_ELB_SILENT:      External lopp back silent mode, just for self-test while developing.
+ *   @arg  CAN_WORK_MD_ELB_SILENT:      External loop back silent mode, just for self-test while developing.
  *                                      It is forbidden to respond to received frames and error frames,
  *                                      but data can be transmitted.
  * @retval None
@@ -329,11 +336,14 @@ static void CAN_WriteTxBuf(CM_CAN_TypeDef *CANx, const stc_can_tx_frame_t *pstcT
     reg32TBUF[0U] = pstcTx->u32ID;
     reg32TBUF[1U] = pstcTx->u32Ctrl;
 
-    if (pstcTx->DLC != CAN_DLC0) {
-        u8WordLen = (uint8_t)((pstcTx->DLC + 3U) / 4U);
-        for (i = 0U; i < u8WordLen; i++) {
-            reg32TBUF[2U + i] = pu32TxData[i];
-        }
+    u8WordLen = m_au8DLC2WordSize[pstcTx->DLC];
+    if ((pstcTx->FDF == 0U) && (u8WordLen > 2U)) {
+        /* Maximum size of data payload is 8 bytes(2words) for classical CAN frame. */
+        u8WordLen = 2U;
+    }
+
+    for (i = 0U; i < u8WordLen; i++) {
+        reg32TBUF[2U + i] = pu32TxData[i];
     }
 }
 
@@ -356,7 +366,18 @@ static void CAN_ReadRxBuf(const CM_CAN_TypeDef *CANx, stc_can_rx_frame_t *pstcRx
     pstcRx->u32ID   = reg32RBUF[0U];
     pstcRx->u32Ctrl = reg32RBUF[1U];
 
-    u8WordLen = (uint8_t)((pstcRx->DLC + 3U) / 4U);
+    if (pstcRx->IDE == 0U) {
+        pstcRx->u32ID &= 0x7FFUL;
+    } else {
+        pstcRx->u32ID &= 0x1FFFFFFFUL;
+    }
+
+    u8WordLen = m_au8DLC2WordSize[pstcRx->DLC];
+    if ((pstcRx->FDF == 0U) && (u8WordLen > 2U)) {
+        /* Maximum size of data payload is 8 bytes(2words) for classical CAN frame. */
+        u8WordLen = 2U;
+    }
+
     for (i = 0U; i < u8WordLen; i++) {
         pu32RxData[i] = reg32RBUF[2U + i];
     }
@@ -391,8 +412,7 @@ int32_t CAN_Init(CM_CAN_TypeDef *CANx, const stc_can_init_t *pstcCanInit)
 #if defined __DEBUG
         CAN_InitParameterCheck(CANx, pstcCanInit);
 #endif
-
-        /* Software reset. */
+        /* Local reset. */
         SET_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET);
         /* Configures nominal bit time. */
         WRITE_REG32(CANx->SBT, ((pstcCanInit->stcBitCfg.u32TimeSeg1 - 2U) | \
@@ -454,7 +474,7 @@ int32_t CAN_StructInit(stc_can_init_t *pstcCanInit)
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
     if (pstcCanInit != NULL) {
-        /*
+        /**
          * Synchronization Segment(SS): Fixed as 1TQ
          * Propagation Time Segment(PTS) and Phase Buffer Segment 1(PBS1): 15TQs
          * Phase Buffer Segment 2(PBS2): 4TQs
@@ -489,7 +509,7 @@ int32_t CAN_StructInit(stc_can_init_t *pstcCanInit)
 }
 
 /**
- * @brief  Deinitializes the specified CAN peripheral registers to their default reset values.
+ * @brief  Deinitialize the specified CAN peripheral registers to their default reset values.
  * @param  [in]  CANx                   Pointer to CAN instance register base.
  *                                      This parameter can be a value of the following:
  *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
@@ -594,8 +614,7 @@ int32_t CAN_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8TxBufType, const stc_can
     DDL_ASSERT(IS_CAN_TX_BUF_TYPE(u8TxBufType));
 
     if (pstcTx != NULL) {
-        DDL_ASSERT(IS_CAN20_DLC(pstcTx->FDF, pstcTx->DLC));
-
+        DDL_ASSERT(IS_CAN20_FDF(pstcTx->FDF));
         if (u8TxBufType == CAN_TX_BUF_PTB) {
             if (READ_REG8_BIT(CANx->TCMD, CAN_TCMD_TPE) != 0U) {
                 /* PTB is being transmitted. */
@@ -609,7 +628,7 @@ int32_t CAN_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8TxBufType, const stc_can
                 u8RTIE  = READ_REG8(CANx->RTIE);
                 u8TCTRL = READ_REG8(CANx->TCTRL);
                 if (((u8RTIE & CAN_RTIE_TSFF) == CAN_RTIE_TSFF) || \
-                        ((u8TCTRL & CAN_TCTRL_TSSTAT) == CAN_TCTRL_TSSTAT)) {
+                    ((u8TCTRL & CAN_TCTRL_TSSTAT) == CAN_TCTRL_TSSTAT)) {
                     /* All STBs are filled. */
                     i32Ret = LL_ERR_BUF_FULL;
                 }
@@ -712,6 +731,54 @@ int32_t CAN_GetRxFrame(CM_CAN_TypeDef *CANx, stc_can_rx_frame_t *pstcRx)
     return i32Ret;
 }
 
+/** Request a local-reset. The some register (e.g for node configuration) can only be modified if RESET=1.
+ *  Bit RESET forces several components to a reset state, see the reference manual for details.
+ * @brief
+ * @param  [in]  CANx                   Pointer to CAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
+ * @retval None
+ */
+void CAN_EnterLocalReset(CM_CAN_TypeDef *CANx)
+{
+    DDL_ASSERT(IS_CAN_UNIT(CANx));
+    SET_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET);
+}
+
+/** Exit the local-reset state. A CAN node will participate in CAN communication after RESET is switched to 0 after 11 CAN bit times.
+ * @brief
+ * @param  [in]  CANx                   Pointer to CAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
+ * @retval None
+ */
+void CAN_ExitLocalReset(CM_CAN_TypeDef *CANx)
+{
+    DDL_ASSERT(IS_CAN_UNIT(CANx));
+    CLR_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET);
+}
+
+/** Check whether CAN is in the local-reset state.
+ * @brief
+ * @param  [in]  CANx                   Pointer to CAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
+ * @retval An @ref en_flag_status_t enumeration type value.
+ */
+en_flag_status_t CAN_GetLocalResetStatus(CM_CAN_TypeDef *CANx)
+{
+    en_flag_status_t enStatus = RESET;
+
+    DDL_ASSERT(IS_CAN_UNIT(CANx));
+
+    if (READ_REG8_BIT(CANx->CFG_STAT, CAN_CFG_STAT_RESET) != 0U) {
+        /* The CAN is in local-reset state */
+        enStatus = SET;
+    }
+
+    return enStatus;
+}
+
 /**
  * @brief  Get the status of specified flag.
  * @param  [in]  CANx                   Pointer to CAN instance register base.
@@ -769,7 +836,7 @@ en_flag_status_t CAN_GetStatus(const CM_CAN_TypeDef *CANx, uint32_t u32Flag)
     u8ERRINT  = READ_REG8_BIT(CANx->ERRINT, u8ERRINT);
 
     if ((u8CFGSTAT != 0U) || (u8RCTRL != 0U) || \
-            (u8RTIE != 0U) || (u8RTIF != 0U) || (u8ERRINT != 0U)) {
+        (u8RTIE != 0U) || (u8RTIF != 0U) || (u8ERRINT != 0U)) {
         enStatus = SET;
     }
 
@@ -1120,7 +1187,7 @@ void CAN_TTC_Cmd(CM_CAN_TypeDef *CANx, en_functional_state_t enNewState)
 }
 
 /**
- * @brief  Get status of the sepcified TTCAN flag.
+ * @brief  Get status of the specified TTCAN flag.
  * @param  [in]  CANx                   Pointer to CAN instance register base.
  *                                      This parameter can be a value of the following:
  *   @arg  CM_CAN or CM_CANx:           CAN instance register base.
@@ -1270,7 +1337,7 @@ int32_t CAN_TTC_FillTxFrame(CM_CAN_TypeDef *CANx, uint8_t u8CANTTCTxBuf, const s
     DDL_ASSERT(IS_TTCAN_TX_BUF_SEL(u8CANTTCTxBuf));
 
     if (pstcTx != NULL) {
-        DDL_ASSERT(IS_CAN20_DLC(pstcTx->FDF, pstcTx->DLC));
+        DDL_ASSERT(IS_CAN20_FDF(pstcTx->FDF));
 
         if (READ_REG8_BIT(CANx->TCTRL, CAN_TX_BUF_FULL) == CAN_TX_BUF_FULL) {
             i32Ret = LL_ERR_BUF_FULL;

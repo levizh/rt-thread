@@ -123,6 +123,7 @@
 #define IS_RTC_ALARM_WEEKDAY(x)                     (((x) >= 0x01U) && ((x) <= 0x7FU))
 
 #define IS_RTC_COMPEN_VALUE(x)                      ((x) <= 0x1FFU)
+
 /**
  * @}
  */
@@ -648,7 +649,7 @@ int32_t RTC_SetTime(uint8_t u8Format, stc_rtc_time_t *pstcRtcTime)
                 pstcRtcTime->u8Second = RTC_DEC2BCD(pstcRtcTime->u8Second);
             }
             if ((RTC_HOUR_FMT_12H == READ_REG32(bCM_RTC->CR1_b.AMPM)) &&
-                    (RTC_HOUR_12H_PM == pstcRtcTime->u8AmPm)) {
+                (RTC_HOUR_12H_PM == pstcRtcTime->u8AmPm)) {
                 SET_REG8_BIT(pstcRtcTime->u8Hour, RTC_HOUR_12H_PM);
             }
 
@@ -769,7 +770,7 @@ int32_t RTC_SetAlarm(uint8_t u8Format, stc_rtc_alarm_t *pstcRtcAlarm)
             pstcRtcAlarm->u8AlarmMinute = RTC_DEC2BCD(pstcRtcAlarm->u8AlarmMinute);
         }
         if ((RTC_HOUR_FMT_12H == READ_REG32(bCM_RTC->CR1_b.AMPM)) &&
-                (RTC_HOUR_12H_PM == pstcRtcAlarm->u8AlarmAmPm)) {
+            (RTC_HOUR_12H_PM == pstcRtcAlarm->u8AlarmAmPm)) {
             SET_REG8_BIT(pstcRtcAlarm->u8AlarmHour, RTC_HOUR_12H_PM);
         }
 
@@ -927,8 +928,8 @@ void RTC_ClearStatus(uint32_t u32Flag)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

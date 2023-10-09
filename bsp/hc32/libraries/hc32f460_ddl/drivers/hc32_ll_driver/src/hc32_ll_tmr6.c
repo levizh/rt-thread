@@ -1,14 +1,18 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_tmr6.c
- * @brief This file provides firmware functions to manage the TMR6 (TMR6).
+ * @brief This file provides firmware functions to manage the TMR6(TMR6).
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Define variable in the beginning of the function
    2023-01-15       CDT             Modify structure stc_timer6_init_t to stc_tmr6_init_t
-   2023-01-15       CDT             Modify API TMR6_SetFilterClockDiv()
+                                    Modify API TMR6_SetFilterClockDiv()
+   2023-06-30       CDT             Modify typo
+                                    Delete union in stc_tmr6_init_t structure
+                                    Modify API TMR6_GetCountDir()
+   2023-09-30       CDT             Modify API TMR6_Init()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -359,15 +363,13 @@ int32_t TMR6_Init(CM_TMR6_TypeDef *TMR6x, const stc_tmr6_init_t *pstcTmr6Init)
             DDL_ASSERT(IS_VALID_CNT_CLK_DIV(pstcTmr6Init->sw_count.u32ClockDiv));
 
             MODIFY_REG32(TMR6x->GCONR, TMR6_INIT_MASK, (pstcTmr6Init->sw_count.u32CountMode | pstcTmr6Init->sw_count.u32CountDir | \
-                         pstcTmr6Init->sw_count.u32ClockDiv));
+                                                        pstcTmr6Init->sw_count.u32ClockDiv));
         } else {
             /* Hardware count */
-            if (0U != pstcTmr6Init->hw_count.u32CountUpCond) {
-                DDL_ASSERT(IS_VALID_CNT_UP_COND(pstcTmr6Init->hw_count.u32CountUpCond));
-            }
-            if (0U != pstcTmr6Init->hw_count.u32CountDownCond) {
-                DDL_ASSERT(IS_VALID_CNT_DOWN_COND(pstcTmr6Init->hw_count.u32CountDownCond));
-            }
+            DDL_ASSERT(IS_VALID_CNT_UP_COND(pstcTmr6Init->hw_count.u32CountUpCond) ||
+                       (pstcTmr6Init->hw_count.u32CountUpCond == TMR6_CNT_UP_COND_INVD));
+            DDL_ASSERT(IS_VALID_CNT_DOWN_COND(pstcTmr6Init->hw_count.u32CountDownCond) ||
+                       (pstcTmr6Init->hw_count.u32CountDownCond == TMR6_CNT_DOWN_COND_INVD));
 
             WRITE_REG32(TMR6x->HCUPR, pstcTmr6Init->hw_count.u32CountUpCond);
             WRITE_REG32(TMR6x->HCDOR, pstcTmr6Init->hw_count.u32CountDownCond);
@@ -414,13 +416,13 @@ void TMR6_SetCountDir(CM_TMR6_TypeDef *TMR6x, uint32_t u32Dir)
  * @brief  Set timer6 base count direction
  * @param  [in] TMR6x               Timer6 unit
  *  @arg CM_TMR6_x
- * @retval uint32_t                 Count direction @ref TMR6_Count_Dir_Define
+ * @retval uint32_t                 Count direction @ref TMR6_Count_Dir_Status_Define
  */
 uint32_t TMR6_GetCountDir(CM_TMR6_TypeDef *TMR6x)
 {
     /* Check parameters */
     DDL_ASSERT(IS_VALID_TMR6_UNIT(TMR6x));
-    return READ_REG32_BIT(TMR6x->GCONR, TMR6_GCONR_DIR);
+    return READ_REG32_BIT(TMR6x->STFLR, TMR6_STFLR_DIRF);
 }
 
 /**
@@ -817,32 +819,32 @@ uint32_t TMR6_GetPeriodNum(const CM_TMR6_TypeDef *TMR6x)
  */
 void TMR6_DeInit(CM_TMR6_TypeDef *TMR6x)
 {
-    uint32_t u32RefRegRstValue;
+    uint32_t u32RefRegResetValue;
     /* Check parameters */
     DDL_ASSERT(IS_VALID_TMR6_UNIT(TMR6x));
-    u32RefRegRstValue = TMR6_REG_RST_VALUE_U16;
+    u32RefRegResetValue = TMR6_REG_RST_VALUE_U16;
 
     WRITE_REG32(TMR6x->GCONR, TMR6_REG_GCONR_RST_VALUE);
     WRITE_REG32(TMR6x->CNTER, 0UL);
-    WRITE_REG32(TMR6x->PERAR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->PERBR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->PERCR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMAR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMBR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMCR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMDR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMER, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->GCMFR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMAR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMBR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMCR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMDR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMER, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->SCMFR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->DTUAR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->DTDAR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->DTUBR, u32RefRegRstValue);
-    WRITE_REG32(TMR6x->DTDBR, u32RefRegRstValue);
+    WRITE_REG32(TMR6x->PERAR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->PERBR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->PERCR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMAR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMBR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMCR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMDR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMER, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->GCMFR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMAR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMBR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMCR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMDR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMER, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->SCMFR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->DTUAR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->DTDAR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->DTUBR, u32RefRegResetValue);
+    WRITE_REG32(TMR6x->DTDBR, u32RefRegResetValue);
     WRITE_REG32(TMR6x->ICONR, 0UL);
     WRITE_REG32(TMR6x->BCONR, 0UL);
     WRITE_REG32(TMR6x->DCONR, 0UL);
@@ -980,7 +982,7 @@ void TMR6_SetSpecialCompareValue(CM_TMR6_TypeDef *TMR6x, uint32_t u32Index, uint
 }
 
 /**
- * @brief  Timer6 set dead time registerr
+ * @brief  Timer6 set dead time register
  * @param  [in] TMR6x               Timer6 unit
  *  @arg CM_TMR6_x
  * @param  [in] u32Index            Special compare register to be write, @ref TMR6_DeadTime_Reg_Define
@@ -1514,17 +1516,18 @@ void TMR6_HWClearCondCmd(CM_TMR6_TypeDef *TMR6x, uint32_t u32Cond, en_functional
 int32_t TMR6_StructInit(stc_tmr6_init_t *pstcTmr6Init)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
-    uint32_t u32RefRegRstValue;
+    uint32_t u32RefRegResetValue;
 
     /* Check structure pointer */
     if (NULL != pstcTmr6Init) {
         pstcTmr6Init->u8CountSrc = TMR6_CNT_SRC_SW;
-        pstcTmr6Init->sw_count.u32ClockDiv = TMR6_CLK_DIV1;
+        pstcTmr6Init->sw_count.u32ClockDiv  = TMR6_CLK_DIV1;
         pstcTmr6Init->sw_count.u32CountMode = TMR6_MD_SAWTOOTH;
-        pstcTmr6Init->sw_count.u32CountDir = TMR6_CNT_UP;
-
-        u32RefRegRstValue = TMR6_REG_RST_VALUE_U16;
-        pstcTmr6Init->u32PeriodValue = u32RefRegRstValue;
+        pstcTmr6Init->sw_count.u32CountDir  = TMR6_CNT_UP;
+        pstcTmr6Init->hw_count.u32CountUpCond   = TMR6_CNT_UP_COND_INVD;
+        pstcTmr6Init->hw_count.u32CountDownCond = TMR6_CNT_DOWN_COND_INVD;
+        u32RefRegResetValue = TMR6_REG_RST_VALUE_U16;
+        pstcTmr6Init->u32PeriodValue = u32RefRegResetValue;
         i32Ret = LL_OK;
     }
     return i32Ret;
@@ -1645,18 +1648,18 @@ int32_t TMR6_ZMaskConfigStructInit(stc_tmr6_zmask_config_t *pstcZMaskConfig)
 int32_t TMR6_PWM_StructInit(stc_tmr6_pwm_init_t *pstcPwmInit)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
-    uint32_t u32RefRegRstValue;
+    uint32_t u32RefRegResetValue;
 
     /* Check structure pointer */
     if (NULL != pstcPwmInit) {
         pstcPwmInit->u32StartPolarity = TMR6_PWM_LOW;
         pstcPwmInit->u32StopPolarity = TMR6_PWM_LOW;
 
-        u32RefRegRstValue = TMR6_REG_RST_VALUE_U16;
+        u32RefRegResetValue = TMR6_REG_RST_VALUE_U16;
         pstcPwmInit->u32CompareMatchPolarity = TMR6_PWM_LOW;
         pstcPwmInit->u32PeriodMatchPolarity = TMR6_PWM_LOW;
         pstcPwmInit->u32StartStopHold = TMR6_PWM_START_STOP_CHANGE;
-        pstcPwmInit->u32CompareValue = u32RefRegRstValue;
+        pstcPwmInit->u32CompareValue = u32RefRegResetValue;
         i32Ret = LL_OK;
     }
     return i32Ret;
@@ -1672,8 +1675,8 @@ int32_t TMR6_PWM_StructInit(stc_tmr6_pwm_init_t *pstcPwmInit)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

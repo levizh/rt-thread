@@ -7,6 +7,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Support re-target printf for IAR EW version 9 or later
+   2023-06-30       CDT             Modify register USART DR to USART TDR
+                                    Prohibit DDL_DelayMS and DDL_DelayUS functions from being optimized
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -138,7 +140,11 @@ __STATIC_INLINE uint32_t LL_GetPrintTimeout(void)
  * @param [in] u32Count                   ms
  * @retval None
  */
-void DDL_DelayMS(uint32_t u32Count)
+#if defined (__CC_ARM)  /*!< ARM Compiler */
+#pragma push
+#pragma O0
+#endif
+__NO_OPTIMIZE void DDL_DelayMS(uint32_t u32Count)
 {
     __IO uint32_t i;
     const uint32_t u32Cyc = (HCLK_VALUE + 10000UL - 1UL) / 10000UL;
@@ -155,7 +161,7 @@ void DDL_DelayMS(uint32_t u32Count)
  * @param [in] u32Count                   us
  * @retval None
  */
-void DDL_DelayUS(uint32_t u32Count)
+__NO_OPTIMIZE void DDL_DelayUS(uint32_t u32Count)
 {
     __IO uint32_t i;
     const uint32_t u32Cyc = (HCLK_VALUE + 10000000UL - 1UL) / 10000000UL;
@@ -166,6 +172,9 @@ void DDL_DelayUS(uint32_t u32Count)
         }
     }
 }
+#if defined (__CC_ARM)  /*!< ARM Compiler */
+#pragma pop
+#endif
 
 /**
  * @brief This function Initializes the interrupt frequency of the SysTick.
@@ -400,7 +409,7 @@ __WEAKDEF int32_t DDL_ConsoleOutputChar(char cData)
         }
 
         if (0UL != u32TxEmpty) {
-            WRITE_REG32(USARTx->DR, (uint32_t)cData);
+            WRITE_REG16(USARTx->TDR, (uint16_t)cData);
             i32Ret = LL_OK;
         } else {
             i32Ret = LL_ERR_TIMEOUT;

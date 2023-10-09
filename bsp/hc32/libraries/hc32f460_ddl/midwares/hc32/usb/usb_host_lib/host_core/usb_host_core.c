@@ -125,7 +125,7 @@ void usb_host_mainprocess(usb_core_instance *pdev, stc_usb_port_identify *pstcPo
     }
 
     if ((host_driver_ifdevconnected(pdev) == 0UL) && (phost->host_state == HOST_IDLE)
-            && (host_driver_getvbusdrivestate(pdev) == 0UL)) {
+        && (host_driver_getvbusdrivestate(pdev) == 0UL)) {
         phost->host_state = HOST_DEV_DISCONNECTED;
     }
 
@@ -298,8 +298,8 @@ HOST_STATUS usb_host_enumprocess(usb_core_instance *pdev, USBH_HOST *phost)
     if (tmp_enum_state == ENUM_GET_FULL_CFGDESC) {
         if (usb_host_getcfgdesc(pdev, phost, phost->device_prop.devcfgdesc.wTotalLength) == HSTATUS_OK) {
             phost->user_callbk->huser_cfgdescavailable(&phost->device_prop.devcfgdesc,
-                    phost->device_prop.devitfdesc,
-                    phost->device_prop.devepdesc[0]);
+                                                       phost->device_prop.devitfdesc,
+                                                       phost->device_prop.devepdesc[0]);
             phost->enum_state = ENUM_GET_MFCSTRINGDESC;
         }
     }
@@ -309,7 +309,7 @@ HOST_STATUS usb_host_enumprocess(usb_core_instance *pdev, USBH_HOST *phost)
                                        phost,
                                        phost->device_prop.devdesc.iManufacturer,
                                        Local_Buffer,
-                                       0xffu) == HSTATUS_OK) {
+                                       0xFFU) == HSTATUS_OK) {
                 phost->user_callbk->huser_mfcstring(Local_Buffer);
                 phost->enum_state = ENUM_GET_PRODUCT_STRINGDESC;
             }
@@ -324,7 +324,7 @@ HOST_STATUS usb_host_enumprocess(usb_core_instance *pdev, USBH_HOST *phost)
                                        phost,
                                        phost->device_prop.devdesc.iProduct,
                                        Local_Buffer,
-                                       0xffu) == HSTATUS_OK) {
+                                       0xFFU) == HSTATUS_OK) {
                 phost->user_callbk->huser_productstring(Local_Buffer);
                 phost->enum_state = ENUM_GET_SERIALNUM_STRINGDESC;
             }
@@ -339,7 +339,7 @@ HOST_STATUS usb_host_enumprocess(usb_core_instance *pdev, USBH_HOST *phost)
                                        phost,
                                        phost->device_prop.devdesc.iSerialNumber,
                                        Local_Buffer,
-                                       0xffu) == HSTATUS_OK) {
+                                       0xFFU) == HSTATUS_OK) {
                 phost->user_callbk->huser_serialnum(Local_Buffer);
                 phost->enum_state = ENUM_SET_CFG;
             }

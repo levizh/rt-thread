@@ -248,10 +248,10 @@ typedef struct {
 /**
  * @brief XTAL driver ability
  * @note
- @verbatim
+ * @verbatim
  *            High      |       Mid       |       Low       |      ULow     |
  *          [20~25]     |     [16~20)     |     (8~16)      |     [4~8]     |
- @endverbatim
+ * @endverbatim
  */
 #define CLK_XTAL_DRV_HIGH               (0x00U << CMU_XTALCFGR_XTALDRV_POS)
 #define CLK_XTAL_DRV_MID                (0x01U << CMU_XTALCFGR_XTALDRV_POS)

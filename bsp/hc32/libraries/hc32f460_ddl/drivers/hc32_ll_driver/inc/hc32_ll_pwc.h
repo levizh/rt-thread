@@ -7,7 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-06-30       CDT             Refine API PWC_STOP_Enter().
+   2022-06-30       CDT             Refine API PWC_STOP_Enter()
+   2023-06-30       CDT             Modify group PWC_Stop_Type
+   2023-09-30       CDT             Add function PWC_LVD_DeInit
+                                    Modify the PWC_LVD_Detection_Voltage_Sel comment
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -167,8 +170,9 @@ typedef struct {
  * @defgroup PWC_Stop_Type PWC stop mode type.
  * @{
  */
-#define PWC_STOP_WFI                    (0x00U)
-#define PWC_STOP_WFE                    (0x01U)
+#define PWC_STOP_WFI                    (0x00U)                 /*!< Enter stop mode by WFI, and wake-up by interrupt handle. */
+#define PWC_STOP_WFE_INT                (0x01U)                 /*!< Enter stop mode by WFE, and wake-up by interrupt request. */
+#define PWC_STOP_WFE_EVT                (0x02U)                 /*!< Enter stop mode by WFE, and wake-up by event. */
 /**
  * @}
  */
@@ -177,8 +181,8 @@ typedef struct {
  * @defgroup PWC_RAM_Config Operating mode for RAM Config
  * @{
  */
-#define PWC_RAM_HIGH_SPEED              (0x8043U)     /*!< MCU operating under high frequency (lower than 240MHz) */
-#define PWC_RAM_ULOW_SPEED              (0x9062U)     /*!< MCU operating under ultra low frequency (lower than 8MHz) */
+#define PWC_RAM_HIGH_SPEED              (0x8043U)               /*!< MCU operating under high frequency (lower than 240MHz) */
+#define PWC_RAM_ULOW_SPEED              (0x9062U)               /*!< MCU operating under ultra low frequency (lower than 8MHz) */
 /**
  * @}
  */
@@ -275,9 +279,9 @@ typedef struct {
  * @{
  * @note
  * @verbatim
- *       |  LVL0  |  LVL1  |  LVL2  |  LVL3  |  LVL4  |  LVL5  |  LVL6  |  LVL7  |  EXVCC |
- * LVD1  |  2.0V  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |
- * LVD2  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |  EXVCC |
+ *       |  LVL0   |  LVL1   |  LVL2   |  LVL3   |  LVL4   |  LVL5   |  LVL6   |  LVL7   |  EXVCC |
+ * LVD1  |  2.00V  |  2.10V  |  2.30V  |  2.55V  |  2.65V  |  2.75V  |  2.85V  |  2.95V  |   --   |
+ * LVD2  |  2.10V  |  2.30V  |  2.55V  |  2.65V  |  2.75V  |  2.85V  |  2.95V  |  1.10V  |  EXVCC |
  * @endverbatim
  */
 #define PWC_LVD_THRESHOLD_LVL0          (0x00U)
@@ -586,6 +590,7 @@ void PWC_LDO_Cmd(uint16_t u16Ldo, en_functional_state_t enNewState);
 
 /* PWC LVD/PVD Function */
 int32_t PWC_LVD_Init(uint8_t u8Ch, const stc_pwc_lvd_init_t *pstcLvdInit);
+void PWC_LVD_DeInit(uint8_t u8Ch);
 int32_t PWC_LVD_StructInit(stc_pwc_lvd_init_t *pstcLvdInit);
 void PWC_LVD_Cmd(uint8_t u8Ch, en_functional_state_t enNewState);
 void PWC_LVD_ExtInputCmd(en_functional_state_t enNewState);
