@@ -8,6 +8,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add API I2C_SlaveAddrCmd(), modify API I2C_SlaveAddrConfig()
+   2023-06-30       CDT             Disable slave address function in I2C_Init()
+                                    Move macro define I2C_SRC_CLK to head file
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -68,8 +70,6 @@
 
 #define IS_I2C_7BIT_ADDR(x)             ((x) <= I2C_7BIT_MAX)
 #define IS_I2C_10BIT_ADDR(x)            ((x) <= I2C_10BIT_MAX)
-
-#define I2C_SRC_CLK                     (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK3S) >> CMU_SCFGR_PCLK3S_POS))
 
 #define IS_I2C_SPEED(x)                                                        \
 (   ((x) != 0U)                                     &&                         \
@@ -234,7 +234,7 @@ void I2C_GenerateStop(CM_I2C_TypeDef *I2Cx)
  *                                 according to i2c bus hardware parameter.
  *                     Dnfsum   -- 0 if digital filter off;
  *                                 Filter capacity if digital filter on(1 ~ 4)
- *                     Imme     -- A Immediate data, 68
+ *                     Imme     -- An Immediate data, 68
  *              step2: chose a division item which is similar and bigger than div from @ref I2C_Clock_Division.
  *         @arg pstcI2cInit->u32Baudrate : Baudrate configuration
  *         @arg pstcI2cInit->u32SclTime : Indicate SCL pin rising and falling
@@ -355,7 +355,7 @@ void I2C_DeInit(CM_I2C_TypeDef *I2Cx)
  *                                 according to i2c bus hardware parameter.
  *                     Dnfsum   -- 0 if digital filter off;
  *                                 Filter capacity if digital filter on(1 ~ 4)
- *                     Imme     -- A Immediate data, 68
+ *                     Imme     -- An Immediate data, 68
  *              step2: chose a division item which is similar and bigger than div
  *                     from @ref I2C_Clock_Division.
  *         @arg pstcI2cInit->u32Baudrate : Baudrate configuration
@@ -393,6 +393,8 @@ int32_t I2C_Init(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cInit, float3
         CLR_REG32_BIT(I2Cx->CR1, I2C_CR1_SWRST);
         /* Disable I2C peripheral */
         CLR_REG32_BIT(I2Cx->CR1, I2C_CR1_PE);
+        /* Disable slave address function */
+        CLR_REG32_BIT(I2Cx->SLR0, I2C_SLR0_SLADDR0EN);
     }
     return i32Ret;
 }
@@ -724,7 +726,7 @@ uint8_t I2C_ReadData(const CM_I2C_TypeDef *I2Cx)
  * @param [in] I2Cx                 Pointer to I2C instance register base.
  *                                  This parameter can be a value of the following:
  *         @arg CM_I2C or CM_I2Cx:  I2C instance register base.
- * @param [in] u32AckConfig         I2C ACK configurate. @ref I2C_Ack_Config
+ * @param [in] u32AckConfig         I2C ACK configure. @ref I2C_Ack_Config
  * @retval None
  */
 void I2C_AckConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AckConfig)
@@ -1022,10 +1024,10 @@ int32_t I2C_TransData(CM_I2C_TypeDef *I2Cx, uint8_t const au8TxData[], uint32_t 
                 /* Send one byte data */
                 I2C_WriteData(I2Cx, au8TxData[u32Count]);
 
-                /* Wait transfer end*/
+                /* Wait transfer end */
                 i32Ret = I2C_WaitStatus(I2Cx, I2C_FLAG_TX_CPLT, SET, u32Timeout);
 
-                /* If receive NACK*/
+                /* If receive NACK */
                 if (I2C_GetStatus(I2Cx, I2C_FLAG_NACKF) == SET) {
                     break;
                 }
@@ -1205,18 +1207,18 @@ int32_t I2C_StructInit(stc_i2c_init_t *pstcI2cInit)
 }
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #endif /* LL_I2C_ENABLE */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

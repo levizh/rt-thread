@@ -1,14 +1,14 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_cmp.h
- * @brief Head file for CMP module.
- *
+ * @brief This file contains all the functions prototypes of the CMP driver
+ *        library.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify structure stc_cmp_window_init_t
-   2022-06-30       CDT             Modify macro define for API
+                                    Modify macro define for API
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

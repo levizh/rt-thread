@@ -7,7 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Deleted redundant comments.
+   2022-10-31       CDT             Deleted redundant comments
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -98,8 +99,8 @@ extern "C"
  * @note Even-parity check error, ECC check error.
  * @{
  */
-#define SRAM_ERR_MD_NMI         (0UL)                        /*!< Non-maskable interrupt occurres while check error occurres. */
-#define SRAM_ERR_MD_RST         (1UL)                        /*!< System reset occurres while check error occurres. */
+#define SRAM_ERR_MD_NMI         (0UL)                        /*!< Non-maskable interrupt occurrence while check error occurs. */
+#define SRAM_ERR_MD_RST         (1UL)                        /*!< System reset occurrence while check error occurs. */
 /**
  * @}
  */
@@ -109,24 +110,24 @@ extern "C"
  * @{
  */
 #define SRAM_ECC_MD_INVD        (0U)                        /*!< The ECC mode is invalid. */
-#define SRAM_ECC_MD1            (SRAMC_CKCR_ECCMOD_0)       /*!< When 1-bit error occurres:
+#define SRAM_ECC_MD1            (SRAMC_CKCR_ECCMOD_0)       /*!< When 1-bit error occurs:
                                                                  ECC error corrects.
                                                                  No 1-bit-error status flag setting, no interrupt or reset.
-                                                                 When 2-bit error occurres:
+                                                                 When 2-bit error occurs:
                                                                  ECC error detects.
-                                                                 2-bit-error status flag sets and interrupt or reset occurres. */
-#define SRAM_ECC_MD2            (SRAMC_CKCR_ECCMOD_1)       /*!< When 1-bit error occurres:
+                                                                 2-bit-error status flag sets and interrupt or reset occurs. */
+#define SRAM_ECC_MD2            (SRAMC_CKCR_ECCMOD_1)       /*!< When 1-bit error occurs:
                                                                  ECC error corrects.
                                                                  1-bit-error status flag sets, no interrupt or reset.
-                                                                 When 2-bit error occurres:
+                                                                 When 2-bit error occurs:
                                                                  ECC error detects.
-                                                                 2-bit-error status flag sets and interrupt or reset occurres. */
-#define SRAM_ECC_MD3            (SRAMC_CKCR_ECCMOD)         /*!< When 1-bit error occurres:
+                                                                 2-bit-error status flag sets and interrupt or reset occurs. */
+#define SRAM_ECC_MD3            (SRAMC_CKCR_ECCMOD)         /*!< When 1-bit error occurs:
                                                                  ECC error corrects.
-                                                                 1-bit-error status flag sets and interrupt or reset occurres.
-                                                                 When 2-bit error occurres:
+                                                                 1-bit-error status flag sets and interrupt or reset occurs.
+                                                                 When 2-bit error occurs:
                                                                  ECC error detects.
-                                                                 2-bit-error status flag sets and interrupt or reset occurres. */
+                                                                 2-bit-error status flag sets and interrupt or reset occurs. */
 /**
  * @}
  */

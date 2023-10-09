@@ -7,7 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Add timing comments.
+   2022-10-31       CDT             Add timing comments
+   2023-09-30       CDT             Modify DMC timing for EXCLK frequency 60MHz -> 30MHz
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -150,21 +151,21 @@ int32_t BSP_IS42S16400J7TLI_Init(void)
 
     /* Configure DMC width && refresh period & chip & timing. */
     (void)EXMC_DMC_StructInit(&stcDmcInit);
-    stcDmcInit.u32RefreshPeriod = 900UL;
+    stcDmcInit.u32RefreshPeriod = 450UL;
     stcDmcInit.u32ColumnBitsNumber = EXMC_DMC_COLUMN_BITS_NUM8;
     stcDmcInit.u32RowBitsNumber = EXMC_DMC_ROW_BITS_NUM12;
     stcDmcInit.u32MemBurst = EXMC_DMC_BURST_1BEAT;
     stcDmcInit.u32AutoRefreshChips = EXMC_DMC_AUTO_REFRESH_2CHIPS;
 
-    /* EXCLK bus frequency@60MHz: 3.3V */
+    /* EXCLK bus frequency@30MHz: 3.3V */
     stcDmcInit.stcTimingConfig.u8CASL = 2U;
     stcDmcInit.stcTimingConfig.u8DQSS = 0U;
     stcDmcInit.stcTimingConfig.u8MRD = 2U;      /* tMRD: 2CLK */
-    stcDmcInit.stcTimingConfig.u8RAS = 3U;      /* tRAS: min=42ns */
-    stcDmcInit.stcTimingConfig.u8RC = 4U;       /* tRC:  min=63ns */
-    stcDmcInit.stcTimingConfig.u8RCD_B = 1U;    /* tRCD: min=15ns */
+    stcDmcInit.stcTimingConfig.u8RAS = 2U;      /* tRAS: min=42ns */
+    stcDmcInit.stcTimingConfig.u8RC = 2U;       /* tRC:  min=63ns */
+    stcDmcInit.stcTimingConfig.u8RCD_B = 3U;    /* tRCD: min=15ns */
     stcDmcInit.stcTimingConfig.u8RCD_P = 0U;
-    stcDmcInit.stcTimingConfig.u8RFC_B = 4U;    /* tRFC: min=63ns */
+    stcDmcInit.stcTimingConfig.u8RFC_B = 2U;    /* tRFC: min=63ns */
     stcDmcInit.stcTimingConfig.u8RFC_P = 0U;
     stcDmcInit.stcTimingConfig.u8RP_B = 1U;     /* tRP:  min=15ns */
     stcDmcInit.stcTimingConfig.u8RP_P = 0U;
@@ -172,8 +173,8 @@ int32_t BSP_IS42S16400J7TLI_Init(void)
     stcDmcInit.stcTimingConfig.u8WR = 2U;       /* tWR:  2CLK */
     stcDmcInit.stcTimingConfig.u8WTR = 1U;
     stcDmcInit.stcTimingConfig.u8XP = 1U;
-    stcDmcInit.stcTimingConfig.u8XSR = 5U;      /* tXSR: min=70ns */
-    stcDmcInit.stcTimingConfig.u8ESR = 5U;
+    stcDmcInit.stcTimingConfig.u8XSR = 3U;      /* tXSR: min=70ns */
+    stcDmcInit.stcTimingConfig.u8ESR = 3U;
     (void)EXMC_DMC_Init(&stcDmcInit);
 
     /* Configure DMC address space. */
@@ -413,8 +414,8 @@ static void BSP_SDRAM_InitSequence(uint32_t u32Chip, uint32_t u32Bank, uint32_t 
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

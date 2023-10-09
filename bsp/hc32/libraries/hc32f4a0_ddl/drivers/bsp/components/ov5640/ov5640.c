@@ -396,8 +396,8 @@ static void OV5640_I2C_Write(const stc_ov5640_ll_t *pstcOv5640LL, uint16_t u16Re
 
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

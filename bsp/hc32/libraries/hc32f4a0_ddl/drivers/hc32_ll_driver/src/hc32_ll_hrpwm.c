@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -73,7 +74,7 @@
 (   ((x) >= HRPWM_CH_MIN)                       &&                             \
     ((x) <= HRPWM_CH_MAX))
 
-/*! Parameter valid check for HRPWM caliration unit */
+/*! Parameter valid check for HRPWM calibration unit */
 #define IS_VALID_HRPWM_CAL_UNIT(x)                                             \
 (   (HRPWM_CAL_UNIT0 == (x))                    ||                             \
     (HRPWM_CAL_UNIT1 == (x)))
@@ -266,7 +267,7 @@ void HRPWM_ChNegativeAdjustCmd(uint32_t u32Ch, en_functional_state_t enNewState)
 }
 
 /**
- * @brief  HRPWM positive edge adjust delay counts configration for specified channel
+ * @brief  HRPWM positive edge adjust delay counts configuration for specified channel
  * @param  [in] u32Ch               Channel, the parameter should range from HRPWM_CH_MIN to HRPWM_CH_MAX
  * @param  [in] u8DelayNum          Delay counts of minimum delay time.
  * @retval None
@@ -282,7 +283,7 @@ void HRPWM_ChPositiveAdjustConfig(uint32_t u32Ch, uint8_t u8DelayNum)
 }
 
 /**
- * @brief  HRPWM negative edge adjust delay counts configration for specified channel
+ * @brief  HRPWM negative edge adjust delay counts configuration for specified channel
  * @param  [in] u32Ch               Channel, the parameter should range from HRPWM_CH_MIN to HRPWM_CH_MAX
  * @param  [in] u8DelayNum          Delay counts of minimum delay time.
  * @retval None
@@ -373,8 +374,8 @@ en_functional_state_t HRPWM_CondConfirm(void)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

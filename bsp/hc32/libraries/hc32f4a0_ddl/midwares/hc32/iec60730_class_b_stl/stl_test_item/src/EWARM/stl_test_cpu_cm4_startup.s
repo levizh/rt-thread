@@ -12,6 +12,7 @@
 ;/*  Date             Author          Notes                                  */
 ;/*  2022-09-14       CDT             First version                          */
 ;/*  2022-12-20       CDT             Load data to R0 before USAT            */
+;/*  2023-05-31       CDT             Typo: Veriry -> Verify                 */
 ;/****************************************************************************/
 
             SECTION constdata:CONST(2)
@@ -69,7 +70,7 @@ _test_cpu_reg0_reg8
             LDR R0, [R0]
             USAT R1, #10, R0                     ; Set Q(saturation) flag
             MRS R0, APSR                         ; Get APSR status register
-            CMP R0, #0x08000000                  ; Veriry Q=1
+            CMP R0, #0x08000000                  ; Verify Q=1
             BNE _test_cpu_reg0_reg13_fail        ; Fails if Q is set
 
             ; Register R1

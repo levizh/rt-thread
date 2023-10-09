@@ -56,7 +56,7 @@ extern "C"
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F4A0_LQFP176_24CXX_Configure HC32F4A0 LQFP176 24CXX Configure
+ * @defgroup EV_HC32F4A0_LQFP176_24CXX_Global_Macros EV_HC32F4A0_LQFP176 24CXX Global Macros
  * @{
  */
 /* I2C unit define */

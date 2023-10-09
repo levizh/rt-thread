@@ -8,7 +8,10 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2023-01-15       CDT             Implemented the definition of __NO_INIT for AC6 and ARM Compiler
-   2023-01-15       CDT             ARM Compiler suppress warning message: diag_1296
+                                    ARM Compiler suppress warning message: diag_1296
+   2023-06-30       CDT             Modify typo
+                                    Add __NO_OPTIMIZE configuration item
+   2023-09-30       CDT             Add attribute for __RAM_FUNC definition
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

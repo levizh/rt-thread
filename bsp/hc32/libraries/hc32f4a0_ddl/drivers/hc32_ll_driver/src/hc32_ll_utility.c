@@ -7,6 +7,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Support re-target printf for IAR EW version 9 or later
+   2023-06-30       CDT             Modify register USART DR to USART TDR
+                                    Prohibit DDL_DelayMS and DDL_DelayUS functions from being optimized
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -407,7 +409,7 @@ __WEAKDEF int32_t DDL_ConsoleOutputChar(char cData)
         }
 
         if (0UL != u32TxEmpty) {
-            WRITE_REG32(USARTx->DR, (uint32_t)cData);
+            WRITE_REG16(USARTx->TDR, (uint16_t)cData);
             i32Ret = LL_OK;
         } else {
             i32Ret = LL_ERR_TIMEOUT;

@@ -7,7 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2023-01-15       CDT             Macro name modified: from IS_AOS_TRIG_SEL to IS_AOS_TARGET
-   2023-01-15       CDT             Modified parameters name and comments of AOS_CommonTriggerCmd() and AOS_SetTriggerEventSrc()
+                                    Modified parameters name and comments of AOS_CommonTriggerCmd() and AOS_SetTriggerEventSrc()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -188,8 +188,8 @@ void AOS_SetTriggerEventSrc(uint32_t u32Target, en_event_src_t enSource)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

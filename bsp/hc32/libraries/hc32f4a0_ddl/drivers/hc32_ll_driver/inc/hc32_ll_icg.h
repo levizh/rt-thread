@@ -7,7 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2023-01-15       CDT             Delete ICG2 function.
+   2023-01-15       CDT             Delete ICG2 function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

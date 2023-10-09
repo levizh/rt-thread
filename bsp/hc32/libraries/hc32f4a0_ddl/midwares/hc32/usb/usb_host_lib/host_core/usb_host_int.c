@@ -7,9 +7,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Remove the judgment of ErrCnt when xfer error
-   2022-06-30       CDT             Add USB core ID select function
-   2022-06-30       CDT             Modify for MISRAC
-   2022-06-30       CDT             Delete comment
+                                    Add USB core ID select function
+                                    Modify for MISRAC
+                                    Delete comment
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -83,12 +83,10 @@ static void usb_host_chx_out_isr(usb_core_instance *pdev, uint8_t chnum)
 
     if (0UL != (u32hcint & USBFS_HCINT_ACK)) {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
-    }
-    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
+    } else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
         usb_host_int_unmskchhltd(pdev, chnum);
-    }
-    else if (0UL != (u32hcint & USBFS_HCINT_FRMOR)) {
+    } else if (0UL != (u32hcint & USBFS_HCINT_FRMOR)) {
         usb_host_int_unmskchhltd(pdev, chnum);
         usb_hchstop(&pdev->regs, chnum);
         usb_host_clrint(pdev, chnum, USBFS_HCINT_FRMOR);
@@ -178,12 +176,10 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
     u32eptypetmp = (u32hcchar & USBFS_HCCHAR_EPTYP) >> USBFS_HCCHAR_EPTYP_POS;
     if (0UL != (u32hcint & USBFS_HCINT_ACK)) {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
-    }
-    else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
+    } else if (0UL != (u32hcint & USBFS_HCINT_AHBERR)) {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
         usb_host_int_unmskchhltd(pdev, chnum);
-    }
-    else if (0UL != (u32hcint & USBFS_HCINT_STALL)) {
+    } else if (0UL != (u32hcint & USBFS_HCINT_STALL)) {
         usb_host_int_unmskchhltd(pdev, chnum);
         pdev->host.HC_Status[chnum] = HOST_CH_STALL;
         usb_host_clrint(pdev, chnum, USBFS_HCINT_NAK);

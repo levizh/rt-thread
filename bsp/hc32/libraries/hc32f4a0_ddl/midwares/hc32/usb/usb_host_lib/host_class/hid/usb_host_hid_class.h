@@ -138,11 +138,11 @@ extern usb_host_class_callback_func  USBH_HID_cb;
   Global function prototypes (definition in C source)
  ******************************************************************************/
 extern HOST_STATUS usb_host_set_hidreport(usb_core_instance *pdev,
-        USBH_HOST *phost,
-        uint8_t reportType,
-        uint8_t reportId,
-        uint8_t reportLen,
-        uint8_t *reportBuff);
+                                          USBH_HOST *phost,
+                                          uint8_t reportType,
+                                          uint8_t reportId,
+                                          uint8_t reportLen,
+                                          uint8_t *reportBuff);
 
 /**
  * @}

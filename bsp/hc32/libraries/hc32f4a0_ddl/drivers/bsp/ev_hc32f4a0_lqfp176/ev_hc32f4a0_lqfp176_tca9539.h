@@ -60,6 +60,10 @@ extern "C"
  ******************************************************************************/
 
 /**
+ * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Global_Macros EV_HC32F4A0_LQFP176 TCA9539 Global Macros
+ * @{
+ */
+/**
  * @defgroup BSP_TCA9539_I2C_Configure BSP TCA9539 I2C Configure
  * @{
  */
@@ -242,6 +246,9 @@ extern "C"
 /**
  * @}
  */
+/**
+ * @}
+ */
 
 /**
  * @}
@@ -255,7 +262,7 @@ extern "C"
   Global function prototypes (definition in C source)
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Exported_Functions HC32F4A0 LQFP176 EVB TCA9539 Exported Functions
+ * @addtogroup EV_HC32F4A0_LQFP176_TCA9539_Global_Functions
  * @{
  */
 void BSP_IO_Init(void);

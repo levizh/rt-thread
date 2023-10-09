@@ -8,7 +8,10 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify structure stc_cmp_window_init_t
-   2022-06-30       CDT             Modify macro define for API
+                                    Modify macro define for API
+   2023-06-30       CDT             Modify typo
+   2023-09-30       CDT             Add assert for CIEN bit in GetCmpFuncStatusAndDisFunc function
+                                    Remove redundant code in function CMP_WindowModeInit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -183,6 +186,9 @@ static void CMP_DelayUS(uint32_t u32Count)
 static uint16_t GetCmpFuncStatusAndDisFunc(CM_CMP_TypeDef *CMPx)
 {
     uint16_t u16temp;
+    /* It is possible that the interrupt may occurs after CMP status switch. */
+    DDL_ASSERT(READ_REG8_BIT(CMPx->FIR, CMP_FIR_CIEN) == 0U);
+
     /* Read CMP status */
     u16temp = (uint16_t)(uint8_t)READ_REG8_BIT(CMPx->MDR, CMP_MDR_CENB);
     /* Stop CMP function */
@@ -191,7 +197,7 @@ static uint16_t GetCmpFuncStatusAndDisFunc(CM_CMP_TypeDef *CMPx)
 }
 
 /**
- * @brief  Revcover CMP function status
+ * @brief  Recover CMP function status
  * @param  [in] CMPx                Pointer to CMP instance register base
  *   @arg  CM_CMPx
  * @param  [in] u16CmpFuncStatus    CMP function status backup value
@@ -333,7 +339,7 @@ int32_t CMP_NormalModeInit(CM_CMP_TypeDef *CMPx, const stc_cmp_init_t *pstcCmpIn
         WRITE_REG8(CMPx->PMSR, (pstcCmpInit->u16PositiveInput & CMP_PMSR_CVSL) | pstcCmpInit->u16NegativeInput);
         if ((CM_CMP1 == CMPx) || (CM_CMP3 == CMPx)) {
             if ((CMP_PMSR_CVSL_1 == (pstcCmpInit->u16PositiveInput & CMP_PMSR_CVSL)) \
-                    || (CMP_PMSR_CVSL_2 == (pstcCmpInit->u16PositiveInput & CMP_PMSR_CVSL))) {
+                || (CMP_PMSR_CVSL_2 == (pstcCmpInit->u16PositiveInput & CMP_PMSR_CVSL))) {
                 WRITE_REG16(CMPx->VISR, (pstcCmpInit->u16PositiveInput >> VISR_OFFSET) & (CMP_VISR_P3SL | CMP_VISR_P2SL));
             }
         }
@@ -617,7 +623,6 @@ int32_t CMP_WindowModeInit(uint8_t u8WinCMPx, const stc_cmp_window_init_t *pstcC
         WRITE_REG8(pCMP_MINOR->PMSR, (CMP1_POSITIVE_CMP2_INP3 & CMP_PMSR_CVSL) | pstcCmpWindowInit->u16WinVolLow);
         WRITE_REG8(pCMP_MAIN->PMSR, (CMP2_POSITIVE_CMP2_INP3 & CMP_PMSR_CVSL) | pstcCmpWindowInit->u16WinVolHigh);
         WRITE_REG16(pCMP_MINOR->VISR, (CMP1_POSITIVE_CMP2_INP3 >> VISR_OFFSET) & (CMP_VISR_P3SL | CMP_VISR_P2SL));
-        WRITE_REG16(pCMP_MAIN->VISR, (CMP2_POSITIVE_CMP2_INP3 >> VISR_OFFSET) & (CMP_VISR_P3SL | CMP_VISR_P2SL));
         /* Select window compare mode */
         SET_REG8_BIT(pCMP_MAIN->MDR, CMP_MDR_CWDE);
         /* Start CMP compare function */
@@ -717,8 +722,8 @@ void CMP_BlankWindowCmd(CM_CMP_TypeDef *CMPx, en_functional_state_t enNewState)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

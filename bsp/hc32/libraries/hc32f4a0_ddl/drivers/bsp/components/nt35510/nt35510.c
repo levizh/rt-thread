@@ -1468,7 +1468,7 @@ void NT35510_SetScanDir(stc_lcd_controller_t *pstcLCD, uint16_t u16Dir)
     /* when display dir is VERTICAL, 1963 IC change scan-direction, other IC don't change
        when display dir is HORIZONTAL, 1963 IC don't change scan-direction, other IC change */
     if (((0U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID == 0x1963U)) || \
-            ((1U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID != 0x1963U))) {
+        ((1U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID != 0x1963U))) {
         if (0U == u16Dir) {
             u16Dir = 6U;
         } else if (1U == u16Dir) {
@@ -2025,8 +2025,8 @@ void NT35510_Clear(stc_lcd_controller_t *pstcLCD, uint16_t u16RGBCode)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

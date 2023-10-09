@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Rename local variables: stcWm8731Config -> m_stcWm8731Config
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -60,13 +61,20 @@
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
-static stc_wm8731_ll_t stcWm8731Config = {0};
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_WM8731_Local_Variables EV_HC32F4A0_LQFP176 WM8731 Local Variables
+ * @{
+ */
+static stc_wm8731_ll_t m_stcWm8731Config = {0};
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F4A0_LQFP176_WM8731_Global_Functions HC32F4A0 LQFP176 EVB WM8731 Global Functions
+ * @defgroup EV_HC32F4A0_LQFP176_WM8731_Local_Functions EV_HC32F4A0_LQFP176 WM8731 Local Functions
  * @{
  */
 
@@ -101,20 +109,27 @@ static void BSP_WM8731_I2C_Write(const uint8_t *pu8Reg, const uint8_t *pu8Buf, u
 {
     (void)BSP_I2C_Write(BSP_WM8731_I2C_UNIT, BSP_WM8731_DEV_ADDR, pu8Reg, BSP_WM8731_REG_ADDR_LEN, pu8Buf, u32Len);
 }
+/**
+ * @}
+ */
 
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_WM8731_Global_Functions EV_HC32F4A0_LQFP176 WM8731 Global Functions
+ * @{
+ */
 /**
  * @brief  De-initialize the WM8731.
  * @retval None
  */
 void BSP_WM8731_DeInit(void)
 {
-    (void)WM8731_Reset(&stcWm8731Config);
+    (void)WM8731_Reset(&m_stcWm8731Config);
     BSP_I2S_DeInit();
     /* Reset the low layer of WM8731 */
-    stcWm8731Config.Delay         = NULL;
-    stcWm8731Config.Init          = NULL;
-    stcWm8731Config.Write         = NULL;
-    stcWm8731Config.Read          = NULL;
+    m_stcWm8731Config.Delay         = NULL;
+    m_stcWm8731Config.Init          = NULL;
+    m_stcWm8731Config.Write         = NULL;
+    m_stcWm8731Config.Read          = NULL;
 }
 
 /**
@@ -151,10 +166,10 @@ int32_t BSP_WM8731_Init(uint8_t u8InputDevice, uint8_t u8OutputDevice,
     stc_wm8731_init_t stcWm8731Init;
 
     /* Configuration the low layer of WM8731 */
-    stcWm8731Config.Delay         = DDL_DelayMS;
-    stcWm8731Config.Init          = BSP_WM8731_I2C_Init;
-    stcWm8731Config.Write         = BSP_WM8731_I2C_Write;
-    stcWm8731Config.Read          = NULL;
+    m_stcWm8731Config.Delay         = DDL_DelayMS;
+    m_stcWm8731Config.Init          = BSP_WM8731_I2C_Init;
+    m_stcWm8731Config.Write         = BSP_WM8731_I2C_Write;
+    m_stcWm8731Config.Read          = NULL;
     /* Configuration the WM8731 */
     stcWm8731Init.u8InputDevice  = u8InputDevice;
     stcWm8731Init.u8OutputDevice = u8OutputDevice;
@@ -163,9 +178,9 @@ int32_t BSP_WM8731_Init(uint8_t u8InputDevice, uint8_t u8OutputDevice,
     stcWm8731Init.u8Volume       = u8Volume;
     stcWm8731Init.u8DataForamt   = WM8731_DATA_FORMAT_PHILLIPS;
     stcWm8731Init.u8DataWidth    = u8DataWidth;
-    (void)WM8731_Init(&stcWm8731Config, &stcWm8731Init);
+    (void)WM8731_Init(&m_stcWm8731Config, &stcWm8731Init);
     /* Play audio */
-    (void)WM8731_Play(&stcWm8731Config);
+    (void)WM8731_Play(&m_stcWm8731Config);
     /* Init I2S */
     return BSP_I2S_Init(u32AudioFreq);
 }
@@ -232,7 +247,7 @@ void BSP_WM8731_Stop(void)
  */
 void BSP_WM8731_SetFreq(uint32_t u32AudioFreq)
 {
-    (void)WM8731_SetAudioFreq(&stcWm8731Config, u32AudioFreq);
+    (void)WM8731_SetAudioFreq(&m_stcWm8731Config, u32AudioFreq);
     (void)I2S_SetAudioFreq(BSP_WM8731_I2S_UNIT, u32AudioFreq);
 }
 
@@ -243,7 +258,7 @@ void BSP_WM8731_SetFreq(uint32_t u32AudioFreq)
  */
 void BSP_WM8731_SetVolume(uint8_t u8Volume)
 {
-    (void)WM8731_SetVolume(&stcWm8731Config, u8Volume);
+    (void)WM8731_SetVolume(&m_stcWm8731Config, u8Volume);
 }
 
 /**
@@ -372,8 +387,8 @@ __WEAKDEF int32_t BSP_I2S_Init(uint32_t u32AudioFreq)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

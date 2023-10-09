@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Modify typo
+                                    Add ETH_MAC_SetInterface function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -2291,6 +2293,7 @@ int32_t ETH_PHY_LoopBackCmd(stc_eth_handle_t *pstcEthHandle, en_functional_state
 void ETH_MAC_DeInit(void);
 int32_t ETH_MAC_Init(stc_eth_handle_t *pstcEthHandle, const stc_eth_mac_init_t *pstcMacInit);
 int32_t ETH_MAC_StructInit(stc_eth_mac_init_t *pstcMacInit);
+void ETH_MAC_SetInterface(uint32_t u32Interface);
 void ETH_MAC_SetDuplexSpeed(uint32_t u32Mode, uint32_t u32Speed);
 void ETH_MAC_SetHashTable(uint32_t u32HashHigh, uint32_t u32HashLow);
 void ETH_MAC_SetTxVlanTagValue(uint16_t u16TxTag);

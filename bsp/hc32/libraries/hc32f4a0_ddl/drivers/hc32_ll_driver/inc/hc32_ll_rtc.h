@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -178,8 +179,8 @@ typedef struct {
  * @defgroup RTC_Clock_Source RTC Clock Source
  * @{
  */
-#define RTC_CLK_SRC_XTAL32                      (0U)                              /*!< XTAL32 Clock   */
-#define RTC_CLK_SRC_LRC                         (RTC_CR3_RCKSEL | RTC_CR3_LRCEN)  /*!< RTC LRC Clock  */
+#define RTC_CLK_SRC_XTAL32                      (0U)                                    /*!< XTAL32 Clock   */
+#define RTC_CLK_SRC_LRC                         (RTC_CR3_RCKSEL | RTC_CR3_LRCEN)        /*!< RTC LRC Clock  */
 /**
  * @}
  */
@@ -292,7 +293,7 @@ typedef struct {
  */
 
 /**
- * @defgroup RTC_Intrusion_Channel RTC Intrustion Channel
+ * @defgroup RTC_Intrusion_Channel RTC Intrusion Channel
  * @{
  */
 #define RTC_INTRU_CH0                           (0x00U)
@@ -302,7 +303,7 @@ typedef struct {
  */
 
 /**
- * @defgroup RTC_Intrusion_Timestamp RTC Intrustion Timestamp
+ * @defgroup RTC_Intrusion_Timestamp RTC Intrusion Timestamp
  * @{
  */
 #define RTC_INTRU_TS_DISABLE                    (0U)

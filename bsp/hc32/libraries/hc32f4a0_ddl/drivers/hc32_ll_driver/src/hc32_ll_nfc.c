@@ -7,6 +7,9 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Typo: featrue -> feature; regsiter, Regster -> register
+                                    Modify macro: EXMC_NFC_4BIT_ECCS -> EXMC_NFC_4BIT_ECC
+                                    Change function attributes from local to global: EXMC_NFC_Read/EXMC_NFC_Write
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -204,7 +207,7 @@
  */
 
 /**
- * @defgroup EXMC_NFC_Command_Regster_Value EXMC_NFC Command Regster Value
+ * @defgroup EXMC_NFC_Command_Register_Value EXMC_NFC Command Register Value
  * @{
  */
 /*!< Command value */
@@ -272,7 +275,7 @@
  * @}
  */
 
-/*!< NFC BACR regsiter: page field value */
+/*!< NFC BACR register: page field value */
 #define NFC_BACR_PAGE_VAL                   ((uint8_t)((READ_REG32_BIT(CM_NFC->BACR, NFC_BACR_PAGE) >> NFC_BACR_PAGE_POS) & 0x3UL))
 
 /*!< NFC Page Size */
@@ -880,7 +883,7 @@ void EXMC_NFC_SetSpareAreaSize(uint8_t u8SpareSizeForUserData)
  * @param  [in] u32EccMode              ECC mode
  *         This parameter can be one of the macros group @ref EXMC_NFC_ECC_Mode
  *           @arg EXMC_NFC_1BIT_ECC:    1 bit ECC
- *           @arg EXMC_NFC_4BIT_ECCS:   4 bit ECC
+ *           @arg EXMC_NFC_4BIT_ECC:    4 bit ECC
  * @retval None
  */
 void EXMC_NFC_SetEccMode(uint32_t u32EccMode)
@@ -1330,7 +1333,7 @@ int32_t EXMC_NFC_ReadParameterPage(uint32_t u32Bank,
  *           @arg EXMC_NFC_BANK5:       NFC device bank 5
  *           @arg EXMC_NFC_BANK6:       NFC device bank 6
  *           @arg EXMC_NFC_BANK7:       NFC device bank 7
- * @param  [in] u8FeatrueAddr           The featrue address
+ * @param  [in] u8FeatureAddr           The feature address
  * @param  [in] au32Data                The data buffer
  * @param  [in] u8NumWords              The number of words to set
  * @param  [in] u32Timeout              The operation timeout value(Max value @ref EXMC_NFC_Max_Timeout)
@@ -1340,7 +1343,7 @@ int32_t EXMC_NFC_ReadParameterPage(uint32_t u32Bank,
  *           - LL_ERR_INVD_PARAM:       The pointer au32Data value is NULL or u8NumWords value is 0.
  * @note Block waiting until operation complete if u32Timeout value is EXMC_NFC_MAX_TIMEOUT.
  */
-int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
+int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatureAddr,
                             const uint32_t au32Data[], uint8_t u8NumWords, uint32_t u32Timeout)
 {
     uint8_t i;
@@ -1352,7 +1355,7 @@ int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
         EXMC_NFC_ClearStatus(NFC_FLAG_RB_BANKx_MASK(u32Bank));
 
         WRITE_REG32(CM_NFC->CMDR, CMD_SET_FEATURE(u32Bank));
-        WRITE_REG32(CM_NFC->CMDR, CMD_SET_FEATURE_ADDR(u32Bank, u8FeatrueAddr));
+        WRITE_REG32(CM_NFC->CMDR, CMD_SET_FEATURE_ADDR(u32Bank, u8FeatureAddr));
 
         for (i = 0U; i < u8NumWords; i++) {
             NFC_DATR_REG32(i) = au32Data[i];
@@ -1378,7 +1381,7 @@ int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
  *           @arg EXMC_NFC_BANK5:       NFC device bank 5
  *           @arg EXMC_NFC_BANK6:       NFC device bank 6
  *           @arg EXMC_NFC_BANK7:       NFC device bank 7
- * @param  [in] u8FeatrueAddr           The featrue address
+ * @param  [in] u8FeatureAddr           The feature address
  * @param  [out] au32Data               The data buffer
  * @param  [in] u8NumWords              The number of words to get
  * @param  [in] u32Timeout              The operation timeout value(Max value @ref EXMC_NFC_Max_Timeout)
@@ -1388,7 +1391,7 @@ int32_t EXMC_NFC_SetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
  *           - LL_ERR_INVD_PARAM:       The pointer au32Data value is NULL or u8NumWords value is 0.
  * @note Block waiting until operation complete if u32Timeout value is EXMC_NFC_MAX_TIMEOUT.
  */
-int32_t EXMC_NFC_GetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
+int32_t EXMC_NFC_GetFeature(uint32_t u32Bank, uint8_t u8FeatureAddr,
                             uint32_t au32Data[], uint8_t u8NumWords, uint32_t u32Timeout)
 {
     uint8_t i;
@@ -1400,7 +1403,7 @@ int32_t EXMC_NFC_GetFeature(uint32_t u32Bank, uint8_t u8FeatrueAddr,
         EXMC_NFC_ClearStatus(NFC_FLAG_RB_BANKx_MASK(u32Bank));
 
         WRITE_REG32(CM_NFC->CMDR, CMD_GET_FEATURE(u32Bank));
-        WRITE_REG32(CM_NFC->CMDR, CMD_GET_FEATURE_ADDR(u32Bank, u8FeatrueAddr));
+        WRITE_REG32(CM_NFC->CMDR, CMD_GET_FEATURE_ADDR(u32Bank, u8FeatureAddr));
 
         i32Ret = EXMC_NFC_WaitFlagUntilTo(NFC_FLAG_RB_BANKx_MASK(u32Bank), SET, u32Timeout);
         if (LL_OK == i32Ret) {
@@ -1575,8 +1578,8 @@ int32_t EXMC_NFC_Read(uint32_t u32Bank, uint32_t u32Page, uint32_t u32Col,
  * @note Block waiting until operation complete if u32Timeout value is EXMC_NFC_MAX_TIMEOUT.
  */
 int32_t EXMC_NFC_Write(uint32_t u32Bank, uint32_t u32Page, uint32_t u32Col,
-                        const uint32_t au32Data[], uint32_t u32NumWords,
-                        en_functional_state_t enEccState, uint32_t u32Timeout)
+                       const uint32_t au32Data[], uint32_t u32NumWords,
+                       en_functional_state_t enEccState, uint32_t u32Timeout)
 {
     uint32_t i;
     uint64_t u64Value;
@@ -1809,8 +1812,8 @@ int32_t EXMC_NFC_WritePageHwEcc(uint32_t u32Bank, uint32_t u32Page,
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /**
  * @}

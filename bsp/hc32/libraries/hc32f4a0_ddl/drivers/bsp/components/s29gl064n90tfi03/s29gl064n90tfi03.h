@@ -139,8 +139,8 @@ int32_t S29GL064_ProgramBuffer(uint32_t u32MemoryBaseAddr,
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #ifdef __cplusplus
 }

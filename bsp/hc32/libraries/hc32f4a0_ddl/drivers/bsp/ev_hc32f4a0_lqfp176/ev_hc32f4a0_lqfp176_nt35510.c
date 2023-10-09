@@ -8,6 +8,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2023-01-15       CDT             Optimize function arguments
+   2023-09-30       CDT             Modify SMC timing parameter: EXCLK 60MHz -> 30MHz
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -211,10 +212,12 @@ static int32_t LCD_SMC_Init(void)
         stcSmcInit.stcChipConfig.u32WriteBurstLen  = EXMC_SMC_WRITE_BURST_4BEAT;
         stcSmcInit.stcChipConfig.u32ReadMode  = EXMC_SMC_READ_SYNC;
         stcSmcInit.stcChipConfig.u32WriteMode  = EXMC_SMC_WRITE_SYNC;
-        stcSmcInit.stcTimingConfig.u8RC = 8U;
-        stcSmcInit.stcTimingConfig.u8WC = 4U;
-        stcSmcInit.stcTimingConfig.u8CEOE = 1U;
-        stcSmcInit.stcTimingConfig.u8WP = 2U;
+
+        /* EXCLK bus frequency@30MHz: 3.3V */
+        stcSmcInit.stcTimingConfig.u8RC = 12U;      /* tRCFM: min=400ns, tRDHFM: min=250ns, tRDLFM: min=150ns */
+        stcSmcInit.stcTimingConfig.u8WC = 2U;       /* tWC: min=33ns, tWRH: min=15ns, tWRL: min=15ns */
+        stcSmcInit.stcTimingConfig.u8CEOE = 7U;
+        stcSmcInit.stcTimingConfig.u8WP = 1U;       /* tWRL: min=15ns */
         stcSmcInit.stcTimingConfig.u8PC = 4U;
         stcSmcInit.stcTimingConfig.u8TR = 1U;
         (void)EXMC_SMC_Init(BSP_NT35510_CHIP, &stcSmcInit);
@@ -528,8 +531,8 @@ void BSP_NT35510_Clear(uint16_t u16RGBCode)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /*******************************************************************************
  * EOF (not truncated)

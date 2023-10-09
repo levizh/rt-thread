@@ -7,7 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Modify for MISRAC
-   2022-10-31       CDT             Fix bug for USB endpoint GET_STATUS request.
+                                    Fix bug for USB endpoint GET_STATUS request
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -209,13 +209,13 @@ void usb_standardepreq(usb_core_instance *pdev, USB_SETUP_REQ *req)
                     break;
                 case USB_DEV_CONFIGURED:
                     if ((ep_addr & 0x80U) == 0x80U) {
-                        if (0U != pdev->dev.in_ep[(ep_addr & 0x7F) % USB_MAX_TX_FIFOS].ep_stall) {
+                        if (0U != pdev->dev.in_ep[(ep_addr & 0x7FU) % USB_MAX_TX_FIFOS].ep_stall) {
                             dev_ep_status = 0x0001U;
                         } else {
                             dev_ep_status = 0x0000U;
                         }
                     } else if ((ep_addr & 0x80U) == 0x00U) {
-                        if (0U != pdev->dev.out_ep[(ep_addr & 0x7F) % USB_MAX_TX_FIFOS].ep_stall) {
+                        if (0U != pdev->dev.out_ep[(ep_addr & 0x7FU) % USB_MAX_TX_FIFOS].ep_stall) {
                             dev_ep_status = 0x0001U;
                         } else {
                             dev_ep_status = 0x0000U;
@@ -315,7 +315,7 @@ void usb_setaddr(usb_core_instance  *pdev, const USB_SETUP_REQ *req)
     uint8_t  dev_addr;
 
     if ((req->wIndex == 0U) && (req->wLength == 0U)) {
-        dev_addr = (uint8_t)(req->wValue) & 0x7Fu;
+        dev_addr = (uint8_t)(req->wValue) & 0x7FU;
 
         if (pdev->dev.device_cur_status == USB_DEV_CONFIGURED) {
             usb_ctrlerr(pdev);

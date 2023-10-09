@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Modify API FMAC_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -125,9 +126,10 @@ int32_t FMAC_StructInit(stc_fmac_init_t *pstcFmacInit)
  *   @arg  CM_FMAC2:             FMAC unit 2 instance register base
  *   @arg  CM_FMAC3:             FMAC unit 3 instance register base
  *   @arg  CM_FMAC4:             FMAC unit 4 instance register base
- * @retval None
+ * @retval int32_t:
+ *           - LL_OK:           Reset success.
  */
-void FMAC_DeInit(CM_FMAC_TypeDef *FMACx)
+int32_t FMAC_DeInit(CM_FMAC_TypeDef *FMACx)
 {
     DDL_ASSERT(IS_VALID_UNIT(FMACx));
 
@@ -137,6 +139,8 @@ void FMAC_DeInit(CM_FMAC_TypeDef *FMACx)
     WRITE_REG32(FMACx->RTR0, 0UL);
     WRITE_REG32(FMACx->RTR1, 0UL);
     WRITE_REG32(FMACx->STR, 0UL);
+
+    return LL_OK;
 }
 
 /**
@@ -342,8 +346,8 @@ int32_t FMAC_GetResult(const CM_FMAC_TypeDef *FMACx, stc_fmac_result_t *pstcResu
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 /*******************************************************************************
  * EOF (not truncated)
  ******************************************************************************/

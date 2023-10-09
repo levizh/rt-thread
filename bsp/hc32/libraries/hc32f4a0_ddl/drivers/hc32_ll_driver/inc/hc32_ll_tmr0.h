@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -128,7 +129,7 @@ typedef struct {
  * @defgroup TMR0_Function TMR0 Function
  * @{
  */
-#define TMR0_FUNC_CMP                   (0UL)                                   /*!< Output comare function */
+#define TMR0_FUNC_CMP                   (0UL)                                   /*!< Output compare function */
 #define TMR0_FUNC_CAPT                  (TMR0_BCONR_CAPMDA | TMR0_BCONR_HICPA)  /*!< Input capture function */
 /**
  * @}

@@ -559,8 +559,8 @@ int32_t W25QXX_PageProgram(const stc_w25qxx_ll_t *pstcW25qxxLL, uint32_t u32Addr
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /*******************************************************************************
  * EOF (not truncated)

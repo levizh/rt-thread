@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Add API MAU_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -259,6 +260,35 @@ int16_t MAU_Sin(CM_MAU_TypeDef *MAUx, uint16_t u16AngleIdx)
 }
 
 /**
+ * @brief  De-initializes MAU.
+ * @param  None
+ * @retval int32_t:
+ *           - LL_OK:                   De-Initialize success.
+ *           - LL_ERR_TIMEOUT:          Timeout.
+ */
+int32_t MAU_DeInit(void)
+{
+    int32_t i32Ret = LL_OK;
+    __IO uint32_t u32TimeOut = MAU_SQRT_TIMEOUT;
+    /* Wait generating done */
+    while (0UL != READ_REG32(bCM_MAU->CSR_b.BUSY)) {
+        u32TimeOut--;
+        if (0UL == u32TimeOut) {
+            i32Ret = LL_ERR_TIMEOUT;
+            break;
+        }
+    }
+    if (LL_OK == i32Ret) {
+        WRITE_REG32(CM_MAU->CSR, 0x00000000UL);
+        WRITE_REG32(CM_MAU->DTR0,  0x00000000UL);
+        WRITE_REG32(CM_MAU->RTR0,  0x00000000UL);
+        WRITE_REG32(CM_MAU->DTR1,  0x00000000UL);
+        WRITE_REG32(CM_MAU->RTR1,  0x00000000UL);
+    }
+    return i32Ret;
+}
+
+/**
  * @}
  */
 
@@ -269,8 +299,8 @@ int16_t MAU_Sin(CM_MAU_TypeDef *MAUx, uint16_t u16AngleIdx)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

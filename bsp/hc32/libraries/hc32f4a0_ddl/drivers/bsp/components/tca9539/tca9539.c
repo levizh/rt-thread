@@ -327,8 +327,8 @@ int32_t TCA9539_ConfigPin(const stc_tca9539_ll_t *pstcTca9539LL, uint8_t u8Port,
 
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

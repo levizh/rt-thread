@@ -2,12 +2,14 @@
  *******************************************************************************
  * @file  hc32_ll_i2c.h
  * @brief This file contains all the functions prototypes of the Inter-Integrated
- *        Circuit(I2C).
+ *        Circuit(I2C) driver library.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add API I2C_SlaveAddrCmd()
+   2023-09-30       CDT             Modify typo
+                                    Move macro define I2C_SRC_CLK to head file
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -78,6 +80,10 @@ typedef struct {
  * @{
  */
 
+#define I2C_SRC_CLK                   (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK3S) >> CMU_SCFGR_PCLK3S_POS))
+
+#define I2C_WIDTH_MAX_IMME            (68UL)
+
 /**
  * @defgroup I2C_Trans_Dir I2C Transfer Direction
  * @{
@@ -89,7 +95,7 @@ typedef struct {
  */
 
 /**
- * @defgroup I2C_Addr_Config I2C Address Configurate
+ * @defgroup I2C_Addr_Config I2C Address Configure
  * @{
  */
 #define I2C_ADDR_DISABLE              (0U)
@@ -126,7 +132,7 @@ typedef struct {
  */
 
 /**
- * @defgroup I2C_Ack_Config I2C ACK Configurate
+ * @defgroup I2C_Ack_Config I2C ACK Configure
  * @{
  */
 #define I2C_ACK                       (0UL)         /*!< Send ACK after date receive */
@@ -136,7 +142,7 @@ typedef struct {
  */
 
 /**
- * @defgroup I2C_Smbus_Match_Config I2C SMBUS Address Match Configurate
+ * @defgroup I2C_Smbus_Match_Config I2C SMBUS Address Match Configure
  * @{
  */
 #define I2C_SMBUS_MATCH_ALARM         (I2C_CR1_SMBALRTEN)

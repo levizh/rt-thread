@@ -9,6 +9,7 @@
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify EXMC_SMC_StructInit, EXMC_SMC_Init, EXMC_SMC_GetChipConfig
                                     Delete function comments: EXMC_SMC_Chipx
+   2023-06-30       CDT             Function EXMC_SMC_DeInit add return value
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -174,6 +175,15 @@
  */
 
 /**
+ * @defgroup EXMC_SMC_Register_Reset_Value EXMC_SMC Register Reset Value
+ * @{
+ */
+#define EXMC_SMC_BACR_RST_VALUE             (0x00000300UL)
+/**
+ * @}
+ */
+
+/**
  * @}
  */
 
@@ -282,7 +292,7 @@ int32_t EXMC_SMC_Init(uint32_t u32Chip, const stc_exmc_smc_init_t *pstcSmcInit)
         WRITE_REG32(CM_SMC->TMCR, u32TMCR); /* Set SMC timing.*/
         WRITE_REG32(CM_SMC->CPCR, u32CPCR); /* Set SMC chip configuration.*/
 
-        /* Set chip selection address match/mask spacefor SMC.*/
+        /* Set chip selection address match/mask space for SMC.*/
         MODIFY_REG32(CM_SMC->CSCR0, SMC_CSCR0_ADDMSKx(u32Chip), \
                      (pstcSmcInit->stcChipConfig.u32AddrMask << SMC_CSCR0_ADDMSKx_POS(u32Chip)));
         MODIFY_REG32(CM_SMC->CSCR1,  SMC_CSCR1_ADDMATx(u32Chip), \
@@ -296,18 +306,27 @@ int32_t EXMC_SMC_Init(uint32_t u32Chip, const stc_exmc_smc_init_t *pstcSmcInit)
 /**
  * @brief  De-Initialize EXMC_SMC function.
  * @param  None
- * @retval None
+ * @retval int32_t:
+ *           - LL_OK:           Reset success.
  */
-void EXMC_SMC_DeInit(void)
+int32_t EXMC_SMC_DeInit(void)
 {
+    int32_t i32Ret = LL_OK;
+
     /* Disable SMC */
     CLR_REG32_BIT(CM_PERIC->SMC_ENAR, PERIC_SMC_ENAR_SMCEN);
 
-    /* Set SMC timing.*/
-    WRITE_REG32(CM_SMC->TMCR, 0UL);
+    /* Set register CSCR0/CSCR1 to reset value.*/
+    WRITE_REG32(CM_SMC->CSCR0, 0xFFFFFFFFUL);
+    WRITE_REG32(CM_SMC->CSCR1, 0x00000000UL);
 
-    /* Set SMC chip configuration.*/
-    WRITE_REG32(CM_SMC->CPCR, 0UL);
+    /* Set register RFTR to reset value.*/
+    WRITE_REG32(CM_SMC->RFTR, 0x00000000UL);
+
+    /* Set register BACR to reset value.*/
+    WRITE_REG32(CM_SMC->BACR, EXMC_SMC_BACR_RST_VALUE);
+
+    return i32Ret;
 }
 
 /**
@@ -512,8 +531,8 @@ int32_t EXMC_SMC_GetTimingConfig(uint32_t u32Chip, stc_exmc_smc_timing_config_t 
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /**
  * @}

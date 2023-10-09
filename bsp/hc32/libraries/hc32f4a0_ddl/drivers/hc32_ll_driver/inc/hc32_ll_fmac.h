@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Modify API FMAC_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -169,7 +170,7 @@ typedef struct {
  * @{
  */
 int32_t FMAC_StructInit(stc_fmac_init_t *pstcFmacInit);
-void FMAC_DeInit(CM_FMAC_TypeDef *FMACx);
+int32_t FMAC_DeInit(CM_FMAC_TypeDef *FMACx);
 int32_t FMAC_Init(CM_FMAC_TypeDef *FMACx, const stc_fmac_init_t *pstcFmacInit);
 void FMAC_Cmd(CM_FMAC_TypeDef *FMACx, en_functional_state_t enNewState);
 void FMAC_SetResultShift(CM_FMAC_TypeDef *FMACx, uint32_t u32ShiftNum);

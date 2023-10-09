@@ -8,6 +8,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify macro group comments: DCU_Interrupt_Type
+   2023-06-30       CDT             Modify typo
+                                    Delete macro definition: DCU_INT_SAWTOOTH_WAVE_RELOAD
+                                    Modify macro-definition according to RM:DCU_CTL_COMP_TRG->DCU_CTL_COMPTRG
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -105,7 +108,7 @@ typedef struct {
  * @{
  */
 #define DCU_CMP_TRIG_DATA0                  (0UL)               /*!< DCU compare triggered by DATA0 */
-#define DCU_CMP_TRIG_DATA0_DATA1_DATA2      (DCU_CTL_COMP_TRG)  /*!< DCU compare triggered by DATA0 or DATA1 or DATA2 */
+#define DCU_CMP_TRIG_DATA0_DATA1_DATA2      (DCU_CTL_COMPTRG)   /*!< DCU compare triggered by DATA0 or DATA1 or DATA2 */
 /**
  * @}
  */
@@ -211,12 +214,10 @@ typedef struct {
  * @note Interrupt type DCU_Wave_Mode_Interrupt is valid when only select DCU_CATEGORY_WAVE
  * @{
  */
-#define DCU_INT_SAWTOOTH_WAVE_RELOAD        (DCU_INTEVTSEL_SEL_RLD) /*!< DCU sawtooth wave mode reload interrupt */
 #define DCU_INT_TRIANGLE_WAVE_BOTTOM        (DCU_INTEVTSEL_SEL_BTM) /*!< DCU triangle wave mode bottom interrupt */
 #define DCU_INT_TRIANGLE_WAVE_TOP           (DCU_INTEVTSEL_SEL_TOP) /*!< DCU triangle wave mode top interrupt */
 #define DCU_INT_WAVE_MD_ALL                 (DCU_INT_TRIANGLE_WAVE_TOP    | \
-                                             DCU_INT_TRIANGLE_WAVE_BOTTOM | \
-                                             DCU_INT_SAWTOOTH_WAVE_RELOAD)
+                                             DCU_INT_TRIANGLE_WAVE_BOTTOM)
 /**
  * @}
  */
@@ -256,7 +257,7 @@ int32_t DCU_Init(CM_DCU_TypeDef *DCUx, const stc_dcu_init_t *pstcDcuInit);
 int32_t DCU_StructInit(stc_dcu_init_t *pstcDcuInit);
 int32_t DCU_DeInit(CM_DCU_TypeDef *DCUx);
 
-int32_t DCU_WaveConfig(CM_DCU_TypeDef *DCUx, const stc_dcu_wave_config_t *pstcWaveconfig);
+int32_t DCU_WaveConfig(CM_DCU_TypeDef *DCUx, const stc_dcu_wave_config_t *pstcWaveConfig);
 
 void DCU_SetMode(CM_DCU_TypeDef *DCUx, uint32_t u32Mode);
 void DCU_SetDataWidth(CM_DCU_TypeDef *DCUx, uint32_t u32DataWidth);

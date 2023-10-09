@@ -1,13 +1,14 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_usb.h
- * @brief A detailed description is available at hardware registers
+ * @brief A detailed description is available at hardware registers.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add USB core ID select function
-   2022-06-30       CDT             Delete comment
+                                    Delete comment
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -146,8 +147,8 @@ typedef struct {
     __IO uint32_t GRXSTSR;                    /* Receive Sts Q Read Register                      01Ch */
     __IO uint32_t GRXSTSP;                    /* Receive Sts Q Read & POP Register                020h */
     __IO uint32_t GRXFSIZ;                    /* Receive FIFO Size Register                       024h */
-    __IO uint32_t HNPTXFSIZ;                  /* HNPTXFSIZ: Host Non-Periodic Transmit FIFO Size Register 028h */
-                                              /* DIEPTXF0: Device IN EP0 Transmit FIFO size register      028h */
+    __IO uint32_t HNPTXFSIZ;                  /* HNPTXFSIZ: Host Non-Periodic Transmit FIFO Size Register 028h
+                                                 DIEPTXF0: Device IN EP0 Transmit FIFO size register      028h */
     __IO uint32_t HNPTXSTS;                   /* Host Non Periodic Transmit FIFO/Queue Status Register    02Ch */
     uint32_t Reserved30[3];                   /* Reserved                                    030h-038h */
     __IO uint32_t CID;                        /* User ID Register                                 03Ch */
@@ -170,12 +171,12 @@ typedef struct {
     uint32_t Reserved20[4];     /* Reserved                                     820h-82Ch */
     __IO uint32_t DTHRCTL;      /* Device Threshold Control Register                 830h */
     __IO uint32_t DIEPEMPMSK;   /* Device IN EP FIFO Empty Interrupt Mask Register   834h */
-    __IO uint32_t DEACHINT;     /* Deivce Each EP Interrupt Register                 838h */
+    __IO uint32_t DEACHINT;     /* Device Each EP Interrupt Register                 838h */
     __IO uint32_t DEACHINTMSK;  /* Device Each EP Interrupt Mask Register            83Ch */
     uint32_t Reserved40;        /* Reserved                                          840h */
-    __IO uint32_t DIEPEACHMSK1; /* Deveice IN EP1 Interrupt Mask Register            844h */
-    uint32_t Reserved48[15];     /* Reserved                                      848-880h */
-    __IO uint32_t DOEPEACHMSK1; /* Deveice OUT EP1 Interrupt Mask Register           884h */
+    __IO uint32_t DIEPEACHMSK1; /* Device IN EP1 Interrupt Mask Register             844h */
+    uint32_t Reserved48[15];    /* Reserved                                      848-880h */
+    __IO uint32_t DOEPEACHMSK1; /* Device OUT EP1 Interrupt Mask Register            884h */
 } USB_CORE_DREGS;
 
 typedef struct {

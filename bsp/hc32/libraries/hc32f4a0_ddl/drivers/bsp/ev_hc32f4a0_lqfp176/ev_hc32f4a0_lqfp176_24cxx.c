@@ -55,15 +55,26 @@
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
+/**
+ * @addtogroup EV_HC32F4A0_LQFP176_24CXX_Local_Functions
+ * @{
+ */
 static int32_t BSP_24CXX_I2C_Init(void);
 static void BSP_24CXX_I2C_DeInit(void);
 static int32_t BSP_24CXX_I2C_WritePage(uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len);
 static int32_t BSP_24CXX_I2C_Read(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len);
 static int32_t BSP_24CXX_I2C_GetStatus(void);
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_24CXX_Local_Variables EV_HC32F4A0_LQFP176 24CXX Local Variables
+ * @{
+ */
 static stc_24cxx_ll_t m_stc24cxxLL = {
     .u32PageSize = EE_24CXX_PAGE_SIZE,
     .u32Capacity = EE_24CXX_CAPACITY,
@@ -74,6 +85,9 @@ static stc_24cxx_ll_t m_stc24cxxLL = {
     .Read = BSP_24CXX_I2C_Read,
     .GetStatus = BSP_24CXX_I2C_GetStatus
 };
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
@@ -88,8 +102,8 @@ static stc_24cxx_ll_t m_stc24cxxLL = {
  * @brief  Initializes I2C for 24CXX.
  * @param  None
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR_INVD_PARAM:     Invalid parameter
+ *            - LL_OK:              Success
+ *            - LL_ERR_INVD_PARAM:  Invalid parameter
  */
 static int32_t BSP_24CXX_I2C_Init(void)
 {
@@ -124,10 +138,10 @@ static void BSP_24CXX_I2C_DeInit(void)
  * @param  [in] pu8Buf:             The pointer to the buffer contains the data to be write.
  * @param  [in] u32Len:             Buffer size in byte.
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR:                Receive NACK
- *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *            - LL_OK:              Success
+ *            - LL_ERR:             Receive NACK
+ *            - LL_ERR_TIMEOUT:     Timeout
+ *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
  * @note   This function don't check if the data write is within one page
  */
 static int32_t BSP_24CXX_I2C_WritePage(uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len)
@@ -147,10 +161,10 @@ static int32_t BSP_24CXX_I2C_WritePage(uint16_t u16Addr, const uint8_t *pu8Buf, 
  * @param  [in] pu8Buf:             The pointer to the buffer contains the data to be read.
  * @param  [in] u32Len:             Buffer size in byte.
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR:                Receive NACK
- *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *            - LL_OK:              Success
+ *            - LL_ERR:             Receive NACK
+ *            - LL_ERR_TIMEOUT:     Timeout
+ *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
  */
 static int32_t BSP_24CXX_I2C_Read(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len)
 {
@@ -167,10 +181,10 @@ static int32_t BSP_24CXX_I2C_Read(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u3
  * @brief  BSP 24CXX status get.
  * @param  None
  * @retval int32_t:
- *         - LL_OK:                 Idle
- *         - LL_ERR:                Receive NACK
- *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *            - LL_OK:              Idle
+ *            - LL_ERR:             Receive NACK
+ *            - LL_ERR_TIMEOUT:     Timeout
+ *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
  */
 static int32_t BSP_24CXX_I2C_GetStatus(void)
 {
@@ -190,8 +204,8 @@ static int32_t BSP_24CXX_I2C_GetStatus(void)
  * @brief  BSP Initializes I2C for 24CXX.
  * @param  None
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR_INVD_PARAM:     Invalid parameter
+ *            - LL_OK:              Success
+ *            - LL_ERR_INVD_PARAM:  Invalid parameter
  */
 int32_t BSP_24CXX_Init(void)
 {
@@ -202,8 +216,8 @@ int32_t BSP_24CXX_Init(void)
  * @brief  BSP De-Initializes I2C for 24CXX.
  * @param  None
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR_INVD_PARAM:     Invalid parameter
+ *            - LL_OK:              Success
+ *            - LL_ERR_INVD_PARAM:  Invalid parameter
  */
 int32_t BSP_24CXX_DeInit(void)
 {
@@ -216,10 +230,10 @@ int32_t BSP_24CXX_DeInit(void)
  * @param  [in] pu8Buf:             The pointer to the buffer contains the data to be write.
  * @param  [in] u32Len:             Buffer size in byte.
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR:                Receive NACK
- *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *            - LL_OK:              Success
+ *            - LL_ERR:             Receive NACK
+ *            - LL_ERR_TIMEOUT:     Timeout
+ *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
  */
 int32_t BSP_24CXX_Write(uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len)
 {
@@ -232,10 +246,10 @@ int32_t BSP_24CXX_Write(uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len
  * @param  [in] pu8Buf:             The pointer to the buffer contains the data to be stored.
  * @param  [in] u32Len:             Buffer size in byte.
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR:                Receive NACK
- *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *            - LL_OK:              Success
+ *            - LL_ERR:             Receive NACK
+ *            - LL_ERR_TIMEOUT:     Timeout
+ *            - LL_ERR_INVD_PARAM:  pu8Buf is NULL
  */
 int32_t BSP_24CXX_Read(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len)
 {
@@ -246,8 +260,8 @@ int32_t BSP_24CXX_Read(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len)
  * @brief  24CXX wait idle.
  * @param  None
  * @retval int32_t:
- *         - LL_OK:                 Success
- *         - LL_ERR_TIMEOUT:        Failed
+ *            - LL_OK:              Success
+ *            - LL_ERR_TIMEOUT:     Failed
  */
 int32_t BSP_24CXX_WaitIdle(void)
 {
@@ -269,8 +283,8 @@ int32_t BSP_24CXX_WaitIdle(void)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

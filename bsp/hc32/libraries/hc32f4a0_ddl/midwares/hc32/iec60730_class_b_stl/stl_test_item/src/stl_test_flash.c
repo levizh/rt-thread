@@ -102,7 +102,7 @@ uint32_t STL_FlashStartupTest(void)
     uint32_t u32Ret = STL_ERR;
 
     u32CcBulidCrc32Addr = (uint32_t)(&STL_ROM_CRC32_CC_CHECKSUM);
-    u32CcBulidCrc32Value =  *( uint32_t *)(u32CcBulidCrc32Addr);
+    u32CcBulidCrc32Value =  *(uint32_t *)(u32CcBulidCrc32Addr);
     u32CalcCrc32Value = STL_CalculateCRC32Value(STL_CRC32_INIT_VALUE, pu8CrcData, u32RomSize);
     u32CalcCrc32Value = SW_CRC32_VALUE_XOR(u32CalcCrc32Value);
     if (u32CcBulidCrc32Value == u32CalcCrc32Value) {
@@ -147,7 +147,7 @@ uint32_t STL_FlashRuntimeTest(void)
         u32CheckAddr += u32CalcLen;       /* Update address */
     } else {
         u32CcBulidCrc32Addr = (uint32_t)(&STL_ROM_CRC32_CC_CHECKSUM);
-        u32CcBulidCrc32Value =  *( uint32_t *)(u32CcBulidCrc32Addr);
+        u32CcBulidCrc32Value =  *(uint32_t *)(u32CcBulidCrc32Addr);
         u32CheckAddr = STL_ROM_CRC32_START;             /* Update address */
         u32CalcCrc32Value = SW_CRC32_VALUE_XOR(u32CalcCrc32Value);
         if (u32CcBulidCrc32Value == u32CalcCrc32Value) {

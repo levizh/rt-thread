@@ -7,7 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Add timing comments.
+   2022-10-31       CDT             Add timing comments
+   2023-09-30       CDT             Modify SMC timing parameter: EXCLK 60MHz -> 30MHz
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -148,11 +149,11 @@ int32_t BSP_IS62WV51216_Init(void)
         stcSmcInit.stcChipConfig.u32AddrMatch = BSP_IS62WV51216_MATCH_ADDR;
         stcSmcInit.stcChipConfig.u32AddrMask = BSP_IS62WV51216_MASK_ADDR;
 
-        /* EXCLK bus frequency@60MHz: 3.3V */
+        /* EXCLK bus frequency@30MHz: 3.3V */
         stcSmcInit.stcTimingConfig.u8RC = 4U;   /* tRC: min=55ns */
         stcSmcInit.stcTimingConfig.u8WC = 4U;   /* tWC: min=55ns */
         stcSmcInit.stcTimingConfig.u8CEOE = 1U;
-        stcSmcInit.stcTimingConfig.u8WP = 3U;   /* tWP: min=40ns */
+        stcSmcInit.stcTimingConfig.u8WP = 2U;   /* tWP: min=40ns */
         stcSmcInit.stcTimingConfig.u8PC = 1U;
         stcSmcInit.stcTimingConfig.u8TR = 1U;
         (void)EXMC_SMC_Init(BSP_IS62WV51216_CHIP, &stcSmcInit);
@@ -344,8 +345,8 @@ static void BSP_SMC_PortInit(void)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

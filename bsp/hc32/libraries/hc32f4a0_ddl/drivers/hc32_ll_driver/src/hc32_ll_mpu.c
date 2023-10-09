@@ -7,8 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2023-01-15       CDT             Update define base on new head file.
-   2023-01-15       CDT             Modify IS_MPU_SP_START_ADDR & SP start address.
+   2023-01-15       CDT             Update define base on new head file
+                                    Modify IS_MPU_SP_START_ADDR & SP start address
+   2023-09-30       CDT             Modify typo
+                                    Optimize MPU_ClearStatus function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -449,7 +451,7 @@ void MPU_ClearStatus(uint32_t u32Flag)
     /* Check parameters */
     DDL_ASSERT(IS_MPU_FLAG(u32Flag));
 
-    SET_REG32_BIT(CM_MPU->ECLR, u32Flag);
+    WRITE_REG32(CM_MPU->ECLR, u32Flag);
 }
 
 /**
@@ -457,7 +459,7 @@ void MPU_ClearStatus(uint32_t u32Flag)
  * @note   'MPU_REGION_NUM8' to 'MPU_REGION_NUM15' are only valid when the MPU unit is 'MPU_UNIT_DMA1' or 'MPU_UNIT_DMA2'.
  * @note   The effective bits of the 'u32BaseAddr' are related to the 'u32Size' of the region,
  *         and the low 'u32Size+1' bits are fixed at 0.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -576,7 +578,7 @@ int32_t MPU_RegionStructInit(stc_mpu_region_init_t *pstcRegionInit)
  * @brief  Set the base address of the region.
  * @note   The effective bits of the 'u32Addr' are related to the 'size' of the region,
  *         and the low 'size+1' bits are fixed at 0.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -614,7 +616,7 @@ void MPU_SetRegionBaseAddr(uint32_t u32Num, uint32_t u32Addr)
 
 /**
  * @brief  Set the size of the region.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -680,7 +682,7 @@ void MPU_SetRegionSize(uint32_t u32Num, uint32_t u32Size)
 /**
  * @brief  Enable or disable the write of the unit for the region.
  * @note   'MPU_REGION_NUM8' to 'MPU_REGION_NUM15' are only valid when the MPU unit is 'MPU_UNIT_DMA1' or 'MPU_UNIT_DMA2'.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -736,7 +738,7 @@ void MPU_RegionWriteCmd(uint32_t u32Num, uint32_t u32Unit, en_functional_state_t
 /**
  * @brief  Enable or disable the read of the unit for the region.
  * @note   'MPU_REGION_NUM8' to 'MPU_REGION_NUM15' are only valid when the MPU unit is 'MPU_UNIT_DMA1' or 'MPU_UNIT_DMA2'.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -792,7 +794,7 @@ void MPU_RegionReadCmd(uint32_t u32Num, uint32_t u32Unit, en_functional_state_t 
 /**
  * @brief  Enable or disable the access control of the unit for the region.
  * @note   'MPU_REGION_NUM8' to 'MPU_REGION_NUM15' are only valid when the MPU unit is 'MPU_UNIT_DMA1' or 'MPU_UNIT_DMA2'.
- * @param  [in] u32Num                  The number of the regsion.
+ * @param  [in] u32Num                  The number of the region.
  *         This parameter can be one of the following values:
  *           @arg MPU_REGION_NUM0:      MPU region number 0
  *           @arg MPU_REGION_NUM1:      MPU region number 1
@@ -944,8 +946,8 @@ void MPU_IP_ReadCmd(uint32_t u32Periph, en_functional_state_t enNewState)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

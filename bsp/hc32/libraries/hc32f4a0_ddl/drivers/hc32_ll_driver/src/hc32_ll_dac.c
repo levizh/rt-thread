@@ -8,7 +8,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify function: DAC_AMPCmd and add assert
-   2022-06-30       CDT             Synchronize register: EN->E,ADPSL->ADCSL,ALIGN->DPSEL
+                                    Synchronize register: EN->E,ADPSL->ADCSL,ALIGN->DPSEL
+   2023-06-30       CDT             Refine data validation
+                                    Modify function:DAC_DeInit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -51,6 +53,10 @@
  * @defgroup DAC_Local_Macros DAC Local Macros
  * @{
  */
+#define DAC_RESOLUTION                   (DAC_RESOLUTION_12BIT)
+#define DAC_DATA_REG_WIDTH               (16U)
+#define DAC_DATA_RIGHT_ALIGN_MASK        ((2U << DAC_RESOLUTION) - 1U)
+#define DAC_DATA_LEFT_ALIGN_MASK         (DAC_DATA_RIGHT_ALIGN_MASK << (DAC_DATA_REG_WIDTH - DAC_RESOLUTION))
 
 /**
  * @defgroup DAC_Check_Parameters_Validity DAC Check Parameters Validity
@@ -66,9 +72,12 @@
 
 #define IS_VALID_ADCPRIO_CONFIG(x)        ((0U != (x)) && (DAC_ADP_SEL_ALL == ((x) | DAC_ADP_SEL_ALL)))
 
-#define IS_ADP_CTRL_ALLOWED(x)                                                 \
-(   ((x) == DISABLE) ||                                                        \
-    ((READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL1) == 0U) && (READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL2) == 0U)))
+#define IS_VALID_RIGHT_ALIGNED_DATA(data)       (((data) & ~DAC_DATA_RIGHT_ALIGN_MASK) == 0U)
+#define IS_VALID_LEFT_ALIGNED_DATA(data)        (((data) & ~DAC_DATA_LEFT_ALIGN_MASK) == 0U)
+
+#define IS_ADP_CTRL_ALLOWED(x,src1,src2)  (((x) == DISABLE) ||                 \
+    (((src1) == (DAC_DATA_SRC_DATAREG)) && ((src2) == (DAC_DATA_SRC_DATAREG))))
+
 /**
  * @}
  */
@@ -189,7 +198,6 @@ void DAC_AMPCmd(CM_DAC_TypeDef *DACx, uint16_t u16Ch, en_functional_state_t enNe
     DDL_ASSERT(IS_VALID_UNIT(DACx));
     DDL_ASSERT(IS_VALID_CH(u16Ch));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
-
     u16Cmd = (uint16_t)(1UL << (DAC_DACR_DAAMP1_POS + u16Ch));
 
     if (ENABLE == enNewState) {
@@ -210,9 +218,17 @@ void DAC_AMPCmd(CM_DAC_TypeDef *DACx, uint16_t u16Ch, en_functional_state_t enNe
  */
 void DAC_ADCPrioCmd(CM_DAC_TypeDef *DACx, en_functional_state_t enNewState)
 {
+#ifdef __DEBUG
+    uint16_t u16DataSrc1;
+    uint16_t u16DataSrc2;
+#endif
     DDL_ASSERT(IS_VALID_UNIT(DACx));
+#ifdef __DEBUG
+    u16DataSrc1 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL1);
+    u16DataSrc2 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL2);
+#endif
+    DDL_ASSERT(IS_ADP_CTRL_ALLOWED(enNewState, u16DataSrc1, u16DataSrc2));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
-    DDL_ASSERT(IS_ADP_CTRL_ALLOWED(enNewState));
 
     if (ENABLE == enNewState) {
         SET_REG16_BIT(DACx->DAADPCR, DAC_DAADPCR_ADPEN);
@@ -362,9 +378,9 @@ void DAC_SetChData(CM_DAC_TypeDef *DACx, uint16_t u16Ch, uint16_t u16Data)
     DDL_ASSERT(IS_VALID_CH(u16Ch));
 
     if (READ_REG16_BIT(DACx->DACR, DAC_DACR_DPSEL) == DAC_DATA_ALIGN_LEFT) {
-        DDL_ASSERT(0U == (u16Data & 0xFU));
+        DDL_ASSERT(IS_VALID_LEFT_ALIGNED_DATA(u16Data));
     } else {
-        DDL_ASSERT(0U == (u16Data & 0xF000U));
+        DDL_ASSERT(IS_VALID_RIGHT_ALIGNED_DATA(u16Data));
     }
 
     u16DADRx = (uint16_t *)((uint32_t) & (DACx->DADR1) + u16Ch * 2UL);
@@ -388,11 +404,11 @@ void DAC_SetDualChData(CM_DAC_TypeDef *DACx, uint16_t u16Data1, uint16_t u16Data
     DDL_ASSERT(IS_VALID_UNIT(DACx));
 
     if (READ_REG16_BIT(DACx->DACR, DAC_DACR_DPSEL) == DAC_DATA_ALIGN_LEFT) {
-        DDL_ASSERT(0U == (u16Data1 & 0xFU));
-        DDL_ASSERT(0U == (u16Data2 & 0xFU));
+        DDL_ASSERT(IS_VALID_LEFT_ALIGNED_DATA(u16Data1));
+        DDL_ASSERT(IS_VALID_LEFT_ALIGNED_DATA(u16Data2));
     } else {
-        DDL_ASSERT(0U == (u16Data1 & 0xF000U));
-        DDL_ASSERT(0U == (u16Data2 & 0xF000U));
+        DDL_ASSERT(IS_VALID_RIGHT_ALIGNED_DATA(u16Data1));
+        DDL_ASSERT(IS_VALID_RIGHT_ALIGNED_DATA(u16Data2));
     }
 
     u32Data = ((uint32_t)u16Data2 << 16U) | u16Data1;
@@ -475,9 +491,8 @@ int32_t DAC_Init(CM_DAC_TypeDef *DACx, uint16_t u16Ch, const stc_dac_init_t *pst
     if (pstcDacInit != NULL) {
         DDL_ASSERT(IS_VALID_UNIT(DACx));
         DDL_ASSERT(IS_VALID_CH(u16Ch));
-        DDL_ASSERT(IS_VALID_DATA_SRC(pstcDacInit->u16Src));
         DDL_ASSERT(IS_FUNCTIONAL_STATE(pstcDacInit->enOutput));
-
+        DDL_ASSERT(IS_VALID_DATA_SRC(pstcDacInit->u16Src));
         DAC_SetDataSrc(DACx, u16Ch, pstcDacInit->u16Src);
         DAC_OutputCmd(DACx, u16Ch, pstcDacInit->enOutput);
         i32Ret = LL_OK;
@@ -491,17 +506,20 @@ int32_t DAC_Init(CM_DAC_TypeDef *DACx, uint16_t u16Ch, const stc_dac_init_t *pst
  * @param  [in] DACx       Pointer to the DAC peripheral register.
  *         This parameter can be a value of the following:
  *         @arg CM_DAC or CM_DACx
+ * @retval int32_t:
+ *           - LL_OK:               Reset success.
  * @retval None
  */
-void DAC_DeInit(CM_DAC_TypeDef *DACx)
+int32_t DAC_DeInit(CM_DAC_TypeDef *DACx)
 {
+    int32_t i32Ret = LL_OK;
     __IO uint32_t *u32DADRx;
-
     WRITE_REG16(DACx->DACR, 0x0000UL);
     WRITE_REG16(DACx->DAOCR, 0x0000UL);
     WRITE_REG16(DACx->DAADPCR, 0x0000UL);
     u32DADRx = (__IO uint32_t *)(uint32_t)(&DACx->DADR1);
     WRITE_REG32(*u32DADRx, 0x0000UL);
+    return i32Ret;
 }
 
 /**
@@ -515,8 +533,8 @@ void DAC_DeInit(CM_DAC_TypeDef *DACx)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

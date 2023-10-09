@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-06-30       CDT             Add API MAU_DeInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -95,6 +96,8 @@ void MAU_SqrtStart(CM_MAU_TypeDef *MAUx);
 int32_t MAU_Sqrt(CM_MAU_TypeDef *MAUx, uint32_t u32Radicand, uint32_t *pu32Result);
 
 int16_t MAU_Sin(CM_MAU_TypeDef *MAUx, uint16_t u16AngleIdx);
+
+int32_t MAU_DeInit(void);
 
 /**
  * @}

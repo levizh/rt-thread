@@ -6,9 +6,12 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Fixed bug# GetClockFreq() API xtal32 value.
-   2022-10-31       CDT             Modified CLK_PLLN_DEFAULT value.
-   2023-01-15       CDT             Optimize API CLK_SetCANClockSrc(), add assert IS_PWC_UNLOCKED().
+   2022-10-31       CDT             Fixed bug# GetClockFreq() API xtal32 value
+                                    Modified CLK_PLLN_DEFAULT value
+   2023-01-15       CDT             Optimize API CLK_SetCANClockSrc(), add assert IS_PWC_UNLOCKED()
+   2023-06-30       CDT             Modify typo
+                                    Modify CLK_SetUSBClockSrc(), add delay after configure USB clock
+   2023-09-30       CDT             Modify API CLK_Xtal32Cmd(), CLK_MrcCmd() and CLK_LrcCmd(), use DDL_DelayUS() to replace CLK_Delay()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -63,9 +66,9 @@
  * @brief Be able to modify TIMEOUT according to board condition.
  */
 #define CLK_TIMEOUT                     ((uint32_t)0x1000UL)
-#define CLK_LRC_TIMEOUT                 ((uint32_t)0x200U)
-#define CLK_MRC_TIMEOUT                 ((uint32_t)0x200U)
-#define CLK_XTAL32_TIMEOUT              ((uint32_t)0x200U)
+#define CLK_LRC_TIMEOUT                 (160U)
+#define CLK_MRC_TIMEOUT                 (1U)
+#define CLK_XTAL32_TIMEOUT              (160U)
 
 /**
  * @brief LRC State ON or OFF
@@ -142,7 +145,7 @@
  * @brief Switch clock stable time
  * @note Approx. 30us
  */
-#define CLK_SYSCLK_SW_STB               (HCLK_VALUE / 50000UL)
+#define CLK_SYSCLK_SW_STB               (30U)
 
 /**
  * @brief Clk FCG Default Value
@@ -254,7 +257,7 @@
 (   ((x) <= CLK_PLLR_DIV_MAX)                     &&                           \
     ((x) >= CLK_PLLR_DIV_MIN))
 
-/* Parameter validity check for PLL Q divede */
+/* Parameter validity check for PLL Q divide */
 #define IS_CLK_PLLQ_DIV(x)                                                     \
 (   ((x) <= CLK_PLLQ_DIV_MAX)                     &&                           \
     ((x) >= CLK_PLLQ_DIV_MIN))
@@ -284,7 +287,7 @@
 (   (CLK_PLLXR_DIV_MIN <= (x))                    &&                           \
     (CLK_PLLXR_DIV_MAX >= (x)))
 
-/* Parameter validity check for PLLX Q divede */
+/* Parameter validity check for PLLX Q divide */
 #define IS_CLK_PLLXQ_DIV(x)                                                    \
 (   (CLK_PLLXQ_DIV_MIN <= (x))                    &&                           \
     (CLK_PLLXQ_DIV_MAX >= (x)))
@@ -532,20 +535,6 @@
  * @{
  */
 /**
- * @brief Clk delay function
- * @param [in] u32Delay         count
- * @retval when switch clock srouce,shoud be delay some time to wait stable.
- */
-static void CLK_Delay(uint32_t u32Delay)
-{
-    __IO uint32_t u32Timeout = 0UL;
-
-    while (u32Timeout < u32Delay) {
-        u32Timeout++;
-    }
-}
-
-/**
  * @brief  Wait clock stable flag.
  * @param  [in] u8Flag      Specifies the stable flag to be wait. @ref CLK_STB_Flag
  * @param  [in] u32Time     Specifies the time to wait while the flag not be set.
@@ -567,7 +556,7 @@ static int32_t CLK_WaitStable(uint8_t u8Flag, uint32_t u32Time)
 }
 
 #ifdef __DEBUG
-/*
+/**
  * @note   The pll_input/PLLM (VCOIN) must between 1 ~ 24MHz.
  *         The VCOIN*PLLN (VCOOUT) is between 240 ~ 480MHz.
  *         The PLLx frequency (VCOOUT/PLLxP_Q_R) is between 15 ~ 240MHz.
@@ -622,19 +611,19 @@ static void SetSysClockSrc(uint8_t u8Src)
         WRITE_REG32(CM_PWC->FCG2, CLK_FCG2_DEFAULT);
         WRITE_REG32(CM_PWC->FCG3, CLK_FCG3_DEFAULT);
         /* Wait stable after close FCGx. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
     /* Set system clock source */
     WRITE_REG8(CM_CMU->CKSWR, u8Src);
     /* Wait stable after setting system clock source */
-    CLK_Delay(CLK_SYSCLK_SW_STB);
+    DDL_DelayUS(CLK_SYSCLK_SW_STB);
     if (1U == u8TmpFlag) {
         WRITE_REG32(CM_PWC->FCG0, fcg0);
         WRITE_REG32(CM_PWC->FCG1, fcg1);
         WRITE_REG32(CM_PWC->FCG2, fcg2);
         WRITE_REG32(CM_PWC->FCG3, fcg3);
         /* Wait stable after open fcg. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
 }
 
@@ -642,9 +631,9 @@ static void GetClockFreq(stc_clock_freq_t *pstcClockFreq)
 {
     stc_clock_scale_t *pstcClockScale;
     uint32_t u32HrcValue;
-    uint32_t plln;
-    uint32_t pllp;
-    uint32_t pllm;
+    uint8_t plln;
+    uint8_t pllp;
+    uint8_t pllm;
 
     switch (READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW)) {
         case CLK_SYSCLK_SRC_HRC:
@@ -669,9 +658,9 @@ static void GetClockFreq(stc_clock_freq_t *pstcClockFreq)
             break;
         case CLK_SYSCLK_SRC_PLL:
             /* PLLHP is used as system clock. */
-            pllp = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHP) >> CMU_PLLHCFGR_PLLHP_POS);
-            plln = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHN) >> CMU_PLLHCFGR_PLLHN_POS);
-            pllm = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHM) >> CMU_PLLHCFGR_PLLHM_POS);
+            pllp = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHP) >> CMU_PLLHCFGR_PLLHP_POS);
+            plln = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHN) >> CMU_PLLHCFGR_PLLHN_POS);
+            pllm = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHM) >> CMU_PLLHCFGR_PLLHM_POS);
             /* pll = ((pllin / pllm) * plln) / pllp */
             if (CLK_PLL_SRC_XTAL == PLL_SRC) {
                 pstcClockFreq->u32SysclkFreq = ((XTAL_VALUE / (pllm + 1UL)) * (plln + 1UL)) / (pllp + 1UL);
@@ -694,7 +683,7 @@ static void GetClockFreq(stc_clock_freq_t *pstcClockFreq)
     pstcClockFreq->u32Pclk4Freq = pstcClockFreq->u32SysclkFreq >> pstcClockScale->SCFGR_f.PCLK4S;
     /* Get pclk3. */
     pstcClockFreq->u32Pclk3Freq = pstcClockFreq->u32SysclkFreq >> pstcClockScale->SCFGR_f.PCLK3S;
-    /* Get exck. */
+    /* Get exclk. */
     pstcClockFreq->u32ExclkFreq = pstcClockFreq->u32SysclkFreq >> pstcClockScale->SCFGR_f.EXCKS;
     /* Get pclk0. */
     pstcClockFreq->u32Pclk0Freq = pstcClockFreq->u32SysclkFreq >> pstcClockScale->SCFGR_f.PCLK0S;
@@ -734,23 +723,23 @@ static void SetSysClockDiv(uint32_t u32Clock, uint32_t u32Div)
         WRITE_REG32(CM_PWC->FCG2, CLK_FCG2_DEFAULT);
         WRITE_REG32(CM_PWC->FCG3, CLK_FCG3_DEFAULT);
         /* Wait stable after close FCGx. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
     MODIFY_REG32(CM_CMU->SCFGR, u32Clock, u32Div);
-    CLK_Delay(CLK_SYSCLK_SW_STB);
+    DDL_DelayUS(CLK_SYSCLK_SW_STB);
     if (1U == u8TmpFlag) {
         WRITE_REG32(CM_PWC->FCG0, fcg0);
         WRITE_REG32(CM_PWC->FCG1, fcg1);
         WRITE_REG32(CM_PWC->FCG2, fcg2);
         WRITE_REG32(CM_PWC->FCG3, fcg3);
         /* Wait stable after open fcg. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
 }
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /**
  * @defgroup CLK_Global_Functions CLK Global Functions
@@ -779,9 +768,9 @@ int32_t CLK_LrcCmd(en_functional_state_t enNewState)
         }
     } else {
         WRITE_REG8(CM_CMU->LRCCR, CLK_LRC_ON);
-
-        CLK_Delay(CLK_LRC_TIMEOUT);
     }
+    /* wait approx, 5 * LRC cycle */
+    DDL_DelayUS(CLK_LRC_TIMEOUT);
 
     return i32Ret;
 }
@@ -809,9 +798,9 @@ int32_t CLK_MrcCmd(en_functional_state_t enNewState)
         }
     } else {
         WRITE_REG8(CM_CMU->MRCCR, CLK_MRC_ON);
-
-        CLK_Delay(CLK_MRC_TIMEOUT);
     }
+    /* Wait approx. 5 * MRC cycle */
+    DDL_DelayUS(CLK_MRC_TIMEOUT);
 
     return i32Ret;
 }
@@ -919,7 +908,7 @@ int32_t CLK_XtalStructInit(stc_clock_xtal_init_t *pstcXtalInit)
         /* Configure to default value */
         pstcXtalInit->u8State = CLK_XTAL_OFF;
         pstcXtalInit->u8Mode  = CLK_XTAL_MD_OSC;
-        pstcXtalInit->u8Drv   = CLK_XTAL_DRV_HIGH;
+        pstcXtalInit->u8Drv = CLK_XTAL_DRV_HIGH;
         pstcXtalInit->u8StableTime = CLK_XTAL_STB_2MS;
     }
     return i32Ret;
@@ -979,9 +968,8 @@ int32_t CLK_XtalCmd(en_functional_state_t enNewState)
     if (DISABLE == enNewState) {
         if (CLK_SYSCLK_SRC_XTAL == READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW)) {
             i32Ret = LL_ERR_BUSY;
-        }
-        /* XTAL as PLL clock source and PLL is working */
-        else if (CLK_PLL_SRC_XTAL == PLL_SRC) {
+        } else if (CLK_PLL_SRC_XTAL == PLL_SRC) {
+            /* XTAL as PLL clock source and PLL is working */
             if (0UL == PLL_EN_REG) {
                 i32Ret = LL_ERR_BUSY;
             } else {
@@ -1171,8 +1159,9 @@ int32_t CLK_Xtal32Cmd(en_functional_state_t enNewState)
     } else {
         WRITE_REG8(CM_CMU->XTAL32CR, CLK_XTAL32_ON);
         /* wait stable*/
-        CLK_Delay(CLK_XTAL32_TIMEOUT);
     }
+    /* wait approx. 5 * xtal32 cycle */
+    DDL_DelayUS(CLK_XTAL32_TIMEOUT);
 
     return i32Ret;
 }
@@ -1651,6 +1640,8 @@ void CLK_SetUSBClockSrc(uint8_t u8Src)
     DDL_ASSERT(IS_CLK_UNLOCKED());
 
     WRITE_REG8(CM_CMU->USBCKCFGR, u8Src);
+
+    DDL_DelayUS(CLK_SYSCLK_SW_STB);
 }
 
 /**
@@ -1736,8 +1727,8 @@ void CLK_SetTpiuClockDiv(uint8_t u8Div)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

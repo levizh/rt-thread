@@ -6,7 +6,10 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Add configuration of XTAL IO as analog function.
+   2022-10-31       CDT             Add configuration of XTAL IO as analog function
+   2023-05-31       CDT             Fix some typo: KYESCAN -> KEYSCAN
+   2023-09-30       CDT             Add API BSP_XTAL32_Init()
+                                    Optimize function BSP_I2C_Init()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -31,7 +34,7 @@
  */
 
 /**
- * @defgroup EV_HC32F4A0_LQFP176 HC32F4A0_LQFP176_EVB
+ * @defgroup EV_HC32F4A0_LQFP176 EV_HC32F4A0_LQFP176
  * @{
  */
 
@@ -45,8 +48,9 @@
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
+
 /**
- * @defgroup EV_HC32F4A0_LQFP176_Base_Global_Types EV_HC32F4A0_LQFP176 Base Global Types
+ * @defgroup EV_HC32F4A0_LQFP176_Local_Types EV_HC32F4A0_LQFP176 Local Types
  * @{
  */
 typedef struct {
@@ -62,7 +66,6 @@ typedef struct {
     IRQn_Type    irq;
     func_ptr_t   callback;
 } BSP_KeyIn_Config;
-
 /**
  * @}
  */
@@ -79,7 +82,7 @@ typedef struct {
  * Local function prototypes ('static')
  ******************************************************************************/
 /**
- * @addtogroup BSP_Local_Functions
+ * @addtogroup EV_HC32F4A0_LQFP176_Local_Functions
  * @{
  */
 static void BSP_KEY_ROW0_IrqCallback(void);
@@ -95,7 +98,7 @@ static void BSP_KEY_COL_Init(void);
  * Local variable definitions ('static')
  ******************************************************************************/
 /**
-* @defgroup BSP_Local_Variables BSP Local Variables
+* @defgroup EV_HC32F4A0_LQFP176_Local_Variables EV_HC32F4A0_LQFP176 Local Variables
 * @{
 */
 static const BSP_Port_Pin BSP_KEYOUT_PORT_PIN[BSP_KEY_COL_NUM] = {
@@ -121,7 +124,7 @@ static uint32_t m_u32GlobalKey = 0UL;
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F4A0_LQFP176_Global_Functions BSP Global Functions
+ * @defgroup EV_HC32F4A0_LQFP176_Global_Functions EV_HC32F4A0_LQFP176 Global Functions
  * @{
  */
 
@@ -132,36 +135,38 @@ static uint32_t m_u32GlobalKey = 0UL;
  *                                  This parameter can be a value of the following:
  *         @arg CM_I2Cx:            I2C instance register base.
  * @retval int32_t:
- *            - LL_OK:              Configurate success
+ *            - LL_OK:              Configure success
  *            - LL_ERR_INVD_PARAM:  Invalid parameter
  */
 int32_t BSP_I2C_Init(CM_I2C_TypeDef *I2Cx)
 {
-    uint8_t i;
-    int32_t i32Ret = LL_ERR;
+    int32_t i32Ret;
     float32_t fErr;
     stc_i2c_init_t stcI2cInit;
+    uint32_t I2cSrcClk;
+    uint32_t I2cClkDiv;
+    uint32_t I2cClkDivReg;
 
-    I2C_DeInit(I2Cx);
-    (void)I2C_StructInit(&stcI2cInit);
-    stcI2cInit.u32Baudrate = BSP_I2C_BAUDRATE;
-    stcI2cInit.u32SclTime  = 0U;
-    stcI2cInit.u32ClockDiv = I2C_CLK_DIV16;
-
-    for (i = 0U; i < 5U; i++) {
-        i32Ret = I2C_Init(I2Cx, &stcI2cInit, &fErr);
-        if (LL_OK != i32Ret) {
-            stcI2cInit.u32ClockDiv--;
-        } else {
+    I2cSrcClk = I2C_SRC_CLK;
+    I2cClkDiv = I2cSrcClk / BSP_I2C_BAUDRATE / I2C_WIDTH_MAX_IMME;
+    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++) {
+        if (I2cClkDiv < (1UL << I2cClkDivReg)) {
             break;
         }
     }
 
+    I2C_DeInit(I2Cx);
+    (void)I2C_StructInit(&stcI2cInit);
+    stcI2cInit.u32Baudrate = BSP_I2C_BAUDRATE;
+    stcI2cInit.u32SclTime  = 400UL * I2cSrcClk / 1000000000UL;  /* SCL time is about 400nS in EVB board */
+    stcI2cInit.u32ClockDiv = I2cClkDivReg;
+    i32Ret = I2C_Init(I2Cx, &stcI2cInit, &fErr);
+
     if (LL_OK == i32Ret) {
         I2C_BusWaitCmd(I2Cx, ENABLE);
+        I2C_Cmd(I2Cx, ENABLE);
     }
 
-    I2C_Cmd(I2Cx, ENABLE);
     return i32Ret;
 }
 
@@ -362,6 +367,68 @@ __WEAKDEF void BSP_CLK_Init(void)
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
 }
 
+/**
+ * @brief  BSP Xtal32 initialize.
+ * @param  None
+ * @retval int32_t:
+ *         - LL_OK: XTAL32 enable successfully
+ *         - LL_ERR_TIMEOUT: XTAL32 enable timeout.
+ */
+__WEAKDEF int32_t BSP_XTAL32_Init(void)
+{
+    stc_clock_xtal32_init_t stcXtal32Init;
+    stc_fcm_init_t stcFcmInit;
+    uint32_t u32TimeOut = 0UL;
+    uint32_t u32Time = HCLK_VALUE / 5UL;
+
+    if (CLK_XTAL32_ON == READ_REG8(CM_CMU->XTAL32CR)) {
+        /* Disable xtal32 */
+        (void)CLK_Xtal32Cmd(DISABLE);
+        /* Wait 5 * xtal32 cycle */
+        DDL_DelayUS(160U);
+    }
+
+    /* Xtal32 config */
+    (void)CLK_Xtal32StructInit(&stcXtal32Init);
+    stcXtal32Init.u8State  = CLK_XTAL32_ON;
+    stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_MID;
+    stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_ALL_MD;
+    GPIO_AnalogCmd(BSP_XTAL32_PORT, BSP_XTAL32_IN_PIN | BSP_XTAL32_OUT_PIN, ENABLE);
+    (void)CLK_Xtal32Init(&stcXtal32Init);
+
+    /* FCM config */
+    FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, ENABLE);
+    (void)FCM_StructInit(&stcFcmInit);
+    stcFcmInit.u32RefClock       = FCM_REF_CLK_MRC;
+    stcFcmInit.u32RefClockDiv    = FCM_REF_CLK_DIV8192;
+    stcFcmInit.u32RefClockEdge   = FCM_REF_CLK_RISING;
+    stcFcmInit.u32TargetClock    = FCM_TARGET_CLK_XTAL32;
+    stcFcmInit.u32TargetClockDiv = FCM_TARGET_CLK_DIV1;
+    stcFcmInit.u16LowerLimit     = (uint16_t)((XTAL32_VALUE / (MRC_VALUE / 8192U)) * 96UL / 100UL);
+    stcFcmInit.u16UpperLimit     = (uint16_t)((XTAL32_VALUE / (MRC_VALUE / 8192U)) * 104UL / 100UL);
+    (void)FCM_Init(&stcFcmInit);
+    /* Enable FCM, to ensure xtal32 stable */
+    FCM_Cmd(ENABLE);
+    for (;;) {
+        if (SET == FCM_GetStatus(FCM_FLAG_END)) {
+            FCM_ClearStatus(FCM_FLAG_END);
+            if ((SET == FCM_GetStatus(FCM_FLAG_ERR)) || (SET == FCM_GetStatus(FCM_FLAG_OVF))) {
+                FCM_ClearStatus(FCM_FLAG_ERR | FCM_FLAG_OVF);
+            } else {
+                (void)FCM_DeInit();
+                FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, DISABLE);
+                return LL_OK;
+            }
+        }
+        u32TimeOut++;
+        if (u32TimeOut > u32Time) {
+            (void)FCM_DeInit();
+            FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, DISABLE);
+            return LL_ERR_TIMEOUT;
+        }
+    }
+}
+
 #if (LL_PRINT_ENABLE == DDL_ON)
 /**
  * @brief  BSP printf device, clock and port pre-initialize.
@@ -431,8 +498,16 @@ void BSP_KEY_Init(void)
 /**
  * @brief  Get BSP key status
  * @param  [in] u32Key chose one macro from below
- *         This parameter can be one or any combination of the following values:
- *           @arg @ref BSP_KEY_Sel
+ *   @arg  BSP_KEY_1
+ *   @arg  BSP_KEY_2
+ *   @arg  BSP_KEY_3
+ *   @arg  BSP_KEY_4
+ *   @arg  BSP_KEY_5
+ *   @arg  BSP_KEY_6
+ *   @arg  BSP_KEY_7
+ *   @arg  BSP_KEY_8
+ *   @arg  BSP_KEY_9
+ *   @arg  BSP_KEY_10
  * @retval An @ref en_flag_status_t enumeration type value.
  *            - SET, Key pressed.
  *            - RESET, Key released.
@@ -449,15 +524,6 @@ en_flag_status_t BSP_KEY_GetStatus(uint32_t u32Key)
 }
 
 /**
- * @}
- */
-
-/**
- * @defgroup BSP_Local_Functions BSP Local Functions
- * @{
- */
-
-/**
  * @brief  BSP Key10 callback function
  * @param  None
  * @retval None
@@ -469,6 +535,15 @@ __WEAKDEF void BSP_KEY_KEY10_IrqHandler(void)
     }
     EXTINT_ClearExtIntStatus(BSP_KEY_KEY10_EXTINT);
 }
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_Local_Functions EV_HC32F4A0_LQFP176 Local Functions
+ * @{
+ */
 
 /**
  * @brief  EXTINT Ch.8 as BSP Key row 0 callback function
@@ -513,7 +588,7 @@ static void BSP_KEY_ROW1_IrqCallback(void)
 }
 
 /**
- * @brief  EXTINT Ch.7 as KYESCAN row 2 callback function
+ * @brief  EXTINT Ch.7 as KEYSCAN row 2 callback function
  * @param  None
  * @retval None
  */

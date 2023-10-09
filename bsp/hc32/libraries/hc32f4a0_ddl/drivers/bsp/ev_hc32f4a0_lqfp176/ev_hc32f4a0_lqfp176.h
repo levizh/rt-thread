@@ -7,8 +7,9 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-10-31       CDT             Add XTAL/XTAL32 IO define.
-   2023-01-15       CDT             Re-define macro: BSP_KEY_KEY10_WAKEUP.
+   2022-10-31       CDT             Add XTAL/XTAL32 IO define
+   2023-01-15       CDT             Re-define macro: BSP_KEY_KEY10_WAKEUP
+   2023-09-30       CDT             Add include file named hc32_ll_fcm.h and add declaration of BSP_XTAL32_Init()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -37,6 +38,7 @@ extern "C"
 #include "hc32_ll_dma.h"
 #include "hc32_ll_efm.h"
 #include "hc32_ll_fcg.h"
+#include "hc32_ll_fcm.h"
 #include "hc32_ll_gpio.h"
 #include "hc32_ll_i2c.h"
 #include "hc32_ll_i2s.h"
@@ -73,7 +75,7 @@ extern "C"
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
 /**
- * @defgroup BSP_Global_Macros BSP Global Macros
+ * @defgroup EV_HC32F4A0_LQFP176_Global_Macros EV_HC32F4A0_LQFP176 Global Macros
  * @{
  */
 
@@ -88,7 +90,7 @@ extern "C"
  */
 
 /**
- * @defgroup BSP_KEY_Sel BSP Key definition
+ * @defgroup EV_HC32F4A0_LQFP176_KEY_Sel EV_HC32F4A0_LQFP176 Key definition
  * @{
  */
 #define BSP_KEY_1               (0x0001UL)    /*!< BSP KEY 1 */
@@ -167,7 +169,7 @@ extern "C"
  */
 
 /**
- * @defgroup BSP_PRINT_CONFIG BSP PRINT Configure definition
+ * @defgroup EV_HC32F4A0_LQFP176_PRINT_CONFIG EV_HC32F4A0_LQFP176 PRINT Configure definition
  * @{
  */
 #define BSP_PRINTF_DEVICE               (CM_USART1)
@@ -184,7 +186,7 @@ extern "C"
  */
 
 /**
- * @defgroup BSP_XTAL_CONFIG BSP XTAL Configure definition
+ * @defgroup EV_HC32F4A0_LQFP176_XTAL_CONFIG EV_HC32F4A0_LQFP176 XTAL Configure definition
  * @{
  */
 #define BSP_XTAL_PORT                   (GPIO_PORT_H)
@@ -195,7 +197,7 @@ extern "C"
  */
 
 /**
- * @defgroup BSP_XTAL32_CONFIG BSP XTAL32 Configure definition
+ * @defgroup EV_HC32F4A0_LQFP176_XTAL32_CONFIG EV_HC32F4A0_LQFP176 XTAL32 Configure definition
  * @{
  */
 #define BSP_XTAL32_PORT                 (GPIO_PORT_C)
@@ -217,9 +219,10 @@ extern "C"
   Global function prototypes (definition in C source)
  ******************************************************************************/
 /**
- * @addtogroup BSP_Global_Functions
+ * @addtogroup EV_HC32F4A0_LQFP176_Global_Functions
  * @{
  */
+int32_t BSP_XTAL32_Init(void);
 void BSP_CLK_Init(void);
 
 void BSP_KEY_Init(void);

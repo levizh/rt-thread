@@ -7,6 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2023-01-15       CDT             Modify USART_SR_TXE to USART_SR_TC in STL_ConsoleOutputChar()
+   2023-05-31       CDT             Modify register USART DR to USART TDR
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -122,7 +123,7 @@ __WEAKDEF uint32_t STL_ConsoleOutputChar(char cData)
     }
 
     if (0UL != u32TxEmpty) {
-        WRITE_REG32(STL_PRINTF_DEVICE->DR, (uint32_t)cData);
+        WRITE_REG16(STL_PRINTF_DEVICE->TDR, (uint16_t)cData);
         u32Ret = STL_OK;
     }
 
@@ -206,7 +207,7 @@ uint32_t STL_PrintfInit(void)
     for (u32Div = 0UL; u32Div <= USART_CLK_DIV64; u32Div++) {
         USART_SetClockDiv(STL_PRINTF_DEVICE, u32Div);
         if ((LL_OK == USART_SetBaudrate(STL_PRINTF_DEVICE, STL_PRINTF_BAUDRATE, &f32Error)) && \
-                ((-STL_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= STL_PRINTF_BAUDRATE_ERR_MAX))) {
+            ((-STL_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= STL_PRINTF_BAUDRATE_ERR_MAX))) {
             USART_FuncCmd(STL_PRINTF_DEVICE, USART_TX, ENABLE);
             u32Ret = STL_OK;
             break;

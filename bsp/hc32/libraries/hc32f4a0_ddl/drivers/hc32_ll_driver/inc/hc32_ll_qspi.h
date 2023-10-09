@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Modify return value type of QSPI_DeInit function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -399,7 +400,7 @@ __STATIC_INLINE uint8_t QSPI_ReadDirectCommValue(void)
 }
 
 /* Initialization and configuration functions */
-void QSPI_DeInit(void);
+int32_t QSPI_DeInit(void);
 int32_t QSPI_Init(const stc_qspi_init_t *pstcQspiInit);
 int32_t QSPI_StructInit(stc_qspi_init_t *pstcQspiInit);
 void QSPI_SetWpPinLevel(uint32_t u32Level);

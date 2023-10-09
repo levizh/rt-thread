@@ -7,7 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2022-06-30       CDT             Add API GPIO_AnalogCmd() and GPIO_ExIntCmd().
+   2022-06-30       CDT             Add API GPIO_AnalogCmd() and GPIO_ExIntCmd()
+   2023-06-30       CDT             Rename GPIO_ExIntCmd() as GPIO_ExtIntCmd
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -74,9 +75,9 @@ typedef struct {
     uint16_t u16PinDrv;         /*!< Pin drive capacity setting, @ref GPIO_PinDrv_Sel for details           */
     uint16_t u16Latch;          /*!< Pin latch setting, @ref GPIO_PinLatch_Sel for details                  */
     uint16_t u16PullUp;         /*!< Internal pull-up resistor setting, @ref GPIO_PinPU_Sel for details     */
-    uint16_t u16Invert;         /*!< Pin input/output invert setting, @ref GPIO_PinInvert_Sel               */
+    uint16_t u16Invert;         /*!< Pin input/output invert setting, @ref GPIO_PinInvert_Sel for details   */
     uint16_t u16ExtInt;         /*!< External interrupt pin setting, @ref GPIO_PinExtInt_Sel for details    */
-    uint16_t u16PinInputType;   /*!< Input type setting, @ref GPIO_PinInType_Sel                            */
+    uint16_t u16PinInputType;   /*!< Input type setting, @ref GPIO_PinInType_Sel for detials                */
     uint16_t u16PinAttr;        /*!< Digital or analog attribute setting, @ref GPIO_PinMode_Sel for details */
 } stc_gpio_init_t;
 /**
@@ -420,7 +421,7 @@ void GPIO_SetPins(uint8_t u8Port, uint16_t u16Pin);
 void GPIO_ResetPins(uint8_t u8Port, uint16_t u16Pin);
 void GPIO_WritePort(uint8_t u8Port, uint16_t u16PortVal);
 void GPIO_TogglePins(uint8_t u8Port, uint16_t u16Pin);
-void GPIO_ExIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState);
+void GPIO_ExtIntCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState);
 void GPIO_AnalogCmd(uint8_t u8Port, uint16_t u16Pin, en_functional_state_t enNewState);
 /**
  * @}

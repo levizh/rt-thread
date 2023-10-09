@@ -57,6 +57,11 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_WM8731_Global_Macros  EV_HC32F4A0_LQFP176 WM8731 Global Macros
+ * @{
+ */
+
 /* WM8731 device address */
 #define BSP_WM8731_DEV_ADDR                     (0x1AU)
 #define BSP_WM8731_REG_ADDR_LEN                 (1U)
@@ -147,6 +152,10 @@ extern "C"
  * @}
  */
 
+/**
+ * @}
+ */
+
 /*******************************************************************************
  * Global variable definitions ('extern')
  ******************************************************************************/
@@ -155,7 +164,7 @@ extern "C"
   Global function prototypes (definition in C source)
  ******************************************************************************/
 /**
- * @addtogroup BSP_WM8731_Global_Functions BSP WM8731 Global Functions
+ * @addtogroup EV_HC32F4A0_LQFP176_WM8731_Global_Functions
  * @{
  */
 void BSP_WM8731_DeInit(void);

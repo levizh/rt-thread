@@ -8,7 +8,11 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-10-31       CDT             Refine TMRA CMP DCU MAU share handler
-   2022-10-31       CDT             Rename I2Cx_Error_IrqHandler as I2Cx_EE_IrqHandler
+                                    Rename I2Cx_Error_IrqHandler as I2Cx_EE_IrqHandler
+   2023-09-30       CDT             Modify typo
+                                    IRQxxx_Handler add __DSB for Arm Errata 838869
+                                    The BCSTR register of TimerA is split into BCSTRH and BCSTRL
+                                    Modify for head file update: EIRQFR -> EIFR
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -99,69 +103,72 @@ void IRQ128_Handler(void)
     const uint32_t VSSEL128 = CM_INTC->VSSEL128;
 
     /* external interrupt 00 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR0) && (0UL != (VSSEL128 & BIT_MASK_00))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR0) && (0UL != (VSSEL128 & BIT_MASK_00))) {
         EXTINT00_IrqHandler();
     }
     /* external interrupt 01 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR1) && (0UL != (VSSEL128 & BIT_MASK_01))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR1) && (0UL != (VSSEL128 & BIT_MASK_01))) {
         EXTINT01_IrqHandler();
     }
     /* external interrupt 02 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR2) && (0UL != (VSSEL128 & BIT_MASK_02))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR2) && (0UL != (VSSEL128 & BIT_MASK_02))) {
         EXTINT02_IrqHandler();
     }
     /* external interrupt 03 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR3) && (0UL != (VSSEL128 & BIT_MASK_03))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR3) && (0UL != (VSSEL128 & BIT_MASK_03))) {
         EXTINT03_IrqHandler();
     }
     /* external interrupt 04 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR4) && (0UL != (VSSEL128 & BIT_MASK_04))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR4) && (0UL != (VSSEL128 & BIT_MASK_04))) {
         EXTINT04_IrqHandler();
     }
     /* external interrupt 05 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR5) && (0UL != (VSSEL128 & BIT_MASK_05))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR5) && (0UL != (VSSEL128 & BIT_MASK_05))) {
         EXTINT05_IrqHandler();
     }
     /* external interrupt 06 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR6) && (0UL != (VSSEL128 & BIT_MASK_06))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR6) && (0UL != (VSSEL128 & BIT_MASK_06))) {
         EXTINT06_IrqHandler();
     }
     /* external interrupt 07 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR7) && (0UL != (VSSEL128 & BIT_MASK_07))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR7) && (0UL != (VSSEL128 & BIT_MASK_07))) {
         EXTINT07_IrqHandler();
     }
     /* external interrupt 08 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR8) && (0UL != (VSSEL128 & BIT_MASK_08))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR8) && (0UL != (VSSEL128 & BIT_MASK_08))) {
         EXTINT08_IrqHandler();
     }
     /* external interrupt 09 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR9) && (0UL != (VSSEL128 & BIT_MASK_09))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR9) && (0UL != (VSSEL128 & BIT_MASK_09))) {
         EXTINT09_IrqHandler();
     }
     /* external interrupt 10 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR10) && (0UL != (VSSEL128 & BIT_MASK_10))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR10) && (0UL != (VSSEL128 & BIT_MASK_10))) {
         EXTINT10_IrqHandler();
     }
     /* external interrupt 11 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR11) && (0UL != (VSSEL128 & BIT_MASK_11))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR11) && (0UL != (VSSEL128 & BIT_MASK_11))) {
         EXTINT11_IrqHandler();
     }
     /* external interrupt 12 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR12) && (0UL != (VSSEL128 & BIT_MASK_12))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR12) && (0UL != (VSSEL128 & BIT_MASK_12))) {
         EXTINT12_IrqHandler();
     }
     /* external interrupt 13 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR13) && (0UL != (VSSEL128 & BIT_MASK_13))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR13) && (0UL != (VSSEL128 & BIT_MASK_13))) {
         EXTINT13_IrqHandler();
     }
     /* external interrupt 14 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR14) && (0UL != (VSSEL128 & BIT_MASK_14))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR14) && (0UL != (VSSEL128 & BIT_MASK_14))) {
         EXTINT14_IrqHandler();
     }
     /* external interrupt 15 */
-    if ((1UL == bCM_INTC->EIRQFR_b.EIRQFR15) && (0UL != (VSSEL128 & BIT_MASK_15))) {
+    if ((1UL == bCM_INTC->EIFR_b.EIFR15) && (0UL != (VSSEL128 & BIT_MASK_15))) {
         EXTINT15_IrqHandler();
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -438,6 +445,9 @@ void IRQ129_Handler(void)
             DCU8_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -686,6 +696,9 @@ void IRQ130_Handler(void)
             }
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -859,6 +872,9 @@ void IRQ131_Handler(void)
     if ((0UL != u32Tmp1) && (0UL != (VSSEL131 & BIT_MASK_31))) {
         SWDT_IrqHandler();
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -870,198 +886,201 @@ void IRQ132_Handler(void)
 {
     const uint32_t VSSEL132 = CM_INTC->VSSEL132;
 
-    /* Timer6 Ch.1 general compare match A */
+    /* Timer6 Unit.1 general compare match A */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMAF) && (0UL != (VSSEL132 & BIT_MASK_00))) {
             TMR6_1_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 general compare match B */
+    /* Timer6 Unit.1 general compare match B */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMBF) && (0UL != (VSSEL132 & BIT_MASK_01))) {
             TMR6_1_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 general compare match C */
+    /* Timer6 Unit.1 general compare match C */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMCF) && (0UL != (VSSEL132 & BIT_MASK_02))) {
             TMR6_1_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 general compare match D */
+    /* Timer6 Unit.1 general compare match D */
     if (1UL == bCM_TMR6_1->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMDF) && (0UL != (VSSEL132 & BIT_MASK_03))) {
             TMR6_1_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 general compare match E */
+    /* Timer6 Unit.1 general compare match E */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMEF) && (0UL != (VSSEL132 & BIT_MASK_04))) {
             TMR6_1_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 general compare match F */
+    /* Timer6 Unit.1 general compare match F */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMFF) && (0UL != (VSSEL132 & BIT_MASK_05))) {
             TMR6_1_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 overflow*/
+    /* Timer6 Unit.1 overflow*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_1->STFLR_b.OVFF) && (0UL != (VSSEL132 & BIT_MASK_06))) {
             TMR6_1_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 underflow*/
+    /* Timer6 Unit.1 underflow*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_1->STFLR_b.UDFF) && (0UL != (VSSEL132 & BIT_MASK_07))) {
             TMR6_1_GUdf_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 U phase higher compare match */
+    /* Timer4 Unit.1 U phase higher compare match */
     if (1UL == bCM_TMR4_1->OCSRU_b.OCIEH) {
         if ((1UL == bCM_TMR4_1->OCSRU_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_08))) {
             TMR4_1_GCmpUH_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 U phase lower compare match */
+    /* Timer4 Unit.1 U phase lower compare match */
     if (1UL == bCM_TMR4_1->OCSRU_b.OCIEL) {
         if ((1UL == bCM_TMR4_1->OCSRU_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_09))) {
             TMR4_1_GCmpUL_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 V phase higher compare match */
+    /* Timer4 Unit.1 V phase higher compare match */
     if (1UL == bCM_TMR4_1->OCSRV_b.OCIEH) {
         if ((1UL == bCM_TMR4_1->OCSRV_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_10))) {
             TMR4_1_GCmpVH_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 V phase lower compare match */
+    /* Timer4 Unit.1 V phase lower compare match */
     if (1UL == bCM_TMR4_1->OCSRV_b.OCIEL) {
         if ((1UL == bCM_TMR4_1->OCSRV_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_11))) {
             TMR4_1_GCmpVL_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 W phase higher compare match */
+    /* Timer4 Unit.1 W phase higher compare match */
     if (1UL == bCM_TMR4_1->OCSRW_b.OCIEH) {
         if ((1UL == bCM_TMR4_1->OCSRW_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_12))) {
             TMR4_1_GCmpWH_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 W phase lower compare match */
+    /* Timer4 Unit.1 W phase lower compare match */
     if (1UL == bCM_TMR4_1->OCSRW_b.OCIEL) {
         if ((1UL == bCM_TMR4_1->OCSRW_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_13))) {
             TMR4_1_GCmpWL_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 overflow */
+    /* Timer4 Unit.1 overflow */
     if (1UL == bCM_TMR4_1->CCSR_b.IRQPEN) {
         if ((1UL == bCM_TMR4_1->CCSR_b.IRQPF) && (0UL != (VSSEL132 & BIT_MASK_14))) {
             TMR4_1_Ovf_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 underflow */
+    /* Timer4 Unit.1 underflow */
     if (1UL == bCM_TMR4_1->CCSR_b.IRQZEN) {
         if ((1UL == bCM_TMR4_1->CCSR_b.IRQZF) && (0UL != (VSSEL132 & BIT_MASK_15))) {
             TMR4_1_Udf_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match A */
+    /* Timer6 Unit.2 general compare match A */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMAF) && (0UL != (VSSEL132 & BIT_MASK_16))) {
             TMR6_2_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match B */
+    /* Timer6 Unit.2 general compare match B */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMBF) && (0UL != (VSSEL132 & BIT_MASK_17))) {
             TMR6_2_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match C */
+    /* Timer6 Unit.2 general compare match C */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMCF) && (0UL != (VSSEL132 & BIT_MASK_18))) {
             TMR6_2_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match D */
+    /* Timer6 Unit.2 general compare match D */
     if (1UL == bCM_TMR6_2->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMDF) && (0UL != (VSSEL132 & BIT_MASK_19))) {
             TMR6_2_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match E */
+    /* Timer6 Unit.2 general compare match E */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMEF) && (0UL != (VSSEL132 & BIT_MASK_20))) {
             TMR6_2_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 general compare match F */
+    /* Timer6 Unit.2 general compare match F */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMFF) && (0UL != (VSSEL132 & BIT_MASK_21))) {
             TMR6_2_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 overflow*/
+    /* Timer6 Unit.2 overflow*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_2->STFLR_b.OVFF) && (0UL != (VSSEL132 & BIT_MASK_22))) {
             TMR6_2_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 underflow*/
+    /* Timer6 Unit.2 underflow*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_2->STFLR_b.UDFF) && (0UL != (VSSEL132 & BIT_MASK_23))) {
             TMR6_2_GUdf_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 U phase higher compare match */
+    /* Timer4 Unit.2 U phase higher compare match */
     if (1UL == bCM_TMR4_2->OCSRU_b.OCIEH) {
         if ((1UL == bCM_TMR4_2->OCSRU_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_24))) {
             TMR4_2_GCmpUH_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 U phase lower compare match */
+    /* Timer4 Unit.2 U phase lower compare match */
     if (1UL == bCM_TMR4_2->OCSRU_b.OCIEL) {
         if ((1UL == bCM_TMR4_2->OCSRU_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_25))) {
             TMR4_2_GCmpUL_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 V phase higher compare match */
+    /* Timer4 Unit.2 V phase higher compare match */
     if (1UL == bCM_TMR4_2->OCSRV_b.OCIEH) {
         if ((1UL == bCM_TMR4_2->OCSRV_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_26))) {
             TMR4_2_GCmpVH_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 V phase lower compare match */
+    /* Timer4 Unit.2 V phase lower compare match */
     if (1UL == bCM_TMR4_2->OCSRV_b.OCIEL) {
         if ((1UL == bCM_TMR4_2->OCSRV_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_27))) {
             TMR4_2_GCmpVL_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 W phase higher compare match */
+    /* Timer4 Unit.2 W phase higher compare match */
     if (1UL == bCM_TMR4_2->OCSRW_b.OCIEH) {
         if ((1UL == bCM_TMR4_2->OCSRW_b.OCFH) && (0UL != (VSSEL132 & BIT_MASK_28))) {
             TMR4_2_GCmpWH_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 W phase lower compare match */
+    /* Timer4 Unit.2 W phase lower compare match */
     if (1UL == bCM_TMR4_2->OCSRW_b.OCIEL) {
         if ((1UL == bCM_TMR4_2->OCSRW_b.OCFL) && (0UL != (VSSEL132 & BIT_MASK_29))) {
             TMR4_2_GCmpWL_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 overflow */
+    /* Timer4 Unit.2 overflow */
     if (1UL == bCM_TMR4_2->CCSR_b.IRQPEN) {
         if ((1UL == bCM_TMR4_2->CCSR_b.IRQPF) && (0UL != (VSSEL132 & BIT_MASK_30))) {
             TMR4_2_Ovf_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 underflow */
+    /* Timer4 Unit.2 underflow */
     if (1UL == bCM_TMR4_2->CCSR_b.IRQZEN) {
         if ((1UL == bCM_TMR4_2->CCSR_b.IRQZF) && (0UL != (VSSEL132 & BIT_MASK_31))) {
             TMR4_2_Udf_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -1073,198 +1092,201 @@ void IRQ133_Handler(void)
 {
     const uint32_t VSSEL133 = CM_INTC->VSSEL133;
 
-    /* Timer6 Ch.3 general compare match A */
+    /* Timer6 Unit.3 general compare match A */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMAF) && (0UL != (VSSEL133 & BIT_MASK_00))) {
             TMR6_3_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 general compare match B */
+    /* Timer6 Unit.3 general compare match B */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMBF) && (0UL != (VSSEL133 & BIT_MASK_01))) {
             TMR6_3_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 general compare match C */
+    /* Timer6 Unit.3 general compare match C */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMCF) && (0UL != (VSSEL133 & BIT_MASK_02))) {
             TMR6_3_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 general compare match D */
+    /* Timer6 Unit.3 general compare match D */
     if (1UL == bCM_TMR6_3->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMDF) && (0UL != (VSSEL133 & BIT_MASK_03))) {
             TMR6_3_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 general compare match E */
+    /* Timer6 Unit.3 general compare match E */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMEF) && (0UL != (VSSEL133 & BIT_MASK_04))) {
             TMR6_3_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 general compare match F */
+    /* Timer6 Unit.3 general compare match F */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMFF) && (0UL != (VSSEL133 & BIT_MASK_05))) {
             TMR6_3_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 overflow*/
+    /* Timer6 Unit.3 overflow*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_3->STFLR_b.OVFF) && (0UL != (VSSEL133 & BIT_MASK_06))) {
             TMR6_3_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 underflow*/
+    /* Timer6 Unit.3 underflow*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_3->STFLR_b.UDFF) && (0UL != (VSSEL133 & BIT_MASK_07))) {
             TMR6_3_GUdf_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 U phase higher compare match */
+    /* Timer4 Unit.3 U phase higher compare match */
     if (1UL == bCM_TMR4_3->OCSRU_b.OCIEH) {
         if ((1UL == bCM_TMR4_3->OCSRU_b.OCFH) && (0UL != (VSSEL133 & BIT_MASK_08))) {
             TMR4_3_GCmpUH_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 U phase lower compare match */
+    /* Timer4 Unit.3 U phase lower compare match */
     if (1UL == bCM_TMR4_3->OCSRU_b.OCIEL) {
         if ((1UL == bCM_TMR4_3->OCSRU_b.OCFL) && (0UL != (VSSEL133 & BIT_MASK_09))) {
             TMR4_3_GCmpUL_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 V phase higher compare match */
+    /* Timer4 Unit.3 V phase higher compare match */
     if (1UL == bCM_TMR4_3->OCSRV_b.OCIEH) {
         if ((1UL == bCM_TMR4_3->OCSRV_b.OCFH) && (0UL != (VSSEL133 & BIT_MASK_10))) {
             TMR4_3_GCmpVH_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 V phase lower compare match */
+    /* Timer4 Unit.3 V phase lower compare match */
     if (1UL == bCM_TMR4_3->OCSRV_b.OCIEL) {
         if ((1UL == bCM_TMR4_3->OCSRV_b.OCFL) && (0UL != (VSSEL133 & BIT_MASK_11))) {
             TMR4_3_GCmpVL_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 W phase higher compare match */
+    /* Timer4 Unit.3 W phase higher compare match */
     if (1UL == bCM_TMR4_3->OCSRW_b.OCIEH) {
         if ((1UL == bCM_TMR4_3->OCSRW_b.OCFH) && (0UL != (VSSEL133 & BIT_MASK_12))) {
             TMR4_3_GCmpWH_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 W phase lower compare match */
+    /* Timer4 Unit.3 W phase lower compare match */
     if (1UL == bCM_TMR4_3->OCSRW_b.OCIEL) {
         if ((1UL == bCM_TMR4_3->OCSRW_b.OCFL) && (0UL != (VSSEL133 & BIT_MASK_13))) {
             TMR4_3_GCmpWL_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 overflow */
+    /* Timer4 Unit.3 overflow */
     if (1UL == bCM_TMR4_3->CCSR_b.IRQPEN) {
         if ((1UL == bCM_TMR4_3->CCSR_b.IRQPF) && (0UL != (VSSEL133 & BIT_MASK_14))) {
             TMR4_3_Ovf_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 underflow */
+    /* Timer4 Unit.3 underflow */
     if (1UL == bCM_TMR4_3->CCSR_b.IRQZEN) {
         if ((1UL == bCM_TMR4_3->CCSR_b.IRQZF) && (0UL != (VSSEL133 & BIT_MASK_15))) {
             TMR4_3_Udf_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 dead time */
+    /* Timer6 Unit.1 dead time */
     if (1UL == bCM_TMR6_1->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_1->STFLR_b.DTEF) && (0UL != (VSSEL133 & BIT_MASK_16))) {
             TMR6_1_GDte_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 specified up compare match A*/
+    /* Timer6 Unit.1 specified up compare match A*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMSAUF) && (0UL != (VSSEL133 & BIT_MASK_19))) {
             TMR6_1_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 specified down compare match A*/
+    /* Timer6 Unit.1 specified down compare match A*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMSADF) && (0UL != (VSSEL133 & BIT_MASK_19))) {
             TMR6_1_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 specified up compare match B*/
+    /* Timer6 Unit.1 specified up compare match B*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMSBUF) && (0UL != (VSSEL133 & BIT_MASK_20))) {
             TMR6_1_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.1 specified down compare match B*/
+    /* Timer6 Unit.1 specified down compare match B*/
     if (1UL == bCM_TMR6_1->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_1->STFLR_b.CMSBDF) && (0UL != (VSSEL133 & BIT_MASK_20))) {
             TMR6_1_SCmpDownB_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 U phase reload */
+    /* Timer4 Unit.1 U phase reload */
     if (0UL == bCM_TMR4_1->RCSR_b.RTIDU) {
         if ((1UL == bCM_TMR4_1->RCSR_b.RTIFU) && (0UL != (VSSEL133 & BIT_MASK_21))) {
             TMR4_1_ReloadU_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 V phase reload */
+    /* Timer4 Unit.1 V phase reload */
     if (0UL == bCM_TMR4_1->RCSR_b.RTIDV) {
         if ((1UL == bCM_TMR4_1->RCSR_b.RTIFV) && (0UL != (VSSEL133 & BIT_MASK_22))) {
             TMR4_1_ReloadV_IrqHandler();
         }
     }
-    /* Timer4 Ch.1 W phase reload */
+    /* Timer4 Unit.1 W phase reload */
     if (0UL == bCM_TMR4_1->RCSR_b.RTIDW) {
         if ((1UL == bCM_TMR4_1->RCSR_b.RTIFW) && (0UL != (VSSEL133 & BIT_MASK_23))) {
             TMR4_1_ReloadW_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 dead time */
+    /* Timer6 Unit.2 dead time */
     if (1UL == bCM_TMR6_2->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_2->STFLR_b.DTEF) && (0UL != (VSSEL133 & BIT_MASK_24))) {
             TMR6_2_GDte_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 specified up compare match A*/
+    /* Timer6 Unit.2 specified up compare match A*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMSAUF) && (0UL != (VSSEL133 & BIT_MASK_27))) {
             TMR6_2_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 specified down compare match A*/
+    /* Timer6 Unit.2 specified down compare match A*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMSADF) && (0UL != (VSSEL133 & BIT_MASK_27))) {
             TMR6_2_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 specified up compare match B*/
+    /* Timer6 Unit.2 specified up compare match B*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMSBUF) && (0UL != (VSSEL133 & BIT_MASK_28))) {
             TMR6_2_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.2 specified down compare match B*/
+    /* Timer6 Unit.2 specified down compare match B*/
     if (1UL == bCM_TMR6_2->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_2->STFLR_b.CMSBDF) && (0UL != (VSSEL133 & BIT_MASK_28))) {
             TMR6_2_SCmpDownB_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 U phase reload */
+    /* Timer4 Unit.2 U phase reload */
     if (0UL == bCM_TMR4_2->RCSR_b.RTIDU) {
         if ((1UL == bCM_TMR4_2->RCSR_b.RTIFU) && (0UL != (VSSEL133 & BIT_MASK_29))) {
             TMR4_2_ReloadU_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 V phase reload */
+    /* Timer4 Unit.2 V phase reload */
     if (0UL == bCM_TMR4_2->RCSR_b.RTIDV) {
         if ((1UL == bCM_TMR4_2->RCSR_b.RTIFV) && (0UL != (VSSEL133 & BIT_MASK_30))) {
             TMR4_2_ReloadV_IrqHandler();
         }
     }
-    /* Timer4 Ch.2 W phase reload */
+    /* Timer4 Unit.2 W phase reload */
     if (0UL == bCM_TMR4_2->RCSR_b.RTIDW) {
         if ((1UL == bCM_TMR4_2->RCSR_b.RTIFW) && (0UL != (VSSEL133 & BIT_MASK_31))) {
             TMR4_2_ReloadW_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -1276,132 +1298,135 @@ void IRQ134_Handler(void)
 {
     const uint32_t VSSEL134 = CM_INTC->VSSEL134;
 
-    /* Timer6 Ch.3 dead time */
+    /* Timer6 Unit.3 dead time */
     if (1UL == bCM_TMR6_3->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_3->STFLR_b.DTEF) && (0UL != (VSSEL134 & BIT_MASK_00))) {
             TMR6_3_GDte_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 specified up compare match A*/
+    /* Timer6 Unit.3 specified up compare match A*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMSAUF) && (0UL != (VSSEL134 & BIT_MASK_03))) {
             TMR6_3_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 specified down compare match A*/
+    /* Timer6 Unit.3 specified down compare match A*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMSADF) && (0UL != (VSSEL134 & BIT_MASK_03))) {
             TMR6_3_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 specified up compare match B*/
+    /* Timer6 Unit.3 specified up compare match B*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMSBUF) && (0UL != (VSSEL134 & BIT_MASK_04))) {
             TMR6_3_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.3 specified down compare match B*/
+    /* Timer6 Unit.3 specified down compare match B*/
     if (1UL == bCM_TMR6_3->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_3->STFLR_b.CMSBDF) && (0UL != (VSSEL134 & BIT_MASK_04))) {
             TMR6_3_SCmpDownB_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 U phase reload */
+    /* Timer4 Unit.3 U phase reload */
     if (0UL == bCM_TMR4_3->RCSR_b.RTIDU) {
         if ((1UL == bCM_TMR4_3->RCSR_b.RTIFU) && (0UL != (VSSEL134 & BIT_MASK_05))) {
             TMR4_3_ReloadU_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 V phase reload */
+    /* Timer4 Unit.3 V phase reload */
     if (0UL == bCM_TMR4_3->RCSR_b.RTIDV) {
         if ((1UL == bCM_TMR4_3->RCSR_b.RTIFV) && (0UL != (VSSEL134 & BIT_MASK_06))) {
             TMR4_3_ReloadV_IrqHandler();
         }
     }
-    /* Timer4 Ch.3 W phase reload */
+    /* Timer4 Unit.3 W phase reload */
     if (0UL == bCM_TMR4_3->RCSR_b.RTIDW) {
         if ((1UL == bCM_TMR4_3->RCSR_b.RTIFW) && (0UL != (VSSEL134 & BIT_MASK_07))) {
             TMR4_3_ReloadW_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match A */
+    /* Timer6 Unit.4 general compare match A */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMAF) && (0UL != (VSSEL134 & BIT_MASK_16))) {
             TMR6_4_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match B */
+    /* Timer6 Unit.4 general compare match B */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMBF) && (0UL != (VSSEL134 & BIT_MASK_17))) {
             TMR6_4_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match C */
+    /* Timer6 Unit.4 general compare match C */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMCF) && (0UL != (VSSEL134 & BIT_MASK_18))) {
             TMR6_4_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match D */
+    /* Timer6 Unit.4 general compare match D */
     if (1UL == bCM_TMR6_4->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMDF) && (0UL != (VSSEL134 & BIT_MASK_19))) {
             TMR6_4_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match E */
+    /* Timer6 Unit.4 general compare match E */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMEF) && (0UL != (VSSEL134 & BIT_MASK_20))) {
             TMR6_4_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 general compare match F */
+    /* Timer6 Unit.4 general compare match F */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMFF) && (0UL != (VSSEL134 & BIT_MASK_21))) {
             TMR6_4_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 overflow*/
+    /* Timer6 Unit.4 overflow*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_4->STFLR_b.OVFF) && (0UL != (VSSEL134 & BIT_MASK_22))) {
             TMR6_4_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 underflow*/
+    /* Timer6 Unit.4 underflow*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_4->STFLR_b.UDFF) && (0UL != (VSSEL134 & BIT_MASK_23))) {
             TMR6_4_GUdf_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 dead time */
+    /* Timer6 Unit.4 dead time */
     if (1UL == bCM_TMR6_4->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_4->STFLR_b.DTEF) && (0UL != (VSSEL134 & BIT_MASK_24))) {
             TMR6_4_Gdte_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 specified up compare match A*/
+    /* Timer6 Unit.4 specified up compare match A*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMSAUF) && (0UL != (VSSEL134 & BIT_MASK_27))) {
             TMR6_4_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 specified down compare match A*/
+    /* Timer6 Unit.4 specified down compare match A*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMSADF) && (0UL != (VSSEL134 & BIT_MASK_27))) {
             TMR6_4_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 specified up compare match B*/
+    /* Timer6 Unit.4 specified up compare match B*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMSBUF) && (0UL != (VSSEL134 & BIT_MASK_28))) {
             TMR6_4_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.4 specified down compare match B*/
+    /* Timer6 Unit.4 specified down compare match B*/
     if (1UL == bCM_TMR6_4->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_4->STFLR_b.CMSBDF) && (0UL != (VSSEL134 & BIT_MASK_28))) {
             TMR6_4_SCmpDownB_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -1415,198 +1440,201 @@ void IRQ135_Handler(void)
     uint32_t u32Tmp2;
     const uint32_t VSSEL135 = CM_INTC->VSSEL135;
 
-    /* Timer6 Ch.5 general compare match A */
+    /* Timer6 Unit.5 general compare match A */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMAF) && (0UL != (VSSEL135 & BIT_MASK_00))) {
             TMR6_5_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 general compare match B */
+    /* Timer6 Unit.5 general compare match B */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMBF) && (0UL != (VSSEL135 & BIT_MASK_01))) {
             TMR6_5_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 general compare match C */
+    /* Timer6 Unit.5 general compare match C */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMCF) && (0UL != (VSSEL135 & BIT_MASK_02))) {
             TMR6_5_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 general compare match D */
+    /* Timer6 Unit.5 general compare match D */
     if (1UL == bCM_TMR6_5->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMDF) && (0UL != (VSSEL135 & BIT_MASK_03))) {
             TMR6_5_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 general compare match E */
+    /* Timer6 Unit.5 general compare match E */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMEF) && (0UL != (VSSEL135 & BIT_MASK_04))) {
             TMR6_5_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 general compare match F */
+    /* Timer6 Unit.5 general compare match F */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMFF) && (0UL != (VSSEL135 & BIT_MASK_05))) {
             TMR6_5_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 overflow*/
+    /* Timer6 Unit.5 overflow*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_5->STFLR_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_06))) {
             TMR6_5_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 underflow*/
+    /* Timer6 Unit.5 underflow*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_5->STFLR_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_07))) {
             TMR6_5_GUdf_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 dead time */
+    /* Timer6 Unit.5 dead time */
     if (1UL == bCM_TMR6_5->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_5->STFLR_b.DTEF) && (0UL != (VSSEL135 & BIT_MASK_08))) {
             TMR6_5_Gdte_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 specified up compare match A*/
+    /* Timer6 Unit.5 specified up compare match A*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMSAUF) && (0UL != (VSSEL135 & BIT_MASK_11))) {
             TMR6_5_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 specified down compare match A*/
+    /* Timer6 Unit.5 specified down compare match A*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMSADF) && (0UL != (VSSEL135 & BIT_MASK_11))) {
             TMR6_5_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 specified up compare match B*/
+    /* Timer6 Unit.5 specified up compare match B*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMSBUF) && (0UL != (VSSEL135 & BIT_MASK_12))) {
             TMR6_5_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.5 specified down compare match B*/
+    /* Timer6 Unit.5 specified down compare match B*/
     if (1UL == bCM_TMR6_5->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_5->STFLR_b.CMSBDF) && (0UL != (VSSEL135 & BIT_MASK_12))) {
             TMR6_5_SCmpDownB_IrqHandler();
         }
     }
-    /* TimerA Ch.1 overflow */
-    if (1UL == bCM_TMRA_1->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_1->BCSTR_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_13))) {
+    /* TimerA Unit.1 overflow */
+    if (1UL == bCM_TMRA_1->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_1->BCSTRH_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_13))) {
             TMRA_1_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.1 underflow */
-    if (1UL == bCM_TMRA_1->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_1->BCSTR_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_14))) {
+    /* TimerA Unit.1 underflow */
+    if (1UL == bCM_TMRA_1->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_1->BCSTRH_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_14))) {
             TMRA_1_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_1->ICONR;
     u32Tmp2 = CM_TMRA_1->STFLR;
-    /* TimerA Ch.1 compare match */
+    /* TimerA Unit.1 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL135 & BIT_MASK_15))) {
         TMRA_1_Cmp_IrqHandler();
     }
-    /* Timer6 Ch.6 general compare match A */
+    /* Timer6 Unit.6 general compare match A */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMAF) && (0UL != (VSSEL135 & BIT_MASK_16))) {
             TMR6_6_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 general compare match B */
+    /* Timer6 Unit.6 general compare match B */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMBF) && (0UL != (VSSEL135 & BIT_MASK_17))) {
             TMR6_6_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 general compare match C */
+    /* Timer6 Unit.6 general compare match C */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMCF) && (0UL != (VSSEL135 & BIT_MASK_18))) {
             TMR6_6_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 general compare match D */
+    /* Timer6 Unit.6 general compare match D */
     if (1UL == bCM_TMR6_6->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMDF) && (0UL != (VSSEL135 & BIT_MASK_19))) {
             TMR6_6_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 general compare match E */
+    /* Timer6 Unit.6 general compare match E */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMEF) && (0UL != (VSSEL135 & BIT_MASK_20))) {
             TMR6_6_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 general compare match F */
+    /* Timer6 Unit.6 general compare match F */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMFF) && (0UL != (VSSEL135 & BIT_MASK_21))) {
             TMR6_6_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 overflow*/
+    /* Timer6 Unit.6 overflow*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_6->STFLR_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_22))) {
             TMR6_6_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 underflow*/
+    /* Timer6 Unit.6 underflow*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_6->STFLR_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_23))) {
             TMR6_6_GUdf_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 dead time */
+    /* Timer6 Unit.6 dead time */
     if (1UL == bCM_TMR6_6->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_6->STFLR_b.DTEF) && (0UL != (VSSEL135 & BIT_MASK_24))) {
             TMR6_6_Gdte_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 specified up compare match A*/
+    /* Timer6 Unit.6 specified up compare match A*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMSAUF) && (0UL != (VSSEL135 & BIT_MASK_27))) {
             TMR6_6_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 specified down compare match A*/
+    /* Timer6 Unit.6 specified down compare match A*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMSADF) && (0UL != (VSSEL135 & BIT_MASK_27))) {
             TMR6_6_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 specified up compare match B*/
+    /* Timer6 Unit.6 specified up compare match B*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMSBUF) && (0UL != (VSSEL135 & BIT_MASK_28))) {
             TMR6_6_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.6 specified down compare match B*/
+    /* Timer6 Unit.6 specified down compare match B*/
     if (1UL == bCM_TMR6_6->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_6->STFLR_b.CMSBDF) && (0UL != (VSSEL135 & BIT_MASK_28))) {
             TMR6_6_SCmpDownB_IrqHandler();
         }
     }
-    /* TimerA Ch.2 overflow */
-    if (1UL == bCM_TMRA_2->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_2->BCSTR_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_29))) {
+    /* TimerA Unit.2 overflow */
+    if (1UL == bCM_TMRA_2->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_2->BCSTRH_b.OVFF) && (0UL != (VSSEL135 & BIT_MASK_29))) {
             TMRA_2_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.2 underflow */
-    if (1UL == bCM_TMRA_2->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_2->BCSTR_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_30))) {
+    /* TimerA Unit.2 underflow */
+    if (1UL == bCM_TMRA_2->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_2->BCSTRH_b.UDFF) && (0UL != (VSSEL135 & BIT_MASK_30))) {
             TMRA_2_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_2->ICONR;
     u32Tmp2 = CM_TMRA_2->STFLR;
-    /* TimerA Ch.2 compare match */
+    /* TimerA Unit.2 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL135 & BIT_MASK_31))) {
         TMRA_2_Cmp_IrqHandler();
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -1620,198 +1648,201 @@ void IRQ136_Handler(void)
     uint32_t u32Tmp2;
     const uint32_t VSSEL136 = CM_INTC->VSSEL136;
 
-    /* Timer6 Ch.7 general compare match A */
+    /* Timer6 Unit.7 general compare match A */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMAF) && (0UL != (VSSEL136 & BIT_MASK_00))) {
             TMR6_7_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 general compare match B */
+    /* Timer6 Unit.7 general compare match B */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMBF) && (0UL != (VSSEL136 & BIT_MASK_01))) {
             TMR6_7_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 general compare match C */
+    /* Timer6 Unit.7 general compare match C */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMCF) && (0UL != (VSSEL136 & BIT_MASK_02))) {
             TMR6_7_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 general compare match D */
+    /* Timer6 Unit.7 general compare match D */
     if (1UL == bCM_TMR6_7->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMDF) && (0UL != (VSSEL136 & BIT_MASK_03))) {
             TMR6_7_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 general compare match E */
+    /* Timer6 Unit.7 general compare match E */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMEF) && (0UL != (VSSEL136 & BIT_MASK_04))) {
             TMR6_7_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 general compare match F */
+    /* Timer6 Unit.7 general compare match F */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMFF) && (0UL != (VSSEL136 & BIT_MASK_05))) {
             TMR6_7_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 overflow*/
+    /* Timer6 Unit.7 overflow*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_7->STFLR_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_06))) {
             TMR6_7_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 underflow*/
+    /* Timer6 Unit.7 underflow*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_7->STFLR_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_07))) {
             TMR6_7_GUdf_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 dead time */
+    /* Timer6 Unit.7 dead time */
     if (1UL == bCM_TMR6_7->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_7->STFLR_b.DTEF) && (0UL != (VSSEL136 & BIT_MASK_08))) {
             TMR6_7_Gdte_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 specified up compare match A*/
+    /* Timer6 Unit.7 specified up compare match A*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMSAUF) && (0UL != (VSSEL136 & BIT_MASK_11))) {
             TMR6_7_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 specified down compare match A*/
+    /* Timer6 Unit.7 specified down compare match A*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMSADF) && (0UL != (VSSEL136 & BIT_MASK_11))) {
             TMR6_7_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 specified up compare match B*/
+    /* Timer6 Unit.7 specified up compare match B*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMSBUF) && (0UL != (VSSEL136 & BIT_MASK_12))) {
             TMR6_7_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.7 specified down compare match B*/
+    /* Timer6 Unit.7 specified down compare match B*/
     if (1UL == bCM_TMR6_7->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_7->STFLR_b.CMSBDF) && (0UL != (VSSEL136 & BIT_MASK_12))) {
             TMR6_7_SCmpDownB_IrqHandler();
         }
     }
-    /* TimerA Ch.3 overflow */
-    if (1UL == bCM_TMRA_3->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_3->BCSTR_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_13))) {
+    /* TimerA Unit.3 overflow */
+    if (1UL == bCM_TMRA_3->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_3->BCSTRH_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_13))) {
             TMRA_3_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.3 underflow */
-    if (1UL == bCM_TMRA_3->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_3->BCSTR_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_14))) {
+    /* TimerA Unit.3 underflow */
+    if (1UL == bCM_TMRA_3->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_3->BCSTRH_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_14))) {
             TMRA_3_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_3->ICONR;
     u32Tmp2 = CM_TMRA_3->STFLR;
-    /* TimerA Ch.3 compare match */
+    /* TimerA Unit.3 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL136 & BIT_MASK_15))) {
         TMRA_3_Cmp_IrqHandler();
     }
-    /* Timer6 Ch.8 general compare match A */
+    /* Timer6 Unit.8 general compare match A */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENA) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMAF) && (0UL != (VSSEL136 & BIT_MASK_16))) {
             TMR6_8_GCmpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 general compare match B */
+    /* Timer6 Unit.8 general compare match B */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENB) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMBF) && (0UL != (VSSEL136 & BIT_MASK_17))) {
             TMR6_8_GCmpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 general compare match C */
+    /* Timer6 Unit.8 general compare match C */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENC) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMCF) && (0UL != (VSSEL136 & BIT_MASK_18))) {
             TMR6_8_GCmpC_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 general compare match D */
+    /* Timer6 Unit.8 general compare match D */
     if (1UL == bCM_TMR6_8->ICONR_b.INTEND) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMDF) && (0UL != (VSSEL136 & BIT_MASK_19))) {
             TMR6_8_GCmpD_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 general compare match E */
+    /* Timer6 Unit.8 general compare match E */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENE) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMEF) && (0UL != (VSSEL136 & BIT_MASK_20))) {
             TMR6_8_GCmpE_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 general compare match F */
+    /* Timer6 Unit.8 general compare match F */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENF) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMFF) && (0UL != (VSSEL136 & BIT_MASK_21))) {
             TMR6_8_GCmpF_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 overflow*/
+    /* Timer6 Unit.8 overflow*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENOVF) {
         if ((1UL == bCM_TMR6_8->STFLR_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_22))) {
             TMR6_8_GOvf_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 underflow*/
+    /* Timer6 Unit.8 underflow*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENUDF) {
         if ((1UL == bCM_TMR6_8->STFLR_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_23))) {
             TMR6_8_GUdf_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 dead time */
+    /* Timer6 Unit.8 dead time */
     if (1UL == bCM_TMR6_8->ICONR_b.INTENDTE) {
         if ((1UL == bCM_TMR6_8->STFLR_b.DTEF) && (0UL != (VSSEL136 & BIT_MASK_24))) {
             TMR6_8_Gdte_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 specified up compare match A*/
+    /* Timer6 Unit.8 specified up compare match A*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENSAU) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMSAUF) && (0UL != (VSSEL136 & BIT_MASK_27))) {
             TMR6_8_SCmpUpA_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 specified down compare match A*/
+    /* Timer6 Unit.8 specified down compare match A*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENSAD) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMSADF) && (0UL != (VSSEL136 & BIT_MASK_27))) {
             TMR6_8_SCmpDownA_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 specified up compare match B*/
+    /* Timer6 Unit.8 specified up compare match B*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENSBU) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMSBUF) && (0UL != (VSSEL136 & BIT_MASK_28))) {
             TMR6_8_SCmpUpB_IrqHandler();
         }
     }
-    /* Timer6 Ch.8 specified down compare match B*/
+    /* Timer6 Unit.8 specified down compare match B*/
     if (1UL == bCM_TMR6_8->ICONR_b.INTENSBD) {
         if ((1UL == bCM_TMR6_8->STFLR_b.CMSBDF) && (0UL != (VSSEL136 & BIT_MASK_28))) {
             TMR6_8_SCmpDownB_IrqHandler();
         }
     }
-    /* TimerA Ch.4 overflow */
-    if (1UL == bCM_TMRA_4->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_4->BCSTR_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_29))) {
+    /* TimerA Unit.4 overflow */
+    if (1UL == bCM_TMRA_4->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_4->BCSTRH_b.OVFF) && (0UL != (VSSEL136 & BIT_MASK_29))) {
             TMRA_4_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.4 underflow */
-    if (1UL == bCM_TMRA_4->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_4->BCSTR_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_30))) {
+    /* TimerA Unit.4 underflow */
+    if (1UL == bCM_TMRA_4->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_4->BCSTRH_b.UDFF) && (0UL != (VSSEL136 & BIT_MASK_30))) {
             TMRA_4_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_4->ICONR;
     u32Tmp2 = CM_TMRA_4->STFLR;
-    /* TimerA Ch.4 compare match */
+    /* TimerA Unit.4 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL136 & BIT_MASK_31))) {
         TMRA_4_Cmp_IrqHandler();
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -1997,6 +2028,9 @@ void IRQ137_Handler(void)
             SPI2_Error_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -2014,75 +2048,75 @@ void IRQ138_Handler(void)
     uint8_t ERRINT;
     uint8_t TTCFG;
 
-    /* TimerA Ch.5 overflow */
-    if (1UL == bCM_TMRA_5->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_5->BCSTR_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_00))) {
+    /* TimerA Unit.5 overflow */
+    if (1UL == bCM_TMRA_5->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_5->BCSTRH_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_00))) {
             TMRA_5_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.5 underflow */
-    if (1UL == bCM_TMRA_5->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_5->BCSTR_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_01))) {
+    /* TimerA Unit.5 underflow */
+    if (1UL == bCM_TMRA_5->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_5->BCSTRH_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_01))) {
             TMRA_5_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_5->ICONR;
     u32Tmp2 = CM_TMRA_5->STFLR;
-    /* TimerA Ch.5 compare match */
+    /* TimerA Unit.5 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL138 & BIT_MASK_02))) {
         TMRA_5_Cmp_IrqHandler();
     }
-    /* TimerA Ch.6 overflow */
-    if (1UL == bCM_TMRA_6->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_6->BCSTR_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_03))) {
+    /* TimerA Unit.6 overflow */
+    if (1UL == bCM_TMRA_6->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_6->BCSTRH_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_03))) {
             TMRA_6_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.6 underflow */
-    if (1UL == bCM_TMRA_6->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_6->BCSTR_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_04))) {
+    /* TimerA Unit.6 underflow */
+    if (1UL == bCM_TMRA_6->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_6->BCSTRH_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_04))) {
             TMRA_6_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_6->ICONR;
     u32Tmp2 = CM_TMRA_6->STFLR;
-    /* TimerA Ch.6 compare match */
+    /* TimerA Unit.6 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL138 & BIT_MASK_05))) {
         TMRA_6_Cmp_IrqHandler();
     }
-    /* TimerA Ch.7 overflow */
-    if (1UL == bCM_TMRA_7->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_7->BCSTR_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_06))) {
+    /* TimerA Unit.7 overflow */
+    if (1UL == bCM_TMRA_7->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_7->BCSTRH_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_06))) {
             TMRA_7_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.7 underflow */
-    if (1UL == bCM_TMRA_7->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_7->BCSTR_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_07))) {
+    /* TimerA Unit.7 underflow */
+    if (1UL == bCM_TMRA_7->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_7->BCSTRH_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_07))) {
             TMRA_7_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_7->ICONR;
     u32Tmp2 = CM_TMRA_7->STFLR;
-    /* TimerA Ch.7 compare match */
+    /* TimerA Unit.7 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL138 & BIT_MASK_08))) {
         TMRA_7_Cmp_IrqHandler();
     }
-    /* TimerA Ch.8 overflow */
-    if (1UL == bCM_TMRA_8->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_8->BCSTR_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_09))) {
+    /* TimerA Unit.8 overflow */
+    if (1UL == bCM_TMRA_8->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_8->BCSTRH_b.OVFF) && (0UL != (VSSEL138 & BIT_MASK_09))) {
             TMRA_8_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.8 underflow */
-    if (1UL == bCM_TMRA_8->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_8->BCSTR_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_10))) {
+    /* TimerA Unit.8 underflow */
+    if (1UL == bCM_TMRA_8->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_8->BCSTRH_b.UDFF) && (0UL != (VSSEL138 & BIT_MASK_10))) {
             TMRA_8_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_8->ICONR;
     u32Tmp2 = CM_TMRA_8->STFLR;
-    /* TimerA Ch.8 compare match */
+    /* TimerA Unit.8 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL138 & BIT_MASK_11))) {
         TMRA_8_Cmp_IrqHandler();
     }
@@ -2139,18 +2173,18 @@ void IRQ138_Handler(void)
         ERRINT = CM_CAN1->ERRINT;
         TTCFG = CM_CAN1->TTCFG;
         if ((0U != (TTCFG & CAN_TTCFG_TEIF))            ||                          \
-                (0U != (RTIF & CAN_RTIF_AIF))           ||                          \
-                (0U != (RTIF & RTIE & 0xFEU))           ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_BEIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_BEIF)))    ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_ALIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_ALIF)))    ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_EPIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_EPIF)))    ||                          \
-                ((0U != (TTCFG & CAN_TTCFG_TTIE))       &&                          \
-                 (0U != (TTCFG & CAN_TTCFG_TTIF)))      ||                          \
-                ((0U != (TTCFG & CAN_TTCFG_WTIE))       &&                          \
-                 (0U != (TTCFG & CAN_TTCFG_WTIF)))) {
+            (0U != (RTIF & CAN_RTIF_AIF))               ||                          \
+            (0U != (RTIF & RTIE & 0xFEU))               ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_BEIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_BEIF)))        ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_ALIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_ALIF)))        ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_EPIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_EPIF)))        ||                          \
+            ((0U != (TTCFG & CAN_TTCFG_TTIE))           &&                          \
+             (0U != (TTCFG & CAN_TTCFG_TTIF)))          ||                          \
+            ((0U != (TTCFG & CAN_TTCFG_WTIE))           &&                          \
+             (0U != (TTCFG & CAN_TTCFG_WTIF)))) {
             CAN1_IrqHandler();
         }
     }
@@ -2161,18 +2195,18 @@ void IRQ138_Handler(void)
         ERRINT = CM_CAN2->ERRINT;
         TTCFG = CM_CAN2->TTCFG;
         if ((0U != (TTCFG & CAN_TTCFG_TEIF))            ||                          \
-                (0U != (RTIF & CAN_RTIF_AIF))           ||                          \
-                (0U != (RTIF & RTIE & 0xFEU))           ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_BEIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_BEIF)))    ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_ALIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_ALIF)))    ||                          \
-                ((0U != (ERRINT & CAN_ERRINT_EPIE))     &&                          \
-                 (0U != (ERRINT & CAN_ERRINT_EPIF)))    ||                          \
-                ((0U != (TTCFG & CAN_TTCFG_TTIE))       &&                          \
-                 (0U != (TTCFG & CAN_TTCFG_TTIF)))      ||                          \
-                ((0U != (TTCFG & CAN_TTCFG_WTIE))       &&                          \
-                 (0U != (TTCFG & CAN_TTCFG_WTIF)))) {
+            (0U != (RTIF & CAN_RTIF_AIF))               ||                          \
+            (0U != (RTIF & RTIE & 0xFEU))               ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_BEIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_BEIF)))        ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_ALIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_ALIF)))        ||                          \
+            ((0U != (ERRINT & CAN_ERRINT_EPIE))         &&                          \
+             (0U != (ERRINT & CAN_ERRINT_EPIF)))        ||                          \
+            ((0U != (TTCFG & CAN_TTCFG_TTIE))           &&                          \
+             (0U != (TTCFG & CAN_TTCFG_TTIF)))          ||                          \
+            ((0U != (TTCFG & CAN_TTCFG_WTIE))           &&                          \
+             (0U != (TTCFG & CAN_TTCFG_WTIF)))) {
             CAN2_IrqHandler();
         }
     }
@@ -2226,6 +2260,9 @@ void IRQ138_Handler(void)
             SPI4_Error_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -2239,75 +2276,75 @@ void IRQ139_Handler(void)
     uint32_t u32Tmp1;
     uint32_t u32Tmp2;
 
-    /* TimerA Ch.9 overflow */
-    if (1UL == bCM_TMRA_9->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_9->BCSTR_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_00))) {
+    /* TimerA Unit.9 overflow */
+    if (1UL == bCM_TMRA_9->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_9->BCSTRH_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_00))) {
             TMRA_9_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.9 underflow */
-    if (1UL == bCM_TMRA_9->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_9->BCSTR_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_01))) {
+    /* TimerA Unit.9 underflow */
+    if (1UL == bCM_TMRA_9->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_9->BCSTRH_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_01))) {
             TMRA_9_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_9->ICONR;
     u32Tmp2 = CM_TMRA_9->STFLR;
-    /* TimerA Ch.9 compare match */
+    /* TimerA Unit.9 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL139 & BIT_MASK_02))) {
         TMRA_9_Cmp_IrqHandler();
     }
-    /* TimerA Ch.10 overflow */
-    if (1UL == bCM_TMRA_10->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_10->BCSTR_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_03))) {
+    /* TimerA Unit.10 overflow */
+    if (1UL == bCM_TMRA_10->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_10->BCSTRH_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_03))) {
             TMRA_10_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.10 underflow */
-    if (1UL == bCM_TMRA_10->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_10->BCSTR_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_04))) {
+    /* TimerA Unit.10 underflow */
+    if (1UL == bCM_TMRA_10->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_10->BCSTRH_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_04))) {
             TMRA_10_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_10->ICONR;
     u32Tmp2 = CM_TMRA_10->STFLR;
-    /* TimerA Ch.10 compare match */
+    /* TimerA Unit.10 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL139 & BIT_MASK_05))) {
         TMRA_10_Cmp_IrqHandler();
     }
-    /* TimerA Ch.11 overflow */
-    if (1UL == bCM_TMRA_11->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_11->BCSTR_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_06))) {
+    /* TimerA Unit.11 overflow */
+    if (1UL == bCM_TMRA_11->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_11->BCSTRH_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_06))) {
             TMRA_11_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.11 underflow */
-    if (1UL == bCM_TMRA_11->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_11->BCSTR_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_07))) {
+    /* TimerA Unit.11 underflow */
+    if (1UL == bCM_TMRA_11->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_11->BCSTRH_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_07))) {
             TMRA_11_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_11->ICONR;
     u32Tmp2 = CM_TMRA_11->STFLR;
-    /* TimerA Ch.11 compare match */
+    /* TimerA Unit.11 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL139 & BIT_MASK_08))) {
         TMRA_11_Cmp_IrqHandler();
     }
-    /* TimerA Ch.12 overflow */
-    if (1UL == bCM_TMRA_12->BCSTR_b.ITENOVF) {
-        if ((1UL == bCM_TMRA_12->BCSTR_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_09))) {
+    /* TimerA Unit.12 overflow */
+    if (1UL == bCM_TMRA_12->BCSTRH_b.ITENOVF) {
+        if ((1UL == bCM_TMRA_12->BCSTRH_b.OVFF) && (0UL != (VSSEL139 & BIT_MASK_09))) {
             TMRA_12_Ovf_IrqHandler();
         }
     }
-    /* TimerA Ch.12 underflow */
-    if (1UL == bCM_TMRA_12->BCSTR_b.ITENUDF) {
-        if ((1UL == bCM_TMRA_12->BCSTR_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_10))) {
+    /* TimerA Unit.12 underflow */
+    if (1UL == bCM_TMRA_12->BCSTRH_b.ITENUDF) {
+        if ((1UL == bCM_TMRA_12->BCSTRH_b.UDFF) && (0UL != (VSSEL139 & BIT_MASK_10))) {
             TMRA_12_Udf_IrqHandler();
         }
     }
     u32Tmp1 = CM_TMRA_12->ICONR;
     u32Tmp2 = CM_TMRA_12->STFLR;
-    /* TimerA Ch.12 compare match */
+    /* TimerA Unit.12 compare match */
     if ((0UL != (u32Tmp1 & u32Tmp2 & 0x0FUL)) && (0UL != (VSSEL139 & BIT_MASK_11))) {
         TMRA_12_Cmp_IrqHandler();
     }
@@ -2425,6 +2462,9 @@ void IRQ139_Handler(void)
             SPI6_Error_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -2590,7 +2630,7 @@ void IRQ140_Handler(void)
             SDIOC2_Error_IrqHandler();
         }
     }
-    /* Ethernat global */
+    /* Ethernet global */
     MMC_REVSTSR = CM_ETH->MMC_REVSTSR & (ETH_MMC_REVSTSR_RXOEIS | ETH_MMC_REVSTSR_RXLEIS |  \
                                          ETH_MMC_REVSTSR_RXUGIS | ETH_MMC_REVSTSR_RXREIS |  \
                                          ETH_MMC_REVSTSR_RXAEIS | ETH_MMC_REVSTSR_RXCEIS |  \
@@ -2617,20 +2657,23 @@ void IRQ140_Handler(void)
     DMA_INTENAR = CM_ETH->DMA_INTENAR & (ETH_DMA_INTENAR_AIE | ETH_DMA_INTENAR_NIE);
     if (0UL != (VSSEL140 & BIT_MASK_28)) {
         if ((0UL != (MMC_REVSTSR & (~MMC_RITCTLR))) ||                          \
-                (0UL != (MMC_TRSSTSR & (~MMC_TITCTLR))) ||                          \
-                (0UL != (PMT_INTSTSR & (~PMT_INTMASK))) ||                          \
-                (0UL != (PTP_INTSTSR & (~PTP_INTMASK) & PTP_INTE)) ||               \
-                (0UL != (DMA_DMASTSR & DMA_INTENAR))) {
+            (0UL != (MMC_TRSSTSR & (~MMC_TITCTLR))) ||                          \
+            (0UL != (PMT_INTSTSR & (~PMT_INTMASK))) ||                          \
+            (0UL != (PTP_INTSTSR & (~PTP_INTMASK) & PTP_INTE)) ||               \
+            (0UL != (DMA_DMASTSR & DMA_INTENAR))) {
             ETH_Global_IrqHandler();
         }
     }
 
-    /* Ethernat wakeup */
+    /* Ethernet wakeup */
     if (0UL == bCM_ETH->MAC_INTMSKR_b.PMTIM) {
         if ((1UL == bCM_ETH->MAC_INTSTSR_b.PMTIS) && (0UL != (VSSEL140 & BIT_MASK_29))) {
             ETH_Wakeup_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -2830,6 +2873,9 @@ void IRQ141_Handler(void)
     if ((0UL != (u32Tmp1 & u32Tmp2)) && (0UL != (VSSEL141 & BIT_MASK_27))) {
         I2C3_EE_IrqHandler();
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -2979,6 +3025,9 @@ void IRQ142_Handler(void)
             CTC_Ovf_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 
 /**
@@ -3087,6 +3136,9 @@ void IRQ143_Handler(void)
             NFC_IrqHandler();
         }
     }
+
+    /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
+    __DSB();
 }
 /**
  * @}

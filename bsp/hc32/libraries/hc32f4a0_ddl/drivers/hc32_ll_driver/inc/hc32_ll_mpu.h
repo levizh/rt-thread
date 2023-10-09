@@ -7,7 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
-   2023-01-15       CDT             Update define base on new head file.
+   2023-01-15       CDT             Update define base on new head file
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

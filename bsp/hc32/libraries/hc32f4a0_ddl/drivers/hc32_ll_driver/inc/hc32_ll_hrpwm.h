@@ -1,12 +1,13 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_hrpwm.h
- * @brief Head file for HRPWM module.
- *
+ * @brief This file contains all the functions prototypes of the HWPRM driver
+ *        library.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -111,9 +112,9 @@ void HRPWM_ChCmd(uint32_t u32Ch, en_functional_state_t enNewState);
 void HRPWM_ChPositiveAdjustCmd(uint32_t u32Ch, en_functional_state_t enNewState);
 /* HRPWM negative edge adjust enable or disable for specified channel */
 void HRPWM_ChNegativeAdjustCmd(uint32_t u32Ch, en_functional_state_t enNewState);
-/* HRPWM positive edge adjust delay counts configration for specified channel */
+/* HRPWM positive edge adjust delay counts configuration for specified channel */
 void HRPWM_ChPositiveAdjustConfig(uint32_t u32Ch, uint8_t u8DelayNum);
-/* HRPWM negative edge adjust delay counts configration for specified channel */
+/* HRPWM negative edge adjust delay counts configuration for specified channel */
 void HRPWM_ChNegativeAdjustConfig(uint32_t u32Ch, uint8_t u8DelayNum);
 
 /**

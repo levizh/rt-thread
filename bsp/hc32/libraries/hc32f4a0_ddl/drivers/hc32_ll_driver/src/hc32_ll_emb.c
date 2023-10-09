@@ -8,7 +8,10 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Optimize function: EMB_TMR4_Init
-   2022-06-30       CDT             Optimize function: EMB_TMR6_Init
+                                    Optimize function: EMB_TMR6_Init
+   2023-06-30       CDT             Function EMB_TMR4_Init don't call EMB_DeInit
+                                    Function EMB_TMR6_Init don't call EMB_DeInit
+                                    Function EMB_DeInit set register EMB_RLSSEL to reset value
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -415,8 +418,6 @@ int32_t EMB_TMR4_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr4_init_t *pstcEmbIn
                          pstcEmbInit->stcPort.stcPort3.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort3.u32PortFilterState | \
                          pstcEmbInit->stcPort.stcPort4.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort4.u32PortFilterState);
 
-        EMB_DeInit(EMBx);
-
         WRITE_REG32(EMBx->CTL2, u32Reg2Value);
         WRITE_REG32(EMBx->CTL1, u32Reg1Value);
         i32Ret = LL_OK;
@@ -572,8 +573,6 @@ int32_t EMB_TMR6_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr6_init_t *pstcEmbIn
                          pstcEmbInit->stcPort.stcPort3.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort3.u32PortFilterState | \
                          pstcEmbInit->stcPort.stcPort4.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort4.u32PortFilterState);
 
-        EMB_DeInit(EMBx);
-
         WRITE_REG32(EMBx->CTL2, u32Reg2Value);
         WRITE_REG32(EMBx->CTL1, u32Reg1Value);
         i32Ret = LL_OK;
@@ -595,6 +594,7 @@ void EMB_DeInit(CM_EMB_TypeDef *EMBx)
 
     WRITE_REG32(EMBx->SOE, 0x00UL);
     WRITE_REG32(EMBx->INTEN, 0x00UL);
+    WRITE_REG32(EMBx->RLSSEL, 0x00UL);
 }
 
 /**
@@ -710,8 +710,8 @@ void EMB_SetReleasePwmCond(CM_EMB_TypeDef *EMBx, uint32_t u32Event, uint32_t u32
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

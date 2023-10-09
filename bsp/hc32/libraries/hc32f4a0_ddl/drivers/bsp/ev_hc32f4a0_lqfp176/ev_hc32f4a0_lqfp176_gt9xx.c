@@ -253,8 +253,8 @@ void BSP_GT9XX_REG_Write(uint16_t u16Reg, const uint8_t *pu8RegValue, uint32_t u
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /*******************************************************************************
  * EOF (not truncated)

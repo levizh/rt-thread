@@ -7,7 +7,9 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Add USB core ID select function
-   2022-06-30       CDT             Modify for MISRAC
+                                    Modify for MISRAC
+   2023-06-30       CDT             Typo: Initailizes -> Initializes
+   2023-09-30       CDT             Modify API usb_dev_resume()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -89,7 +91,7 @@ usb_dev_int_cbk_typedef  *dev_int_cbkpr = &dev_int_cbk;
  ******************************************************************************/
 
 /**
- * @brief  Initailizes the device stack and load the class driver
+ * @brief  Initializes the device stack and load the class driver
  * @param  [in] pdev            device instance
  * @param  [in] pstcPortIdentify     usb core and phy select
  * @param  [in] pdesc           Device Descriptor
@@ -114,7 +116,7 @@ void usb_dev_init(usb_core_instance *pdev,
 }
 
 /**
- * @brief  De-initailizes the device stack and load the class driver
+ * @brief  De-Initializes the device stack and load the class driver
  * @param  [in] pdev        device instance
  * @retval None
  */
@@ -177,7 +179,6 @@ void usb_dev_resume(usb_core_instance *pdev)
 {
     pdev->dev.user_callback->user_devresume();
     pdev->dev.device_cur_status = pdev->dev.device_old_status;
-    pdev->dev.device_cur_status = USB_DEV_CONFIGURED;
 }
 
 /**
@@ -249,7 +250,7 @@ void usb_dataout_process(usb_core_instance *pdev, uint8_t epnum)
                 }
                 ep->rem_data_len = 0UL;
                 if ((pdev->dev.device_cur_status == USB_DEV_CONFIGURED) &&
-                        (pdev->dev.class_callback->ep0_dataout != NULL)) {
+                    (pdev->dev.class_callback->ep0_dataout != NULL)) {
                     pdev->dev.class_callback->ep0_dataout(pdev);
                 }
                 usb_ctrlstatustx(pdev);
@@ -285,13 +286,13 @@ void usb_datain_process(usb_core_instance *pdev, uint8_t epnum)
             } else {
                 /* last packet is MPS multiple, so send ZLP packet */
                 if ((ep->total_data_len % ep->maxpacket == 0U) &&
-                        (ep->total_data_len >= ep->maxpacket) &&
-                        (ep->total_data_len < ep->ctl_data_len)) {
+                    (ep->total_data_len >= ep->maxpacket) &&
+                    (ep->total_data_len < ep->ctl_data_len)) {
                     usb_deveptx(pdev, 0U, NULL, 0UL);
                     ep->ctl_data_len = 0UL;
                 } else {
                     if ((pdev->dev.device_cur_status == USB_DEV_CONFIGURED) &&
-                            (pdev->dev.class_callback->ep0_datain != NULL)) {
+                        (pdev->dev.class_callback->ep0_datain != NULL)) {
                         pdev->dev.class_callback->ep0_datain(pdev);
                     }
                     usb_ctrlstatusrx(pdev);

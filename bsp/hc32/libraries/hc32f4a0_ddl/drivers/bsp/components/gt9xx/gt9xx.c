@@ -174,8 +174,8 @@ void GT9XX_GetXY(const stc_gt9xx_ll_t *pstcGt9xxLL, uint16_t u16Point, uint16_t 
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

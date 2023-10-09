@@ -262,8 +262,8 @@ HOST_STATUS usb_host_clrfeature(usb_core_instance *pdev,
                                 uint8_t hc_num)
 {
     phost->ctrlparam.setup.b.bmRequestType = USB_H2D |
-            USB_REQ_RECIPIENT_ENDPOINT |
-            USB_REQ_TYPE_STANDARD;
+                                             USB_REQ_RECIPIENT_ENDPOINT |
+                                             USB_REQ_TYPE_STANDARD;
 
     phost->ctrlparam.setup.b.bRequest      = USB_REQ_CLEAR_FEATURE;
     phost->ctrlparam.setup.b.wValue.w      = FEATURE_SELECTOR_ENDPOINT;
@@ -352,7 +352,7 @@ void usb_host_parsecfgdesc(usb_host_cfgdesc_typedef *cfg_desc,
             while (ptr < cfg_desc->wTotalLength) {
                 pdesc = usb_host_getnextdesc((uint8_t *)pdesc, &ptr);
                 if (pdesc->bDescriptorType   == USB_DESC_TYPE_INTERFACE) {
-                    if_ix             = (int8_t)*(((uint8_t *)pdesc) + 2U);
+                    if_ix             = (int8_t) * (((uint8_t *)pdesc) + 2U);
                     pif               = &itf_desc[if_ix];
 
                     if ((*((uint8_t *)pdesc + 3U)) < 3U) {

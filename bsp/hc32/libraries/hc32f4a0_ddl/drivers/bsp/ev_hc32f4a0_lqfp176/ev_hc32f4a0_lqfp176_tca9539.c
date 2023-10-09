@@ -6,6 +6,8 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Change Reset control pin from NMOS to CMOS output cause of "EV_F4A0_LQ176_Rev1.0"'s modification
+                                    Rename local variables: stcTca9539Config -> m_stcTca9539Config
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -59,13 +61,20 @@
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
-static stc_tca9539_ll_t stcTca9539Config = {0};
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Local_Variables EV_HC32F4A0_LQFP176 TCA9539 Local Variables
+ * @{
+ */
+static stc_tca9539_ll_t m_stcTca9539Config = {0};
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 /**
- * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Global_Functions HC32F4A0 LQFP176 EVB TCA9539 Global Functions
+ * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Local_Functions EV_HC32F4A0_LQFP176 TCA9539 Local Functions
  * @{
  */
 
@@ -81,9 +90,8 @@ static void BSP_TCA9539_Reset(void)
     /* Set to low before output enable */
     GPIO_ResetPins(EIO_RST_PORT, EIO_RST_PIN);
     (void)GPIO_StructInit(&stcGpioInit);
-    /* SET to NMOS output */
-    stcGpioInit.u16PinOutputType = PIN_OUT_TYPE_NMOS;
-    stcGpioInit.u16PinDir        = PIN_DIR_OUT;
+    /* SET to output */
+    stcGpioInit.u16PinDir = PIN_DIR_OUT;
     (void)GPIO_Init(EIO_RST_PORT, EIO_RST_PIN, &stcGpioInit);
     /* Reset the device */
     DDL_DelayMS(3UL);
@@ -132,6 +140,14 @@ static void BSP_TCA9539_I2C_Read(const uint8_t *pu8Reg, uint8_t *pu8Buf, uint32_
 {
     (void)BSP_I2C_Read(BSP_TCA9539_I2C_UNIT, BSP_TCA9539_DEV_ADDR, pu8Reg, BSP_TCA9539_REG_ADDR_LEN, pu8Buf, u32Len);
 }
+/**
+ * @}
+ */
+
+/**
+ * @defgroup EV_HC32F4A0_LQFP176_TCA9539_Global_Functions EV_HC32F4A0_LQFP176 TCA9539 Global Functions
+ * @{
+ */
 
 /**
  * @brief  Expand IO initialize.
@@ -141,13 +157,13 @@ static void BSP_TCA9539_I2C_Read(const uint8_t *pu8Reg, uint8_t *pu8Buf, uint32_
 void BSP_IO_Init(void)
 {
     /* Configuration the low layer of TCA9539 */
-    stcTca9539Config.Init          = BSP_TCA9539_I2C_Init;
-    stcTca9539Config.Write         = BSP_TCA9539_I2C_Write;
-    stcTca9539Config.Read          = BSP_TCA9539_I2C_Read;
-    stcTca9539Config.Reset         = BSP_TCA9539_Reset;
-    stcTca9539Config.IntInit       = NULL;
+    m_stcTca9539Config.Init          = BSP_TCA9539_I2C_Init;
+    m_stcTca9539Config.Write         = BSP_TCA9539_I2C_Write;
+    m_stcTca9539Config.Read          = BSP_TCA9539_I2C_Read;
+    m_stcTca9539Config.Reset         = BSP_TCA9539_Reset;
+    m_stcTca9539Config.IntInit       = NULL;
     /* Configuration the TCA9539 */
-    (void)TCA9539_Init(&stcTca9539Config);
+    (void)TCA9539_Init(&m_stcTca9539Config);
 }
 
 /**
@@ -157,7 +173,7 @@ void BSP_IO_Init(void)
  */
 void BSP_IO_IntInit(void)
 {
-    (void)TCA9539_IntInit(&stcTca9539Config);
+    (void)TCA9539_IntInit(&m_stcTca9539Config);
 }
 
 /**
@@ -169,7 +185,7 @@ void BSP_IO_IntInit(void)
  */
 void BSP_IO_WritePortPin(uint8_t u8Port, uint8_t u8Pin, uint8_t u8PinState)
 {
-    (void)TCA9539_WritePin(&stcTca9539Config, u8Port, u8Pin, u8PinState);
+    (void)TCA9539_WritePin(&m_stcTca9539Config, u8Port, u8Pin, u8PinState);
 }
 
 /**
@@ -182,7 +198,7 @@ uint8_t BSP_IO_ReadPortPin(uint8_t u8Port, uint8_t u8Pin)
 {
     uint8_t u8Value;
 
-    (void)TCA9539_ReadPin(&stcTca9539Config, u8Port, u8Pin, &u8Value);
+    (void)TCA9539_ReadPin(&m_stcTca9539Config, u8Port, u8Pin, &u8Value);
     return u8Value;
 }
 
@@ -194,7 +210,7 @@ uint8_t BSP_IO_ReadPortPin(uint8_t u8Port, uint8_t u8Pin)
  */
 void BSP_IO_TogglePortPin(uint8_t u8Port, uint8_t u8Pin)
 {
-    (void)TCA9539_TogglePin(&stcTca9539Config, u8Port, u8Pin);
+    (void)TCA9539_TogglePin(&m_stcTca9539Config, u8Port, u8Pin);
 }
 
 /**
@@ -206,7 +222,7 @@ void BSP_IO_TogglePortPin(uint8_t u8Port, uint8_t u8Pin)
  */
 void BSP_IO_ConfigPortPin(uint8_t u8Port, uint8_t u8Pin, uint8_t u8Dir)
 {
-    (void)TCA9539_ConfigPin(&stcTca9539Config, u8Port, u8Pin, u8Dir);
+    (void)TCA9539_ConfigPin(&m_stcTca9539Config, u8Port, u8Pin, u8Dir);
 }
 
 /**
@@ -417,8 +433,8 @@ void BSP_LED_Toggle(uint8_t u8Led)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

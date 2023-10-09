@@ -7,6 +7,14 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Optimize ETH start and stop timing
+                                    Modify the process of obtaining PHY status
+                                    Modify the process of auto-negotiation disable
+                                    Modify ETH_PTP_UpdateBasicAddend function
+                                    Modify typo
+                                    Modify the clock division of SMIC
+                                    Modify operation sequence of ETH_DeInit function
+                                    Add ETH_MAC_SetInterface function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -673,20 +681,20 @@ int32_t ETH_DeInit(void)
 {
     int32_t i32Ret;
 
-    ETH_MAC_DeInit();
-    ETH_DMA_DeInit();
-    ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX0);
-    ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX1);
-    ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX2);
-    ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX3);
-    ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX4);
-    ETH_MAC_L3L4FilterDeInit();
-    ETH_PTP_DeInit();
-    ETH_PPS_DeInit(ETH_PPS_CH0);
-    ETH_PPS_DeInit(ETH_PPS_CH1);
-    i32Ret = ETH_MMC_DeInit();
+    i32Ret = ETH_DMA_SoftwareReset();
     if (LL_OK == i32Ret) {
-        i32Ret = ETH_DMA_SoftwareReset();
+        ETH_DMA_DeInit();
+        ETH_MAC_DeInit();
+        ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX0);
+        ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX1);
+        ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX2);
+        ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX3);
+        ETH_MACADDR_DeInit(ETH_MAC_ADDR_IDX4);
+        ETH_MAC_L3L4FilterDeInit();
+        ETH_PTP_DeInit();
+        ETH_PPS_DeInit(ETH_PPS_CH0);
+        ETH_PPS_DeInit(ETH_PPS_CH1);
+        i32Ret = ETH_MMC_DeInit();
     }
 
     return i32Ret;
@@ -727,14 +735,14 @@ int32_t ETH_Init(stc_eth_handle_t *pstcEthHandle, stc_eth_init_t *pstcEthInit)
         } else {
             /* Get ETH frequency value */
             u32BusClk = SystemCoreClock / (0x01UL << (READ_REG32_BIT(CM_CMU->SCFGR,
-                                           CMU_SCFGR_PCLK1S) >> CMU_SCFGR_PCLK1S_POS));
+                                                                     CMU_SCFGR_PCLK1S) >> CMU_SCFGR_PCLK1S_POS));
             /* Set SMIC bits depending on PCLK1 clock value */
             /* PCLK1 Clock Range between 20-35 MHz */
-            if ((u32BusClk >= 20000000UL) && (u32BusClk < 35000000UL)) {
+            if ((u32BusClk >= 20000000UL) && (u32BusClk <= 35000000UL)) {
                 u32TempReg = ETH_MAC_SMIADDR_SMIC_1;
-            } else if ((u32BusClk >= 35000000UL) && (u32BusClk < 60000000UL)) {     /* PCLK1 Clock Range between 35-60 MHz */
+            } else if ((u32BusClk > 35000000UL) && (u32BusClk <= 60000000UL)) {     /* PCLK1 Clock Range between 35-60 MHz */
                 u32TempReg = ETH_MAC_SMIADDR_SMIC_1 | ETH_MAC_SMIADDR_SMIC_0;
-            } else if ((u32BusClk >= 60000000UL) && (u32BusClk < 100000000UL)) {    /* PCLK1 Clock Range between 60-100 MHz */
+            } else if ((u32BusClk > 60000000UL) && (u32BusClk <= 100000000UL)) {    /* PCLK1 Clock Range between 60-100 MHz */
                 u32TempReg = 0UL;
             } else {    /* PCLK1 Clock Range between 100-120 MHz */
                 u32TempReg = ETH_MAC_SMIADDR_SMIC_0;
@@ -790,7 +798,7 @@ int32_t ETH_Init(stc_eth_handle_t *pstcEthHandle, stc_eth_init_t *pstcEthInit)
                                 i32Ret = LL_ERR_TIMEOUT;
                             } else {
                                 /* Read the result of the auto-negotiation */
-                                ETH_PHY_ReadReg(pstcEthHandle, PHY_SR, &u16PhyReg);
+                                (void)ETH_PHY_ReadReg(pstcEthHandle, PHY_SR, &u16PhyReg);
                                 /* Configure ETH duplex mode according to the result of automatic negotiation */
                                 if (0U != (u16PhyReg & PHY_DUPLEX_STATUS)) {
                                     pstcEthHandle->stcCommInit.u32DuplexMode = ETH_MAC_DUPLEX_MD_FULL;
@@ -832,6 +840,8 @@ int32_t ETH_Init(stc_eth_handle_t *pstcEthHandle, stc_eth_init_t *pstcEthInit)
                             i32Ret = LL_ERR_INVD_PARAM;
                         } else if (PHY_LINK_STATUS != (u16PhyReg & PHY_LINK_STATUS)) {
                             i32Ret = LL_ERR_TIMEOUT;
+                        } else {
+                            /* Reserved */
                         }
                     }
                 }
@@ -1281,6 +1291,26 @@ int32_t ETH_MAC_StructInit(stc_eth_mac_init_t *pstcMacInit)
     }
 
     return i32Ret;
+}
+
+/**
+ * @brief  Set MAC interface.
+ * @param  [in] u32Interface            The media interface.
+ *         This parameter can be one of the following values:
+ *           @arg ETH_MAC_IF_MII:       MII interface
+ *           @arg ETH_MAC_IF_RMII:      RMII interface
+ * @retval None
+ */
+void ETH_MAC_SetInterface(uint32_t u32Interface)
+{
+    /* Check parameters */
+    DDL_ASSERT(IS_ETH_MAC_IF(u32Interface));
+
+    if (ETH_MAC_IF_RMII != u32Interface) {
+        WRITE_REG32(bCM_ETH->MAC_IFCONFR_b.IFSEL, DISABLE);
+    } else {
+        WRITE_REG32(bCM_ETH->MAC_IFCONFR_b.IFSEL, ENABLE);
+    }
 }
 
 /**

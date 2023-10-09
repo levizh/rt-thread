@@ -204,8 +204,8 @@ int32_t WM8731_SetVolume(const stc_wm8731_ll_t *pstcWm8731LL, uint8_t u8Volume);
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #ifdef __cplusplus
 }

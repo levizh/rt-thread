@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-09-30       CDT             Optimize comments
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -87,12 +88,13 @@ const static stc_ov5640_ll_t m_stcOv5640LL = {
 };
 
 static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
-    /* system control:24MHz input clock,24MHz PCLK */
-    {0x3008, 0x42},   /* b7:software reset <> b6:software power down <> b5~b0:reserved */
-    {0x3017, 0xFF},   /* b7:FREX <> b6:VSYNC <> b5:HREF <> b4:PCLK <> b3~0:D[9:6] output enable */
-    {0x3018, 0xFF},   /* b7~2:D[5:0] <> b1~0:GPIO[1:0] output enable */
-    {0x3034, 0x1A},   /* b7:reserved <> b6~b4:PLL charge pump control <> b3~b0:MIPI bit mode */
-    {0x3037, 0x13},   /* b7~b5:reserved <> b4:PLL root bypass or divider/2 <> b3~b0:PLL pre-divider 1\2\3\4\6\8 */
+    /* input clock: 24Mhz, PCLK: 11.4Mhz */
+    {0x3008, 0x42}, /* b7:software reset <> b6:software power down <> b5~b0:reserved */
+    {0x3017, 0xFF}, /* b7:FREX <> b6:VSYNC <> b5:HREF <> b4:PCLK <> b3~0:D[9:6] output enable */
+    {0x3018, 0xFF}, /* b7~2:D[5:0] <> b1~0:GPIO[1:0] output enable */
+    {0x3034, 0x1A}, /* b7:reserved <> b6~b4:PLL charge pump control <> b3~b0:MIPI bit mode */
+    {0x3037, 0x13}, /* b7~b5:reserved <> b4:PLL root bypass or divider/2
+                       b3~b0:PLL pre-divider 1\1\2\3\4\1.5\6\2.5\8\1\1\1\1\1\1\1 */
 
     /* SCCB control */
     {0x3103, 0x03}, /* b1:system clock from PAD or PLL <> b7~b2&&b0:reserved */
@@ -131,8 +133,8 @@ static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
     {0x3622, 0x01},
 
     /* 50/60Hz detection */
-    {0x3C01, 0x34}, /* b7:band manual or auto <> b6:band begin reset <> b5:sum auto mode <> */
-    /* b4:band count enable <> b3~b0:band counter threshold */
+    {0x3C01, 0x34}, /* b7:band manual or auto <> b6:band begin reset <> b5:sum auto mode <>
+                       b4:band count enable <> b3~b0:band counter threshold */
     {0x3C04, 0x28}, /* b7~b0:threshold low sum */
     {0x3C05, 0x98}, /* b7~b0:threshold high sum */
     {0x3C06, 0x00}, /* b7~b0:light meter 1 threshold[15:8] */
@@ -146,22 +148,22 @@ static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
     {0x3810, 0x00}, /* b7~b4:reserved <> b3~b0:Timing Hoffset[11:8] */
     {0x3811, 0x10}, /* b7~b0:Timing Hoffset[7:0] */
     {0x3812, 0x00}, /* b7~b3:reserved <> b2~b0:Timing Voffset[10:8] */
-    {0x3708, 0x64}, /* ?? */
+    {0x3708, 0x64},
 
     /* black level calibration(BLC) */
-    {0x4001, 0x02},   /* b7~b6:reserved <> b5~b0:BLC start line */
-    {0x4005, 0x1A},   /* b7~b2:reserved <> b1:BLC update always or normal freeze <> b0:reserved */
+    {0x4001, 0x02}, /* b7~b6:reserved <> b5~b0:BLC start line */
+    {0x4005, 0x1A}, /* b7~b2:reserved <> b1:BLC update always or normal freeze <> b0:reserved */
 
     /* system control:DVP enable */
     {0x3000, 0x00}, /* b7~b0:blocks reset control reset or enable */
     {0x3004, 0xFF}, /* b7~b0:blocks clock control enable or disable */
     {0x300E, 0x58}, /* b7~b3:MIPI about(MIPI power down) <> b2:MIPI/DVP select <> b1~b0:reserved */
-    {0x302E, 0x00}, /* ?? */
+    {0x302E, 0x00},
 
     /* format control */
     {0x4300, 0x30}, /* YUV422,YUYV */
-    {0x501F, 0x00}, /* ?? YUV 422 */
-    {0x440E, 0x00}, /* ?? JPEG control */
+    {0x501F, 0x00}, /* YUV 422 */
+    {0x440E, 0x00}, /* JPEG control */
 
     /* image sensor processor (ISP) */
     {0x5000, 0xA7}, /* b7:lenc on <> b5:raw gamma on <> b2:BPC on <> b1:WPC on <> b0:CIP on */
@@ -245,31 +247,31 @@ static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
     {0x5183, 0x14}, /* b7:AWB simple or advanced <> b6:YUV enable <> b5:AWB preset <> b4:AWB SIMF <> b3~b2:AWB win */
     {0x5184, 0x25}, /* b7~b6:count area <> b5:G enable <> b4~b2:count limit <> b1~b0:count threshold */
     {0x5185, 0x24}, /* b7~b4:stable range unstable <> b3~b0:stable range stable */
-    {0x5186, 0x09}, /* ?? about advance */
-    {0x5187, 0x09}, /* ?? about advance */
-    {0x5188, 0x09}, /* ?? about advance */
-    {0x5189, 0x75}, /* ?? about advance */
-    {0x518A, 0x54}, /* ?? about advance */
-    {0x518C, 0xE0}, /* ?? about advance */
-    {0x518C, 0xB2}, /* ?? about advance */
-    {0x518D, 0x42}, /* ?? about advance */
-    {0x518E, 0x3D}, /* ?? about advance */
-    {0x518F, 0x56}, /* ?? about advance */
-    {0x5190, 0x46}, /* ?? about advance */
+    {0x5186, 0x09}, /* about advance */
+    {0x5187, 0x09}, /* about advance */
+    {0x5188, 0x09}, /* about advance */
+    {0x5189, 0x75}, /* about advance */
+    {0x518A, 0x54}, /* about advance */
+    {0x518C, 0xE0}, /* about advance */
+    {0x518C, 0xB2}, /* about advance */
+    {0x518D, 0x42}, /* about advance */
+    {0x518E, 0x3D}, /* about advance */
+    {0x518F, 0x56}, /* about advance */
+    {0x5190, 0x46}, /* about advance */
     {0x5191, 0xF8}, /* b7~b0:AWB top limit */
     {0x5192, 0x04}, /* b7~b0:AWB bottom limit */
     {0x5193, 0x70}, /* b7~b0:red limit */
     {0x5194, 0xF0}, /* b7~b0:green limit */
     {0x5195, 0xF0}, /* b7~b0:blue limit */
-    {0x5196, 0x03}, /* b7~b6:reserved <> b5:AWB freeze <> b4:reserved <> */
-    /* b3~b2:simple select <> b1:fast enable <> b0:AWB bias stat */
+    {0x5196, 0x03}, /* b7~b6:reserved <> b5:AWB freeze <> b4:reserved <>
+                       b3~b2:simple select <> b1:fast enable <> b0:AWB bias stat */
     {0x5197, 0x01}, /* b7~b0:local limit */
-    {0x5198, 0x04}, /* ?? */
-    {0x5199, 0x12}, /* ?? */
-    {0x519A, 0x04}, /* ?? */
-    {0x519B, 0x00}, /* ?? */
-    {0x519C, 0x06}, /* ?? */
-    {0x519D, 0x82}, /* ?? */
+    {0x5198, 0x04},
+    {0x5199, 0x12},
+    {0x519A, 0x04},
+    {0x519B, 0x00},
+    {0x519C, 0x06},
+    {0x519D, 0x82},
     {0x519E, 0x38}, /* b7~b4:reserved <> b3:local limit select <> b2:simple stable select <> b1~b0:reserved */
 
     /* raw gamma(GMA) */
@@ -305,14 +307,14 @@ static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
     {0x538B, 0x98}, /* b7~b0:CMX8~1 sign */
 
     /* special digital effects (SDE):(UV adjust) */
-    {0x5580, 0x06}, /* b7:fixed Y enable <> b6:negative enable <> b5:gray enable <> b4:dixed V enable */
-    /* b3:fixed U enable <> b2:contrast enable <> b1:saturation enable <> b0:hue enable */
+    {0x5580, 0x06}, /* b7:fixed Y enable <> b6:negative enable <> b5:gray enable <> b4:dixed V enable
+                       b3:fixed U enable <> b2:contrast enable <> b1:saturation enable <> b0:hue enable */
     {0x5583, 0x40}, /* b7~b0:max value for UV adjust */
     {0x5584, 0x10}, /* b7~b0:min value for UV adjust */
     {0x5589, 0x10}, /* b7~b0:UV adjust threshold 1 valid */
     {0x558A, 0x00}, /* b7~b1:reserved <> b0:UV adjust threshold 2 valid */
     {0x558B, 0xF8}, /* b7~b0:UV adjust threshold 2 valid */
-    {0x501D, 0x40}, /* ?? enable manual offset of contrast */
+    {0x501D, 0x40}, /* enable manual offset of contrast */
 
     /* color interpolation (CIP) */
     {0x5300, 0x08}, /* b7~b0:CIP sharpen MT threshold 1 */
@@ -323,43 +325,42 @@ static const stc_ov5640_reg_value_t m_astcOv5640InitRegTable[] = {
     {0x5305, 0x30}, /* b7~b0:CIP DNS threshold 2 */
     {0x5306, 0x08}, /* b7~b0:CIP DNS offset 1 */
     {0x5307, 0x16}, /* b7~b0:CIP DNS offset 2 */
-    /* ?????? */
+
     {0x5309, 0x08}, /* b7~b0:CIP sharpen TH threshold 1 */
     {0x530A, 0x30}, /* b7~b0:CIP sharpen TH threshold 2 */
     {0x530B, 0x04}, /* b7~b0:CIP sharpen TH offset 1 */
     {0x530D, 0x06}, /* b7~b0:CIP sharpen TH offset 2 */
-    {0x5025, 0x00}, /* ?? */
+    {0x5025, 0x00},
 
     /* system control:wake up from standby */
     {0x3008, 0x02}, /* b7:software reset <> b6:software power down <> b5~b0:reserved */
 
     /* DVP control */
-    {0x4740, 0x21}, /* b7~b6:reserved <> b5:PCLK polarity H/L <> b4:reserved <> b3:gate PCLK under VSYNC <> */
-    /* b2:gate PCLK under HREF <> b1:HREF polarity H/L <> b0:VSYNC polarity H/L */
+    {0x4740, 0x21}, /* b7~b6:reserved <> b5:PCLK polarity H/L <> b4:reserved <> b3:gate PCLK under VSYNC <>
+                       b2:gate PCLK under HREF <> b1:HREF polarity H/L <> b0:VSYNC polarity H/L */
 
     {0x4740, 0x21},
 };
 
-/* ---RGB565 mode: frame-rate 15FPS, max-out: 1280*800 */
+/* RGB565 mode: frame-rate 8fps, max-out: 1528*900 */
 static const stc_ov5640_reg_value_t m_astcOv5640Rgb565RegTable[] = {
     {0x4300, 0x6F},
     {0x501F, 0x01},
-    /* 1280x800, 15fps */
-    /* input clock 24Mhz, PCLK 22Mhz */
-    /* b7~b4:system clock divider slow down all clocks */
-    /* b3~b0:scale divider for MIPI PCLK/SERCLK can be slowed down */
-    {0x3035, 0x41},
+    /* input clock: 24Mhz, PCLK: 11.4Mhz */
+    {0x3035, 0x41}, /* b7~b4:system clock divider slow down all clocks
+                       b3~b0:scale divider for MIPI PCLK/SERCLK can be slowed down */
 
-    {0x3036, 0x39}, /* b7~b0:PLL multiplier */
-    /* a0: 64M NG */
-    /* 9c: 62M OK */
-    /* 98: 60M OK */
-    /* 90: 58M OK */
+    {0x3036, 0x39}, /* b7~b0:PLL multiplier
+                       a0: 64M NG
+                       9c: 62M OK
+                       98: 60M OK
+                       90: 58M OK */
     {0x3C07, 0x07}, /* lightmeter 1 threshold[7:0] */
+
     /* timing control */
     {0x3820, 0x46}, /* b7~b3:reserved <> b2:ISP vflip <> b1:sensor vflip <> b0:reserved */
-    {0x3821, 0x00}, /* b7~b6:reserved <> b5:JPEG enable <> b4~b3:reserved <> */
-    /* b2:ISP mirror <> b1:sensor mirror <> b0:horizontal binning enable */
+    {0x3821, 0x00}, /* b7~b6:reserved <> b5:JPEG enable <> b4~b3:reserved <>
+                       b2:ISP mirror <> b1:sensor mirror <> b0:horizontal binning enable */
     {0x3814, 0x31}, /* b7~b4:horizontal odd subsample increment <> b3~b0:even */
     {0x3815, 0x31}, /* b7~b4:vertical odd subsample increment <> b3~b0:even */
     {0x3800, 0x00}, /* b7~b4:reserved <> b3~b0:X address start[11:8] */
@@ -611,8 +612,8 @@ void BSP_OV5640_TestPattern(uint8_t u8Mode)
  */
 
 /**
-* @}
-*/
+ * @}
+ */
 
 /******************************************************************************
  * EOF (not truncated)

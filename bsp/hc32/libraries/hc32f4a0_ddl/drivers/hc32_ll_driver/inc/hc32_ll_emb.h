@@ -8,6 +8,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify structure comments:stc_emb_monitor_tmr_pwm_t
+   2023-09-30       CDT             Update EMB_CTL1_CMPEN0~3 to EMB_CTL1_CMPEN1~4
+                                    Update EMB_INTEN_PORTINTEN to EMB_INTEN_PORTININTEN
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -199,10 +201,10 @@ typedef struct {
 #define EMB_CMP3_DISABLE                    (0UL)
 #define EMB_CMP4_DISABLE                    (0UL)
 
-#define EMB_CMP1_ENABLE                     (EMB_CTL1_CMPEN0)
-#define EMB_CMP2_ENABLE                     (EMB_CTL1_CMPEN1)
-#define EMB_CMP3_ENABLE                     (EMB_CTL1_CMPEN2)
-#define EMB_CMP4_ENABLE                     (EMB_CTL1_CMPEN3)
+#define EMB_CMP1_ENABLE                     (EMB_CTL1_CMPEN1)
+#define EMB_CMP2_ENABLE                     (EMB_CTL1_CMPEN2)
+#define EMB_CMP3_ENABLE                     (EMB_CTL1_CMPEN3)
+#define EMB_CMP4_ENABLE                     (EMB_CTL1_CMPEN4)
 /**
  * @}
  */
@@ -416,10 +418,10 @@ typedef struct {
 #define EMB_INT_PWMS                        (EMB_INTEN_PWMSINTEN)
 #define EMB_INT_CMP                         (EMB_INTEN_CMPINTEN)
 #define EMB_INT_OSC                         (EMB_INTEN_OSINTEN)
-#define EMB_INT_PORT1                       (EMB_INTEN_PORTINTEN1)
-#define EMB_INT_PORT2                       (EMB_INTEN_PORTINTEN2)
-#define EMB_INT_PORT3                       (EMB_INTEN_PORTINTEN3)
-#define EMB_INT_PORT4                       (EMB_INTEN_PORTINTEN4)
+#define EMB_INT_PORT1                       (EMB_INTEN_PORTININTEN1)
+#define EMB_INT_PORT2                       (EMB_INTEN_PORTININTEN2)
+#define EMB_INT_PORT3                       (EMB_INTEN_PORTININTEN3)
+#define EMB_INT_PORT4                       (EMB_INTEN_PORTININTEN4)
 #define EMB_INT_ALL                         (EMB_INT_PWMS  | EMB_INT_CMP   | EMB_INT_OSC   | \
                                              EMB_INT_PORT1 | EMB_INT_PORT2 | EMB_INT_PORT3 | EMB_INT_PORT4)
 /**

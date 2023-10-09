@@ -8,6 +8,8 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-06-30       CDT             Modify function: DAC_AMPCmd
+   2023-06-30       CDT             Refine definition of dac resolution
+   2023-09-30       CDT             Modify API DAC_DeInit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -110,10 +112,10 @@ typedef struct {
  */
 
 /**
- * @defgroup DAC_DATAREG_VALUE_MAX DAC data register value maximum
+ * @defgroup DAC_RESOLUTION DAC resolution
  * @{
  */
-#define DAC_DATAREG_VALUE_MAX              (4096UL)
+#define DAC_RESOLUTION_12BIT                 (12U)
 /**
  * @}
  */
@@ -148,7 +150,7 @@ typedef struct {
 
 int32_t DAC_StructInit(stc_dac_init_t *pstcDacInit);
 int32_t DAC_Init(CM_DAC_TypeDef *DACx, uint16_t u16Ch, const stc_dac_init_t *pstcDacInit);
-void DAC_DeInit(CM_DAC_TypeDef *DACx);
+int32_t DAC_DeInit(CM_DAC_TypeDef *DACx);
 
 void DAC_SetDataSrc(CM_DAC_TypeDef *DACx, uint16_t u16Ch, uint16_t u16Src);
 void DAC_DataRegAlignConfig(CM_DAC_TypeDef *DACx, uint16_t u16Align);
