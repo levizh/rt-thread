@@ -7,7 +7,7 @@ cwd = GetCurrentDir()
 # The set of source files associated with this SConscript file.
 
 src = Split('''
-drivers/cmsis/Device/HDSC/hc32f4xx/Source/system_hc32f460.c
+drivers/cmsis/Device/HDSC/hc32f4xx/Source/system_hc32f448.c
 drivers/hc32_ll_driver/src/hc32_ll.c
 drivers/hc32_ll_driver/src/hc32_ll_aos.c
 drivers/hc32_ll_driver/src/hc32_ll_clk.c
