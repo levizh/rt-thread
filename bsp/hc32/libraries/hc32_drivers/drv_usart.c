@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
+ * 2023-10-09     CDT          support HC32F448
  */
 
 /*******************************************************************************
@@ -49,6 +50,10 @@
 
 #elif defined (HC32F4A0)
     #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
+
+#elif defined (HC32F448)
+    #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
+
 #endif
 
 #define FCG_TMR0_CLK                    FCG_Fcg2PeriphClockCmd
@@ -376,7 +381,8 @@ static int hc32_getc(struct rt_serial_device *serial)
     return ch;
 }
 
-static rt_size_t hc32_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
+//static rt_size_t hc32_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
+static rt_ssize_t hc32_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
 {
 #ifdef RT_SERIAL_USING_DMA
     struct hc32_uart *uart;
