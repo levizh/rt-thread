@@ -222,7 +222,7 @@ const struct fal_flash_dev hc32_onchip_flash =
 {
     .name       = "onchip_flash",
     .addr       = HC32_FLASH_START_ADDRESS,
-    .len        = HC32_FLASH_LENGTH,
+    .len        = HC32_FLASH_SIZE,
     .blk_size   = HC32_FLASH_SIZE_GRANULARITY,
     .ops        = {NULL, fal_flash_read, fal_flash_write, fal_flash_erase},
     .write_gran = 4
