@@ -597,7 +597,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         /* Initialize DMA */
         DMA_StructInit(&dma_init);
         dma_init.u32IntEn       = DMA_INT_ENABLE;
-        dma_init.u32SrcAddr     = ((uint32_t)(&uart->config->Instance->DR) + 2UL);
+        dma_init.u32SrcAddr     = (uint32_t)(&uart->config->Instance->RDR);
         dma_init.u32DestAddr    = (uint32_t)rx_fifo->buffer;
         dma_init.u32DataWidth   = DMA_DATAWIDTH_8BIT;
         dma_init.u32BlockSize   = 1UL;
@@ -640,7 +640,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         DMA_StructInit(&dma_init);
         dma_init.u32IntEn       = DMA_INT_DISABLE;
         dma_init.u32SrcAddr     = 0UL;
-        dma_init.u32DestAddr    = (uint32_t)(&uart->config->Instance->DR);
+        dma_init.u32DestAddr    = (uint32_t)(&uart->config->Instance->TDR);
         dma_init.u32DataWidth   = DMA_DATAWIDTH_8BIT;
         dma_init.u32BlockSize   = 1UL;
         dma_init.u32TransCount  = 0UL;
@@ -661,7 +661,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
 static void hc32_uart_dma_rx_irq_handler(struct hc32_uart *uart)
 {
     rt_base_t level;
-    rt_size_t recv_len, counter;
+    rt_size_t recv_len;
     struct rt_serial_device *serial;
 
     serial = &uart->serial;

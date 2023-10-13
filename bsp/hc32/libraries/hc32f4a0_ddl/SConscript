@@ -25,7 +25,7 @@ drivers/hc32_ll_driver/src/hc32_ll_utility.c
 drivers/hc32_ll_driver/src/hc32f4a0_ll_interrupts_share.c
 ''')
 
-if GetDepend(['BSP_USING_NANDFLASH']):
+if GetDepend(['BSP_USING_NAND']):
     src += ['drivers/hc32_ll_driver/src/hc32_ll_nfc.c']
 
 if GetDepend(['BSP_USING_SDRAM']):
