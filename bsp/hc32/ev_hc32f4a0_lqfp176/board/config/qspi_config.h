@@ -24,6 +24,7 @@ extern "C" {
     {                                                       \
         .Instance = CM_QSPI,                                \
         .clock    = FCG1_PERIPH_QSPI,                       \
+        .timeout  = 5000UL,                                 \
         .err_irq.irq_config =                               \
         {                                                   \
             .irq_num    = BSP_QSPI_ERR_IRQ_NUM,             \
@@ -54,6 +55,7 @@ extern "C" {
         .clock          = QSPI_DMA_CLOCK,                   \
         .trigger_select = QSPI_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_AOS_STRG,                 \
+        .flag           = QSPI_DMA_TRANS_FLAG,              \
         .irq_config     =                                   \
         {                                                   \
             .irq_num    = QSPI_DMA_IRQn,                    \

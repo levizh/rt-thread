@@ -112,7 +112,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/config/flashloader/HC32F460xE.board</state>
+                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/config/flashloader/FlashHC32F460xE.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>
@@ -1593,7 +1593,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/config/flashloader/HC32F460xE.board</state>
+                    <state>$PROJ_DIR$/../libraries/hc32f460_ddl/config/flashloader/FlashHC32F460xE.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>

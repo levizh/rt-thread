@@ -336,7 +336,7 @@
               <MiscControls />
               <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, HC32F4A0, __RTTHREAD__</Define>
               <Undefine />
-              <IncludePath>..\..\..\libcpu\arm\common;..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\inc;board\ports;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\include;board\config\usb_config;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\finsh;.;..\..\..\components\drivers\include;applications;..\..\..\components\libc\posix\io\stdio;..\..\..\include;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\poll;..\libraries\hc32f4a0_ddl\drivers\cmsis\Include;..\libraries\hc32_drivers;..\..\..\libcpu\arm\cortex-m4;board;board\config;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\extension</IncludePath>
+              <IncludePath>..\..\..\components\drivers\include;board\ports;..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\inc;applications;..\..\..\components\libc\posix\io\poll;..\..\..\components\drivers\include;.;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\libraries\hc32f4a0_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\components\drivers\include;..\..\..\components\finsh;..\..\..\components\libc\compilers\common\include;..\..\..\libcpu\arm\common;board\config;board;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\stdio;board\config\usb_config;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;..\libraries\hc32f4a0_ddl\drivers\cmsis\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -766,6 +766,13 @@
           </Files>
           <Files>
             <File>
+              <FileName>hc32_ll_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
               <FileName>hc32_ll_pwc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</FilePath>
@@ -780,9 +787,9 @@
           </Files>
           <Files>
             <File>
-              <FileName>hc32_ll_sram.c</FileName>
+              <FileName>hc32_ll_fcm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</FilePath>
+              <FilePath>..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcm.c</FilePath>
             </File>
           </Files>
           <Files>

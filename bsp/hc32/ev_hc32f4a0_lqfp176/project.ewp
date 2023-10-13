@@ -2175,13 +2175,16 @@
       <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_aos.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcm.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\drivers\hc32_ll_driver\src\hc32_ll.c</name>

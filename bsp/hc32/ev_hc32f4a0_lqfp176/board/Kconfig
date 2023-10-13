@@ -142,21 +142,60 @@ menu "On-chip Peripheral Drivers"
                         default 256
                 endif
 
-            config BSP_USING_UART3
+            menuconfig BSP_USING_UART3
                 bool "Enable UART3"
                 default n
+                if BSP_USING_UART3
+                    config BSP_UART3_RX_BUFSIZE
+                        int "Set UART3 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART4
+                    config BSP_UART3_TX_BUFSIZE
+                        int "Set UART3 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART4
                 bool "Enable UART4"
                 default n
+                if BSP_USING_UART4
+                    config BSP_UART4_RX_BUFSIZE
+                        int "Set UART4 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART5
+                    config BSP_UART4_TX_BUFSIZE
+                        int "Set UART4 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART5
                 bool "Enable UART5"
                 default n
+                if BSP_USING_UART5
+                    config BSP_UART5_RX_BUFSIZE
+                        int "Set UART5 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART5_TX_BUFSIZE
+                        int "Set UART5 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
 
             menuconfig BSP_USING_UART6
                 bool "Enable UART6"
-                default y
+                default n
                 if BSP_USING_UART6
                     config BSP_UART6_RX_USING_DMA
                         bool "Enable UART6 RX DMA"
@@ -178,94 +217,239 @@ menu "On-chip Peripheral Drivers"
                         int "Set UART6 TX buffer size"
                         range 0 65535
                         depends on RT_USING_SERIAL_V2
+                        default 256
+                endif
+
+            menuconfig BSP_USING_UART7
+                bool "Enable UART7"
+                default n
+                if BSP_USING_UART7
+                    config BSP_UART7_RX_USING_DMA
+                        bool "Enable UART7 RX DMA"
+                        depends on BSP_USING_UART7 && RT_SERIAL_USING_DMA
+                        default n
+
+                    config BSP_UART7_TX_USING_DMA
+                        bool "Enable UART7 TX DMA"
+                        depends on BSP_USING_UART7 && RT_SERIAL_USING_DMA
+                        default n
+
+                    config BSP_UART7_RX_BUFSIZE
+                        int "Set UART7 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART7_TX_BUFSIZE
+                        int "Set UART7 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+                endif
+
+
+            menuconfig BSP_USING_UART8
+                bool "Enable UART8"
+                default n
+                if BSP_USING_UART8
+                    config BSP_UART8_RX_BUFSIZE
+                        int "Set UART8 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART8_TX_BUFSIZE
+                        int "Set UART8 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
                         default 0
                 endif
 
-            config BSP_USING_UART7
-                bool "Enable UART7"
-                default n
-
-            config BSP_UART7_RX_USING_DMA
-                bool "Enable UART7 RX DMA"
-                depends on BSP_USING_UART7
-                select RT_SERIAL_USING_DMA
-                default n
-
-            config BSP_UART7_TX_USING_DMA
-                bool "Enable UART7 TX DMA"
-                depends on BSP_USING_UART7
-                select RT_SERIAL_USING_DMA
-                default n
-
-            config BSP_USING_UART8
-                bool "Enable UART8"
-                default n
-
-            config BSP_USING_UART9
+            menuconfig BSP_USING_UART9
                 bool "Enable UART9"
                 default n
+                if BSP_USING_UART9
+                    config BSP_UART9_RX_BUFSIZE
+                        int "Set UART9 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
 
-            config BSP_USING_UART10
+                    config BSP_UART9_TX_BUFSIZE
+                        int "Set UART9 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
+
+            menuconfig BSP_USING_UART10
                 bool "Enable UART10"
                 default n
+                if BSP_USING_UART10
+                    config BSP_UART10_RX_BUFSIZE
+                        int "Set UART10 RX buffer size"
+                        range 64 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 256
+
+                    config BSP_UART10_TX_BUFSIZE
+                        int "Set UART10 TX buffer size"
+                        range 0 65535
+                        depends on RT_USING_SERIAL_V2
+                        default 0
+                endif
         endif
 
     menuconfig BSP_USING_I2C
         bool "Enable I2C BUS"
         default n
         select RT_USING_I2C
+
         if BSP_USING_I2C
-            config BSP_USING_I2C1_SW
+            menuconfig BSP_USING_I2C1_SW
                 bool "Enable I2C1 BUS (software simulation)"
-                default y
+                default n
                 select RT_USING_I2C_BITOPS
                 select RT_USING_PIN
-            if BSP_USING_I2C1_SW
-                config BSP_I2C1_SCL_PIN
-                    int "i2c1 scl pin number"
-                    range 1 176
-                    default 51
-                config BSP_I2C1_SDA_PIN
-                    int "I2C1 sda pin number"
-                    range 1 176
-                    default 90
-            endif
+                if BSP_USING_I2C1_SW
+                    config BSP_I2C1_SCL_PIN
+                        int "i2c1 scl pin number"
+                        range 1 176
+                        default 51
+                    config BSP_I2C1_SDA_PIN
+                        int "I2C1 sda pin number"
+                        range 1 176
+                        default 90
+                endif
         endif
 
         if BSP_USING_I2C
-            config BSP_USING_I2C1
+            config BSP_I2C_USING_DMA
+                bool
+                default n
+            config BSP_USING_I2C_HW
+                bool
+                default n
+
+            menuconfig BSP_USING_I2C1
                 bool "Enable I2C1 BUS"
-                default y
+                default n
+                select BSP_USING_I2C_HW
                 if BSP_USING_I2C1
-                    config BSP_USING_I2C_HW
-                    bool
-                    default y
+                    config BSP_I2C1_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C1_TX_USING_DMA
+                        bool "Enable I2C1 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C1_USING_DMA
+                    config BSP_I2C1_RX_USING_DMA
+                        bool "Enable I2C1 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C1_USING_DMA
                 endif
-        endif
-        if BSP_USING_I2C
-            config BSP_USING_I2C2
+
+            menuconfig BSP_USING_I2C2
                 bool "Enable I2C2 BUS"
                 default n
-        endif
-        if BSP_USING_I2C
-            config BSP_USING_I2C3
+                select BSP_USING_I2C_HW
+                if BSP_USING_I2C2
+                    config BSP_I2C2_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C2_TX_USING_DMA
+                        bool "Enable I2C2 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C2_USING_DMA
+                    config BSP_I2C2_RX_USING_DMA
+                        bool "Enable I2C2 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C2_USING_DMA
+                endif
+
+            menuconfig BSP_USING_I2C3
                 bool "Enable I2C3 BUS"
                 default n
-        endif
-        if BSP_USING_I2C
-            config BSP_USING_I2C4
+                select BSP_USING_I2C_HW
+                if BSP_USING_I2C3
+                    config BSP_I2C3_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C3_TX_USING_DMA
+                        bool "Enable I2C3 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C3_USING_DMA
+                    config BSP_I2C3_RX_USING_DMA
+                        bool "Enable I2C3 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C3_USING_DMA
+                endif
+
+            menuconfig BSP_USING_I2C4
                 bool "Enable I2C4 BUS"
                 default n
-        endif
-        if BSP_USING_I2C
-            config BSP_USING_I2C5
+                select BSP_USING_I2C_HW
+                if BSP_USING_I2C4
+                    config BSP_I2C4_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C4_TX_USING_DMA
+                        bool "Enable I2C4 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C4_USING_DMA
+                    config BSP_I2C4_RX_USING_DMA
+                        bool "Enable I2C4 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C4_USING_DMA
+                endif
+
+            menuconfig BSP_USING_I2C5
                 bool "Enable I2C5 BUS"
                 default n
-        endif
-        if BSP_USING_I2C
-            config BSP_USING_I2C6
+                select BSP_USING_I2C_HW
+                if BSP_USING_I2C5
+                    config BSP_I2C5_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C5_TX_USING_DMA
+                        bool "Enable I2C5 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C5_USING_DMA
+                    config BSP_I2C5_RX_USING_DMA
+                        bool "Enable I2C5 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C5_USING_DMA
+                endif
+
+            menuconfig BSP_USING_I2C6
                 bool "Enable I2C6 BUS"
                 default n
+                select BSP_USING_I2C_HW
+                if BSP_USING_I2C6
+                    config BSP_I2C6_USING_DMA
+                        bool
+                        default n
+                    config BSP_I2C6_TX_USING_DMA
+                        bool "Enable I2C6 TX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C6_USING_DMA
+                    config BSP_I2C6_RX_USING_DMA
+                        bool "Enable I2C6 RX DMA"
+                        default n
+                        select BSP_I2C_USING_DMA
+                        select BSP_I2C6_USING_DMA
+                endif
         endif
 
     config BSP_USING_ON_CHIP_FLASH
@@ -277,65 +461,69 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_SPI
         if BSP_USING_SPI
-            config BSP_USING_SPI1
+            config BSP_SPI_USING_DMA
+                bool
+                default n
+
+            menuconfig BSP_USING_SPI1
                 bool "Enable SPI1 BUS"
                 default n
+                if BSP_USING_SPI1
+                    config BSP_SPI1_TX_USING_DMA
+                        bool "Enable SPI1 TX DMA"
+                        select BSP_SPI_USING_DMA
+                        default n
+                    config BSP_SPI1_RX_USING_DMA
+                        bool "Enable SPI1 RX DMA"
+                        select BSP_SPI_USING_DMA
+                        select BSP_SPI1_TX_USING_DMA
+                        default n
+                endif
 
-            config BSP_SPI1_TX_USING_DMA
-                bool "Enable SPI1 TX DMA"
-                depends on BSP_USING_SPI1
-                default n
-
-            config BSP_SPI1_RX_USING_DMA
-                bool "Enable SPI1 RX DMA"
-                depends on BSP_USING_SPI1
-                select BSP_SPI1_TX_USING_DMA
-                default n
-
-            config BSP_USING_SPI2
+            menuconfig BSP_USING_SPI2
                 bool "Enable SPI2 BUS"
                 default n
+                if BSP_USING_SPI2
+                    config BSP_SPI2_TX_USING_DMA
+                        bool "Enable SPI2 TX DMA"
+                        select BSP_SPI_USING_DMA
+                        default n
+                    config BSP_SPI2_RX_USING_DMA
+                        bool "Enable SPI2 RX DMA"
+                        select BSP_SPI_USING_DMA
+                        select BSP_SPI2_TX_USING_DMA
+                        default n
+                endif
 
-            config BSP_SPI2_TX_USING_DMA
-                bool "Enable SPI2 TX DMA"
-                depends on BSP_USING_SPI2
-                default n
-
-            config BSP_SPI2_RX_USING_DMA
-                bool "Enable SPI2 RX DMA"
-                depends on BSP_USING_SPI2
-                select BSP_SPI2_TX_USING_DMA
-                default n
-
-            config BSP_USING_SPI3
+            menuconfig BSP_USING_SPI3
                 bool "Enable SPI3 BUS"
                 default n
+                if BSP_USING_SPI3
+                    config BSP_SPI3_TX_USING_DMA
+                        bool "Enable SPI3 TX DMA"
+                        select BSP_SPI_USING_DMA
+                        default n
+                    config BSP_SPI3_RX_USING_DMA
+                        bool "Enable SPI3 RX DMA"
+                        select BSP_SPI_USING_DMA
+                        select BSP_SPI3_TX_USING_DMA
+                        default n
+                endif
 
-            config BSP_SPI3_TX_USING_DMA
-                bool "Enable SPI3 TX DMA"
-                depends on BSP_USING_SPI3
-                default n
-
-            config BSP_SPI3_RX_USING_DMA
-                bool "Enable SPI3 RX DMA"
-                depends on BSP_USING_SPI3
-                select BSP_SPI3_TX_USING_DMA
-                default n
-
-            config BSP_USING_SPI4
+            menuconfig BSP_USING_SPI4
                 bool "Enable SPI4 BUS"
                 default n
-
-            config BSP_SPI4_TX_USING_DMA
-                bool "Enable SPI4 TX DMA"
-                depends on BSP_USING_SPI4
-                default n
-
-            config BSP_SPI4_RX_USING_DMA
-                bool "Enable SPI4 RX DMA"
-                depends on BSP_USING_SPI4
-                select BSP_SPI4_TX_USING_DMA
-                default n
+                if BSP_USING_SPI4
+                    config BSP_SPI4_TX_USING_DMA
+                        bool "Enable SPI4 TX DMA"
+                        select BSP_SPI_USING_DMA
+                        default n
+                    config BSP_SPI4_RX_USING_DMA
+                        bool "Enable SPI4 RX DMA"
+                        select BSP_SPI_USING_DMA
+                        select BSP_SPI4_TX_USING_DMA
+                        default n
+                endif
         endif
 
     menuconfig BSP_USING_ADC
@@ -423,15 +611,14 @@ menu "On-chip Peripheral Drivers"
         select BSP_USING_EXMC
         if BSP_USING_EXMC
             choice
-                prompt "Using SDRAM or Nand"
+                prompt "Using SDRAM or Nandflash"
                 default BSP_USING_SDRAM
 
                 config BSP_USING_SDRAM
                     bool "Using SDRAM"
 
-                config BSP_USING_NAND
-                    bool "Using Nand"
-                    select RT_USING_MTD_NAND
+                config BSP_USING_NANDFLASH
+                    bool "Using Nandflash"
             endchoice
         endif
 
