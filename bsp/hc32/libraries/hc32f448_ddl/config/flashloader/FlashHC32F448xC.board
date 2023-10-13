@@ -9,4 +9,8 @@
     <loader>$PROJ_DIR$\..\libraries\hc32f448_ddl\config\flashloader\FlashHC32F448_otp.flash</loader>
     <range>CODE 0x03000C00 0x03000FFF</range>
   </pass>
+  <pass>
+    <loader>$PROJ_DIR$\..\libraries\hc32f448_ddl\config\flashloader\FlashHC32F448_qspi.flash</loader>
+    <range>CODE 0x98000000 0x987FFFFF</range>
+  </pass>
 </flash_board>

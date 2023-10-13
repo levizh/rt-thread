@@ -67,7 +67,7 @@
 #endif
 
 #if defined (HC32F460)
-    #define FILTER_COUNT                                    (8)
+    #define FILTER_COUNT                                    (8U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN_INT)
 #endif
 

@@ -350,7 +350,7 @@ SetSRAM3Wait:
                 /* Call the clock system initialization function. */
                 bl          SystemInit
                 /* Call the application's entry point. */
-                bl          main
+                bl          entry
                 bx          lr
                 .size       Reset_Handler, . - Reset_Handler
 /*
