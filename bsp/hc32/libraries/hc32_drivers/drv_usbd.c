@@ -423,9 +423,9 @@ static void usb_resume_isr(usb_core_instance *pdev)
 static void usb_susp_isr(usb_core_instance *pdev)
 {
     uint32_t u32dsts;
-    
+
     u32dsts = READ_REG32(pdev->regs.DREGS->DSTS);
-    if((u32dsts & 1UL) != 0UL)
+    if ((u32dsts & 1UL) != 0UL)
     {
         dev_int_cbkpr->Suspend(pdev);
     }

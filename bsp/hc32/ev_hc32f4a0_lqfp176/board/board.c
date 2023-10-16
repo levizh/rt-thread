@@ -17,7 +17,7 @@
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
 #if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
-extern rt_err_t rt_hw_xtal32_board_init(void);
+    extern rt_err_t rt_hw_xtal32_board_init(void);
 #endif
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)

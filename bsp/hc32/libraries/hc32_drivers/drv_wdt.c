@@ -70,12 +70,12 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         break;
     /* set watchdog timeout */
     case RT_DEVICE_CTRL_WDT_SET_TIMEOUT:
-        if ((*((rt_uint32_t*)arg)) > WDT_CNT_PERIOD65536)
+        if ((*((rt_uint32_t *)arg)) > WDT_CNT_PERIOD65536)
         {
             LOG_E("wdg set timeout parameter too large, please less than %d", WDT_CNT_PERIOD65536);
             return -RT_EINVAL;
         }
-        hc32_wdt.stcwdg.u32CountPeriod = (*((rt_uint32_t*)arg));
+        hc32_wdt.stcwdg.u32CountPeriod = (*((rt_uint32_t *)arg));
         if (hc32_wdt.is_start)
         {
             if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK)
@@ -88,7 +88,7 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         LOG_D("wdg set timeout successful. timeout = %d ms", wdt_get_timeout_ms());
         break;
     case RT_DEVICE_CTRL_WDT_GET_TIMEOUT:
-        (*((rt_uint32_t*)arg)) = wdt_get_timeout_ms();
+        (*((rt_uint32_t *)arg)) = wdt_get_timeout_ms();
         break;
     case RT_DEVICE_CTRL_WDT_START:
         if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK)

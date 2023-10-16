@@ -37,7 +37,7 @@
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
 #if defined (BSP_USING_SDRAM)
-rt_err_t rt_hw_board_sdram_init(void);
+    rt_err_t rt_hw_board_sdram_init(void);
 #endif
 
 /*******************************************************************************
@@ -48,7 +48,7 @@ rt_err_t rt_hw_board_sdram_init(void);
  * Local variable definitions ('static')
  ******************************************************************************/
 #ifdef RT_USING_MEMHEAP_AS_HEAP
-static struct rt_memheap _system_heap;
+    static struct rt_memheap _system_heap;
 #endif
 
 /*******************************************************************************

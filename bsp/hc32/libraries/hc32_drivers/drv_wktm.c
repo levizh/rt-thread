@@ -23,9 +23,9 @@
 #define CMPVAL_MAX          0xFFFU
 
 #if defined(HC32F460)
-#define WKTM_IRQn           (INT130_IRQn)
+    #define WKTM_IRQn           (INT130_IRQn)
 #elif defined(HC32F4A0)
-#define WKTM_IRQn           (INT131_IRQn)
+    #define WKTM_IRQn           (INT131_IRQn)
 #endif
 
 static rt_uint32_t cmpval = CMPVAL_MAX;

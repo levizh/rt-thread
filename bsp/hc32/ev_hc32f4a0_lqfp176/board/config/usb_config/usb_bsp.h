@@ -7,7 +7,7 @@
  * Date           Author       Notes
  * 2023-02-14     CDT          first version
  */
- 
+
 #ifndef __USB_BSP_H__
 #define __USB_BSP_H__
 

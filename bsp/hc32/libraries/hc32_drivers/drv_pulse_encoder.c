@@ -72,11 +72,13 @@ struct hc32_pulse_encoder_tima_device
     struct rt_pulse_encoder_device pulse_encoder;
     CM_TMRA_TypeDef *tim_handler;
     uint32_t u32Fcg2Periph;
-    struct {
+    struct
+    {
         uint16_t u16CountUpCond;
         uint16_t u16CountDownCond;
     } hw_count;
-    struct {
+    struct
+    {
         en_int_src_t enIntSrc_OVF;
         IRQn_Type enIRQn_OVF;
         uint8_t u8Int_Prio_OVF;
@@ -338,7 +340,7 @@ rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
     stc_tmra_init_t stcTmraInit;
     stc_irq_signin_config_t stcIrq;
     struct hc32_pulse_encoder_tima_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tima_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
 
     /* Enable TimerA peripheral clock. */
     FCG_Fcg2PeriphClockCmd(hc32_device->u32Fcg2Periph, ENABLE);
@@ -379,7 +381,7 @@ rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
 rt_err_t pulse_encoder_tima_clear_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
     struct hc32_pulse_encoder_tima_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tima_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
     hc32_device->over_under_flowcount = 0;
     TMRA_SetCountValue(hc32_device->tim_handler, 0);
     return RT_EOK;
@@ -388,7 +390,7 @@ rt_err_t pulse_encoder_tima_clear_count(struct rt_pulse_encoder_device *pulse_en
 rt_int32_t pulse_encoder_tima_get_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
     struct hc32_pulse_encoder_tima_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tima_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
     return (rt_int32_t)((rt_int16_t)TMRA_GetCountValue(hc32_device->tim_handler) + (hc32_device->over_under_flowcount * (hc32_device->u32PeriodValue + 1)));
 }
 
@@ -396,7 +398,7 @@ rt_err_t pulse_encoder_tima_control(struct rt_pulse_encoder_device *pulse_encode
 {
     rt_err_t result;
     struct hc32_pulse_encoder_tima_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tima_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
 
     result = RT_EOK;
 
@@ -470,11 +472,13 @@ struct hc32_pulse_encoder_tim6_device
     struct rt_pulse_encoder_device pulse_encoder;
     CM_TMR6_TypeDef *tim_handler;
     uint32_t u32Fcg2Periph;
-    struct {
+    struct
+    {
         uint32_t u32CountUpCond;
         uint32_t u32CountDownCond;
     } hw_count;
-    struct {
+    struct
+    {
         en_int_src_t enIntSrc_OVF;
         IRQn_Type enIRQn_OVF;
         uint8_t u8Int_Prio_OVF;
@@ -660,7 +664,7 @@ rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
     stc_tmr6_init_t stcTmr6Init;
     stc_irq_signin_config_t stcIrq;
     struct hc32_pulse_encoder_tim6_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tim6_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
 
     /* Enable Timer6 peripheral clock. */
     FCG_Fcg2PeriphClockCmd(hc32_device->u32Fcg2Periph, ENABLE);
@@ -701,7 +705,7 @@ rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
 rt_err_t pulse_encoder_tim6_clear_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
     struct hc32_pulse_encoder_tim6_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tim6_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
     hc32_device->over_under_flowcount = 0;
     TMR6_SetCountValue(hc32_device->tim_handler, 0);
     return RT_EOK;
@@ -710,7 +714,7 @@ rt_err_t pulse_encoder_tim6_clear_count(struct rt_pulse_encoder_device *pulse_en
 rt_int32_t pulse_encoder_tim6_get_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
     struct hc32_pulse_encoder_tim6_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tim6_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
     return (rt_int32_t)((rt_int16_t)TMR6_GetCountValue(hc32_device->tim_handler) + (hc32_device->over_under_flowcount * (hc32_device->u32PeriodValue + 1)));
 }
 
@@ -718,7 +722,7 @@ rt_err_t pulse_encoder_tim6_control(struct rt_pulse_encoder_device *pulse_encode
 {
     rt_err_t result;
     struct hc32_pulse_encoder_tim6_device *hc32_device;
-    hc32_device = (struct hc32_pulse_encoder_tim6_device*)pulse_encoder;
+    hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
 
     result = RT_EOK;
 

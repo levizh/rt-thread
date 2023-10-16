@@ -202,7 +202,7 @@ static rt_err_t hc32_rtc_init(void)
 #endif
             stcRtcInit.u8HourFormat = RTC_HOUR_FMT_24H;
             (void)RTC_Init(&stcRtcInit);
-            
+
             /* Clear all status */
             RTC_ClearStatus(RTC_FLAG_CLR_ALL);
             /* Startup RTC count */

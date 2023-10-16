@@ -40,7 +40,8 @@ struct hc32_hwtimer
     uint32_t u32Fcg2Periph;
     uint32_t u32Ch;
     uint32_t u32Flag;
-    struct {
+    struct
+    {
         en_int_src_t enIntSrc;
         IRQn_Type enIRQn;
         uint8_t u8Int_Prio;
@@ -89,9 +90,12 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         /* Counter Frequency Fixed to maxfreq */
         timer->freq = timer->info->maxfreq;
 
-        if (tim_device->u32Ch == TMR0_CH_A) {
+        if (tim_device->u32Ch == TMR0_CH_A)
+        {
             TMR0_IntCmd(tim_device->tim_handle, TMR0_INT_CMP_A, ENABLE);
-        } else {
+        }
+        else
+        {
             TMR0_IntCmd(tim_device->tim_handle, TMR0_INT_CMP_B, ENABLE);
         }
         /* Interrupt configuration */
@@ -150,10 +154,13 @@ static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
     {
     case HWTIMER_CTRL_FREQ_SET:
     {
-        if (freq != timer->freq) {
+        if (freq != timer->freq)
+        {
             LOG_W("Not Support To Set The Counter Frequency! Default is %d Hz", timer->freq);
             result = -RT_EINVAL;
-        } else {
+        }
+        else
+        {
             result = RT_EOK;
         }
     }
@@ -214,9 +221,9 @@ static void TMR0_2B_callback(void)
 static struct rt_hwtimer_info _info;
 void tmr0_get_info_callback(void)
 {
-    _info.maxcnt  = CLK_GetBusClockFreq(CLK_BUS_PCLK1)/64/1000;   //Period = 1ms
-    _info.maxfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1)/64;
-    _info.minfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1)/64/_info.maxcnt;
+    _info.maxcnt  = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64 / 1000; //Period = 1ms
+    _info.maxfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64;
+    _info.minfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64 / _info.maxcnt;
     _info.cntmode = HWTIMER_CNTMODE_UP;
 
 #ifdef BSP_USING_TIM0_1A
@@ -253,10 +260,12 @@ static int hc32_hwtimer_init(void)
         hc32_hwtimer_obj[i].time_device.info = &_info;
         hc32_hwtimer_obj[i].time_device.ops  = &_ops;
         if (rt_device_hwtimer_register(&hc32_hwtimer_obj[i].time_device,
-            hc32_hwtimer_obj[i].name, &hc32_hwtimer_obj[i].tim_handle) == RT_EOK)
+                                       hc32_hwtimer_obj[i].name, &hc32_hwtimer_obj[i].tim_handle) == RT_EOK)
         {
             LOG_D("%s register success", hc32_hwtimer_obj[i].name);
-        } else {
+        }
+        else
+        {
             LOG_E("%s register failed", hc32_hwtimer_obj[i].name);
             result = -RT_ERROR;
         }

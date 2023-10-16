@@ -540,22 +540,22 @@ static uint16_t _get_filter_idx(struct rt_can_filter_config *filter_cfg)
 
     for (int i = 0; i < filter_cfg->count; i++)
     {
-        if (filter_cfg->items[i].hdr != -1)
+        if (filter_cfg->items[i].hdr_bank != -1)
         {
-            u16FilterSelected |= 1 << filter_cfg->items[i].hdr;
+            u16FilterSelected |= 1 << filter_cfg->items[i].hdr_bank;
         }
     }
 
     for (int i = 0; i < filter_cfg->count; i++)
     {
-        if (filter_cfg->items[i].hdr == -1)
+        if (filter_cfg->items[i].hdr_bank == -1)
         {
             for (int j = 0; j < FILTER_COUNT; j++)
             {
                 if ((u16FilterSelected & 1 << j) == 0)
                 {
-                    filter_cfg->items[i].hdr = j;
-                    u16FilterSelected |= 1 << filter_cfg->items[i].hdr;
+                    filter_cfg->items[i].hdr_bank = j;
+                    u16FilterSelected |= 1 << filter_cfg->items[i].hdr_bank;
                     break;
                 }
             }
@@ -877,17 +877,14 @@ static rt_err_t _can_control(struct rt_can_device *can, int cmd, void *arg)
         break;
     case RT_CAN_CMD_SET_FILTER:
         return _can_config_filter(p_can_dev, arg);
-        break;
     case RT_CAN_CMD_SET_MODE:
         return _can_config_work_mode(p_can_dev, arg);
-        break;
     case RT_CAN_CMD_SET_BAUD:
 #ifdef RT_CAN_USING_CANFD
         return _canfd_control(p_can_dev, cmd, arg);
 #else
         return _can20_config_baud(p_can_dev, arg);
 #endif
-        break;
     case RT_CAN_CMD_SET_PRIV:
         argval = (rt_uint32_t) arg;
         if (argval != RT_CAN_MODE_PRIV &&
@@ -925,7 +922,7 @@ static rt_err_t _can_control(struct rt_can_device *can, int cmd, void *arg)
     return RT_EOK;
 }
 
-static int _can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t box_num)
+static rt_ssize_t _can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t box_num)
 {
     struct rt_can_msg *pmsg = (struct rt_can_msg *) buf;
     stc_can_tx_frame_t stc_tx_frame = {0};
@@ -973,7 +970,7 @@ static int _can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t 
     return RT_EOK;
 }
 
-static int _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
+static rt_ssize_t _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
 {
     int32_t ll_ret;
     struct rt_can_msg *pmsg;
@@ -1011,7 +1008,7 @@ static int _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
     /* get len */
     pmsg->len = ll_rx_frame.DLC;
     /* get hdr_index */
-    pmsg->hdr = 0;
+    pmsg->hdr_index = 0;
 #ifdef RT_CAN_USING_CANFD
     pmsg->fd_frame = ll_rx_frame.FDF;
     pmsg->brs = ll_rx_frame.BRS;
@@ -1234,7 +1231,7 @@ int rt_hw_can_init(void)
         g_can_dev_array[i].ll_init.pstcFilter[0].u32IDMask = 0x1FFFFFFF;
         g_can_dev_array[i].ll_init.pstcFilter[0].u32IDType = CAN_ID_STD_EXT;
         g_can_dev_array[i].ll_init.u16FilterSelect = CAN_FILTER1;
-        if(g_can_dev_array[i].init.single_trans_mode)
+        if (g_can_dev_array[i].init.single_trans_mode)
         {
             g_can_dev_array[i].ll_init.u8PTBSingleShotTx = CAN_PTB_SINGLESHOT_TX_ENABLE;
         }
