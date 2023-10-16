@@ -161,7 +161,7 @@ static rt_uint32_t tmra_get_clk_bydiv(CM_TMRA_TypeDef *TMRAx)
     uint16_t u16Div;
 
     u32clkFreq = tmra_get_clk_notdiv(TMRAx);
-    u16Div = (READ_REG16(TMRAx->BCSTR) & TMRA_BCSTR_CKDIV);
+    u16Div = (READ_REG16(TMRAx->BCSTRL) & TMRA_BCSTRL_CKDIV);
     switch (u16Div)
     {
         case (TMRA_CLK_DIV1):
@@ -336,7 +336,7 @@ static rt_uint64_t tmra_auto_set_div(CM_TMRA_TypeDef *TMRAx, uint32_t period)
         {
             return 0;
         }
-        TMRA_SetClockDiv(TMRAx, div_bit << TMRA_BCSTR_CKDIV_POS);
+        TMRA_SetClockDiv(TMRAx, div_bit << TMRA_BCSTRL_CKDIV_POS);
         u32clkFreq = tmra_get_clk_bydiv(TMRAx);
         u64clk_ns = (rt_uint64_t)(1000000000UL / u32clkFreq);
     }

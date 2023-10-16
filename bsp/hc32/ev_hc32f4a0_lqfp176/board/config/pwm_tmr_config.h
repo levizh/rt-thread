@@ -32,11 +32,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -63,11 +63,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -94,11 +94,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -125,11 +125,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -156,11 +156,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -187,11 +187,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -218,11 +218,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -249,11 +249,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -280,11 +280,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -311,11 +311,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -342,11 +342,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -373,11 +373,11 @@ extern "C" {
             .u32PeriodValue             = 0xFFFF,               \
             .sw_count =                                         \
             {                                                   \
-                .u16ClockDiv            = TMRA_CLK_DIV1,        \
-                .u16CountMode           = TMRA_MD_SAWTOOTH,     \
-                .u16CountDir            = TMRA_DIR_DOWN,        \
+                .u8ClockDiv             = TMRA_CLK_DIV1,        \
+                .u8CountMode            = TMRA_MD_SAWTOOTH,     \
+                .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u16CountReload             = TMRA_CNT_RELOAD_ENABLE\
+            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \

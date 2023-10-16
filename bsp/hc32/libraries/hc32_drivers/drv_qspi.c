@@ -189,13 +189,13 @@ static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi
     if ((QSPI_READ_FUNC == u8Func) && (LL_OK == hc32_qspi_search_rom_cmd(u8Instr)))
     {
         if ((message->instruction.qspi_lines != 1) ||
-            ((message->address.qspi_lines != 1) && (message->address.qspi_lines != 2) && (message->address.qspi_lines != 4)) ||
-            ((message->qspi_data_lines != 1) && (message->qspi_data_lines != 2) && (message->qspi_data_lines != 4)))
+                ((message->address.qspi_lines != 1) && (message->address.qspi_lines != 2) && (message->address.qspi_lines != 4)) ||
+                ((message->qspi_data_lines != 1) && (message->qspi_data_lines != 2) && (message->qspi_data_lines != 4)))
         {
             return LL_ERR_INVD_PARAM;
         }
         if (((message->address.qspi_lines == 2) && ((message->qspi_data_lines == 1) || (message->qspi_data_lines == 4))) ||
-            ((message->address.qspi_lines == 4) && ((message->qspi_data_lines == 1) || (message->qspi_data_lines == 2))))
+                ((message->address.qspi_lines == 4) && ((message->qspi_data_lines == 1) || (message->qspi_data_lines == 2))))
         {
             return LL_ERR_INVD_PARAM;
         }
@@ -337,7 +337,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8I
             u32TimeoutCnt = 0U;
             /* Wait DMA transfer completed */
             while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
-                   (u32TimeoutCnt < qspi_bus->config->timeout))
+                    (u32TimeoutCnt < qspi_bus->config->timeout))
             {
                 rt_thread_mdelay(1);
                 u32TimeoutCnt++;
@@ -419,7 +419,7 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8In
             u32TimeoutCnt = 0U;
             /* Wait DMA transfer completed */
             while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
-                   (u32TimeoutCnt < qspi_bus->config->timeout))
+                    (u32TimeoutCnt < qspi_bus->config->timeout))
             {
                 rt_thread_mdelay(1);
                 u32TimeoutCnt++;
@@ -559,7 +559,7 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
                 u32TimeoutCnt = 0U;
                 /* Wait DMA transfer completed */
                 while ((RESET == DMA_GetTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag)) &&
-                       (u32TimeoutCnt < qspi_bus->config->timeout))
+                        (u32TimeoutCnt < qspi_bus->config->timeout))
                 {
                     rt_thread_mdelay(1);
                     u32TimeoutCnt++;
@@ -629,7 +629,7 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
     return i32Ret;
 }
 
-static rt_uint32_t qspixfer(struct rt_spi_device *device, struct rt_spi_message *message)
+static rt_ssize_t qspixfer(struct rt_spi_device *device, struct rt_spi_message *message)
 {
     RT_ASSERT(device != RT_NULL);
     RT_ASSERT(device->bus != RT_NULL);

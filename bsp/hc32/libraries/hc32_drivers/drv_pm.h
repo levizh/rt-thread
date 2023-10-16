@@ -80,8 +80,10 @@ struct pm_sleep_mode_shutdown_config
                                         (mode ==  PM_SLEEP_MODE_DEEP && PM_SLEEP_DEEP_CHECK())|| \
                                         (mode !=  PM_SLEEP_MODE_SHUTDOWN)|| \
                                         (mode !=  PM_SLEEP_MODE_DEEP))
+
 #define PM_SLEEP_WAIT_TYPE_WFI          (PWC_STOP_WFI)
-#define PM_SLEEP_WAIT_TYPE_WFE          (PWC_STOP_WFE)
+#define PM_SLEEP_WAIT_TYPE_WFE_INT      (PWC_STOP_WFE_INT)
+#define PM_SLEEP_WAIT_TYPE_WFE_EVT      (PWC_STOP_WFE_EVT)
 
 /*******************************************************************************
  * Global variable definitions ('extern')

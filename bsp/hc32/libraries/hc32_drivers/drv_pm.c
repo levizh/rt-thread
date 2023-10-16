@@ -231,8 +231,9 @@ int drv_pm_hw_init(void)
         __wakeup_timer_stop,
         __wakeup_timer_get_tick
     };
-    RT_ASSERT((st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFI) || \
-              (st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFE)
+    RT_ASSERT((st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFI)     || \
+              (st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFE_INT) || \
+              (st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFE_EVT)
              );
 
     rt_uint8_t timer_mask;

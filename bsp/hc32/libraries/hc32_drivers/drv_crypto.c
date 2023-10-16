@@ -66,7 +66,7 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
     }
 #endif
 
-    switch(ctx ->crc_cfg.width)
+    switch (ctx ->crc_cfg.width)
     {
     case 16:
         stcCrcInit.u32Protocol = CRC_CRC16;
@@ -91,8 +91,14 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
         LOG_D("CRC_Init.");
         rt_memcpy(&stcCrcInit_bk, &stcCrcInit, sizeof(stc_crc_init_t));
     }
-
-    result = CRC_AccumulateData8(in, length);
+    if (16U  == ctx->crc_cfg.width)
+    {
+        result = CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
+    }
+    else   /* CRC32 */
+    {
+        result = CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
+    }
 
 _exit:
     rt_mutex_release(&hc32_hw_dev->mutex);
@@ -153,7 +159,7 @@ static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt
     case HWCRYPTO_TYPE_SHA256:
         hash_in = in;
         hash_length = length;
-       break;
+        break;
     default :
         LOG_E("not support hash type: %x", ctx->parent.type);
         result = RT_ERROR;
@@ -171,11 +177,11 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
 
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
-    
+
     if (hash_in == RT_NULL || hash_length == 0)
     {
         LOG_E("no data input.");
-            result = RT_ERROR;
+        result = RT_ERROR;
         goto _exit;
     }
 
@@ -187,7 +193,7 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
         {
             result = HASH_Calculate(hash_in, hash_length, out);
         }
-        else 
+        else
         {
             LOG_E("The out size must be 32 bytes");
         }
@@ -195,7 +201,7 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
 
     default :
         LOG_E("not support hash type: %x", ctx->parent.type);
-            result = RT_ERROR;
+        result = RT_ERROR;
         break;
     }
 
@@ -224,8 +230,8 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
     switch (ctx->parent.type)
     {
     case HWCRYPTO_TYPE_AES_ECB:
-       LOG_D("AES type is ECB.");
-       break;
+        LOG_D("AES type is ECB.");
+        break;
     case HWCRYPTO_TYPE_AES_CBC:
     case HWCRYPTO_TYPE_AES_CTR:
     case HWCRYPTO_TYPE_DES_ECB:
@@ -236,14 +242,14 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
     }
 
 #if defined (HC32F460)
-    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE*8))
+    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8))
     {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
         result = RT_ERROR;
         goto _exit;
     }
 #elif defined (HC32F4A0)
-    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE*8) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE*8) && ctx->key_bitlen != (AES_KEY_SIZE_32BYTE*8))
+    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8) && ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8))
     {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
         result = RT_ERROR;
@@ -261,12 +267,12 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
     if (info->mode == HWCRYPTO_MODE_ENCRYPT)
     {
         /* AES encryption. */
-        result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen/8), info->out);
+        result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8), info->out);
     }
     else if (info->mode == HWCRYPTO_MODE_DECRYPT)
     {
         /* AES decryption */
-        result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen/8), info->out);
+        result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8), info->out);
     }
     else
     {

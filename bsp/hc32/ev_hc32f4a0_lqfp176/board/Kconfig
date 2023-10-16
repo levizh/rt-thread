@@ -24,8 +24,6 @@ menu "Onboard Peripheral Drivers"
                     select BSP_USING_I2C
                     select BSP_USING_I2C1
                     select BSP_USING_TCA9539
-                config ETH_PHY_USING_JL11X1
-                    bool "ETH PHY USING JL11X1"
             endchoice
 
             choice
@@ -58,14 +56,12 @@ menu "Onboard Peripheral Drivers"
     config BSP_USING_SPI_FLASH
         bool "Enable SPI FLASH (w25q64 spi1)"
         select BSP_USING_SPI
+        select BSP_USING_SPI1
+        select BSP_USING_ON_CHIP_FLASH
         select RT_USING_SFUD
-        default n
-
-    config BSP_USING_QSPI_FLASH
-        bool "Enable QSPI FLASH (w25q64)"
-        select BSP_USING_QSPI
-        select RT_USING_SFUD
-        select RT_SFUD_USING_QSPI
+        select RT_USING_DFS
+        select RT_USING_FAL
+        select RT_USING_MTD_NOR
         default n
 
     config BSP_USING_MT29F2G08AB
@@ -678,11 +674,6 @@ menu "On-chip Peripheral Drivers"
                     bool "Using Hardware SHA2_256 mode"
                     select RT_HWCRYPTO_USING_SHA2_256
                     default y
-                    if BSP_USING_SHA2_256
-                        config BSP_HASH_USING_DMA
-                            bool "Enable Hash DMA"
-                            default y
-                    endif
             endif
 
         endif

@@ -158,10 +158,10 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     uart_init.u32ClockSrc = USART_CLK_SRC_INTERNCLK;
 #if defined(HC32F4A0)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-        (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
+            (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
 #elif defined (HC32F460)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-        (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
+            (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
 #endif
     {
         uart_init.u32CKOutput = USART_CK_OUTPUT_ENABLE;
@@ -251,7 +251,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     {
         USART_SetClockDiv(uart->config->Instance, u32Div);
         if ((LL_OK == USART_SetBaudrate(uart->config->Instance, uart_init.u32Baudrate, &f32Error)) &&
-            ((-UART_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= UART_BAUDRATE_ERR_MAX)))
+                ((-UART_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= UART_BAUDRATE_ERR_MAX)))
         {
             i32Ret = LL_OK;
             break;
@@ -400,10 +400,10 @@ static int hc32_getc(struct rt_serial_device *serial)
     return ch;
 }
 
-static rt_size_t hc32_transmit(struct rt_serial_device  *serial,
-                               rt_uint8_t               *buf,
-                               rt_size_t                 size,
-                               rt_uint32_t               tx_flag)
+static rt_ssize_t hc32_transmit(struct rt_serial_device  *serial,
+                                rt_uint8_t               *buf,
+                                rt_size_t                 size,
+                                rt_uint32_t               tx_flag)
 {
 
     struct hc32_uart *uart;
