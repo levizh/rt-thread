@@ -102,6 +102,9 @@ static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
     int ret = RT_ERROR;
     stc_i2c_init_t i2c_init;
     float32_t f32Error = 0.0F;
+    rt_uint32_t I2cSrcClk;
+    rt_uint32_t I2cClkDiv;
+    rt_uint32_t I2cClkDivReg;
     RT_ASSERT(RT_NULL != bus);
 
     struct hc32_i2c *i2c_obj = rt_container_of(bus, struct hc32_i2c, i2c_bus);
@@ -114,23 +117,17 @@ static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
     }
     I2C_DeInit(i2c_obj->config->Instance);
 
-    i2c_init.u32ClockDiv = I2C_CLK_DIV128;
-    i2c_init.u32SclTime = 0UL;
-    i2c_init.u32Baudrate = i2c_obj->config->baudrate;
-
-    for (rt_uint32_t i = 0U; i < 8U; i++)
-    {
-        ret = I2C_Init(i2c_obj->config->Instance, &i2c_init, &f32Error);
-        if (RT_EOK != ret)
-        {
-            i2c_init.u32ClockDiv--;
-        }
-        else
-        {
+    I2cSrcClk = I2C_SRC_CLK;
+    I2cClkDiv = I2cSrcClk / i2c_obj->config->baudrate / I2C_WIDTH_MAX_IMME;
+    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++) {
+        if (I2cClkDiv < (1UL << I2cClkDivReg)) {
             break;
         }
     }
-
+    i2c_init.u32ClockDiv = I2cClkDivReg;
+    i2c_init.u32SclTime = 0UL * I2cSrcClk / (1UL << I2cClkDivReg) / 1000000000UL;  /* SCL time is about 400nS in EVB board */
+    i2c_init.u32Baudrate = i2c_obj->config->baudrate;
+    ret = I2C_Init(i2c_obj->config->Instance, &i2c_init, &f32Error);
     if (RT_EOK == ret)
     {
         I2C_BusWaitCmd(i2c_obj->config->Instance, ENABLE);

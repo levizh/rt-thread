@@ -77,6 +77,9 @@ typedef struct {
  * @{
  */
 
+#define I2C_SRC_CLK                   (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK3S) >> CMU_SCFGR_PCLK3S_POS))
+#define I2C_WIDTH_MAX_IMME            (68UL)
+
 /**
  * @defgroup I2C_Trans_Dir I2C Transfer Direction
  * @{
