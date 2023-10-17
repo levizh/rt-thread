@@ -5,10 +5,10 @@
  @verbatim
    Change Logs:
    Date             Author          Notes
-   2022-04-28       CDT             First version
+   2022-03-31       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -23,6 +23,7 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
+#include <rtconfig.h>
 
 /* C binding of definitions if building with C++ compiler */
 #ifdef __cplusplus
@@ -89,7 +90,7 @@ extern "C"
 #define LL_TMRA_ENABLE                              (DDL_ON)
 #define LL_TRNG_ENABLE                              (DDL_ON)
 #define LL_USART_ENABLE                             (DDL_ON)
-#define LL_USB_ENABLE                               (DDL_OFF)
+#define LL_USB_ENABLE                               (DDL_ON)
 #define LL_WDT_ENABLE                               (DDL_ON)
 
 /**
@@ -113,12 +114,6 @@ extern "C"
 #define BSP_24CXX_ENABLE                            (DDL_OFF)
 #define BSP_W25QXX_ENABLE                           (DDL_OFF)
 #define BSP_WM8731_ENABLE                           (DDL_OFF)
-
-/**
- * @brief The macro is used to re-define main function in system_device.c(eg. device=hc32f4a0).
- * @note  Set value to non-zero if re-define main function.
- */
-#define RE_DEFINE_MAIN                              (0)
 
 /*******************************************************************************
  * Global variable definitions ('extern')
