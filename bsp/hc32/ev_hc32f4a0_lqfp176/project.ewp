@@ -179,12 +179,13 @@
         <debug>0</debug>
         <option>
           <name>CCDefines</name>
-          <state>__DEBUG</state>
+          <state />
           <state>CLOCKS_PER_SEC=RT_TICK_PER_SECOND</state>
           <state>RT_USING_DLIBC</state>
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
           <state>HC32F4A0</state>
+          <state>__DEBUG</state>
           <state>__RTTHREAD__</state>
           <state>USE_DDL_DRIVER</state>
         </option>
@@ -1173,6 +1174,7 @@
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
           <state>HC32F4A0</state>
+          <state>__DEBUG</state>
           <state>__RTTHREAD__</state>
           <state>USE_DDL_DRIVER</state>
         </option>

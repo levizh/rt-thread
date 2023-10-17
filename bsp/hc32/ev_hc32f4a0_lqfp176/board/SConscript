@@ -32,7 +32,7 @@ elif rtconfig.PLATFORM in ['armcc', 'armclang']:
 elif rtconfig.PLATFORM in ['iccarm']:
     src += [startup_path_prefix + '/hc32f4a0_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/IAR/startup_hc32f4a0.s']
 
-CPPDEFINES = ['HC32F4A0']
+CPPDEFINES = ['HC32F4A0', '__DEBUG']
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
 
 Return('group')

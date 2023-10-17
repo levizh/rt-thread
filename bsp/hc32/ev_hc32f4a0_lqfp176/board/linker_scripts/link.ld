@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -12,7 +12,7 @@
 /*  Abstract    Linker script for HC32F4A0 Device with                       */
 /*              2MByte FLASH, 516KByte RAM                                   */
 /*  Version     V1.0                                                         */
-/*  Date        2022-04-28                                                   */
+/*  Date        2022-03-31                                                   */
 /*****************************************************************************/
 
 /* Custom defines, according to section 7.7 of the user manual.

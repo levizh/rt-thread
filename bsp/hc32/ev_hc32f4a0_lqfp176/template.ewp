@@ -181,7 +181,7 @@
         <debug>0</debug>
         <option>
           <name>CCDefines</name>
-          <state>__DEBUG</state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
