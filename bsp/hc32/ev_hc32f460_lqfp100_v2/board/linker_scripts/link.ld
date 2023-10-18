@@ -179,16 +179,16 @@ SECTIONS
         __StackTop = .;
     } >RAM
 
-    __etext_ramb = __etext + ALIGN (SIZEOF(.data), 4);
-    .ramb_data : AT (__etext_ramb)
+    __etext_ret_ram = __etext + ALIGN (SIZEOF(.data), 4);
+    .ramb_data : AT (__etext_ret_ram)
     {
         . = ALIGN(4);
-        __data_start_ramb__ = .;
+        __data_start_ret_ram__ = .;
         *(.ramb_data)
         *(.ramb_data*)
         . = ALIGN(4);
-        __data_end_ramb__ = .;
-    } >RAMB
+        __data_end_ret_ram__ = .;
+    } >RET_RAM
 
     __bss_start = .;
     .bss __StackTop (NOLOAD):
@@ -211,12 +211,12 @@ SECTIONS
     .ramb_bss :
     {
         . = ALIGN(4);
-        __bss_start_ramb__ = .;
+        __bss_start_ret_ram__ = .;
         *(.ramb_bss)
         *(.ramb_bss*)
         . = ALIGN(4);
-        __bss_end_ramb__ = .;
-    } >RAMB
+        __bss_end_ret_ram__ = .;
+    } >RET_RAM
 
     /DISCARD/ :
     {
