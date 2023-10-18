@@ -91,12 +91,8 @@ extern "C" {
 
 //todo UART IRQn definition
 #if defined(BSP_USING_UART1)
-#define BSP_UART1_RXERR_IRQ_NUM         USART1_IRQn
-#define BSP_UART1_RXERR_IRQ_PRIO        DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART1_RX_IRQ_NUM            USART1_IRQn
-#define BSP_UART1_RX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART1_TX_IRQ_NUM            USART1_IRQn
-#define BSP_UART1_TX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_UART1_IRQ_NUM               USART1_IRQn
+#define BSP_UART1_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
 #if defined(BSP_UART1_RX_USING_DMA)
 #define BSP_UART1_RXTO_IRQ_NUM          USART1_IRQn
@@ -109,12 +105,8 @@ extern "C" {
 #endif /* BSP_USING_UART1 */
 
 #if defined(BSP_USING_UART2)
-#define BSP_UART2_RXERR_IRQ_NUM         USART2_IRQn
-#define BSP_UART2_RXERR_IRQ_PRIO        DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART2_RX_IRQ_NUM            USART2_IRQn
-#define BSP_UART2_RX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART2_TX_IRQ_NUM            USART2_IRQn
-#define BSP_UART2_TX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_UART2_IRQ_NUM               USART2_IRQn
+#define BSP_UART2_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
 #if defined(BSP_UART2_RX_USING_DMA)
 #define BSP_UART2_RXTO_IRQ_NUM          USART2_IRQn
@@ -127,12 +119,8 @@ extern "C" {
 #endif /* BSP_USING_UART2 */
 
 #if defined(BSP_USING_UART3)
-#define BSP_UART3_RXERR_IRQ_NUM         USART3_IRQn
-#define BSP_UART3_RXERR_IRQ_PRIO        DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART3_RX_IRQ_NUM            USART3_IRQn
-#define BSP_UART3_RX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART3_TX_IRQ_NUM            USART3_IRQn
-#define BSP_UART3_TX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_UART3_IRQ_NUM               USART3_IRQn
+#define BSP_UART3_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
 #if defined(BSP_UART3_RX_USING_DMA)
 #define BSP_UART3_RXTO_IRQ_NUM          USART3_IRQn
@@ -145,12 +133,8 @@ extern "C" {
 #endif /* BSP_USING_UART3 */
 
 #if defined(BSP_USING_UART4)
-#define BSP_UART4_RXERR_IRQ_NUM         USART4_IRQn
-#define BSP_UART4_RXERR_IRQ_PRIO        DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART4_RX_IRQ_NUM            USART4_IRQn
-#define BSP_UART4_RX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#define BSP_UART4_TX_IRQ_NUM            USART4_IRQn
-#define BSP_UART4_TX_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_UART4_IRQ_NUM               USART4_IRQn
+#define BSP_UART4_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
 #if defined(BSP_UART4_RX_USING_DMA)
 #define BSP_UART4_RXTO_IRQ_NUM          USART4_IRQn

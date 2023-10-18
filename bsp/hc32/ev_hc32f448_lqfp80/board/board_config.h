@@ -30,11 +30,11 @@
 #endif
 
 #if defined(BSP_USING_UART2)
-    #define USART2_RX_PORT                  (GPIO_PORT_A)
-    #define USART2_RX_PIN                   (GPIO_PIN_03)
+    #define USART2_RX_PORT                  (GPIO_PORT_C)
+    #define USART2_RX_PIN                   (GPIO_PIN_11)
 
-    #define USART2_TX_PORT                  (GPIO_PORT_A)
-    #define USART2_TX_PIN                   (GPIO_PIN_02)
+    #define USART2_TX_PORT                  (GPIO_PORT_C)
+    #define USART2_TX_PIN                   (GPIO_PIN_10)
 #endif
 
 #if defined(BSP_USING_UART3)

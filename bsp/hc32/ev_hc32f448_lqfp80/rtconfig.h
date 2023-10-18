@@ -43,7 +43,7 @@
 #define RT_USING_DEVICE
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
-#define RT_CONSOLE_DEVICE_NAME "uart4"
+#define RT_CONSOLE_DEVICE_NAME "uart2"
 #define RT_VER_NUM 0x50001
 #define RT_USING_HW_ATOMIC
 #define RT_USING_CPU_FFS
@@ -240,7 +240,7 @@
 
 #define BSP_USING_GPIO
 #define BSP_USING_UART
-#define BSP_USING_UART4
+#define BSP_USING_UART2
 
 /* Board extended module Drivers */
 

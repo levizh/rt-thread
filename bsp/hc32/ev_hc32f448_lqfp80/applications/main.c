@@ -13,10 +13,8 @@
 #include <rtdevice.h>
 #include <board.h>
 
-
-/* defined the LED_GREEN pin: PD4 */
-#define LED_GREEN_PIN GET_PIN(D, 4)
-
+/* defined the LED_GREEN pin: PA2 */
+#define LED_GREEN_PIN GET_PIN(A, 2)
 
 int main(void)
 {

@@ -122,24 +122,10 @@ extern "C" {
         .name     = "uart2",                                    \
         .Instance = CM_USART2,                                  \
         .clock    = FCG3_PERIPH_USART2,                         \
-        .rxerr_irq.irq_config =                                 \
-        {                                                       \
-            .irq_num    = BSP_UART2_RXERR_IRQ_NUM,              \
-            .irq_prio   = BSP_UART2_RXERR_IRQ_PRIO,             \
-            .int_src    = INT_SRC_USART2_EI,                    \
-        },                                                      \
-        .rx_irq.irq_config =                                    \
-        {                                                       \
-            .irq_num    = BSP_UART2_RX_IRQ_NUM,                 \
-            .irq_prio   = BSP_UART2_RX_IRQ_PRIO,                \
-            .int_src    = INT_SRC_USART2_RI,                    \
-        },                                                      \
-        .tx_irq.irq_config =                                    \
-        {                                                       \
-            .irq_num    = BSP_UART2_TX_IRQ_NUM,                 \
-            .irq_prio   = BSP_UART2_TX_IRQ_PRIO,                \
-            .int_src    = INT_SRC_USART2_TI,                    \
-        },                                                      \
+        .irq_num  = BSP_UART2_IRQ_NUM,                          \
+        .rxerr_int_src = INT_SRC_USART2_EI,                     \
+        .rx_int_src    = INT_SRC_USART2_RI,                     \
+        .tx_int_src    = INT_SRC_USART2_TI,                     \
     }
 #endif /* UART2_CONFIG */
 

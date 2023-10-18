@@ -1436,6 +1436,37 @@ void USART_FuncCmd(CM_USART_TypeDef *USARTx, uint32_t u32Func, en_functional_sta
 }
 
 /**
+ * @brief  Get USART Transmit/Receive Function.
+ * @param  [in] USARTx                  Pointer to USART instance register base
+ *         This parameter can be one of the following values:
+ *           @arg CM_USARTx:            USART unit instance register base
+ * @param  [in] u32Func                 USART function type
+ *         This parameter can be any composed value of the macros group @ref USART_Function.
+  * @retval An @ref en_flag_status_t enumeration type value.
+ */
+en_flag_status_t USART_GetFunc(CM_USART_TypeDef *USARTx, uint32_t u32Func)
+{
+    uint32_t u32BaseFunc;
+    uint32_t u32LinFunc;
+    en_flag_status_t enRet;
+
+    DDL_ASSERT(IS_USART_UNIT(USARTx));
+    DDL_ASSERT(IS_USART_FUNC(u32Func));
+    DDL_ASSERT(IS_USART_LIN_FUNC(USARTx, u32Func));
+    DDL_ASSERT(IS_USART_TIMEOUT_FUNC(USARTx, u32Func));
+
+    u32BaseFunc = (u32Func & 0xFFFFUL);
+    if (u32BaseFunc > 0UL) {    
+        enRet = (0UL == (READ_REG32_BIT(USARTx->CR1, u32BaseFunc)) ? RESET : SET);
+    }
+    u32LinFunc = ((u32Func & USART_LIN_FUNC_MASK) >> USART_LIN_FUNC_OFFSET);
+    if (u32LinFunc > 0UL) {
+        enRet |= (0UL == (READ_REG32_BIT(USARTx->CR2, u32LinFunc)) ? RESET : SET);
+    }
+    return enRet;
+}
+
+/**
  * @brief  Get USART flag.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:

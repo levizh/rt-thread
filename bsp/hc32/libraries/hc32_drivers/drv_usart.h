@@ -51,9 +51,17 @@ struct hc32_uart_config
     const char                  *name;
     CM_USART_TypeDef            *Instance;
     rt_uint32_t                 clock;
+#if defined (HC32F460) || defined (HC32F4A0)
     struct hc32_uart_irq_config rxerr_irq;
     struct hc32_uart_irq_config rx_irq;
     struct hc32_uart_irq_config tx_irq;
+#elif defined (HC32F448)
+    IRQn_Type                   irq_num;
+    en_int_src_t                rxerr_int_src;
+    en_int_src_t                tx_int_src;
+    en_int_src_t                rx_int_src;
+#endif
+
 #ifdef RT_SERIAL_USING_DMA
     struct hc32_uart_rxto       *rx_timeout;
     stc_dma_llp_descriptor_t    llp_desc;

@@ -472,6 +472,7 @@ int32_t USART_SmartCard_Init(CM_USART_TypeDef *USARTx,
 
 int32_t USART_DeInit(CM_USART_TypeDef *USARTx);
 void USART_FuncCmd(CM_USART_TypeDef *USARTx, uint32_t u32Func, en_functional_state_t enNewState);
+en_flag_status_t USART_GetFunc(CM_USART_TypeDef *USARTx, uint32_t u32Func);
 en_flag_status_t USART_GetStatus(const CM_USART_TypeDef *USARTx, uint32_t u32Flag);
 void USART_ClearStatus(CM_USART_TypeDef *USARTx, uint32_t u32Flag);
 void USART_SetParity(CM_USART_TypeDef *USARTx, uint32_t u32Parity);
