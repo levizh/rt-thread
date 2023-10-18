@@ -197,12 +197,15 @@ static const struct canfd_baud_rate_tab g_baudrate_fd[] =
 
 static can_device g_can_dev_array[] =
 {
-#if defined (HC32F4A0)
 #ifdef BSP_USING_CAN1
     {
         {0},
         CAN1_INIT_PARAMS,
+#if defined (HC32F4A0)
         .instance = CM_CAN1,
+#elif defined (HC32F460)
+        .instance = CM_CAN,
+#endif
     },
 #endif
 #ifdef BSP_USING_CAN2
@@ -211,17 +214,6 @@ static can_device g_can_dev_array[] =
         CAN2_INIT_PARAMS,
         .instance = CM_CAN2,
     },
-#endif
-#endif
-
-#if defined (HC32F460)
-#ifdef BSP_USING_CAN1
-    {
-        {0},
-        CAN1_INIT_PARAMS,
-        .instance = CM_CAN,
-    },
-#endif
 #endif
 };
 
@@ -1159,18 +1151,15 @@ static void _can2_irq_handler(void)
 
 static void _can_clock_enable(void)
 {
+#if defined(BSP_USING_CAN1)
 #if defined(HC32F4A0)
-#if defined(BSP_USING_CAN1)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
-#endif
-#if   defined(BSP_USING_CAN2)
-    FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN2, ENABLE);
-#endif
-#endif
-
-#if defined(HC32F460)
-#if defined(BSP_USING_CAN1)
+#elif defined(HC32F460)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN, ENABLE);
+#endif
+#endif
+#if defined(BSP_USING_CAN2)
+    FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN2, ENABLE);
 #endif
 #endif
 }

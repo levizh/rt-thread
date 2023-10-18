@@ -49,7 +49,6 @@ enum
 #ifdef BSP_USING_PWM_TIMA_6
     PWM_TIMA_6_INDEX,
 #endif
-#if defined(HC32F4A0)
 #ifdef BSP_USING_PWM_TIMA_7
     PWM_TIMA_7_INDEX,
 #endif
@@ -67,7 +66,6 @@ enum
 #endif
 #ifdef BSP_USING_PWM_TIMA_12
     PWM_TIMA_12_INDEX,
-#endif
 #endif
     PWM_TIMA_UNIT_NUM,
 };
@@ -104,7 +102,6 @@ static struct hc32_pwm_tmra g_pwm_tmra_array[] =
 #ifdef BSP_USING_PWM_TIMA_6
     PWM_TIMA_6_CONFIG,
 #endif
-#if defined(HC32F4A0)
 #ifdef BSP_USING_PWM_TIMA_7
     PWM_TIMA_7_CONFIG,
 #endif
@@ -123,35 +120,27 @@ static struct hc32_pwm_tmra g_pwm_tmra_array[] =
 #ifdef BSP_USING_PWM_TIMA_12
     PWM_TIMA_12_CONFIG,
 #endif
-#endif  /* HC32F4A0 */
 };
 
 static rt_uint32_t tmra_get_clk_notdiv(CM_TMRA_TypeDef *TMRAx)
 {
     rt_uint32_t u32clkFreq;
-    switch ((rt_uint32_t)TMRAx)
-    {
-    case (rt_uint32_t)CM_TMRA_1:
-    case (rt_uint32_t)CM_TMRA_2:
-    case (rt_uint32_t)CM_TMRA_3:
-    case (rt_uint32_t)CM_TMRA_4:
-        u32clkFreq = CLK_GetBusClockFreq(CLK_BUS_PCLK0);
-        break;
+    rt_uint32_t u32BusName;
+
 #if defined(HC32F4A0)
-    case (rt_uint32_t)CM_TMRA_5:
-    case (rt_uint32_t)CM_TMRA_6:
-    case (rt_uint32_t)CM_TMRA_7:
-    case (rt_uint32_t)CM_TMRA_8:
-    case (rt_uint32_t)CM_TMRA_9:
-    case (rt_uint32_t)CM_TMRA_10:
-    case (rt_uint32_t)CM_TMRA_11:
-    case (rt_uint32_t)CM_TMRA_12:
-        u32clkFreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1);
-        break;
-#endif
-    default:
-        break;
+    if ((rt_uint32_t)TMRAx >= (rt_uint32_t)CM_TMRA_1)
+    {
+        u32BusName = CLK_BUS_PCLK0;
     }
+    else
+    {
+        u32BusName = CLK_BUS_PCLK1;
+    }
+#elif defined(HC32F460)
+    u32BusName = CLK_BUS_PCLK1;
+#endif
+    u32clkFreq = CLK_GetBusClockFreq(u32BusName);
+
     return (u32clkFreq ? u32clkFreq : HCLK_VALUE);
 }
 
@@ -458,7 +447,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_1_CH4
     g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_1_CH5
     g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 4);
 #endif
@@ -470,7 +458,6 @@ static void pwm_tmra_get_channel(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_1_CH8
     g_pwm_tmra_array[PWM_TIMA_1_INDEX].channel |= (1 << 7);
-#endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_2
@@ -486,7 +473,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_2_CH4
     g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_2_CH5
     g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 4);
 #endif
@@ -498,7 +484,6 @@ static void pwm_tmra_get_channel(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_2_CH8
     g_pwm_tmra_array[PWM_TIMA_2_INDEX].channel |= (1 << 7);
-#endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_3
@@ -514,7 +499,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_3_CH4
     g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_3_CH5
     g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 4);
 #endif
@@ -526,7 +510,6 @@ static void pwm_tmra_get_channel(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_3_CH8
     g_pwm_tmra_array[PWM_TIMA_3_INDEX].channel |= (1 << 7);
-#endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_4
@@ -542,7 +525,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_4_CH4
     g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_4_CH5
     g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 4);
 #endif
@@ -554,7 +536,6 @@ static void pwm_tmra_get_channel(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_4_CH8
     g_pwm_tmra_array[PWM_TIMA_4_INDEX].channel |= (1 << 7);
-#endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_5
@@ -570,7 +551,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_5_CH4
     g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_5_CH5
     g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 4);
 #endif
@@ -582,7 +562,6 @@ static void pwm_tmra_get_channel(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_5_CH8
     g_pwm_tmra_array[PWM_TIMA_5_INDEX].channel |= (1 << 7);
-#endif
 #endif
 #endif
 #ifdef BSP_USING_PWM_TIMA_6
@@ -598,7 +577,6 @@ static void pwm_tmra_get_channel(void)
 #ifdef BSP_USING_PWM_TIMA_6_CH4
     g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 3);
 #endif
-#if defined(HC32F460)
 #ifdef BSP_USING_PWM_TIMA_6_CH5
     g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 4);
 #endif
@@ -612,8 +590,6 @@ static void pwm_tmra_get_channel(void)
     g_pwm_tmra_array[PWM_TIMA_6_INDEX].channel |= (1 << 7);
 #endif
 #endif
-#endif
-#if defined(HC32F4A0)
 #ifdef BSP_USING_PWM_TIMA_7
 #ifdef BSP_USING_PWM_TIMA_7_CH1
     g_pwm_tmra_array[PWM_TIMA_7_INDEX].channel |= (1 << 0);
@@ -698,7 +674,6 @@ static void pwm_tmra_get_channel(void)
     g_pwm_tmra_array[PWM_TIMA_12_INDEX].channel |= (1 << 3);
 #endif
 #endif
-#endif
 }
 
 static void enable_tmra_unit_clk(void)
@@ -721,7 +696,6 @@ static void enable_tmra_unit_clk(void)
 #ifdef BSP_USING_PWM_TIMA_6
     FCG_Fcg2PeriphClockCmd(FCG2_PERIPH_TMRA_6, ENABLE);
 #endif
-#if defined(HC32F4A0)
 #ifdef BSP_USING_PWM_TIMA_7
     FCG_Fcg2PeriphClockCmd(FCG2_PERIPH_TMRA_7, ENABLE);
 #endif
@@ -739,7 +713,6 @@ static void enable_tmra_unit_clk(void)
 #endif
 #ifdef BSP_USING_PWM_TIMA_12
     FCG_Fcg2PeriphClockCmd(FCG2_PERIPH_TMRA_12, ENABLE);
-#endif
 #endif
 }
 

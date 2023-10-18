@@ -390,7 +390,6 @@ static void usb_wrblanktxfifo(usb_core_instance *pdev, uint32_t epnum)
     }
 }
 
-#if defined (HC32F460) || defined (HC32F4A0)
 #ifdef VBUS_SENSING_ENABLED
 static void usb_sessionrequest_isr(usb_core_instance *pdev)
 {
@@ -403,7 +402,6 @@ static void usb_sessionrequest_isr(usb_core_instance *pdev)
         CLR_REG32_BIT(*pdev->regs.GCCTL, USBFS_GCCTL_STPPCLK | USBFS_GCCTL_GATEHCLK);
     }
 }
-#endif
 #endif
 
 static void usb_resume_isr(usb_core_instance *pdev)
@@ -708,13 +706,11 @@ void usb_isr_handler(usb_core_instance *pdev)
         {
             usb_isooutincomplt_isr(pdev);
         }
-#if defined (HC32F460) || defined (HC32F4A0)
 #ifdef VBUS_SENSING_ENABLED
         if ((u32gintsts & VBUSV_INT) != 0UL)
         {
             usb_sessionrequest_isr(pdev);
         }
-#endif
 #endif
     }
 }

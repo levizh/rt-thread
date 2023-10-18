@@ -131,13 +131,11 @@ static const struct rt_dac_ops g_dac_ops =
 
 static void _dac_clock_enable(void)
 {
-#if defined(HC32F4A0)
 #if defined(BSP_USING_DAC1)
     FCG_Fcg3PeriphClockCmd(PWC_FCG3_DAC1, ENABLE);
 #endif
 #if defined(BSP_USING_DAC2)
     FCG_Fcg3PeriphClockCmd(PWC_FCG3_DAC2, ENABLE);
-#endif
 #endif
 }
 
