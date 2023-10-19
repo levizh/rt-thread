@@ -83,6 +83,7 @@
 #define RT_SYSTEM_WORKQUEUE_PRIORITY 23
 #define RT_USING_SERIAL
 #define RT_USING_SERIAL_V1
+#define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
 
@@ -235,6 +236,7 @@
 #define SOC_HC32F448MC
 
 /* Onboard Peripheral Drivers */
+
 
 /* On-chip Peripheral Drivers */
 

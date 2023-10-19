@@ -10,14 +10,15 @@
  */
 
 #include "board.h"
+#include "board_config.h"
 
 /* unlock/lock peripheral */
 #define EXAMPLE_PERIPH_WE               (LL_PERIPH_GPIO | LL_PERIPH_EFM | LL_PERIPH_FCG | \
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
-#if defined(BSP_RTC_USING_XTAL32)
-extern rt_err_t rt_hw_xtal32_board_init(void);
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
+    extern rt_err_t rt_hw_xtal32_board_init(void);
 #endif
 
 /** System Clock Configuration
@@ -26,7 +27,7 @@ void SystemClock_Config(void)
 {
     stc_clock_xtal_init_t stcXtalInit;
     stc_clock_pll_init_t stcPLLHInit;
-#if defined(BSP_RTC_USING_XTAL32)
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     stc_clock_xtal32_init_t stcXtal32Init;
 #endif
 
@@ -38,9 +39,8 @@ void SystemClock_Config(void)
                     (CLK_PCLK0_DIV1 | CLK_PCLK1_DIV2 | CLK_PCLK2_DIV4 |
                      CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 |
                      CLK_HCLK_DIV1));
-    // todo, all chips
-    //GPIO_AnalogCmd(BSP_XTAL_PORT, BSP_XTAL_IN_PIN | BSP_XTAL_OUT_PIN, ENABLE);
-    
+
+    GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
     (void)CLK_XtalStructInit(&stcXtalInit);
     /* Config Xtal and enable Xtal */
     stcXtalInit.u8Mode   = CLK_XTAL_MD_OSC;
@@ -71,7 +71,7 @@ void SystemClock_Config(void)
     GPIO_SetReadWaitCycle(GPIO_RD_WAIT3);
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
 
-#if defined(BSP_RTC_USING_XTAL32)
+#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     /* Xtal32 config */
     rt_hw_xtal32_board_init();
     (void)CLK_Xtal32StructInit(&stcXtal32Init);
@@ -86,10 +86,15 @@ void SystemClock_Config(void)
 */
 void PeripheralClock_Config(void)
 {
-#if defined(HC32F448)
+#if defined(BSP_USING_CAN1)
+    CLK_SetCANClockSrc(CLK_CAN1, CLK_CANCLK_SYSCLK_DIV6);
+#endif
+#if defined(BSP_USING_CAN2)
+    CLK_SetCANClockSrc(CLK_CAN2, CLK_CANCLK_SYSCLK_DIV6);
+#endif
+
 #if defined(RT_USING_ADC)
     CLK_SetPeriClockSrc(CLK_PERIPHCLK_PCLK);
-#endif
 #endif
 }
 

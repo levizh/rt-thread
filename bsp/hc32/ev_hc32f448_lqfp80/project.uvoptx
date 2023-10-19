@@ -10,7 +10,7 @@
     <aExt>*.s*; *.src; *.a*</aExt>
     <oExt>*.obj; *.o</oExt>
     <lExt>*.lib</lExt>
-    <tExt>*.txt; *.h; *.inc</tExt>
+    <tExt>*.txt; *.h; *.inc; *.md</tExt>
     <pExt>*.plm</pExt>
     <CppX>*.cpp</CppX>
     <nMigrate>0</nMigrate>
@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>CMSIS_AGDI</Key>
-          <Name>-X"" -O206 -S0 -C0 -P00 -FO7 -FD1FFF8000 -FC1000 -FN2 -FF0HC32F448_256K -FS00 -FL080000 -FP0($$Device:HC32F448MCTI$FlashARM\HC32F448_256K.FLM) -FF1HC32F448_otp -FS13000C00 -FL13FC -FP1($$Device:HC32F448MCTI$FlashARM\HC32F448_otp.FLM)</Name>
+          <Name>-X"" -O206 -S0 -C0 -P00 -FO15 -FD1FFF8000 -FC4000 -FN2 -FF0HC32F448_256K -FS00 -FL080000 -FP0($$Device:HC32F448MCTI$FlashARM\HC32F448_256K.FLM) -FF1HC32F448_otp -FS13000C00 -FL1400 -FP1($$Device:HC32F448MCTI$FlashARM\HC32F448_otp.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -129,8 +129,8 @@
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>JL2CM3</Key>
-          <Name>-U261009725 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST2 -TO18 -TC10000000 -TP21 -TDS8000 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD1FFF8000 -FC1000 -FN1 -FF0HC32F448_256K.FLM -FS00 -FL080000 -FP0($$Device:HC32F448MCTI$FlashARM\HC32F448_256K.FLM)</Name>
+          <Key>CMSIS_AGDI</Key>
+          <Name>-X"" -O206 -S0 -C0 -P00 -FO15 -FD1FFF8000 -FC4000 -FN2 -FF0HC32F448_256K -FS00 -FL080000 -FP0($$Device:HC32F448MCTI$FlashARM\HC32F448_256K.FLM) -FF1HC32F448_otp -FS13000C00 -FL1400 -FP1($$Device:HC32F448MCTI$FlashARM\HC32F448_otp.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>

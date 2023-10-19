@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2022, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -8,28 +8,28 @@
  *
  */
 /*****************************************************************************/
-/*  File        HC32F460xE.ld                                                */
-/*  Abstract    Linker script for HC32F460 Device with                       */
-/*              512KByte FLASH, 192KByte RAM                                 */
-/*  Version     V1.0                                                          */
-/*  Date        2022-04-28                                                   */
+/*  File        HC32F448xC.ld                                                */
+/*  Abstract    Linker script for HC32F448 Device with                       */
+/*              256KByte FLASH, 68KByte RAM                                  */
+/*  Version     V1.0                                                         */
+/*  Date        2023-05-31                                                   */
 /*****************************************************************************/
 
 /* Custom defines, according to section 7.7 of the user manual.
-   Take OTP sector 0 for example. */
+   Take OTP sector 16 for example. */
 __OTP_DATA_START = 0x03000C00;
-__OTP_DATA_SIZE  = 64;
-__OTP_LOCK_START = 0x03000FC0;
-__OTP_LOCK_SIZE  = 4;
+__OTP_DATA_SIZE  = 1024;
+__OTP_LOCK_START = 0x03000A80;
+__OTP_LOCK_SIZE  = 128;
 
 /* Use contiguous memory regions for simple. */
 MEMORY
 {
-    FLASH       (rx): ORIGIN = 0x00000000, LENGTH = 512K
+    FLASH       (rx): ORIGIN = 0x00000000, LENGTH = 256K
     OTP_DATA    (rx): ORIGIN = __OTP_DATA_START, LENGTH = __OTP_DATA_SIZE
     OTP_LOCK    (rx): ORIGIN = __OTP_LOCK_START, LENGTH = __OTP_LOCK_SIZE
-    RAM        (rwx): ORIGIN = 0x1FFF8000, LENGTH = 188K
-    RET_RAM    (rwx): ORIGIN = 0x200F0000, LENGTH = 4K
+    RAM        (rwx): ORIGIN = 0x1FFF8000, LENGTH = 64K
+    RAMB       (rwx): ORIGIN = 0x200F0000, LENGTH = 4K
 }
 
 ENTRY(Reset_Handler)
@@ -163,42 +163,6 @@ SECTIONS
         __data_end__ = .;
     } >RAM
 
-    __etext_ret_ram = __etext + ALIGN (SIZEOF(.data), 4);
-    .ret_ram_data : AT (__etext_ret_ram)
-    {
-        . = ALIGN(4);
-        __data_start_ret_ram__ = .;
-        *(.ret_ram_data)
-        *(.ret_ram_data*)
-        . = ALIGN(4);
-        __data_end_ret_ram__ = .;
-    } >RET_RAM
-
-    __bss_start = .;
-    .bss :
-    {
-        . = ALIGN(4);
-        _sbss = .;
-        __bss_start__ = _sbss;
-        *(.bss)
-        *(.bss*)
-        *(COMMON)
-        . = ALIGN(4);
-        _ebss = .;
-        __bss_end__ = _ebss;
-    } >RAM
-    __bss_end = .;
-
-    .ret_ram_bss :
-    {
-        . = ALIGN(4);
-        __bss_start_ret_ram__ = .;
-        *(.ret_ram_bss)
-        *(.ret_ram_bss*)
-        . = ALIGN(4);
-        __bss_end_ret_ram__ = .;
-    } >RET_RAM
-
     .heap_stack (COPY) :
     {
         . = ALIGN(8);
@@ -214,6 +178,45 @@ SECTIONS
         . = ALIGN(8);
         __StackTop = .;
     } >RAM
+
+    __etext_ramb = __etext + ALIGN (SIZEOF(.data), 4);
+    .ramb_data : AT (__etext_ramb)
+    {
+        . = ALIGN(4);
+        __data_start_ramb__ = .;
+        *(.ramb_data)
+        *(.ramb_data*)
+        . = ALIGN(4);
+        __data_end_ramb__ = .;
+    } >RAMB
+
+    __bss_start = .;
+    .bss __StackTop (NOLOAD):
+    {
+        . = ALIGN(4);
+        _sbss = .;
+        __bss_start__ = _sbss;
+        *(.bss)
+        *(.bss*)
+        *(COMMON)
+        . = ALIGN(4);
+        _ebss = .;
+        __bss_end__ = _ebss;
+        . = ALIGN(4);
+        *(.noinit*)
+        . = ALIGN(4);
+    } >RAM
+    __bss_end = .;
+
+    .ramb_bss :
+    {
+        . = ALIGN(4);
+        __bss_start_ramb__ = .;
+        *(.ramb_bss)
+        *(.ramb_bss*)
+        . = ALIGN(4);
+        __bss_end_ramb__ = .;
+    } >RAMB
 
     /DISCARD/ :
     {

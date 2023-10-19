@@ -18,10 +18,10 @@
           <Vendor>HDSC</Vendor>
           <PackID>HDSC.HC32F448.1.0.0</PackID>
           <PackURL>https://raw.githubusercontent.com/hdscmcu/pack/master/</PackURL>
-          <Cpu>IROM1(0x00000000,0x80000) IROM2(0x03000C00,0x3FC) IRAM1(0x1FFF8000,0x2F000)  IRAM2(0x200F0000,0x1000) CPUTYPE("Cortex-M4") FPU2 CLOCK(8000000) ESEL ELITTLE</Cpu>
+          <Cpu>IROM1(0x00000000,0x40000) IROM2(0x03000C00,0x400) IRAM1(0x1FFF8000,0x10000) IRAM2(0x200F0000,0x1000) CPUTYPE("Cortex-M4") FPU2 CLOCK(8000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>CMSIS_AGDI(-S0 -C0 -P0 -FD1FFF8000 -FC1000 -FN2 -FF0HC32F448_256K -FS00 -FL080000 -FP0($$Device:HC32F448MCTI$FlashARM\HC32F448_256K.FLM) -FF1HC32F448_otp -FS103000C00 -FL13FC -FP1($$Device:HC32F448MCTI$FlashARM\HC32F448_otp.FLM))</FlashDriverDll>
+          <FlashDriverDll>CMSIS_AGDI(-S0 -C0 -P00 -FO15 -FD1FFF8000 -FC4000 -FN2 -FF0HC32F448_256K -FS00 -FL0080000 -FP0($$Device:HC32F448PETB$FlashARM\HC32F448_256K.FLM) -FF1HC32F448_otp -FS13000C00 -FL1400 -FP1($$Device:HC32F448MCTI$FlashARM\HC32F448_otp.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
           <RegisterFile>$$Device:HC32F448MCTI$Device\Include\HC32F448MCTI.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
@@ -49,10 +49,10 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\build\keil\Obj\</OutputDirectory>
-          <OutputName>rtthread</OutputName>
+          <OutputName>rt-thread</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>0</BrowseInformation>
           <ListingPath>.\build\keil\List\</ListingPath>
@@ -185,8 +185,9 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>1</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>1</hadIRAM2>
-            <hadIROM2>0</hadIROM2>
+            <hadIROM2>1</hadIROM2>
             <StupSel>8</StupSel>
             <useUlib>0</useUlib>
             <EndSel>1</EndSel>
@@ -245,12 +246,12 @@
               <IRAM>
                 <Type>0</Type>
                 <StartAddress>0x1FFF8000</StartAddress>
-                <Size>0x2F000</Size>
+                <Size>0x10000</Size>
               </IRAM>
               <IROM>
                 <Type>1</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x40000</Size>
               </IROM>
               <XRAM>
                 <Type>0</Type>
@@ -275,12 +276,12 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x40000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
                 <StartAddress>0x03000C00</StartAddress>
-                <Size>0x3FC</Size>
+                <Size>0x400</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
@@ -300,7 +301,7 @@
               <OCR_RVCT9>
                 <Type>0</Type>
                 <StartAddress>0x1FFF8000</StartAddress>
-                <Size>0x2F000</Size>
+                <Size>0x10000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
