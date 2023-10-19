@@ -18,6 +18,11 @@
 #include "drv_config.h"
 
 
+/************************* XTAL port **********************/
+#define XTAL_PORT                       (GPIO_PORT_H)
+#define XTAL_IN_PIN                     (GPIO_PIN_01)
+#define XTAL_OUT_PIN                    (GPIO_PIN_00)
+
 /************************ USART port **********************/
 #if defined(BSP_USING_UART1)
     #define USART1_RX_PORT                  (GPIO_PORT_H)

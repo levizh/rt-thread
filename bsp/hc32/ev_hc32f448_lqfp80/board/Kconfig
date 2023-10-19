@@ -446,26 +446,26 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable timerA output PWM"
                 default n
                 if BSP_USING_PWM_TIMA
-                    menuconfig BSP_USING_PWM_TIMA_4
-                        bool "Enable timerA-4 output PWM"
+                    menuconfig BSP_USING_PWM_TIMA_1
+                        bool "Enable timerA-1 output PWM"
                         default n
-                        if BSP_USING_PWM_TIMA_4
-                            config BSP_USING_PWM_TIMA_4_CH1
-                                bool "Enable timerA-4 channel1"
+                        if BSP_USING_PWM_TIMA_1
+                            config BSP_USING_PWM_TIMA_1_CH1
+                                bool "Enable timerA-1 channel1"
                                 default n
-                            config BSP_USING_PWM_TIMA_4_CH2
-                                bool "Enable timerA-4 channel2"
+                            config BSP_USING_PWM_TIMA_1_CH2
+                                bool "Enable timerA-1 channel2"
                                 default n
                         endif
-                    menuconfig BSP_USING_PWM_TIMA_5
-                        bool "Enable timerA-5 output PWM"
+                    menuconfig BSP_USING_PWM_TIMA_2
+                        bool "Enable timerA-2 output PWM"
                         default n
-                        if BSP_USING_PWM_TIMA_5
-                            config BSP_USING_PWM_TIMA_5_CH1
-                                bool "Enable timerA-5 channel1"
+                        if BSP_USING_PWM_TIMA_2
+                            config BSP_USING_PWM_TIMA_2_CH1
+                                bool "Enable timerA-2 channel1"
                                 default n
-                            config BSP_USING_PWM_TIMA_5_CH2
-                                bool "Enable timerA-5 channel2"
+                            config BSP_USING_PWM_TIMA_2_CH2
+                                bool "Enable timerA-2 channel2"
                                 default n
                         endif
                 endif

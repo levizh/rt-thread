@@ -10,6 +10,7 @@
  */
 
 #include "board.h"
+#include "board_config.h"
 
 /* unlock/lock peripheral */
 #define EXAMPLE_PERIPH_WE               (LL_PERIPH_GPIO | LL_PERIPH_EFM | LL_PERIPH_FCG | \
@@ -62,6 +63,7 @@ void SystemClock_Config(void)
     CLK_SetClockDiv(CLK_BUS_CLK_ALL, (CLK_HCLK_DIV1 | CLK_EXCLK_DIV2 | CLK_PCLK0_DIV1 | CLK_PCLK1_DIV2 | \
                                       CLK_PCLK2_DIV4 | CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2));
 
+    GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
     (void)CLK_XtalStructInit(&stcXtalInit);
     /* Config Xtal and enable Xtal */
     stcXtalInit.u8Mode  = CLK_XTAL_MD_OSC;
@@ -124,7 +126,6 @@ void SystemClock_Config(void)
 */
 void PeripheralClock_Config(void)
 {
-#if defined(HC32F460)
 #if defined(RT_USING_ADC)
     CLK_SetPeriClockSrc(CLK_PERIPHCLK_PCLK);
 #endif
@@ -134,10 +135,9 @@ void PeripheralClock_Config(void)
     /* Wait stable here, since the current DDL API does not include this */
     CLK_Delay(CLK_SYSCLK_SW_STB);
 #endif
-#endif
 }
 
-/** Peripheral Registers Unclock
+/** Peripheral Registers Unlock
 */
 void PeripheralRegister_Unlock(void)
 {

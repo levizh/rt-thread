@@ -133,8 +133,14 @@ rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
 #if defined(RT_USING_CAN)
 void CanPhyEnable(void)
 {
-    TCA9539_WritePin(CAN_STB_PORT, CAN_STB_PIN, TCA9539_PIN_RESET);
-    TCA9539_ConfigPin(CAN_STB_PORT, CAN_STB_PIN, TCA9539_DIR_OUT);
+#if defined(BSP_USING_CAN1)
+    TCA9539_WritePin(CAN1_STB_PORT, CAN1_STB_PIN, TCA9539_PIN_RESET);
+    TCA9539_ConfigPin(CAN1_STB_PORT, CAN1_STB_PIN, TCA9539_DIR_OUT);
+#endif
+#if defined(BSP_USING_CAN2)
+    TCA9539_WritePin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_PIN_RESET);
+    TCA9539_ConfigPin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_DIR_OUT);
+#endif
 }
 rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
 {
@@ -241,54 +247,6 @@ rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
 #endif
 #ifdef BSP_USING_PWM_TIMA_2_CH4
         GPIO_SetFunc(PWM_TIMA_2_CH4_PORT, PWM_TIMA_2_CH4_PIN, PWM_TIMA_2_CH4_PIN_FUNC);
-#endif
-        break;
-#endif
-#if defined(BSP_USING_PWM_TIMA_3)
-    case (rt_uint32_t)CM_TMRA_3:
-#ifdef BSP_USING_PWM_TIMA_3_CH1
-        GPIO_SetFunc(PWM_TIMA_3_CH1_PORT, PWM_TIMA_3_CH1_PIN, PWM_TIMA_3_CH1_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_3_CH2
-        GPIO_SetFunc(PWM_TIMA_3_CH2_PORT, PWM_TIMA_3_CH2_PIN, PWM_TIMA_3_CH2_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_3_CH3
-        GPIO_SetFunc(PWM_TIMA_3_CH3_PORT, PWM_TIMA_3_CH3_PIN, PWM_TIMA_3_CH3_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_3_CH4
-        GPIO_SetFunc(PWM_TIMA_3_CH4_PORT, PWM_TIMA_3_CH4_PIN, PWM_TIMA_3_CH4_PIN_FUNC);
-#endif
-        break;
-#endif
-#if defined(BSP_USING_PWM_TIMA_4)
-    case (rt_uint32_t)CM_TMRA_4:
-#ifdef BSP_USING_PWM_TIMA_4_CH1
-        GPIO_SetFunc(PWM_TIMA_4_CH1_PORT, PWM_TIMA_4_CH1_PIN, PWM_TIMA_4_CH1_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_4_CH2
-        GPIO_SetFunc(PWM_TIMA_4_CH2_PORT, PWM_TIMA_4_CH2_PIN, PWM_TIMA_4_CH2_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_4_CH3
-        GPIO_SetFunc(PWM_TIMA_4_CH3_PORT, PWM_TIMA_4_CH3_PIN, PWM_TIMA_4_CH3_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_4_CH4
-        GPIO_SetFunc(PWM_TIMA_4_CH4_PORT, PWM_TIMA_4_CH4_PIN, PWM_TIMA_4_CH4_PIN_FUNC);
-#endif
-        break;
-#endif
-#if defined(BSP_USING_PWM_TIMA_5)
-    case (rt_uint32_t)CM_TMRA_5:
-#ifdef BSP_USING_PWM_TIMA_5_CH1
-        GPIO_SetFunc(PWM_TIMA_5_CH1_PORT, PWM_TIMA_5_CH1_PIN, PWM_TIMA_5_CH1_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_5_CH2
-        GPIO_SetFunc(PWM_TIMA_5_CH2_PORT, PWM_TIMA_5_CH2_PIN, PWM_TIMA_5_CH2_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_5_CH3
-        GPIO_SetFunc(PWM_TIMA_5_CH3_PORT, PWM_TIMA_5_CH3_PIN, PWM_TIMA_5_CH3_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TIMA_5_CH4
-        GPIO_SetFunc(PWM_TIMA_5_CH4_PORT, PWM_TIMA_5_CH4_PIN, PWM_TIMA_5_CH4_PIN_FUNC);
 #endif
         break;
 #endif

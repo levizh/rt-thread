@@ -10,6 +10,7 @@
  */
 
 #include "board.h"
+#include "board_config.h"
 
 /* unlock/lock peripheral */
 #define EXAMPLE_PERIPH_WE               (LL_PERIPH_GPIO | LL_PERIPH_EFM | LL_PERIPH_FCG | \
@@ -64,6 +65,7 @@ void SystemClock_Config(void)
                      CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 | \
                      CLK_HCLK_DIV1));
 
+    GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
     (void)CLK_XtalStructInit(&stcXtalInit);
     /* Config Xtal and enable Xtal */
     stcXtalInit.u8Mode   = CLK_XTAL_MD_OSC;
@@ -86,16 +88,12 @@ void SystemClock_Config(void)
 
     /* Highspeed SRAM set to 0 Read/Write wait cycle */
     SRAM_SetWaitCycle(SRAM_SRAMH, SRAM_WAIT_CYCLE0, SRAM_WAIT_CYCLE0);
-
     /* SRAM1_2_3_4_backup set to 1 Read/Write wait cycle */
     SRAM_SetWaitCycle((SRAM_SRAM123 | SRAM_SRAM4 | SRAM_SRAMB), SRAM_WAIT_CYCLE1, SRAM_WAIT_CYCLE1);
-
     /* 0-wait @ 40MHz */
     (void)EFM_SetWaitCycle(EFM_WAIT_CYCLE5);
-
     /* 4 cycles for 200 ~ 250MHz */
     GPIO_SetReadWaitCycle(GPIO_RD_WAIT4);
-
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
@@ -123,14 +121,12 @@ void SystemClock_Config(void)
     stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_RUN_MD;
     (void)CLK_Xtal32Init(&stcXtal32Init);
 #endif
-
 }
 
 /** Peripheral Clock Configuration
 */
 void PeripheralClock_Config(void)
 {
-#if defined(HC32F4A0)
 #if defined(BSP_USING_CAN1)
     CLK_SetCANClockSrc(CLK_CAN1, CLK_CANCLK_SYSCLK_DIV6);
 #endif
@@ -147,10 +143,9 @@ void PeripheralClock_Config(void)
     /* Wait stable here, since the current DDL API does not include this */
     CLK_Delay(CLK_SYSCLK_SW_STB);
 #endif
-#endif
 }
 
-/** Peripheral Registers Unclock
+/** Peripheral Registers Unlock
 */
 void PeripheralRegister_Unlock(void)
 {
