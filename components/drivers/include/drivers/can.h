@@ -280,7 +280,8 @@ struct rt_can_msg
     rt_int32_t hdr : 8;
 #ifdef RT_CAN_USING_CANFD
     rt_uint32_t fd_frame : 1;
-    rt_uint32_t reserved : 7;
+    rt_uint32_t brs : 1;
+    rt_uint32_t reserved : 6;
 #else
     rt_uint32_t reserved : 8;
 #endif
