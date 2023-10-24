@@ -335,7 +335,7 @@ menu "On-chip Peripheral Drivers"
         bool "Enable Watchdog Timer"
         select RT_USING_WDT
         default n
-        
+
     menuconfig BSP_USING_RTC
         bool "Enable RTC"
         select RT_USING_RTC
@@ -370,6 +370,19 @@ menu "On-chip Peripheral Drivers"
         bool "Enable PM"
         default n
         select RT_USING_PM
+        if BSP_USING_PM
+            choice
+                prompt "Select WKTM Clock Src"
+                default BSP_USING_WKTM_LRC
+
+                config BSP_USING_WKTM_XTAL32
+                    bool "Using Xtal32"
+                config BSP_USING_WKTM_LRC
+                    bool "Using LRC"
+                config BSP_USING_WKTM_64HZ
+                    bool "Using 64HZ(Note:Must Enable RTC)"
+            endchoice
+        endif
 
     menuconfig BSP_USING_HWCRYPTO
         bool "Using Hardware Crypto drivers"
