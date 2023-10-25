@@ -12,7 +12,7 @@
 
 #if defined(BSP_USING_HWCRYPTO)
 
-#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv_crypto"
 #include <drv_log.h>
 
@@ -24,80 +24,82 @@ struct hc32_hwcrypto_device
 
 #if defined(BSP_USING_CRC)
 
-#define DEFAULT_CRC16_X25_POLY      (0x1021)       /*!<  X^16 + X^12 + X^5 + 1 */
+#define DEFAULT_CRC16_CCITT_POLY    (0x1021)       /*!<  X^16 + X^12 + X^5 + 1 */
 #define DEFAULT_CRC32_POLY          (0x04C11DB7)   /*!<  X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 + X^10 +X^8 + X^7 + X^5 + X^4 + X^2+ X + 1 */
-
-static stc_crc_init_t stcCrcInit;
-static stc_crc_init_t stcCrcInit_bk;
 
 static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, rt_size_t length)
 {
     rt_uint32_t result = 0;
+    stc_crc_init_t stcCrcInit;
+    static struct hwcrypto_crc_cfg crc_cfgbk = {0};
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
 
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
-    if (ctx ->crc_cfg.poly != DEFAULT_CRC16_X25_POLY && ctx ->crc_cfg.poly != DEFAULT_CRC32_POLY)
-    {
+    if (ctx->crc_cfg.poly != DEFAULT_CRC16_CCITT_POLY && ctx->crc_cfg.poly != DEFAULT_CRC32_POLY) {
         LOG_E("CRC polynomial only support 0x1021/0x04C11DB7U.");
         goto _exit;
     }
 
+    /* if crc_cfg change we need init crc again */
+    if (rt_memcmp(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg))) {
 #if defined(HC32F460)
-    switch (ctx ->crc_cfg.flags)
-    {
-    case 0:
-        stcCrcInit.u32RefIn = CRC_REFIN_DISABLE;
-        stcCrcInit.u32RefOut = CRC_REFOUT_DISABLE;
-        break;
-    case CRC_FLAG_REFIN:
-        stcCrcInit.u32RefIn = CRC_REFIN_ENABLE;
-        break;
-    case CRC_FLAG_REFOUT:
-        stcCrcInit.u32RefOut = CRC_REFOUT_ENABLE;
-        break;
-    case CRC_FLAG_REFIN | CRC_FLAG_REFOUT:
-        stcCrcInit.u32RefIn = CRC_REFIN_ENABLE;
-        stcCrcInit.u32RefOut = CRC_REFOUT_ENABLE;
-        break;
-    default :
-        LOG_E("crc flag parameter error.");
-        goto _exit;
-    }
+        switch (ctx->crc_cfg.flags)
+        {
+        case 0:
+            stcCrcInit.u32RefIn = CRC_REFIN_DISABLE;
+            stcCrcInit.u32RefOut = CRC_REFOUT_DISABLE;
+            break;
+        case CRC_FLAG_REFIN:
+            stcCrcInit.u32RefIn = CRC_REFIN_ENABLE;
+            stcCrcInit.u32RefOut = CRC_REFOUT_DISABLE;
+            break;
+        case CRC_FLAG_REFOUT:
+            stcCrcInit.u32RefIn = CRC_REFIN_DISABLE;
+            stcCrcInit.u32RefOut = CRC_REFOUT_ENABLE;
+            break;
+        case CRC_FLAG_REFIN | CRC_FLAG_REFOUT:
+            stcCrcInit.u32RefIn = CRC_REFIN_ENABLE;
+            stcCrcInit.u32RefOut = CRC_REFOUT_ENABLE;
+            break;
+        default :
+            LOG_E("crc flag parameter error.");
+            goto _exit;
+        }
+
+        if (ctx->crc_cfg.xorout) {
+            stcCrcInit.u32XorOut = CRC_XOROUT_ENABLE;
+        } else {
+            stcCrcInit.u32XorOut = CRC_XOROUT_DISABLE;
+        }
 #endif
 
-    switch (ctx ->crc_cfg.width)
-    {
-    case 16:
-        stcCrcInit.u32Protocol = CRC_CRC16;
-        break;
-    case 32:
-        stcCrcInit.u32Protocol = CRC_CRC32;
-        break;
-    default :
-        LOG_E("crc width only support 16/32.");
-        goto _exit;
-    }
-
-    stcCrcInit.u32InitValue = ctx ->crc_cfg.last_val;
-
-    if (rt_memcmp(&stcCrcInit_bk, &stcCrcInit, sizeof(stc_crc_init_t)))
-    {
-        if (CRC_Init(&stcCrcInit) != LL_OK)
+        switch (ctx->crc_cfg.width)
         {
+        case 16U:
+            stcCrcInit.u32Protocol = CRC_CRC16;
+            break;
+        case 32U:
+            stcCrcInit.u32Protocol = CRC_CRC32;
+            break;
+        default :
+            LOG_E("crc width only support 16/32.");
+            goto _exit;
+        }
+
+        stcCrcInit.u32InitValue = ctx->crc_cfg.last_val;
+
+        if (CRC_Init(&stcCrcInit) != LL_OK) {
             LOG_E("crc init error.");
             goto _exit;
         }
         LOG_D("CRC_Init.");
-        rt_memcpy(&stcCrcInit_bk, &stcCrcInit, sizeof(stc_crc_init_t));
+        rt_memcpy(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg));
     }
-    if (16U  == ctx->crc_cfg.width)
-    {
-        result = CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
-    }
-    else   /* CRC32 */
-    {
-        result = CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
+    if (16U  == ctx->crc_cfg.width) {
+        result = CRC_CRC16_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
+    } else {    /* CRC32 */
+        result = CRC_CRC32_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
     }
 
 _exit:
@@ -117,8 +119,7 @@ static rt_uint32_t _rng_rand(struct hwcrypto_rng *ctx)
 {
     rt_uint32_t gen_random = 0;
 
-    if (TRNG_GenerateRandom(&gen_random, 1U) != LL_OK)
-    {
+    if (TRNG_GenerateRandom(&gen_random, 1U) != LL_OK) {
         return 0;
     }
 
@@ -133,18 +134,10 @@ static const struct hwcrypto_rng_ops rng_ops =
 
 #if defined(BSP_USING_HASH)
 
-#define HASH_MSG_DIGEST_SIZE        (32U)
+#define HASH_SHA256_MSG_DIGEST_SIZE        (32U)
 
 static const rt_uint8_t *hash_in = RT_NULL;
 static rt_size_t hash_length = 0;
-
-static void HASH_Config(void)
-{
-    /* Enable HASH. */
-    FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_HASH, ENABLE);
-    /* Configures HASH. SHA256 operating mode */
-    (void)HASH_SetMode(HASH_MD_SHA256);
-}
 
 static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt_size_t length)
 {
@@ -178,23 +171,20 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
-    if (hash_in == RT_NULL || hash_length == 0)
-    {
+    if (hash_in == RT_NULL || hash_length == 0) {
         LOG_E("no data input.");
         result = RT_ERROR;
         goto _exit;
     }
 
-    /* Get the computed digest value */
+    /* Get the hash Subtype */
     switch (ctx->parent.type)
     {
     case HWCRYPTO_TYPE_SHA256:
-        if (length == HASH_MSG_DIGEST_SIZE)
-        {
+        /* SHA256 = 32*8 Bits */
+        if (length == HASH_SHA256_MSG_DIGEST_SIZE) {
             result = HASH_Calculate(hash_in, hash_length, out);
-        }
-        else
-        {
+        } else {
             LOG_E("The out size must be 32 bytes");
         }
         break;
@@ -220,8 +210,7 @@ static const struct hwcrypto_hash_ops hash_ops =
 #endif /* BSP_USING_HASH */
 
 #if defined(BSP_USING_AES)
-static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
-                            struct hwcrypto_symmetric_info *info)
+static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symmetric_info *info)
 {
     rt_uint32_t result = RT_EOK;
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
@@ -242,40 +231,33 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx,
     }
 
 #if defined (HC32F460)
-    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8))
-    {
+    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U)) {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
         result = RT_ERROR;
         goto _exit;
     }
 #elif defined (HC32F4A0)
-    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8) && ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8))
-    {
+    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8U) && \
+        ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8U)) {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
         result = RT_ERROR;
         goto _exit;
     }
 #endif
 
-    if ((info->length % 16U) != 0)
-    {
+    if ((info->length % 16U) != 0U) {
         LOG_E("aes supports only an integer multiple of 16 in length");
         result = RT_ERROR;
         goto _exit;
     }
 
-    if (info->mode == HWCRYPTO_MODE_ENCRYPT)
-    {
+    if (info->mode == HWCRYPTO_MODE_ENCRYPT) {
         /* AES encryption. */
-        result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8), info->out);
-    }
-    else if (info->mode == HWCRYPTO_MODE_DECRYPT)
-    {
+        result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
+    } else if (info->mode == HWCRYPTO_MODE_DECRYPT) {
         /* AES decryption */
-        result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8), info->out);
-    }
-    else
-    {
+        result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
+    } else {
         rt_kprintf("error cryp mode : %02x!\n", info->mode);
         result = RT_ERROR;
         goto _exit;
@@ -318,23 +300,7 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
     {
         /* Enable CRC module clock. */
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_CRC, ENABLE);
-        /* Initialize CRC16 */
-        CRC_StructInit(&stcCrcInit);
-#if defined(BSP_USING_CRC32)
-        stcCrcInit.u32Protocol = CRC_CRC32;
-        stcCrcInit.u32InitValue = 0xFFFFFFFFU;
-#else
-        stcCrcInit.u32Protocol = CRC_CRC16;
-        stcCrcInit.u32InitValue = 0xFFFFU;
-#endif
-        if (CRC_Init(&stcCrcInit) != LL_OK)
-        {
-            LOG_E("crc init error.");
-            res = -RT_ERROR;
-            break;
-        }
-        rt_memcpy(&stcCrcInit_bk, &stcCrcInit, sizeof(stc_crc_init_t));
-
+        /* do not Initialize CRC because crc_update will do it */
         ((struct hwcrypto_crc *)ctx)->ops = &crc_ops;
 
         break;
@@ -346,14 +312,11 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_SHA1:
     case HWCRYPTO_TYPE_SHA2:
     {
-        if (ctx->type == HWCRYPTO_TYPE_SHA256)
-        {
-            /* Configures HASH */
-            HASH_Config();
+        if (ctx->type == HWCRYPTO_TYPE_SHA256) {
+            /* Enable HASH. */
+            FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_HASH, ENABLE);
             ((struct hwcrypto_hash *)ctx)->ops = &hash_ops;
-        }
-        else
-        {
+        } else {
             LOG_E("not support hash type.");
             res = -RT_ERROR;
         }
@@ -390,6 +353,7 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
     {
 #if defined(BSP_USING_RNG)
     case HWCRYPTO_TYPE_RNG:
+        TRNG_DeInit();
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_TRNG, DISABLE);
         break;
 #endif /* BSP_USING_RNG */
@@ -405,6 +369,7 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_MD5:
     case HWCRYPTO_TYPE_SHA1:
     case HWCRYPTO_TYPE_SHA2:
+        HASH_DeInit();
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_HASH, DISABLE);
         break;
 #endif /* BSP_USING_HASH */
@@ -415,6 +380,7 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_3DES:
     case HWCRYPTO_TYPE_RC4:
     case HWCRYPTO_TYPE_GCM:
+        AES_DeInit();
         FCG_Fcg0PeriphClockCmd(PWC_FCG0_AES, DISABLE);
         break;
 #endif /* BSP_USING_AES */
@@ -517,14 +483,16 @@ int hc32_hw_crypto_device_init(void)
     EFM_GetUID(&pstcUID);
     cpuid[0] = pstcUID.u32UniqueID0;
     cpuid[1] = pstcUID.u32UniqueID1;
+    cpuid[2] = pstcUID.u32UniqueID2;
+    /* we only used 2 words to as the UQID */
     rt_memcpy(&_crypto_dev.dev.id, cpuid, 8);
+    LOG_D("UQID = %x%x", cpuid[0], cpuid[1]);
 #endif /* BSP_USING_UQID */
 
     _crypto_dev.dev.ops = &_ops;
     _crypto_dev.dev.user_data = &_crypto_dev;
 
-    if (rt_hwcrypto_register(&_crypto_dev.dev, RT_HWCRYPTO_DEFAULT_NAME) != RT_EOK)
-    {
+    if (rt_hwcrypto_register(&_crypto_dev.dev, RT_HWCRYPTO_DEFAULT_NAME) != RT_EOK) {
         return -RT_ERROR;
     }
 

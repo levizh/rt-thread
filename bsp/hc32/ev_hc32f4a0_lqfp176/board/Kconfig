@@ -648,45 +648,42 @@ menu "On-chip Peripheral Drivers"
 
             config BSP_USING_RNG
             bool "Using Hardware RNG"
-            select RT_HWCRYPTO_USING_RNG
             default n
+            select RT_HWCRYPTO_USING_RNG
 
             config BSP_USING_CRC
             bool "Using Hardware CRC"
-            select RT_HWCRYPTO_USING_CRC
             default n
-            if BSP_USING_CRC
-                config BSP_USING_CRC16_X25
-                    bool "Using Hardware CRC16 0x1021 polynomial"
-                    select RT_HWCRYPTO_USING_CRC_1021
-                    default n
-
-                config BSP_USING_CRC32
-                    bool "Using Hardware CRC32 0x04C11DB7 polynomial"
-                    select RT_HWCRYPTO_USING_CRC_04C11DB7
-                    default y
-            endif
+            select RT_HWCRYPTO_USING_CRC
 
             config BSP_USING_AES
             bool "Using Hardware AES"
-            select RT_HWCRYPTO_USING_AES
             default n
+            select RT_HWCRYPTO_USING_AES
             if BSP_USING_AES
-                config BSP_USING_AES_ECB
-                    bool "Using Hardware AES ECB mode"
-                    select RT_HWCRYPTO_USING_AES_ECB
-                    default y
+                choice
+                    prompt "Select AES Mode"
+                    default BSP_USING_AES_ECB
+
+                    config BSP_USING_AES_ECB
+                        bool "ECB mode"
+                        select RT_HWCRYPTO_USING_AES_ECB
+                endchoice
             endif
 
             config BSP_USING_HASH
             bool "Using Hardware Hash"
-            select RT_HWCRYPTO_USING_SHA2
             default n
+            select RT_HWCRYPTO_USING_SHA2
             if BSP_USING_HASH
-                config BSP_USING_SHA2_256
-                    bool "Using Hardware SHA2_256 mode"
-                    select RT_HWCRYPTO_USING_SHA2_256
-                    default y
+                choice
+                    prompt "Select Hash Mode"
+                    default BSP_USING_SHA2_256
+
+                    config BSP_USING_SHA2_256
+                        bool "SHA2_256 Mode"
+                        select RT_HWCRYPTO_USING_SHA2_256
+                endchoice
             endif
 
         endif
