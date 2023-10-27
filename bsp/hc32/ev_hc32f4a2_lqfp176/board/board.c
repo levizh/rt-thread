@@ -10,15 +10,12 @@
  */
 
 #include "board.h"
+#include "board_config.h"
 
 /* unlock/lock peripheral */
 #define EXAMPLE_PERIPH_WE               (LL_PERIPH_GPIO | LL_PERIPH_EFM | LL_PERIPH_FCG | \
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
-
-#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
-extern rt_err_t rt_hw_xtal32_board_init(void);
-#endif
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
 /**
@@ -64,6 +61,7 @@ void SystemClock_Config(void)
                      CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 | \
                      CLK_HCLK_DIV1));
 
+    GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
     (void)CLK_XtalStructInit(&stcXtalInit);
     /* Config Xtal and enable Xtal */
     stcXtalInit.u8Mode   = CLK_XTAL_MD_OSC;
@@ -116,7 +114,7 @@ void SystemClock_Config(void)
     PWC_VBAT_Reset();
 #if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     /* Xtal32 config */
-    rt_hw_xtal32_board_init();
+    GPIO_AnalogCmd(XTAL32_PORT, XTAL32_IN_PIN | XTAL32_OUT_PIN, ENABLE);
     (void)CLK_Xtal32StructInit(&stcXtal32Init);
     stcXtal32Init.u8State  = CLK_XTAL32_ON;
     stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_HIGH;
