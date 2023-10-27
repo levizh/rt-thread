@@ -17,10 +17,6 @@
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
-#if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
-    extern rt_err_t rt_hw_xtal32_board_init(void);
-#endif
-
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
@@ -73,7 +69,7 @@ void SystemClock_Config(void)
 
 #if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     /* Xtal32 config */
-    rt_hw_xtal32_board_init();
+    GPIO_AnalogCmd(XTAL32_PORT, XTAL32_IN_PIN | XTAL32_OUT_PIN, ENABLE);
     (void)CLK_Xtal32StructInit(&stcXtal32Init);
     stcXtal32Init.u8State  = CLK_XTAL32_ON;
     stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_HIGH;

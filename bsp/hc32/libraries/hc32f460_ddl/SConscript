@@ -86,6 +86,9 @@ if GetDepend(['RT_HWCRYPTO_USING_SHA2']):
 if GetDepend(['BSP_USING_USBD']) or GetDepend(['BSP_USING_USBH']):
     src += ['drivers/hc32_ll_driver/src/hc32_ll_usb.c']
 
+if GetDepend(['BSP_RTC_USING_XTAL32']) or GetDepend(['RT_USING_PM']):
+    src += ['drivers/hc32_ll_driver/src/hc32_ll_fcm.c']
+
 path = [
     cwd + '/drivers/cmsis/Device/HDSC/hc32f4xx/Include',
     cwd + '/drivers/cmsis/Include',
