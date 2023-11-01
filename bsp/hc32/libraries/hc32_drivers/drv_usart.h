@@ -41,8 +41,10 @@ struct hc32_uart_rxto
     rt_uint32_t                 channel;
     rt_uint32_t                 clock;
     rt_size_t                   timeout_bits;
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     struct hc32_irq_config      irq_config;
     func_ptr_t                  irq_callback;
+#endif
 };
 
 /* HC32 config uart class */
@@ -60,6 +62,9 @@ struct hc32_uart_config
     en_int_src_t                rxerr_int_src;
     en_int_src_t                tx_int_src;
     en_int_src_t                rx_int_src;
+#ifdef RT_SERIAL_USING_DMA
+    en_int_src_t                rxto_int_src;
+#endif
 #endif
 
 #ifdef RT_SERIAL_USING_DMA
@@ -71,7 +76,7 @@ struct hc32_uart_config
 #endif
 };
 
-/* HC32 uart dirver class */
+/* HC32 uart driver class */
 struct hc32_uart
 {
     struct hc32_uart_config *config;

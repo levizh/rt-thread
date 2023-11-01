@@ -143,6 +143,7 @@ extern "C" {
             .irq_num    = UART2_RX_DMA_IRQn,                    \
             .irq_prio   = UART2_RX_DMA_INT_PRIO,                \
             .int_src    = UART2_RX_DMA_INT_SRC,                 \
+            .int_src_msk= UART2_RX_DMA_INT_SRC_MSK,             \
         },                                                      \
     }
 #endif /* UART2_DMA_RX_CONFIG */
@@ -154,12 +155,6 @@ extern "C" {
         .channel       = TMR0_CH_B,                             \
         .clock         = FCG2_PERIPH_TMR0_1,                    \
         .timeout_bits  = 20UL,                                  \
-        .irq_config    =                                        \
-        {                                                       \
-            .irq_num   = BSP_UART2_RXTO_IRQ_NUM,                \
-            .irq_prio  = BSP_UART2_RXTO_IRQ_PRIO,               \
-            .int_src   = INT_SRC_USART2_RTO,                    \
-        },                                                      \
     }
 #endif /* UART2_RXTO_CONFIG */
 #endif /* BSP_UART2_RX_USING_DMA */
@@ -187,7 +182,7 @@ extern "C" {
         .trigger_event  = EVT_SRC_USART2_TI,                    \
         .irq_config     =                                       \
         {                                                       \
-            .irq_num     = UART2_TX_DMA_IRQn,                   \
+            .irq_num    = UART2_TX_DMA_IRQn,                    \
             .irq_prio   = UART2_TX_DMA_INT_PRIO,                \
             .int_src    = UART2_TX_DMA_INT_SRC,                 \
         },                                                      \

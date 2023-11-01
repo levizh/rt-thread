@@ -154,6 +154,10 @@ extern "C" {
 #define UART2_RX_DMA_IRQn               BSP_DMA2_CH2_IRQ_NUM
 #define UART2_RX_DMA_INT_PRIO           BSP_DMA2_CH2_IRQ_PRIO
 #define UART2_RX_DMA_INT_SRC            INT_SRC_DMA2_TC2
+#if defined (HC32F448)
+#define UART2_RX_DMA_INT_SRC_MSK        INT_SRC_DMA2_BTC2
+#define UART2_RX_DMA_Handler            DMA2_TC2_BTC2_Handler
+#endif
 #endif
 
 #if defined(BSP_UART4_RX_USING_DMA) && !defined(UART4_RX_DMA_INSTANCE)

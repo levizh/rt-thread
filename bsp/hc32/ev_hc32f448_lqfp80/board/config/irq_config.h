@@ -113,7 +113,7 @@ extern "C" {
 #define BSP_UART2_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif
 #if defined(BSP_UART2_TX_USING_DMA)
-#define BSP_UART2_TX_CPLT_IRQ_NUM       USART2_IRQn
+#define BSP_UART2_TX_CPLT_IRQ_NUM       USART2_TCI_IRQn
 #define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
 #endif /* BSP_USING_UART2 */
