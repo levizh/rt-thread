@@ -580,7 +580,16 @@ menu "On-chip Peripheral Drivers"
                 bool "Use Timer0_2 CHB As The Hw Timer"
                 default n
         endif
-
+    menuconfig BSP_USING_SENSOR
+        bool "Enable SENSOR"
+        default n
+        select RT_USING_HWTIMER
+        if BSP_USING_SENSOR
+            config BSP_USING_TIM0_2B
+                bool "Use KEYSCAN"
+                select RT_USING_KEYSCAN
+                default n
+        endif
 endmenu
 
 menu "Board extended module Drivers"
