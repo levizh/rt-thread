@@ -48,7 +48,7 @@
 #if defined (HC32F460)
     #define FCG_USART_CLK               FCG_Fcg1PeriphClockCmd
 
-#elif defined(HC32F4A0) || defined(HC32F4A2)
+#elif defined (HC32F4A0)
     #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
 
 #elif defined (HC32F448)
@@ -160,7 +160,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     uart_init.u32OverSampleBit = USART_OVER_SAMPLE_8BIT;
     uart_init.u32Baudrate = cfg->baud_rate;
     uart_init.u32ClockSrc = USART_CLK_SRC_INTERNCLK;
-#if defined(HC32F4A0) || defined(HC32F4A2)
+#if defined (HC32F4A0)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
             (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
 #elif defined (HC32F460)

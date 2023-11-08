@@ -507,10 +507,12 @@ static void hc32_phy_monitor_thread(void *parameter)
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);
+
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
     MODIFY_REG16(u16RegVal, PHY_LED_SELECT, PHY_LED_SELECT_10);
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_P7_IWLFR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
+
     u16RegVal = PHY_PAGE_ADDR_0;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);

@@ -74,9 +74,6 @@ typedef struct {
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define I2C_SRC_CLK                   (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK3S) >> CMU_SCFGR_PCLK3S_POS))
-#define I2C_WIDTH_MAX_IMME            (68UL)
-
 
 /**
  * @defgroup I2C_Global_Macros I2C Global Macros
