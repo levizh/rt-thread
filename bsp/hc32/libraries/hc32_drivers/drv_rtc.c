@@ -21,11 +21,7 @@
 #define LOG_TAG             "drv.rtc"
 #include <drv_log.h>
 
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-=======
 #if defined(HC32F4A0)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 /* BACKUP REG: 96~127 for RTC used */
 #define RTC_BACKUP_DATA_SIZE        (32U)
 #define RTC_BACKUP_REG_OFFSET       (128U - RTC_BACKUP_DATA_SIZE)
@@ -63,11 +59,7 @@ static struct stc_hc32_alarm_irq hc32_alarm_irq =
 };
 #endif
 
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-=======
 #if defined(HC32F4A0)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 static void _bakup_reg_write(void)
 {
     uint8_t u8Num;
@@ -98,8 +90,6 @@ static int32_t _bakup_reg_check(void)
 
     return i32Ret;
 }
-<<<<<<< HEAD
-=======
 
 static int32_t _hc32_rtc_rw_check(void)
 {
@@ -117,7 +107,6 @@ static int32_t _hc32_rtc_rw_check(void)
 
     return i32Ret;
 }
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 static rt_err_t hc32_rtc_get_timeval(struct timeval *tv)
@@ -186,13 +175,8 @@ static rt_err_t hc32_rtc_init(void)
 {
     stc_rtc_init_t stcRtcInit;
 
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-    if (LL_OK != _bakup_reg_check())
-=======
 #if defined(HC32F4A0)
     if ((LL_OK != _bakup_reg_check()) || (LL_OK != _hc32_rtc_rw_check()))
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #elif  defined(HC32F460)
     if (DISABLE == RTC_GetCounterState())
 #endif
@@ -219,19 +203,6 @@ static rt_err_t hc32_rtc_init(void)
             stcRtcInit.u8HourFormat = RTC_HOUR_FMT_24H;
             (void)RTC_Init(&stcRtcInit);
 
-<<<<<<< HEAD
-            /* Startup RTC count */
-            RTC_Cmd(ENABLE);
-
-#if defined(HC32F4A0) || defined(HC32F4A2)
-            /* Write sequence flag to backup register  */
-            _bakup_reg_write();
-#endif
-        }
-    }
-
-    LOG_D("rtc init success");
-=======
             /* Clear all status */
             RTC_ClearStatus(RTC_FLAG_CLR_ALL);
             /* Startup RTC count */
@@ -249,7 +220,6 @@ static rt_err_t hc32_rtc_init(void)
         LOG_D("rtc does not need to init");
     }
 
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     return RT_EOK;
 }
 

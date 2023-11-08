@@ -221,11 +221,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     {
         uart_init.u32FirstBit = USART_FIRST_BIT_MSB;
     }
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-=======
 #if defined (HC32F4A0) || defined (HC32F448)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     switch (cfg->flowcontrol)
     {
     case RT_SERIAL_FLOWCONTROL_NONE:
@@ -614,13 +610,10 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         uart->config->llp_desc.LLPx  = (uint32_t)&uart->config->llp_desc;
         uart->config->llp_desc.CHCTLx = (dma_init.u32SrcAddrInc | dma_init.u32DestAddrInc | dma_init.u32DataWidth | \
                                          llp_init.u32State      | llp_init.u32Mode        | dma_init.u32IntEn);
-<<<<<<< HEAD
-=======
 
 #if defined (HC32F448)
         INTC_IntSrcCmd(uart_dma->irq_config.int_src_msk, DISABLE);
 #endif
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 
         /* Enable DMA interrupt */
         NVIC_EnableIRQ(uart->config->dma_rx->irq_config.irq_num);

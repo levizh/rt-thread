@@ -46,17 +46,6 @@ struct rthw_sdio
 #include <drv_log.h>
 
 #ifndef SDIO_BUFF_SIZE
-<<<<<<< HEAD
-#define SDIO_BUFF_SIZE          (4096)
-#endif
-
-#ifndef SDIO_ALIGN_LEN
-#define SDIO_ALIGN_LEN          (4)
-#endif
-
-#ifndef SDIO_MAX_FREQ
-#define SDIO_MAX_FREQ           (50*1000*1000)
-=======
     #define SDIO_BUFF_SIZE          (4096)
 #endif
 
@@ -66,7 +55,6 @@ struct rthw_sdio
 
 #ifndef SDIO_MAX_FREQ
     #define SDIO_MAX_FREQ           (50*1000*1000)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 #define RTHW_SDIO_LOCK(_sdio)   rt_mutex_take(&(_sdio)->mutex, RT_WAITING_FOREVER)
@@ -81,19 +69,11 @@ extern rt_err_t rt_hw_board_sdio_init(CM_SDIOC_TypeDef *SDIOCx);
  * Local function prototypes ('static')
  ******************************************************************************/
 #ifdef BSP_USING_SDIO1
-<<<<<<< HEAD
-static void _sdio1_handler(void);
-#endif
-
-#ifdef BSP_USING_SDIO2
-static void _sdio2_handler(void);
-=======
     static void _sdio1_handler(void);
 #endif
 
 #ifdef BSP_USING_SDIO2
     static void _sdio2_handler(void);
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 /*******************************************************************************
@@ -130,15 +110,6 @@ static const func_ptr_t _sdio_irq_handler[] =
 };
 
 #ifdef BSP_USING_SDIO1
-<<<<<<< HEAD
-ALIGN(SDIO_ALIGN_LEN)
-static rt_uint8_t _sdio1_cache_buf[SDIO_BUFF_SIZE];
-#endif
-
-#ifdef BSP_USING_SDIO2
-ALIGN(SDIO_ALIGN_LEN)
-static rt_uint8_t _sdio2_cache_buf[SDIO_BUFF_SIZE];
-=======
     rt_align(SDIO_ALIGN_LEN)
     static rt_uint8_t _sdio1_cache_buf[SDIO_BUFF_SIZE];
 #endif
@@ -146,7 +117,6 @@ static rt_uint8_t _sdio2_cache_buf[SDIO_BUFF_SIZE];
 #ifdef BSP_USING_SDIO2
     rt_align(SDIO_ALIGN_LEN)
     static rt_uint8_t _sdio2_cache_buf[SDIO_BUFF_SIZE];
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 static rt_uint8_t *const _sdio_cache_buf[] =
@@ -176,33 +146,6 @@ static rt_uint32_t _sdio_get_cmd_resptype(rt_uint32_t rt_resptype)
 
     switch (rt_resptype)
     {
-<<<<<<< HEAD
-        case RESP_NONE:
-            sdioc_resptype = SDIOC_RESP_TYPE_NO;
-            break;
-        case RESP_R1:
-            sdioc_resptype = SDIOC_RESP_TYPE_R1_R5_R6_R7;
-            break;
-        case RESP_R2:
-            sdioc_resptype = SDIOC_RESP_TYPE_R2;
-            break;
-        case RESP_R3:
-        case RESP_R4:
-            sdioc_resptype = SDIOC_RESP_TYPE_R3_R4;
-            break;
-        case RESP_R5:
-        case RESP_R6:
-        case RESP_R7:
-            sdioc_resptype = SDIOC_RESP_TYPE_R1_R5_R6_R7;
-            break;
-        case RESP_R1B:
-            sdioc_resptype = SDIOC_RESP_TYPE_R1B_R5B;
-            break;
-        default:
-            sdioc_resptype = SDIOC_RESP_TYPE_NO;
-            LOG_E("unknown response type: %d", rt_resptype);
-            break;
-=======
     case RESP_NONE:
         sdioc_resptype = SDIOC_RESP_TYPE_NO;
         break;
@@ -228,7 +171,6 @@ static rt_uint32_t _sdio_get_cmd_resptype(rt_uint32_t rt_resptype)
         sdioc_resptype = SDIOC_RESP_TYPE_NO;
         LOG_E("unknown response type: %d", rt_resptype);
         break;
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     }
 
     return sdioc_resptype;
@@ -515,12 +457,8 @@ static void _sdio_request(struct rt_mmcsd_host *host, struct rt_mmcsd_req *req)
                 }
                 pkg.buf = sdio->cache_buf;
             }
-<<<<<<< HEAD
-            else {
-=======
             else
             {
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
                 pkg.buf = data->buf;
             }
         }
@@ -606,20 +544,6 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
 
     switch (io_cfg->bus_width)
     {
-<<<<<<< HEAD
-        case MMCSD_BUS_WIDTH_1:
-            SDIOC_SetBusWidth(instance, SDIOC_BUS_WIDTH_1BIT);
-            break;
-        case MMCSD_BUS_WIDTH_4:
-            SDIOC_SetBusWidth(instance, SDIOC_BUS_WIDTH_4BIT);
-            break;
-        case MMCSD_BUS_WIDTH_8:
-            SDIOC_SetBusWidth(instance, SDIOC_BUS_WIDTH_8BIT);
-            break;
-        default:
-            LOG_E("unknown bus width: %d", io_cfg->bus_width);
-            break;
-=======
     case MMCSD_BUS_WIDTH_1:
         SDIOC_SetBusWidth(instance, SDIOC_BUS_WIDTH_1BIT);
         break;
@@ -632,23 +556,10 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
     default:
         LOG_E("unknown bus width: %d", io_cfg->bus_width);
         break;
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     }
 
     switch (io_cfg->power_mode)
     {
-<<<<<<< HEAD
-        case MMCSD_POWER_OFF:
-            SDIOC_PowerCmd(instance, DISABLE);
-            break;
-        case MMCSD_POWER_UP:
-        case MMCSD_POWER_ON:
-            SDIOC_PowerCmd(instance, ENABLE);
-            break;
-        default:
-            LOG_W("unknown power_mode %d", io_cfg->power_mode);
-            break;
-=======
     case MMCSD_POWER_OFF:
         SDIOC_PowerCmd(instance, DISABLE);
         break;
@@ -659,7 +570,6 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
     default:
         LOG_W("unknown power_mode %d", io_cfg->power_mode);
         break;
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     }
 
     instance->CLKCON = 0;
@@ -751,11 +661,7 @@ static rt_uint32_t _sdio_clock_get(CM_SDIOC_TypeDef *SDIOCx)
     rt_uint32_t clk;
 
     (void)SDIOCx;
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-=======
 #if defined (HC32F4A0)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     clk = CLK_GetBusClockFreq(CLK_BUS_PCLK1);
 #elif defined (HC32F460)
     clk = CLK_GetBusClockFreq(CLK_BUS_EXCLK);
@@ -968,23 +874,14 @@ static void _sdio_clock_enable(struct hc32_sdio_config *config)
  * @retval rt_mmcsd_host
  */
 static struct rt_mmcsd_host *_sdio_host_create(struct hc32_sdio_config *config,
-<<<<<<< HEAD
-                                               uint8_t *cache_buf,
-                                               const struct hc32_sdio_des *sdio_des)
-=======
         uint8_t *cache_buf,
         const struct hc32_sdio_des *sdio_des)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 {
     struct rt_mmcsd_host *host;
     struct rthw_sdio *sdio = RT_NULL;
 
     if ((config == RT_NULL) || (cache_buf == RT_NULL) || \
-<<<<<<< HEAD
-        (sdio_des == RT_NULL) || (sdio_des->txconfig == RT_NULL) || (sdio_des->rxconfig == RT_NULL))
-=======
             (sdio_des == RT_NULL) || (sdio_des->txconfig == RT_NULL) || (sdio_des->rxconfig == RT_NULL))
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     {
         LOG_E("function arguments error: %s %s %s %s %s",
               (config == RT_NULL ? "config is NULL" : ""),

@@ -50,11 +50,7 @@ struct pm_sleep_mode_shutdown_config
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
 #define PM_CHECK_EFM()                  (EFM_GetStatus(EFM_FLAG_RDY) == RESET)
-<<<<<<< HEAD
-#if defined(HC32F4A0) || defined(HC32F4A2)
-=======
 #if defined(HC32F4A0)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #define PM_CHECK_XTAL()                 (CM_CMU->XTALSTDCR & CLK_XTALSTD_ON != CLK_XTALSTD_ON)
 #define PM_CHECK_DMA()                                              \
 (                                       (DMA_GetTransStatus(CM_DMA1, DMA_STAT_TRANS_DMA) == RESET) && \
@@ -84,15 +80,10 @@ struct pm_sleep_mode_shutdown_config
                                         (mode ==  PM_SLEEP_MODE_DEEP && PM_SLEEP_DEEP_CHECK())|| \
                                         (mode !=  PM_SLEEP_MODE_SHUTDOWN)|| \
                                         (mode !=  PM_SLEEP_MODE_DEEP))
-<<<<<<< HEAD
-#define PM_SLEEP_WAIT_TYPE_WFI          (PWC_STOP_WFI)
-#define PM_SLEEP_WAIT_TYPE_WFE          (PWC_STOP_WFE)
-=======
 
 #define PM_SLEEP_WAIT_TYPE_WFI          (PWC_STOP_WFI)
 #define PM_SLEEP_WAIT_TYPE_WFE_INT      (PWC_STOP_WFE_INT)
 #define PM_SLEEP_WAIT_TYPE_WFE_EVT      (PWC_STOP_WFE_EVT)
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 
 /*******************************************************************************
  * Global variable definitions ('extern')

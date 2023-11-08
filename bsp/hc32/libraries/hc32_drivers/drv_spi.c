@@ -37,13 +37,10 @@
 /* SPI max division */
 #define SPI_MAX_DIV_VAL                 (0x7U)  /* Div256 */
 
-<<<<<<< HEAD
-=======
 #ifdef BSP_SPI_USING_DMA
     #define DMA_CH_REG(reg_base, ch)    (*(__IO uint32_t *)((uint32_t)(&(reg_base)) + ((ch) * 0x40UL)))
 #endif
 
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
@@ -121,11 +118,7 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
     SPI_StructInit(&stcSpiInit);
 
     if ((cfg->mode & RT_SPI_SLAVE) &&
-<<<<<<< HEAD
-        ((RT_SPI_MODE_0 == (cfg->mode & RT_SPI_MODE_3)) || (RT_SPI_MODE_2 == (cfg->mode & RT_SPI_MODE_3))))
-=======
             ((RT_SPI_MODE_0 == (cfg->mode & RT_SPI_MODE_3)) || (RT_SPI_MODE_2 == (cfg->mode & RT_SPI_MODE_3))))
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     {
         return -RT_EINVAL;
     }
@@ -332,8 +325,6 @@ static uint32_t hc32_spi_get_trans_mode(CM_SPI_TypeDef *SPIx)
 {
     return READ_REG32_BIT(SPIx->CR1, SPI_CR1_TXMDS);
 }
-<<<<<<< HEAD
-=======
 
 /**
  * @brief  Config DMA source address increment mode.
@@ -364,7 +355,6 @@ void DMA_SetDestAddrIncMode(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32IncM
     CHCTLx = &DMA_CH_REG(DMAx->CHCTL0, u8Ch);
     MODIFY_REG32(*CHCTLx, DMA_CHCTL_DINC, u32IncMode);
 }
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 static rt_err_t hc32_spi_configure(struct rt_spi_device *device,
@@ -448,11 +438,7 @@ static int32_t hc32_spi_dma_trans(struct hc32_spi_config *spi_config, const uint
         DmaFlag = spi_config->dma_tx->flag;
     }
     while ((RESET == DMA_GetTransCompleteStatus(DmaInstance, DmaFlag)) &&
-<<<<<<< HEAD
-           (u32TimeoutCnt < spi_config->timeout))
-=======
             (u32TimeoutCnt < spi_config->timeout))
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     {
         rt_thread_mdelay(1);
         u32TimeoutCnt++;
@@ -584,11 +570,7 @@ static rt_ssize_t hc32_spi_xfer(struct rt_spi_device *device, struct rt_spi_mess
                 {
                     u32TimeoutCnt = 0U;
                     while ((RESET == SPI_GetStatus(spi_instance, SPI_FLAG_IDLE)) &&
-<<<<<<< HEAD
-                           (u32TimeoutCnt < spi_drv->config->timeout))
-=======
                             (u32TimeoutCnt < spi_drv->config->timeout))
->>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
                     {
                         rt_thread_mdelay(1);
                         u32TimeoutCnt++;
