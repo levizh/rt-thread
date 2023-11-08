@@ -23,7 +23,7 @@
 #define RT_NAME_MAX                 (8)
 
 /* RT_ALIGN_SIZE */
-#define RT_ALIGN_SIZE               (4)
+#define RT_ALIGN_SIZE               (8)
 
 /* PRIORITY_MAX */
 #define RT_THREAD_PRIORITY_MAX      (32)
@@ -34,13 +34,6 @@
 /* SECTION: RT_DEBUG */
 #define RT_DEBUG
 #define RT_DEBUG_COLOR
-//#define RT_DEBUG_MEM              (1)
-//#define RT_DEBUG_SCHEDULER            (1)
-//#define RT_DEBUG_IPC              (1)
-//#define THREAD_DEBUG
-//#define IRQ_DEBUG
-#define RT_USING_OVERFLOW_CHECK
-//#define DFS_DEBUG
 #define RT_LWIP_DEBUG
 
 //#define RT_IRQHDL_DEBUG
@@ -209,7 +202,6 @@
 #endif
 
 /* SECTION: Runtime library */
-// #define RT_USING_NEWLIB
 #define RT_LIBC_USING_TIME
 
 /* SECTION: Console options */
@@ -265,7 +257,7 @@
 #endif
 
 /* SECTION: device filesystem */
-#if (defined(RT_USING_NEWLIB) || defined(EFM32_USING_SPISD))
+#ifdef EFM32_USING_SPISD
 #define RT_USING_DFS
 /* the max number of mounted filesystem */
 #define DFS_FILESYSTEMS_MAX         (2)
@@ -273,14 +265,12 @@
 #define DFS_FD_MAX                  (4)
 /* the max number of cached sector      */
 #define DFS_CACHE_MAX_NUM           (4)
-#endif /* defined(RT_USING_NEWLIB) || defined(EFM32_USING_SPISD) */
+#endif /* EFM32_USING_SPISD */
 #if defined(EFM32_USING_SPISD)
 #define RT_USING_DFS_ELMFAT
 #define DFS_ELMFAT_INTERFACE_EFM
 #endif /* defined(EFM32_USING_SPISD) */
-#if defined(RT_USING_NEWLIB)
 #define RT_USING_DFS_DEVFS
-#endif /* defined(RT_USING_NEWLIB) */
 
 /* SECTION: lwip, a lighwight TCP/IP protocol stack */
 #if defined(EFM32_USING_ETHERNET)

@@ -34,7 +34,7 @@ Linux：
 RTT_EXEC_PATH=r'/opt/csky-abiv2-elf-tools-x86_64-minilibc-20161211/bin'
 ```
 
-
+或者通过`scons --exec-path="GCC工具链路径"`命令，在指定工具链位置的同时直接编译，推荐使用该方法。
 
 ## BSP使用
 
@@ -47,11 +47,13 @@ RTT_EXEC_PATH=r'/opt/csky-abiv2-elf-tools-x86_64-minilibc-20161211/bin'
 
 #### 编译
 
-配置好环境变量`RTT_EXEC_PATH`后，使用[env工具](https://www.rt-thread.org/page/download.html)，可以在console下进入到bsp目录中，运行以下命令就可以编译该BSP：
+配置好环境变量`RTT_EXEC_PATH`后，使用[env工具](https://www.rt-thread.org/download.html#download-rt-thread-env-tool)，可以在console下进入到bsp目录中，运行以下命令就可以编译该BSP：
 
 ```
 scons
 ```
+
+或者通过 `scons --exec-path="GCC工具链路径"` 命令，在指定工具链位置的同时直接编译。
 
 #### 仿真
 
@@ -82,4 +84,4 @@ msh >
 
 维护人：
 
-- [tanek](https://github.com/TanekLiang)
+- [tanek](https://github.com/liangyongxiang)

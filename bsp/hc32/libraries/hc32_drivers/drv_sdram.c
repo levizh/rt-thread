@@ -37,7 +37,11 @@
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
 #if defined (BSP_USING_SDRAM)
+<<<<<<< HEAD
 rt_err_t rt_hw_board_sdram_init(void);
+=======
+    rt_err_t rt_hw_board_sdram_init(void);
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 /*******************************************************************************
@@ -48,7 +52,11 @@ rt_err_t rt_hw_board_sdram_init(void);
  * Local variable definitions ('static')
  ******************************************************************************/
 #ifdef RT_USING_MEMHEAP_AS_HEAP
+<<<<<<< HEAD
 static struct rt_memheap _system_heap;
+=======
+    static struct rt_memheap _system_heap;
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #endif
 
 /*******************************************************************************
@@ -81,7 +89,11 @@ static rt_int32_t _sdram_verify_clock_frequency(void)
 {
     rt_int32_t ret = RT_EOK;
 
+<<<<<<< HEAD
 #if defined(HC32F4A0) || defined(HC32F4A2)
+=======
+#if defined (HC32F4A0)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     /* EXCLK max frequency for SDRAM: 60MHz */
     if (CLK_GetBusClockFreq(CLK_BUS_EXCLK) > (60 * 1000000))
     {

@@ -19,8 +19,8 @@ extern "C" {
 #include <rtdevice.h>
 #include <rtthread.h>
 
-/* attention !!! 
-* if RT_CAN_USING_CANFD is enabled, RT_CAN_CMD_SET_BITTIMING is more recommended 
+/* attention !!!
+* if RT_CAN_USING_CANFD is enabled, RT_CAN_CMD_SET_BITTIMING is more recommended
 * than RT_CAN_CMD_SET_BAUD_FD.
 * because sample point is not specified by config when using RT_CAN_CMD_SET_BAUD_FD
 * but in range [CAN_SAMPLEPOINT_MIN/1000,CAN_SAMPLEPOINT_MAX/1000]

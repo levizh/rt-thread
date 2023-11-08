@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  * Copyright 2022 NXP
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -16,6 +16,7 @@
 #include "lvgl.h"
 
 #include "board.h"
+#include "touchpad.h"
 #include "fsl_video_common.h"
 #include "fsl_lpi2c.h"
 #include "fsl_gpio.h"

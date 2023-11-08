@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -519,11 +519,14 @@ void GPIO13_Combined_0_31_IRQHandler(void)
     rt_interrupt_leave();
 }
 #endif
-static void imxrt_pin_mode(rt_device_t dev, rt_base_t pin, rt_base_t mode)
+static void imxrt_pin_mode(rt_device_t dev, rt_base_t pin, rt_uint8_t mode)
 {
     gpio_pin_config_t gpio;
-    rt_uint32_t config_value = 0;
     rt_int8_t port, pin_num;
+
+#ifndef SOC_IMXRT1170_SERIES
+    rt_uint32_t config_value = 0;
+#endif
 
     port = pin >> 5;
     pin_num = pin & 31;
@@ -542,35 +545,45 @@ static void imxrt_pin_mode(rt_device_t dev, rt_base_t pin, rt_base_t mode)
     case PIN_MODE_OUTPUT:
     {
         gpio.direction = kGPIO_DigitalOutput;
+#ifndef SOC_IMXRT1170_SERIES
         config_value = 0x0030U;    /* Drive Strength R0/6 */
+#endif
     }
     break;
 
     case PIN_MODE_INPUT:
     {
         gpio.direction = kGPIO_DigitalInput;
+#ifndef SOC_IMXRT1170_SERIES
         config_value = 0x0830U;    /* Open Drain Enable */
+#endif
     }
     break;
 
     case PIN_MODE_INPUT_PULLDOWN:
     {
         gpio.direction = kGPIO_DigitalInput;
+#ifndef SOC_IMXRT1170_SERIES
         config_value = 0x3030U;    /* 100K Ohm Pull Down */
+#endif
     }
     break;
 
     case PIN_MODE_INPUT_PULLUP:
     {
         gpio.direction = kGPIO_DigitalInput;
+#ifndef SOC_IMXRT1170_SERIES
         config_value = 0xB030U;    /* 100K Ohm Pull Up */
+#endif
     }
     break;
 
     case PIN_MODE_OUTPUT_OD:
     {
         gpio.direction = kGPIO_DigitalOutput;
+#ifndef SOC_IMXRT1170_SERIES
         config_value = 0x0830U;    /* Open Drain Enable */
+#endif
     }
     break;
     }
@@ -609,7 +622,7 @@ static void imxrt_pin_mode(rt_device_t dev, rt_base_t pin, rt_base_t mode)
     GPIO_PinInit(mask_tab[port].gpio, pin_num, &gpio);
 }
 
-static int imxrt_pin_read(rt_device_t dev, rt_base_t pin)
+static rt_int8_t imxrt_pin_read(rt_device_t dev, rt_base_t pin)
 {
     int value;
     rt_int8_t port, pin_num;
@@ -627,7 +640,7 @@ static int imxrt_pin_read(rt_device_t dev, rt_base_t pin)
     return GPIO_PinReadPadStatus(mask_tab[port].gpio, pin_num);
 }
 
-static void imxrt_pin_write(rt_device_t dev, rt_base_t pin, rt_base_t value)
+static void imxrt_pin_write(rt_device_t dev, rt_base_t pin, rt_uint8_t value)
 {
     rt_int8_t port, pin_num;
 
@@ -643,8 +656,8 @@ static void imxrt_pin_write(rt_device_t dev, rt_base_t pin, rt_base_t value)
     GPIO_PinWrite(mask_tab[port].gpio, pin_num, value);
 }
 
-static rt_err_t imxrt_pin_attach_irq(struct rt_device *device, rt_int32_t pin,
-                                     rt_uint32_t mode, void (*hdr)(void *args), void *args)
+static rt_err_t imxrt_pin_attach_irq(struct rt_device *device, rt_base_t pin,
+                                     rt_uint8_t mode, void (*hdr)(void *args), void *args)
 {
     rt_base_t level;
     rt_int8_t port, pin_num;
@@ -655,7 +668,7 @@ static rt_err_t imxrt_pin_attach_irq(struct rt_device *device, rt_int32_t pin,
     if (PIN_INVALID_CHECK(port, pin_num))
     {
         LOG_D("invalid pin,rtt pin: %d,port: %d,pin: %d \n", pin,port + 1,pin_num);
-        return RT_ENOSYS;
+        return -RT_ENOSYS;
     }
 
     level = rt_hw_interrupt_disable();
@@ -677,7 +690,7 @@ static rt_err_t imxrt_pin_attach_irq(struct rt_device *device, rt_int32_t pin,
     return RT_EOK;
 }
 
-static rt_err_t imxrt_pin_detach_irq(struct rt_device *device, rt_int32_t pin)
+static rt_err_t imxrt_pin_detach_irq(struct rt_device *device, rt_base_t pin)
 {
     rt_base_t level;
     rt_int8_t port, pin_num;
@@ -688,7 +701,7 @@ static rt_err_t imxrt_pin_detach_irq(struct rt_device *device, rt_int32_t pin)
     if (PIN_INVALID_CHECK(port, pin_num))
     {
         LOG_D("invalid pin,rtt pin: %d,port: %d,pin: %d \n", pin,port + 1,pin_num);
-        return RT_ENOSYS;
+        return -RT_ENOSYS;
     }
 
     level = rt_hw_interrupt_disable();
@@ -706,7 +719,7 @@ static rt_err_t imxrt_pin_detach_irq(struct rt_device *device, rt_int32_t pin)
     return RT_EOK;
 }
 
-static rt_err_t imxrt_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_uint32_t enabled)
+static rt_err_t imxrt_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt_uint8_t enabled)
 {
     gpio_interrupt_mode_t int_mode;
     rt_int8_t port, pin_num, irq_index;
@@ -717,13 +730,13 @@ static rt_err_t imxrt_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt
     if (PIN_INVALID_CHECK(port, pin_num))
     {
         LOG_D("invalid pin,rtt pin: %d,port: %d,pin: %d \n", pin,port + 1,pin_num);
-        return RT_ENOSYS;
+        return -RT_ENOSYS;
     }
 
     if (hdr_tab[pin].pin == -1)
     {
         LOG_D("rtt pin: %d callback function not initialized!\n", pin);
-        return RT_ENOSYS;
+        return -RT_ENOSYS;
     }
 
     if (enabled == PIN_IRQ_ENABLE)
@@ -761,7 +774,7 @@ static rt_err_t imxrt_pin_irq_enable(struct rt_device *device, rt_base_t pin, rt
     }
     else
     {
-        return RT_EINVAL;
+        return -RT_EINVAL;
     }
 
     return RT_EOK;

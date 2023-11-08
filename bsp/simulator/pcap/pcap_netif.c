@@ -26,6 +26,10 @@
 #include <rtthread.h>
 #include <netif/ethernetif.h>
 
+#define DBG_TAG    "pcap.netif"
+#define DBG_LVL    DBG_INFO
+#include <rtdbg.h>
+
 #define MAX_ADDR_LEN 6
 
 #define NETIF_DEVICE(netif) ((struct pcap_netif*)(netif))
@@ -160,13 +164,13 @@ static rt_err_t pcap_netif_close(rt_device_t dev)
     return RT_EOK;
 }
 
-static rt_size_t pcap_netif_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_size_t size)
+static rt_ssize_t pcap_netif_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_size_t size)
 {
     rt_set_errno(-RT_ENOSYS);
     return 0;
 }
 
-static rt_size_t pcap_netif_write (rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
+static rt_ssize_t pcap_netif_write (rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
 {
     rt_set_errno(-RT_ENOSYS);
     return 0;
@@ -203,6 +207,14 @@ rt_err_t pcap_netif_tx( rt_device_t dev, struct pbuf* p)
     /* lock EMAC device */
     rt_sem_take(&sem_lock, RT_WAITING_FOREVER);
 
+    /* check if the total length of pbuf exceeds the size of buf */
+    if(p->tot_len > 2048)
+    {
+        LOG_E("Sending the packet: send data exceed max len 2048!");
+        rt_sem_release(&sem_lock);
+        return -RT_ERROR;
+    }
+
     /* copy data to tx buffer */
     q = p;
     ptr = (rt_uint8_t*)buf;
@@ -219,7 +231,7 @@ rt_err_t pcap_netif_tx( rt_device_t dev, struct pbuf* p)
 
     if (res != 0)
     {
-        rt_kprintf("Error sending the packet: \n", pcap_geterr(tap));
+        LOG_E("Sending the packet: %s", pcap_geterr(tap));
         result = -RT_ERROR;
     }
 

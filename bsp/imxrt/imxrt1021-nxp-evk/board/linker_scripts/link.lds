@@ -69,6 +69,8 @@ MEMORY
 /* Define output sections */
 SECTIONS
 {
+  __NCACHE_REGION_START = ORIGIN(m_nocache);
+  __NCACHE_REGION_SIZE  = LENGTH(m_nocache);
   .boot_data :
   {
     KEEP(*(.boot_hdr.conf))
@@ -260,7 +262,7 @@ SECTIONS
     stack_end = .;
     __StackTop = .;
   } > m_dtcm
-  
+
   .RTT_HEAP :
   {
     heap_start = .;

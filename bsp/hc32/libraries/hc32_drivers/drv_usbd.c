@@ -390,7 +390,10 @@ static void usb_wrblanktxfifo(usb_core_instance *pdev, uint32_t epnum)
     }
 }
 
+<<<<<<< HEAD
 #if defined (HC32F460) || defined(HC32F4A0) || defined(HC32F4A2)
+=======
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #ifdef VBUS_SENSING_ENABLED
 static void usb_sessionrequest_isr(usb_core_instance *pdev)
 {
@@ -404,7 +407,10 @@ static void usb_sessionrequest_isr(usb_core_instance *pdev)
     }
 }
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 
 static void usb_resume_isr(usb_core_instance *pdev)
 {
@@ -423,9 +429,15 @@ static void usb_resume_isr(usb_core_instance *pdev)
 static void usb_susp_isr(usb_core_instance *pdev)
 {
     uint32_t u32dsts;
+<<<<<<< HEAD
     
     u32dsts = READ_REG32(pdev->regs.DREGS->DSTS);
     if((u32dsts & 1UL) != 0UL)
+=======
+
+    u32dsts = READ_REG32(pdev->regs.DREGS->DSTS);
+    if ((u32dsts & 1UL) != 0UL)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     {
         dev_int_cbkpr->Suspend(pdev);
     }
@@ -708,14 +720,20 @@ void usb_isr_handler(usb_core_instance *pdev)
         {
             usb_isooutincomplt_isr(pdev);
         }
+<<<<<<< HEAD
 #if defined (HC32F460) || defined(HC32F4A0) || defined(HC32F4A2)
+=======
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 #ifdef VBUS_SENSING_ENABLED
         if ((u32gintsts & VBUSV_INT) != 0UL)
         {
             usb_sessionrequest_isr(pdev);
         }
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     }
 }
 

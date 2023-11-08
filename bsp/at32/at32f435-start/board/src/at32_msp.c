@@ -477,3 +477,122 @@ void at32_msp_sdram_init(void *instance)
 }
 
 #endif /* BSP_USING_SDRAM */
+
+#ifdef BSP_USING_USBFS
+void at32_msp_usb_init(void *instance)
+{
+    /* defalut usb clock from hick */
+    usb_clk48_s clk_s = USB_CLK_HICK;
+
+#if defined (BSP_USING_HOST_USBFS1) || defined (BSP_USING_DEVICE_USBFS1)
+    crm_periph_clock_enable(CRM_OTGFS1_PERIPH_CLOCK, TRUE);
+#endif
+
+#if defined (BSP_USING_HOST_USBFS2) || defined (BSP_USING_DEVICE_USBFS2)
+    crm_periph_clock_enable(CRM_OTGFS2_PERIPH_CLOCK, TRUE);
+#endif
+
+    if(clk_s == USB_CLK_HICK)
+    {
+        crm_usb_clock_source_select(CRM_USB_CLOCK_SOURCE_HICK);
+        /* enable the acc calibration ready interrupt */
+        crm_periph_clock_enable(CRM_ACC_PERIPH_CLOCK, TRUE);
+
+        /* update the c1\c2\c3 value */
+        acc_write_c1(7980);
+        acc_write_c2(8000);
+        acc_write_c3(8020);
+
+        /* open acc calibration */
+        acc_calibration_mode_enable(ACC_CAL_HICKTRIM, TRUE);
+    }
+    else
+    {
+        switch(system_core_clock)
+        {
+            /* 48MHz */
+            case 48000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_1);
+                break;
+
+            /* 72MHz */
+            case 72000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_1_5);
+                break;
+
+            /* 96MHz */
+            case 96000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_2);
+                break;
+
+            /* 120MHz */
+            case 120000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_2_5);
+                break;
+
+            /* 144MHz */
+            case 144000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_3);
+                break;
+
+            /* 168MHz */
+            case 168000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_3_5);
+                break;
+
+            /* 192MHz */
+            case 192000000:
+              crm_usb_clock_div_set(CRM_USB_DIV_4);
+              break;
+
+            /* 216MHz */
+            case 216000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_4_5);
+                break;
+
+            /* 240MHz */
+            case 240000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_5);
+                break;
+
+            /* 264MHz */
+            case 264000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_5_5);
+                break;
+
+            /* 288MHz */
+            case 288000000:
+                crm_usb_clock_div_set(CRM_USB_DIV_6);
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+#endif /* BSP_USING_USBFS */
+
+#ifdef BSP_USING_DAC
+void at32_msp_dac_init(void *instance)
+{
+    gpio_init_type gpio_init_struct;
+    dac_type *dac_x = (dac_type *)instance;
+
+    gpio_default_para_init(&gpio_init_struct);
+    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+#ifdef BSP_USING_DAC1
+    if(dac_x == DAC)
+    {
+        /* dac & gpio clock enable */
+        crm_periph_clock_enable(CRM_DAC_PERIPH_CLOCK, TRUE);
+        crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
+
+        /* configure adc channel as analog output */
+        gpio_init_struct.gpio_pins = GPIO_PINS_4 | GPIO_PINS_5;
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init(GPIOA, &gpio_init_struct);
+    }
+#endif
+}
+#endif /* BSP_USING_DAC */

@@ -91,7 +91,11 @@ static void usb_host_chx_out_isr(usb_core_instance *pdev, uint8_t chnum)
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
+<<<<<<< HEAD
 #if defined (HC32F4A0) || defined (HC32F4A2)
+=======
+#if defined (HC32F4A0)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
@@ -215,7 +219,11 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
+<<<<<<< HEAD
 #if defined (HC32F4A0) || defined (HC32F4A2)
+=======
+#if defined (HC32F4A0)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
     else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
@@ -328,7 +336,17 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
             usb_host_int_unmskchhltd(pdev, chnum);
             usb_hchstop(&pdev->regs, chnum);
         }
+<<<<<<< HEAD
         else if ((u32eptypetmp == EP_TYPE_CTRL) || (u32eptypetmp == EP_TYPE_BULK))
+=======
+        else if (u32eptypetmp == EP_TYPE_CTRL)
+        {
+            u32hcchar |= USBFS_HCCHAR_CHENA;
+            u32hcchar &= ~USBFS_HCCHAR_CHDIS;
+            WRITE_REG32(pdev->regs.HC_REGS[chnum]->HCCHAR, u32hcchar);
+        }
+        else if (u32eptypetmp == EP_TYPE_BULK)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
         {
             usb_host_int_unmskchhltd(pdev, chnum);
             usb_hchstop(&pdev->regs, chnum);/* stop hc avoid block */

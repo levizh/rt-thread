@@ -25,11 +25,17 @@ Windows平台推荐使用[env工具][1]。龙芯1C的LS232处理器核是一款M
 
 安装好工具链后，假设工具链安装在`D:\mgc\embedded\codebench`目录下。使用env工具，打开console后，进入到命令行环境中，需要手动设置工具链的环境变量`RTT_EXEC_PATH`：
 
+```
     set RTT_EXEC_PATH=D:\mgc\embedded\codebench\bin
-	
+```
+
 使用env工具，可以在console下进入到`bsp/ls1cdev`目录中，运行以下命令：
 
+```
     scons
+```
+
+或者通过 `scons --exec-path="GCC工具链路径"` 命令，在指定工具链位置的同时直接编译，推荐使用该方法。
 
 来编译这个板级支持包。如果编译正确无误，会产生rtthread.elf、rtthread.bin文件。
 
@@ -91,7 +97,7 @@ Link is with 100M Speed
 * 1C芯片[用户手册][3]
 * 1C芯片[数据手册][4]
 
-  [1]: https://www.rt-thread.org/page/download.html
+  [1]: https://www.rt-thread.org/download.html#download-rt-thread-env-tool
   [2]: https://sourcery.mentor.com/GNUToolchain/package13851/public/mips-sde-elf/mips-2015.05-19-mips-sde-elf.exe
   [3]: http://www.loongson.cn/uploadfile/cpu/1C/Loongson_1C300_user.pdf
   [4]: http://www.loongson.cn/uploadfile/cpu/1C/Loongson_1C300_data.pdf

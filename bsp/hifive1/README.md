@@ -44,6 +44,8 @@ Freedom Studio 是 SiFive 公司推出的一个集成开发环境，用来编写
 set RTT_EXEC_PATH=F:\FreedomStudio\SiFive\riscv64-unknown-elf-gcc-20171231-x86_64-w64-mingw32\bin
 ```
 
+或者通过`scons --exec-path="GCC工具链路径"`命令，在指定工具链位置的同时直接编译。
+
 ### 添加环境变量
 
 将 **工具链**和**编译工具**的路径 添加到环境变量里，输入命令如下
@@ -175,7 +177,7 @@ msh >
 ## 5. 联系人信息
 
 维护人：
-- [tanek](https://github.com/TanekLiang)
+- [tanek](https://github.com/liangyongxiang)
 
 ## 6. 参考
 

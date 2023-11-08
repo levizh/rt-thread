@@ -50,7 +50,7 @@ static void serial_thread_entry(void *parameter)
     {
         rt_memset(&msg, 0, sizeof(msg));
         result = rt_mq_recv(&rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
-        if (result == RT_EOK)
+        if (result >= 0)
         {
             rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
             rx_buffer[rx_length] = '\0';
@@ -79,7 +79,7 @@ static int uart_dma_sample(int argc, char *argv[])
     if (!serial)
     {
         rt_kprintf("find %s failed!\n", uart_name);
-        return RT_ERROR;
+        return -RT_ERROR;
     }
 
     rt_mq_init(&rx_mq, "rx_mq",
@@ -111,7 +111,7 @@ static int uart_dma_sample(int argc, char *argv[])
     }
     else
     {
-        ret = RT_ERROR;
+        ret = -RT_ERROR;
     }
 
     return ret;

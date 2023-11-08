@@ -305,7 +305,7 @@ static int ft32_getc(struct rt_serial_device *serial)
     return ch;
 }
 
-static rt_size_t ft32_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
+static rt_ssize_t ft32_dma_transmit(struct rt_serial_device *serial, rt_uint8_t *buf, rt_size_t size, int direction)
 {
     RT_ASSERT(serial != RT_NULL);
     RT_ASSERT(buf != RT_NULL);
@@ -357,7 +357,7 @@ static void uart_isr(struct rt_serial_device *serial)
         }
         USART_ClearFlag(uart->config->Instance, USART_IT_IDLE);
     }
-    else if (USART_GetFlagStatus(uart->config->Instance, USART_FLAG_TC) != RESET))
+    else if (USART_GetFlagStatus(uart->config->Instance, USART_FLAG_TC) != RESET)
     {
         if ((serial->parent.open_flag & RT_DEVICE_FLAG_DMA_TX) != 0)
         {

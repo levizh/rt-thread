@@ -1,16 +1,18 @@
 /*
- * Copyright (c) 2006-2021, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-05-18     Chushicheng      The first version for LPC55S6x
  */
 
 #ifndef __DRV_SPI_H__
 #define __DRV_SPI_H__
 
-#include <rtthread.h>
 #include <rtdevice.h>
 
-int rt_hw_spi_init(void);
-rt_err_t lpc_spi_bus_attach_device(const char *bus_name, const char *device_name, rt_uint32_t pin);
+rt_err_t rt_hw_spi_device_attach(const char *bus_name, const char *device_name, rt_base_t cs_pin);
 
-#endif
+#endif /*__DRV_SPI_H__ */

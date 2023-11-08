@@ -14,15 +14,15 @@
 #ifdef BSP_USING_I2C
 
 static struct rt_i2c_bus_device prv_air105_i2c;
-static rt_size_t air105_i2c_mst_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t air105_i2c_mst_xfer(struct rt_i2c_bus_device *bus,
                                  struct rt_i2c_msg msgs[],
                                  rt_uint32_t num);
-static rt_size_t air105_i2c_slv_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t air105_i2c_slv_xfer(struct rt_i2c_bus_device *bus,
                                  struct rt_i2c_msg msgs[],
                                  rt_uint32_t num);
 static rt_err_t air105_i2c_bus_control(struct rt_i2c_bus_device *bus,
-                                   rt_uint32_t,
-                                   rt_uint32_t);
+                                   int cmd,
+                                   void *args);
 
 static const struct rt_i2c_bus_device_ops air105_i2c_ops =
 {
@@ -32,7 +32,7 @@ static const struct rt_i2c_bus_device_ops air105_i2c_ops =
 };
 
 
-static rt_size_t air105_i2c_mst_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t air105_i2c_mst_xfer(struct rt_i2c_bus_device *bus,
                                  struct rt_i2c_msg msgs[],
                                  rt_uint32_t num)
 {
@@ -81,15 +81,15 @@ static rt_size_t air105_i2c_mst_xfer(struct rt_i2c_bus_device *bus,
     }
     return i;
 }
-static rt_size_t air105_i2c_slv_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t air105_i2c_slv_xfer(struct rt_i2c_bus_device *bus,
                                  struct rt_i2c_msg msgs[],
                                  rt_uint32_t num)
 {
-    return RT_ERROR;
+    return -RT_ENOSYS;
 }
 static rt_err_t air105_i2c_bus_control(struct rt_i2c_bus_device *bus,
-                                   rt_uint32_t cmd,
-                                   rt_uint32_t arg)
+                                   int cmd,
+                                   void *args)
 {
 
     RT_ASSERT(bus != RT_NULL);
@@ -97,7 +97,7 @@ static rt_err_t air105_i2c_bus_control(struct rt_i2c_bus_device *bus,
     switch (cmd)
     {
     case RT_I2C_DEV_CTRL_CLK:
-        I2C_MasterSetup(i2c_id, arg);
+        I2C_MasterSetup(i2c_id, *(rt_uint32_t *)args);
         break;
     default:
         return -RT_EIO;

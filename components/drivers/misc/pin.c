@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,35 +13,35 @@
 #include <drivers/pin.h>
 
 static struct rt_device_pin _hw_pin;
-static rt_size_t _pin_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
+static rt_ssize_t _pin_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
-    struct rt_device_pin_status *status;
+    struct rt_device_pin_value *value;
     struct rt_device_pin *pin = (struct rt_device_pin *)dev;
 
     /* check parameters */
     RT_ASSERT(pin != RT_NULL);
 
-    status = (struct rt_device_pin_status *)buffer;
-    if (status == RT_NULL || size != sizeof(*status))
+    value = (struct rt_device_pin_value *)buffer;
+    if (value == RT_NULL || size != sizeof(*value))
         return 0;
 
-    status->status = pin->ops->pin_read(dev, status->pin);
+    value->value = pin->ops->pin_read(dev, value->pin);
     return size;
 }
 
-static rt_size_t _pin_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
+static rt_ssize_t _pin_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
-    struct rt_device_pin_status *status;
+    struct rt_device_pin_value *value;
     struct rt_device_pin *pin = (struct rt_device_pin *)dev;
 
     /* check parameters */
     RT_ASSERT(pin != RT_NULL);
 
-    status = (struct rt_device_pin_status *)buffer;
-    if (status == RT_NULL || size != sizeof(*status))
+    value = (struct rt_device_pin_value *)buffer;
+    if (value == RT_NULL || size != sizeof(*value))
         return 0;
 
-    pin->ops->pin_write(dev, (rt_base_t)status->pin, (rt_base_t)status->status);
+    pin->ops->pin_write(dev, (rt_base_t)value->pin, (rt_base_t)value->value);
 
     return size;
 }
@@ -101,7 +101,7 @@ int rt_device_pin_register(const char *name, const struct rt_pin_ops *ops, void 
     return 0;
 }
 
-rt_err_t rt_pin_attach_irq(rt_int32_t pin, rt_uint32_t mode,
+rt_err_t rt_pin_attach_irq(rt_base_t pin, rt_uint8_t mode,
                            void (*hdr)(void *args), void *args)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
@@ -112,7 +112,7 @@ rt_err_t rt_pin_attach_irq(rt_int32_t pin, rt_uint32_t mode,
     return -RT_ENOSYS;
 }
 
-rt_err_t rt_pin_detach_irq(rt_int32_t pin)
+rt_err_t rt_pin_detach_irq(rt_base_t pin)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
     if (_hw_pin.ops->pin_detach_irq)
@@ -122,7 +122,7 @@ rt_err_t rt_pin_detach_irq(rt_int32_t pin)
     return -RT_ENOSYS;
 }
 
-rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint32_t enabled)
+rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint8_t enabled)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
     if (_hw_pin.ops->pin_irq_enable)
@@ -133,33 +133,29 @@ rt_err_t rt_pin_irq_enable(rt_base_t pin, rt_uint32_t enabled)
 }
 
 /* RT-Thread Hardware PIN APIs */
-void rt_pin_mode(rt_base_t pin, rt_base_t mode)
+void rt_pin_mode(rt_base_t pin, rt_uint8_t mode)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
     _hw_pin.ops->pin_mode(&_hw_pin.parent, pin, mode);
 }
 
-void rt_pin_write(rt_base_t pin, rt_base_t value)
+void rt_pin_write(rt_base_t pin, rt_uint8_t value)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
     _hw_pin.ops->pin_write(&_hw_pin.parent, pin, value);
 }
 
-int rt_pin_read(rt_base_t pin)
+rt_int8_t rt_pin_read(rt_base_t pin)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
     return _hw_pin.ops->pin_read(&_hw_pin.parent, pin);
 }
 
-
+/* Get pin number by name, such as PA.0, P0.12 */
 rt_base_t rt_pin_get(const char *name)
 {
     RT_ASSERT(_hw_pin.ops != RT_NULL);
 
-    if (name[0] != 'P' && name[0] != 'p')
-    {
-        return -RT_EINVAL;
-    }
     if (_hw_pin.ops->pin_get == RT_NULL)
     {
         return -RT_ENOSYS;
@@ -176,36 +172,25 @@ rt_base_t rt_pin_get(const char *name)
 
 /*
  * convert function for port name
- * support PE02, PE2, PE.02, PE.2, pe02, pe2, pe.02, pe.2
  */
 static rt_base_t _pin_cmd_conv(const char *name)
 {
-    int size = 0;
-    char format_name[6] = { 0 };
-    format_name[0] = toupper(name[0]);
-    format_name[1] = toupper(name[1]);
-
-    size = rt_strlen(name);
-    size = (size > 5) ? 5 : size;
-    size -= 2;
-    if (name[2] != '.')
-    {
-        format_name[2] = '.';
-    }
-    strncat(format_name, name + 2, size);
-    return rt_pin_get(format_name);
+    return rt_pin_get(name);
 }
 
 static void _pin_cmd_print_usage(void)
 {
-    rt_kprintf("pin [option]\n");
-    rt_kprintf("  num: get pin number from hardware pin\n");
-    rt_kprintf("    num can be PE02, PE2, PE.02, PE.2, pe02, pe2, pe.02, pe.2\n");
-    rt_kprintf("    e.g. MSH >pin num PA.16\n");
-    rt_kprintf("  mode: set pin mode to output/input/input_pullup/input_pulldown/output_od\n    e.g. MSH >pin mode PA.16 output\n");
-    rt_kprintf("  read: read pin level of hardware pin\n    e.g. MSH >pin read PA.16\n");
-    rt_kprintf("  write: write pin level(high/low or on/off) to hardware pin\n    e.g. MSH >pin write PA.16 high\n");
-    rt_kprintf("  help: this help list\n");
+    rt_kprintf("pin [option] GPIO\n");
+    rt_kprintf("     num:      get pin number from hardware pin\n");
+    rt_kprintf("     mode:     set pin mode to output/input/input_pullup/input_pulldown/output_od\n");
+    rt_kprintf("               e.g. MSH >pin mode GPIO output\n");
+    rt_kprintf("     read:     read pin level of hardware pin\n");
+    rt_kprintf("               e.g. MSH >pin read GPIO\n");
+    rt_kprintf("     write:    write pin level(high/low or on/off) to hardware pin\n");
+    rt_kprintf("               e.g. MSH >pin write GPIO high\n");
+    rt_kprintf("     help:     this help list\n");
+    rt_kprintf("GPIO e.g.:");
+    rt_pin_get(" ");
 }
 
 /* e.g. MSH >pin num PA.16 */
@@ -284,7 +269,7 @@ static void _pin_cmd_mode(int argc, char *argv[])
 static void _pin_cmd_read(int argc, char *argv[])
 {
     rt_base_t pin;
-    rt_base_t value;
+    rt_uint8_t value;
     if (argc < 3)
     {
         _pin_cmd_print_usage();
@@ -307,11 +292,11 @@ static void _pin_cmd_read(int argc, char *argv[])
     value = rt_pin_read(pin);
     if (value == PIN_HIGH)
     {
-        rt_kprintf("pin[%d] = on\n", pin);
+        rt_kprintf("pin[%d] = high\n", pin);
     }
     else
     {
-        rt_kprintf("pin[%d] = off\n", pin);
+        rt_kprintf("pin[%d] = low\n", pin);
     }
 }
 
@@ -319,7 +304,7 @@ static void _pin_cmd_read(int argc, char *argv[])
 static void _pin_cmd_write(int argc, char *argv[])
 {
     rt_base_t pin;
-    rt_base_t value;
+    rt_uint8_t value;
     if (argc < 4)
     {
         _pin_cmd_print_usage();

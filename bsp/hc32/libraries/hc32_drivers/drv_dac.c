@@ -18,7 +18,7 @@
 #include "hc32_ll.h"
 #include <drv_log.h>
 
-#if defined(HC32F4A0) || defined(HC32F4A2)
+#if defined(HC32F4A0)
     #define DAC_CHANNEL_ID_MAX              (DAC_CH2 + 1U)
     #define DAC_RESOLUTION                  (12)
     #define DAC_LEFT_ALIGNED_DATA_MASK      (0xFFF0U)
@@ -131,13 +131,11 @@ static const struct rt_dac_ops g_dac_ops =
 
 static void _dac_clock_enable(void)
 {
-#if defined(HC32F4A0) || defined(HC32F4A2)
 #if defined(BSP_USING_DAC1)
     FCG_Fcg3PeriphClockCmd(PWC_FCG3_DAC1, ENABLE);
 #endif
-#if   defined(BSP_USING_DAC2)
+#if defined(BSP_USING_DAC2)
     FCG_Fcg3PeriphClockCmd(PWC_FCG3_DAC2, ENABLE);
-#endif
 #endif
 }
 

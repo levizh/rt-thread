@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,7 +14,7 @@
 #include "core_cm7.h"
 
 /* defined the LED pin: GPIO1_IO9 */
-#define LED0_PIN               GET_PIN(1, 8)
+#define LED0_PIN               GET_PIN(1, 9)
 
 int main(void)
 {

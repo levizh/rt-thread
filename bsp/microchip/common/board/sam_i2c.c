@@ -30,14 +30,14 @@ static struct sam_i2c_bus sam_i2c0 =
     .device_name = I2CBUS_NAME,
 };
 
-static rt_size_t sam_i2c_master_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t sam_i2c_master_xfer(struct rt_i2c_bus_device *bus,
                                      struct rt_i2c_msg msgs[],
                                      rt_uint32_t num);
-static rt_size_t sam_i2c_slave_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t sam_i2c_slave_xfer(struct rt_i2c_bus_device *bus,
                                     struct rt_i2c_msg msgs[],
                                     rt_uint32_t num);
 static rt_err_t sam_i2c_bus_control(struct rt_i2c_bus_device *bus,
-                                    rt_uint32_t, rt_uint32_t);
+                                    int cmd, void *args);
 
 static const struct rt_i2c_bus_device_ops sam_i2c_ops =
 {
@@ -62,7 +62,7 @@ static inline void sam_i2c_update_control(struct rt_i2c_msg *src,
         dest->flags |= I2C_M_SEVEN;
 }
 
-static rt_size_t sam_i2c_master_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t sam_i2c_master_xfer(struct rt_i2c_bus_device *bus,
                                      struct rt_i2c_msg msgs[],
                                      rt_uint32_t num)
 {
@@ -82,7 +82,7 @@ static rt_size_t sam_i2c_master_xfer(struct rt_i2c_bus_device *bus,
     return i;
 }
 
-static rt_size_t sam_i2c_slave_xfer(struct rt_i2c_bus_device *bus,
+static rt_ssize_t sam_i2c_slave_xfer(struct rt_i2c_bus_device *bus,
                                     struct rt_i2c_msg msgs[],
                                     rt_uint32_t num)
 {
@@ -90,10 +90,10 @@ static rt_size_t sam_i2c_slave_xfer(struct rt_i2c_bus_device *bus,
 }
 
 static rt_err_t sam_i2c_bus_control(struct rt_i2c_bus_device *bus,
-                                    rt_uint32_t cmd,
-                                    rt_uint32_t arg)
+                                    int cmd,
+                                    void *args)
 {
-    return RT_ERROR;
+    return -RT_ERROR;
     struct sam_i2c_bus *sam_i2c = (struct sam_i2c_bus *)bus;
 
     RT_ASSERT(bus != RT_NULL);
@@ -101,7 +101,7 @@ static rt_err_t sam_i2c_bus_control(struct rt_i2c_bus_device *bus,
     switch (cmd)
     {
     case RT_I2C_DEV_CTRL_CLK:
-        i2c_m_sync_set_baudrate(sam_i2c->i2c_desc, 0, arg);
+        i2c_m_sync_set_baudrate(sam_i2c->i2c_desc, 0, *(rt_uint32_t *)args);
         break;
     default:
         return -RT_EIO;

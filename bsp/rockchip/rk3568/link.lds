@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -13,7 +13,7 @@ OUTPUT_ARCH(aarch64)
 
 SECTIONS
 {
-    . = 0x208000;
+    . = 0x20000000;
     . = ALIGN(4096);
     .text :
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,7 +41,7 @@ extern int heap_end;
 
 
 /*! @brief The board flash size */
-#define BOARD_FLASH_SIZE (0x400000U)
+#define BOARD_FLASH_SIZE (0x800000U)
 
 void rt_hw_board_init(void);
 

@@ -179,12 +179,13 @@
         <debug>0</debug>
         <option>
           <name>CCDefines</name>
-          <state>__DEBUG</state>
+          <state />
           <state>CLOCKS_PER_SEC=RT_TICK_PER_SECOND</state>
           <state>RT_USING_DLIBC</state>
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
           <state>HC32F460</state>
+          <state>__DEBUG</state>
           <state>__RTTHREAD__</state>
           <state>USE_DDL_DRIVER</state>
         </option>
@@ -324,6 +325,7 @@
           <state>$PROJ_DIR$\board\ports</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
           <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
@@ -334,7 +336,7 @@
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\board\config</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\inc</state>
+          <state>$PROJ_DIR$\board\config\usb_config</state>
           <state>$PROJ_DIR$\board</state>
         </option>
         <option>
@@ -722,7 +724,8 @@
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state />
+          <state>_LINK_FLASH_= 0</state>
+          <state>_HC32F460_512K_= 1</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -1171,6 +1174,7 @@
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
           <state>HC32F460</state>
+          <state>__DEBUG</state>
           <state>__RTTHREAD__</state>
           <state>USE_DDL_DRIVER</state>
         </option>
@@ -1310,6 +1314,7 @@
           <state>$PROJ_DIR$\board\ports</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
           <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
@@ -1320,7 +1325,7 @@
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\board\config</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\inc</state>
+          <state>$PROJ_DIR$\board\config\usb_config</state>
           <state>$PROJ_DIR$\board</state>
         </option>
         <option>
@@ -1704,7 +1709,8 @@
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state />
+          <state>_LINK_FLASH_= 0</state>
+          <state>_HC32F460_512K_= 1</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -2029,7 +2035,7 @@
   <group>
     <name>CPU</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libcpu\arm\common\backtrace.c</name>
+      <name>$PROJ_DIR$\..\..\..\libcpu\arm\common\atomic_arm.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libcpu\arm\common\div0.c</name>
@@ -2046,6 +2052,9 @@
   </group>
   <group>
     <name>DeviceDrivers</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\components\drivers\core\device.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\components\drivers\ipc\completion.c</name>
     </file>
@@ -2086,6 +2095,9 @@
       <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\IAR\startup_hc32f460.s</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_common.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_gpio.c</name>
     </file>
     <file>
@@ -2119,9 +2131,6 @@
       <name>$PROJ_DIR$\..\..\..\src\components.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\src\device.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\src\idle.c</name>
     </file>
     <file>
@@ -2143,7 +2152,7 @@
       <name>$PROJ_DIR$\..\..\..\src\object.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\src\scheduler.c</name>
+      <name>$PROJ_DIR$\..\..\..\src\scheduler_up.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\src\thread.c</name>
@@ -2173,13 +2182,16 @@
       <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_aos.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcm.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32f460_ddl\drivers\hc32_ll_driver\src\hc32_ll.c</name>

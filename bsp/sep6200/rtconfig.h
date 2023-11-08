@@ -2,22 +2,11 @@
 #ifndef __RTTHREAD_CFG_H__
 #define __RTTHREAD_CFG_H__
 
-/* #define RT_DEBUG_IRQ 1 */
-/* #define RT_DEBUG_TIMER 1 */
-
-/* #define RT_DEBUG_MEM 1 */
-/* #define RT_DEBUG_MEMHEAP 1 */
-/* #define RT_DEBUG_MODULE 1 */
-/* #define RT_DEBUG_SCHEDULER 1 */
-/* #define RT_DEBUG_SLAB 1 */
-/* #define RT_DEBUG_THREAD 1 */
-/* #define RT_DEBUG_IPC 1 */
-
 /* RT_NAME_MAX*/
 #define RT_NAME_MAX	8
 
 /* RT_ALIGN_SIZE*/
-#define RT_ALIGN_SIZE	4
+#define RT_ALIGN_SIZE	8
 
 /* PRIORITY_MAX */
 #define RT_THREAD_PRIORITY_MAX	256
@@ -88,7 +77,6 @@
 
 /* SECTION: a runtime libc library */
 /* a runtime libc library */
-/* #define RT_USING_NEWLIB */
 
 /* SECTION: a mini libc */
 

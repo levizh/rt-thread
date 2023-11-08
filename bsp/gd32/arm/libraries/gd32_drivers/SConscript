@@ -44,10 +44,14 @@ if GetDepend('RT_USING_HWTIMER'):
 # add adc drivers.
 if GetDepend('RT_USING_ADC'):
     src += ['drv_adc.c']
-    
+
 # add sdio drivers.
 if GetDepend('RT_USING_SDIO'):
     src += ['drv_sdio.c']
+    
+# add pwm drivers.
+if GetDepend('RT_USING_PWM'):
+    src += ['drv_pwm.c']
 
 path = [cwd]
 

@@ -20,12 +20,18 @@
 extern "C" {
 #endif
 
+
+#define HC32_FLASH_SIZE_GRANULARITY     (8 * 1024)
+#define HC32_FLASH_SIZE                 (2 * 1024 * 1024)
+#define HC32_FLASH_START_ADDRESS        (0)
+#define HC32_FLASH_END_ADDRESS          (HC32_FLASH_START_ADDRESS + HC32_FLASH_SIZE)
+
 #define HC32_SRAM_SIZE                  (512)
 #define HC32_SRAM_END                   (0x1FFE0000 + HC32_SRAM_SIZE * 1024)
 
 #ifdef __ARMCC_VERSION
-extern int Image$$RW_IRAM1$$ZI$$Limit;
-#define HEAP_BEGIN                      (&Image$$RW_IRAM1$$ZI$$Limit)
+extern int Image$$RW_IRAM2$$ZI$$Limit;
+#define HEAP_BEGIN                      (&Image$$RW_IRAM2$$ZI$$Limit)
 #elif __ICCARM__
 #pragma section="HEAP"
 #define HEAP_BEGIN                      (__segment_end("HEAP"))
@@ -35,6 +41,10 @@ extern int __bss_end;
 #endif
 
 #define HEAP_END                        HC32_SRAM_END
+
+void PeripheralRegister_Unlock(void);
+void PeripheralClock_Config(void);
+void SystemClock_Config(void);
 
 #ifdef __cplusplus
 }

@@ -126,7 +126,7 @@ void rt_hw_hard_fault_exception(struct stack_frame* exception_contex)
         rt_kprintf("acchi: 0x%08x\n", exception_contex->ACCHI);
         rt_kprintf("acclo: 0x%08x\n", exception_contex->ACCLO);
     }
-        rt_kprintf("hard fault on thread: %s\n", rt_current_thread->name);
+        rt_kprintf("hard fault on thread: %s\n", rt_current_thread->parent.name);
     #if defined(RT_USING_FINSH) && defined(MSH_USING_BUILT_IN_COMMANDS)
         list_thread();
     #endif
@@ -179,7 +179,7 @@ void rt_hw_context_switch_interrupt(rt_uint32_t from, rt_uint32_t to)
  *
  * @author LXZ (2014/11/8)
  */
-RT_WEAK void rt_hw_cpu_shutdown(void)
+rt_weak void rt_hw_cpu_shutdown(void)
 {
     rt_kprintf("shutdown...\n");
 

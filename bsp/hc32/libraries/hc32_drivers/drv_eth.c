@@ -161,14 +161,14 @@ static rt_err_t rt_hc32_eth_close(rt_device_t dev)
     return RT_EOK;
 }
 
-static rt_size_t rt_hc32_eth_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
+static rt_ssize_t rt_hc32_eth_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
     LOG_D("eth read");
     rt_set_errno(-RT_ENOSYS);
     return 0;
 }
 
-static rt_size_t rt_hc32_eth_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
+static rt_ssize_t rt_hc32_eth_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
     LOG_D("eth write");
     rt_set_errno(-RT_ENOSYS);
@@ -379,12 +379,12 @@ static void hc32_phy_link_change(void)
 {
     static rt_uint8_t phy_status = 0;
     rt_uint8_t phy_status_new = 0;
-#if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
+#if defined (ETH_PHY_USING_RTL8201F)
     uint16_t u16RegVal = 0U;
     uint16_t u16Page = 0U;
 #endif
 
-#if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
+#if defined (ETH_PHY_USING_RTL8201F)
     /* Switch page */
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16Page);
     if (u16Page != PHY_PAGE_ADDR_0)
@@ -456,7 +456,7 @@ static void hc32_phy_link_change(void)
 #if defined(ETH_PHY_USING_INTERRUPT_MODE)
 static void eth_phy_irq_handler(void *args)
 {
-#if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
+#if defined (ETH_PHY_USING_RTL8201F)
     rt_uint16_t status = 0;
 
     ETH_PHY_ReadReg(&EthHandle, PHY_IISDR, &status);
@@ -502,17 +502,15 @@ static void hc32_phy_monitor_thread(void *parameter)
     ETH_PHY_WriteReg(&EthHandle, PHY_BASIC_CONTROL_REG, PHY_AUTO_NEGOTIATION_MASK);
     hc32_phy_link_change();
 
-#if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
+#if defined (ETH_PHY_USING_RTL8201F)
     /* Configure PHY LED mode */
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);
-    
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
     MODIFY_REG16(u16RegVal, PHY_LED_SELECT, PHY_LED_SELECT_10);
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_P7_IWLFR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
-    
     u16RegVal = PHY_PAGE_ADDR_0;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);
@@ -530,7 +528,7 @@ static void hc32_phy_monitor_thread(void *parameter)
     rt_pin_attach_irq(ETH_PHY_INTERRUPT_PIN, PIN_IRQ_MODE_FALLING, eth_phy_irq_handler, (void *)"callbackargs");
     rt_pin_irq_enable(ETH_PHY_INTERRUPT_PIN, PIN_IRQ_ENABLE);
 
-#if defined (ETH_PHY_USING_RTL8201F) || defined(ETH_PHY_USING_JL11X1)
+#if defined (ETH_PHY_USING_RTL8201F)
     /* Configure PHY to generate an interrupt when Eth Link state changes */
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);

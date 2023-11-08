@@ -58,15 +58,27 @@ export PATH=~/Software/Nuclei/gcc/bin:~/Software/Nuclei/openocd/bin:$PATH
 
 ### 编译程序
 
-下载好[RT-Thread](https://github.com/RT-Thread/rt-thread)的代码和[ENV工具](https://www.rt-thread.org/document/site/tutorial/env-video/)以后。
+下载好[RT-Thread](https://github.com/RT-Thread/rt-thread)的代码和[ENV工具](https://www.rt-thread.org/download.html#download-rt-thread-env-tool)以后。
 
 按照ENV工具的教程, 在**rt-thread\bsp\nuclei\gd32vf103_rvstar**目录打开ENV工具命令行。
 
 **注意**: 请确保Nuclei GCC和Nuclei OpenOCD的路径设置正确无误。
 
-1. 运行 ``pkgs --update``来下载最新的依赖的**Nuclei SDK**开发包
+1. 运行 ``pkgs --update``来下载最新的依赖的**Nuclei SDK**开发包,修改链接脚本。
+
+   ```c
+     .stack ORIGIN(RAM) + LENGTH(RAM) - __TOT_STACK_SIZE (NOLOAD) :
+     {
+   	...
+       PROVIDE( _sp = . );
+       PROVIDE( __rt_rvstack = . );//在链接脚本中补充该条语句
+     } >RAM AT>RAM
+   ```
+
 2. **可选**: 运行 ``menuconfig``来进行内核配置
+
 3. 运行 ``scons -c``清理之前的编译结果
+
 4. 运行 ``scons``来进行代码的编译
 
 ### 下载程序

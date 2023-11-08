@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2021, RT-Thread Development Team
+ * Copyright (c) 2006-2023, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -14,7 +14,7 @@
 
 #include <rtdevice.h>
 
-int rt_hw_hwtimer_init(void);
+int rt_hw_wdt_init(void);
 
 #endif /* __DRV_WDT_H__ */
 

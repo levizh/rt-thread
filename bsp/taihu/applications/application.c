@@ -15,10 +15,10 @@
 #if 0
 struct rt_semaphore sem1, sem2;
 static struct rt_thread thread1;
-ALIGN(4)
+rt_align(4)
 static rt_uint8_t thread1_stack[THREAD_STACK_SIZE];
 static struct rt_thread thread2;
-ALIGN(4)
+rt_align(4)
 static rt_uint8_t thread2_stack[THREAD_STACK_SIZE];
 
 static void thread1_entry(void* parameter)
@@ -26,9 +26,9 @@ static void thread1_entry(void* parameter)
     while (1)
     {
         rt_sem_release(&sem2);
-        rt_kprintf("thread1..: %s\n", rt_thread_self()->name);
+        rt_kprintf("thread1..: %s\n", rt_thread_self()->parent.name);
         rt_sem_take(&sem1, RT_WAITING_FOREVER);
-        rt_kprintf("get semaphore: %s!\n", rt_thread_self()->name);
+        rt_kprintf("thread1..: %s\n", rt_thread_self()->parent.name);
     }
 }
 
@@ -37,7 +37,7 @@ static void thread2_entry(void* parameter)
     while (1)
     {
         rt_sem_take(&sem2, RT_WAITING_FOREVER);
-        rt_kprintf("thread2--->: %s\n", rt_thread_self()->name);
+        rt_kprintf("thread2--->: %s\n", rt_thread_self()->parent.name);
         rt_sem_release(&sem1);
     }
 }
@@ -64,7 +64,7 @@ int rt_application_init()
 }
 #else
 static struct rt_thread thread1;
-ALIGN(4)
+rt_align(4)
 static rt_uint8_t thread1_stack[THREAD_STACK_SIZE];
 rt_timer_t ttimer;
 
@@ -73,7 +73,7 @@ static void thread1_entry(void* parameter)
     rt_uint32_t count = 0;
     while (1)
     {
-        rt_kprintf("%s: count = %d\n", rt_thread_self()->name, count ++);
+        rt_kprintf("%s: count = %d\n", rt_thread_self()->parent.name, count ++);
 
         rt_thread_delay(10);
     }

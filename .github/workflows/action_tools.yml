@@ -27,10 +27,14 @@ on:
       - '**/*.h'
       - '**/*.cpp'
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   test:
     runs-on: ubuntu-latest
     name: Tools
+    if: github.repository_owner == 'RT-Thread'
     strategy:
       fail-fast: false
     env:
@@ -61,12 +65,6 @@ jobs:
     - name: Project generate Tools
       if: ${{ success() }}
       run: |
-        echo "Test to generate mdk project"
-        scons --target=mdk -s -C $TEST_BSP_ROOT
-        scons --target=mdk4 -s -C $TEST_BSP_ROOT
-        scons --target=mdk5 -s -C $TEST_BSP_ROOT
-        echo "Test to generate iar project"
-        scons --target=iar -s -C $TEST_BSP_ROOT
         echo "Test to generate eclipse project"
         scons --target=eclipse -s -C $TEST_BSP_ROOT
         echo "Test to generate cmake project"
@@ -80,3 +78,8 @@ jobs:
         echo "Test to dist project"
         scons --dist -C $TEST_BSP_ROOT
         scons --dist-ide -C $TEST_BSP_ROOT
+        ls $TEST_BSP_ROOT
+        ls $TEST_BSP_ROOT/dist
+        scons -C $TEST_BSP_ROOT/dist/project
+        scons -C $TEST_BSP_ROOT/rt-studio-project
+        

@@ -16,7 +16,11 @@
 #define LOG_TAG             "drv_wdt"
 #include <drv_log.h>
 
+<<<<<<< HEAD
 #define CLK_DIV             8192U
+=======
+#define CLK_DIV             (8192U)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
 
 struct hc32_wdt_obj
 {
@@ -35,6 +39,7 @@ static rt_uint32_t wdt_get_timeout_ms(void)
     switch (hc32_wdt.stcwdg.u32CountPeriod)
     {
     case WDT_CNT_PERIOD256:
+<<<<<<< HEAD
         CountPeriod = 256;
         break;
     case WDT_CNT_PERIOD4096:
@@ -45,6 +50,18 @@ static rt_uint32_t wdt_get_timeout_ms(void)
         break;
     case WDT_CNT_PERIOD65536:
         CountPeriod = 65536;
+=======
+        CountPeriod = 256U;
+        break;
+    case WDT_CNT_PERIOD4096:
+        CountPeriod = 4096U;
+        break;
+    case WDT_CNT_PERIOD16384:
+        CountPeriod = 16384U;
+        break;
+    case WDT_CNT_PERIOD65536:
+        CountPeriod = 65536U;
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
         break;
     default:
         break;
@@ -70,12 +87,20 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         break;
     /* set watchdog timeout */
     case RT_DEVICE_CTRL_WDT_SET_TIMEOUT:
+<<<<<<< HEAD
         if ((*((rt_uint32_t*)arg)) > WDT_CNT_PERIOD65536)
+=======
+        if ((*((rt_uint32_t *)arg)) > WDT_CNT_PERIOD65536)
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
         {
             LOG_E("wdg set timeout parameter too large, please less than %d", WDT_CNT_PERIOD65536);
             return -RT_EINVAL;
         }
+<<<<<<< HEAD
         hc32_wdt.stcwdg.u32CountPeriod = (*((rt_uint32_t*)arg));
+=======
+        hc32_wdt.stcwdg.u32CountPeriod = (*((rt_uint32_t *)arg));
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
         if (hc32_wdt.is_start)
         {
             if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK)
@@ -88,7 +113,11 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         LOG_D("wdg set timeout successful. timeout = %d ms", wdt_get_timeout_ms());
         break;
     case RT_DEVICE_CTRL_WDT_GET_TIMEOUT:
+<<<<<<< HEAD
         (*((rt_uint32_t*)arg)) = wdt_get_timeout_ms();
+=======
+        (*((rt_uint32_t *)arg)) = wdt_get_timeout_ms();
+>>>>>>> 98b36a8b145734f8302270eab9e44c21c19e4a28
         break;
     case RT_DEVICE_CTRL_WDT_START:
         if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK)
