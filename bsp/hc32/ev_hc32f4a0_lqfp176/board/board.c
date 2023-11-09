@@ -58,7 +58,7 @@ void SystemClock_Config(void)
     /* EX BUS Max 120MHz */
     CLK_SetClockDiv(CLK_BUS_CLK_ALL, \
                     (CLK_PCLK0_DIV1 | CLK_PCLK1_DIV2 | CLK_PCLK2_DIV4 | \
-                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 | \
+                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV4 | \
                      CLK_HCLK_DIV1));
 
     GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
