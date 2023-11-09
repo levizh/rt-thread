@@ -80,6 +80,7 @@ static void can_rx_thread(void *parameter)
     while (1)
     {
         rxmsg.hdr = -1;
+        rt_memset(&rxmsg,0,sizeof(struct rt_can_msg));
         rt_sem_take(&rx_sem[ch], RT_WAITING_FOREVER);
         rt_mutex_take(can_mutex[ch], RT_WAITING_FOREVER);
         rt_device_read(can_dev[ch], 0, &rxmsg, sizeof(rxmsg));
@@ -273,11 +274,9 @@ int can_sample_init(void)
 
         res = rt_device_open(can_dev[ch], RT_DEVICE_FLAG_INT_TX | RT_DEVICE_FLAG_INT_RX);
         RT_ASSERT(res == RT_EOK);
-        rt_uint32_t data_baud = CANFD_DATA_BAUD_4M;
-        rt_uint32_t arbitration_baud = CANFD_ARBITRATION_BAUD_500K;
-        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD, &arbitration_baud);
+        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD, (void*)CANFD_ARBITRATION_BAUD_500K);
         RT_ASSERT(res == RT_EOK);
-        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD_FD, &data_baud);
+        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD_FD, (void *)CANFD_DATA_BAUD_4M);
         RT_ASSERT(res == RT_EOK);
 
         _set_tx_indicate(ch);
