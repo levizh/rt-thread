@@ -23,43 +23,84 @@ extern "C"
 {
 #endif
 /*******************************************************************************
+ *  @defgroup sleep_mode_map
+ *  @brief The mapping of rtt pm sleep mode to hc32 low power mode
+ * --------------------------------------------------
+ * rtt pm sleep mode |  hc32 low power mode
+ * ------------------|-------------------------------
+ *    idle           |    sleep
+ *    deep           |    stop
+ *    standby        |    power down mode 1 or 2, selection @ref PM_SLEEP_STANDBY_CFG
+ *    shutdown mode  |    power down mode 3 or 4, selection @ref PM_SLEEP_SHUTDOWN_CFG
+ ******************************************************************************/
+
+/*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
 typedef void (* sleep_mode_init_func)(void);
 typedef void (* run_mode_init_func)(uint8_t run_mode);
 
+/**
+ * @brief  run mode config @ref PM_RUN_MODE_CFG
+ */
 struct pm_run_mode_config
 {
     run_mode_init_func sys_clk_cfg;
 };
 
-struct pm_sleep_mode_deep_config
+/**
+ * @brief  sleep idle config @ref PM_SLEEP_IDLE_CFG
+ */
+struct pm_sleep_mode_idle_config
 {
-    sleep_mode_init_func init_func;
-    stc_pwc_stop_mode_config_t cfg;
-    uint8_t wait_for_wakeup_type;
-    uint32_t wakeup_int_src;
+    uint8_t wait_for_type;
 };
 
+/**
+ * @brief  sleep deep config @ref PM_SLEEP_DEEP_CFG
+ */
+struct pm_sleep_mode_deep_config
+{
+    stc_pwc_stop_mode_config_t cfg;
+    uint8_t wait_for_type;
+};
+
+/**
+ * @brief  sleep standby config @ref PM_SLEEP_STANDBY_CFG
+ */
+struct pm_sleep_mode_standby_config
+{
+    stc_pwc_pd_mode_config_t cfg;       /*!< cfg.u8Mode could only be PWC_PD_MD1 or  PWC_PD_MD2,
+                                            @ref PWC_PDMode_Sel, @ref  sleep_mode_map */
+};
+
+/**
+ * @brief  sleep shutdown config @ref PM_SLEEP_SHUTDOWN_CFG
+ */
 struct pm_sleep_mode_shutdown_config
 {
-    sleep_mode_init_func init_func;
-    stc_pwc_pd_mode_config_t cfg;
+    stc_pwc_pd_mode_config_t cfg;       /*!< cfg.u8Mode could only be PWC_PD_MD3 or  PWC_PD_MD4,
+                                              @ref PWC_PDMode_Sel, @ref sleep_mode_map */
 };
+
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define PM_CHECK_EFM()                  (EFM_GetStatus(EFM_FLAG_RDY) == RESET)
-#if defined(HC32F4A0)
-#define PM_CHECK_XTAL()                 (CM_CMU->XTALSTDCR & CLK_XTALSTD_ON != CLK_XTALSTD_ON)
+#if defined(HC32F4A0) || defined(HC32F4A2)
+#define PM_CHECK_EFM()                  ((EFM_GetStatus(EFM_FLAG_RDY) == SET) && (EFM_GetStatus(EFM_FLAG_RDY1) == SET))
+#elif defined(HC32F460)
+#define PM_CHECK_EFM()                  ((EFM_GetStatus(EFM_FLAG_RDY) == SET))
+#endif
+#define PM_CHECK_XTAL()                 ((CM_CMU->XTALSTDCR & CLK_XTALSTD_ON) == 0)
 #define PM_CHECK_DMA()                                              \
 (                                       (DMA_GetTransStatus(CM_DMA1, DMA_STAT_TRANS_DMA) == RESET) && \
                                         (DMA_GetTransStatus(CM_DMA2, DMA_STAT_TRANS_DMA) == RESET))
 #define PM_CHECK_SWDT()                                             \
 (                                       ((CM_ICG->ICG0 & ICG_SWDT_RST_START) != ICG_SWDT_RST_START) || \
                                         ((CM_ICG->ICG0 & ICG_SWDT_LPM_CNT_STOP) == ICG_SWDT_LPM_CNT_STOP))
-#define PM_CHECK_PVD()                  (CM_PWC->PVDCR1 & (PWC_PVDCR1_PVD1IRS | PWC_PVDCR1_PVD2IRS) != 0)
-#endif
+#define PM_CHECK_PVD()                                              \
+(                                       ((CM_PWC->PVDCR1 & (PWC_PVDCR1_PVD1IRE | PWC_PVDCR1_PVD1IRS)) != (PWC_PVDCR1_PVD1IRE | PWC_PVDCR1_PVD1IRS)) && \
+                                        ((CM_PWC->PVDCR1 & (PWC_PVDCR1_PVD2IRE | PWC_PVDCR1_PVD2IRS)) != (PWC_PVDCR1_PVD2IRE | PWC_PVDCR1_PVD2IRS)))
 #define PM_SLEEP_SHUTDOWN_CHECK()                                   \
 (                                       PM_CHECK_EFM() &&           \
                                         PM_CHECK_XTAL() &&          \
@@ -76,26 +117,13 @@ struct pm_sleep_mode_shutdown_config
 * please refer user manual to known all the requirements in detail.
 */
 #define PM_SLEEP_CHECK(mode)                                        \
+(                                       (mode ==  PM_SLEEP_MODE_STANDBY && PM_SLEEP_SHUTDOWN_CHECK()) || \
 (                                       (mode ==  PM_SLEEP_MODE_SHUTDOWN && PM_SLEEP_SHUTDOWN_CHECK()) || \
                                         (mode ==  PM_SLEEP_MODE_DEEP && PM_SLEEP_DEEP_CHECK())|| \
-                                        (mode !=  PM_SLEEP_MODE_SHUTDOWN)|| \
-                                        (mode !=  PM_SLEEP_MODE_DEEP))
+                                        (mode <=  PM_SLEEP_MODE_IDLE)))
 
-#define PM_SLEEP_WAIT_TYPE_WFI          (PWC_STOP_WFI)
-#define PM_SLEEP_WAIT_TYPE_WFE_INT      (PWC_STOP_WFE_INT)
-#define PM_SLEEP_WAIT_TYPE_WFE_EVT      (PWC_STOP_WFE_EVT)
-
-/*******************************************************************************
- * Global variable definitions ('extern')
- ******************************************************************************/
-static const struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
-/*
-* sleep_mode_init_func is called before entering sleep mode,
-* it can be used to implement operations such as making the peripherals
-* meet the requirements shown in PM_SLEEP_CHECK,and some other init operations
-*/
-static const struct pm_sleep_mode_deep_config st_sleep_deep_cfg = PM_SLEEP_DEEP_CFG;
-static const struct pm_sleep_mode_shutdown_config st_sleep_shutdown_cfg = PM_SLEEP_SHUTDOWN_CFG;
+#define PM_SLEEP_WAIT_FOR_INT           (0U)
+#define PM_SLEEP_WAIT_FOR_EVT           (1U)
 
 /*******************************************************************************
  * Global function prototypes (definition in C source)

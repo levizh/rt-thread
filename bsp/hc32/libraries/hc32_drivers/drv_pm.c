@@ -22,10 +22,14 @@
 #define LOG_TAG             "drv_pm"
 #include <drv_log.h>
 
+//TODO: delete IS_PWC_UNLOCKED after TODO in __sleep_enter_idle is done
+#define IS_PWC_UNLOCKED()           ((CM_PWC->FPRC & PWC_FPRC_FPRCB1) == PWC_FPRC_FPRCB1)
+
 typedef void (* run_switch_func_type)(void);
 typedef void (* sleep_enter_func_type)(void);
-static void __sleep_enter_light(void);
-static void __sleep_enter_stop(void);
+static void __sleep_enter_idle(void);
+static void __sleep_enter_deep(void);
+static void __sleep_enter_standby(void);
 static void __sleep_enter_shutdown(void);
 static void __run_switch_high_to_low(void);
 static void __run_switch_low_to_high(void);
@@ -41,10 +45,10 @@ static run_switch_func_type run_switch_func[PM_RUN_MODE_MAX][PM_RUN_MODE_MAX] =
 static sleep_enter_func_type sleep_enter_func[PM_SLEEP_MODE_MAX] =
 {
     RT_NULL,
+    __sleep_enter_idle,
     RT_NULL,
-    __sleep_enter_light,
-    __sleep_enter_stop,
-    RT_NULL,
+    __sleep_enter_deep,
+    __sleep_enter_standby,
     __sleep_enter_shutdown,
 };
 
@@ -55,33 +59,74 @@ static void uart_console_reconfig(void)
     rt_device_control(rt_console_get_device(), RT_DEVICE_CTRL_CONFIG, &config);
 }
 
-static void __sleep_enter_light(void)
+
+
+static void __sleep_enter_idle(void)
 {
-    PWC_SLEEP_Enter();
+    struct pm_sleep_mode_idle_config sleep_idle_cfg = PM_SLEEP_IDLE_CFG;
+
+    //TODO: replace the following code by ddl api after WFI/WFE selection is supported
+    RT_ASSERT(IS_PWC_UNLOCKED());
+    RT_ASSERT((sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT) || \
+              (sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
+             );
+
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F451) || defined (HC32F452) || defined (HC32F472) || \
+    defined (HC32F448) || defined (HC32F334)
+    CLR_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
+    CLR_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
+#elif defined (HC32M423) || defined (CD32Z16X) || defined (HC32M120) || defined (HC32F115) || defined (HC32F120) || defined (HC32F160) || \
+      defined (HC32F165)
+    CLR_REG8_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
+#endif
+    if (sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT)
+    {
+        __WFI();
+    }
+    else
+    {
+        __SEV();
+        __WFE();
+        __WFE();
+    }
 }
 
-static void __sleep_enter_stop(void)
+static void __sleep_enter_deep(void)
 {
-    if (st_sleep_deep_cfg.init_func != RT_NULL)
-    {
-        st_sleep_deep_cfg.init_func();
-    }
-    RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_DEEP));
+    struct pm_sleep_mode_deep_config sleep_deep_cfg = PM_SLEEP_DEEP_CFG;
+    uint8_t u8StopType = PWC_STOP_WFI;
 
-    INTC_WakeupSrcCmd(st_sleep_deep_cfg.wakeup_int_src, ENABLE);
-    (void)PWC_STOP_Config(&st_sleep_deep_cfg.cfg);
-    PWC_STOP_Enter(st_sleep_deep_cfg.wait_for_wakeup_type);
+    RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_DEEP));
+    RT_ASSERT((sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT) || \
+              (sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
+             );
+
+    (void)PWC_STOP_Config(&sleep_deep_cfg.cfg);
+    if (sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
+    {
+        u8StopType = PWC_STOP_WFE_EVT;
+    }
+    PWC_STOP_Enter(u8StopType);
+}
+
+static void __sleep_enter_standby(void)
+{
+    struct pm_sleep_mode_standby_config sleep_standby_cfg = PM_SLEEP_STANDBY_CFG;
+    RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_SHUTDOWN));
+    RT_ASSERT(sleep_standby_cfg.cfg.u8Mode == PWC_PD_MD1 || sleep_standby_cfg.cfg.u8Mode == PWC_PD_MD2);
+
+    (void)PWC_PD_Config(&sleep_standby_cfg.cfg);
+    PWC_PD_ClearWakeupStatus(PWC_PD_WKUP_FLAG_ALL);
+    PWC_PD_Enter();
 }
 
 static void __sleep_enter_shutdown(void)
 {
-    if (st_sleep_shutdown_cfg.init_func != RT_NULL)
-    {
-        st_sleep_shutdown_cfg.init_func();
-    }
+    struct pm_sleep_mode_shutdown_config sleep_shutdown_cfg = PM_SLEEP_SHUTDOWN_CFG;
     RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_SHUTDOWN));
+    RT_ASSERT(sleep_shutdown_cfg.cfg.u8Mode == PWC_PD_MD3 || sleep_shutdown_cfg.cfg.u8Mode == PWC_PD_MD4);
 
-    (void)PWC_PD_Config(&st_sleep_shutdown_cfg.cfg);
+    (void)PWC_PD_Config(&sleep_shutdown_cfg.cfg);
     PWC_PD_ClearWakeupStatus(PWC_PD_WKUP_FLAG_ALL);
     PWC_PD_Enter();
 }
@@ -101,6 +146,7 @@ static void sleep(struct rt_pm *pm, uint8_t mode)
 
 static void __run_switch_high_to_low(void)
 {
+    struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
     st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_LOW_SPEED);
     SysTick_Configuration();
 
@@ -110,6 +156,7 @@ static void __run_switch_high_to_low(void)
 static void __run_switch_low_to_high(void)
 {
     PWC_LowSpeedToHighSpeed();
+    struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
 
     st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_HIGH_SPEED);
     SysTick_Configuration();
@@ -127,7 +174,7 @@ static void run(struct rt_pm *pm, uint8_t mode)
         run_switch_func[last_mode][mode]();
     }
 
-    /* 4. temporary update peripheral clk here
+    /* temporary update peripheral clk here
     * TODO: uart_console_reconfig implement in rt_device_pm_ops.frequency_change
     * (add rt_pm_device_register in drv_usart ) */
     uart_console_reconfig();
@@ -231,15 +278,8 @@ int drv_pm_hw_init(void)
         __wakeup_timer_stop,
         __wakeup_timer_get_tick
     };
-    RT_ASSERT((st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFI)     || \
-              (st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFE_INT) || \
-              (st_sleep_deep_cfg.wait_for_wakeup_type == PM_SLEEP_WAIT_TYPE_WFE_EVT)
-             );
 
-    rt_uint8_t timer_mask;
-    timer_mask = 1UL << PM_SLEEP_MODE_DEEP;
-    timer_mask |= 1UL << PM_SLEEP_MODE_SHUTDOWN;
-
+    rt_uint8_t timer_mask = 0;
     /* initialize system pm module */
     rt_system_pm_init(&_ops, timer_mask, RT_NULL);
     return 0;
