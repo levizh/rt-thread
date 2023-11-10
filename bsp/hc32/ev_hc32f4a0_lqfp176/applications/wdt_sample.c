@@ -14,6 +14,9 @@
 #include <rtdef.h>
 #include "board_config.h"
 #include "drv_wdt.h"
+#include "rtconfig.h"
+
+#if defined(BSP_USING_WDT)
 
 /* macros define */
 #define SAMPLE_WDT_NAME     "wdt"
@@ -123,3 +126,8 @@ static int wdt_sample(int argc, char *argv[])
 
 /* export to function msh command list */
 MSH_CMD_EXPORT(wdt_sample, wdt device sample);
+
+#endif /* BSP_USING_WDT */
+/*
+ EOF
+*/
