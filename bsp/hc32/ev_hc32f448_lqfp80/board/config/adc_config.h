@@ -24,6 +24,7 @@ extern "C" {
 #define ADC1_INIT_PARAMS                                                        \
     {                                                                           \
        .name                            = "adc1",                               \
+       .vref                            = 3300,                                 \
        .resolution                      = ADC_RESOLUTION_12BIT,                 \
        .data_align                      = ADC_DATAALIGN_RIGHT,                  \
        .eoc_poll_time_max               = 100,                                  \
@@ -46,6 +47,7 @@ extern "C" {
 #define ADC2_INIT_PARAMS                                                        \
     {                                                                           \
        .name                            = "adc2",                               \
+       .vref                            = 3300,                                 \
        .resolution                      = ADC_RESOLUTION_12BIT,                 \
        .data_align                      = ADC_DATAALIGN_RIGHT,                  \
        .eoc_poll_time_max               = 100,                                  \
@@ -68,6 +70,7 @@ extern "C" {
 #define ADC3_INIT_PARAMS                                                        \
     {                                                                           \
        .name                            = "adc3",                               \
+       .vref                            = 3300,                                 \
        .resolution                      = ADC_RESOLUTION_12BIT,                 \
        .data_align                      = ADC_DATAALIGN_RIGHT,                  \
        .eoc_poll_time_max               = 100,                                  \
