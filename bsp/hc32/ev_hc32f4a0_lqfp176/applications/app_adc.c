@@ -11,7 +11,7 @@
 #include "board_config.h"
 #include "drv_adc.h"
 
-#define REFER_VOLTAGE       330         /* 参考电压 3.3V,数据精度乘以100保留2位小数*/
+#define REFER_VOLTAGE       3300        /* 参考电压 3.3V,单位mv */
 #define CONVERT_BITS        (1 << 12)   /* 转换位数为12位 */
 
 static int adc_vol_sample(int argc, char **argv)
@@ -47,14 +47,14 @@ static int adc_vol_sample(int argc, char **argv)
 
         /* 读取采样值 */
         value = rt_adc_read(adc_dev, adc_channel);
-        rt_kprintf("Channel: %d, value is :%d   %x\n", adc_channel, value, value);
+        rt_kprintf("Channel: %d, value is :%d   0x%x\n", adc_channel, value, value);
 
         /* 转换为对应电压值 */
         vol = value * REFER_VOLTAGE / CONVERT_BITS;
-        rt_kprintf("Simulate voltage is :%d.%02d \n", vol / 100, vol % 100);
+        rt_kprintf("Simulate voltage is :%d mv\n", vol);
 
         vol =  rt_adc_voltage(adc_dev, adc_channel);
-        rt_kprintf("Read voltage is :%d \n", vol);
+        rt_kprintf("Read voltage is :%d mv\n", vol);
         rt_kprintf("*********************\n\n");
     }
     rt_kprintf("*******The %s all channel have be tested**********\n", adc_device);
