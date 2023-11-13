@@ -448,6 +448,7 @@ void ADC_IntCmd(CM_ADC_TypeDef *ADCx, uint8_t u8IntType, en_functional_state_t e
 void ADC_Start(CM_ADC_TypeDef *ADCx);
 void ADC_Stop(CM_ADC_TypeDef *ADCx);
 uint16_t ADC_GetValue(const CM_ADC_TypeDef *ADCx, uint8_t u8Ch);
+uint16_t ADC_GetResolution(const CM_ADC_TypeDef *ADCx);
 en_flag_status_t ADC_GetStatus(const CM_ADC_TypeDef *ADCx, uint8_t u8Flag);
 void ADC_ClearStatus(CM_ADC_TypeDef *ADCx, uint8_t u8Flag);
 /*******************************************************************************

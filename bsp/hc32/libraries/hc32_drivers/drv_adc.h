@@ -33,6 +33,7 @@ extern "C"
 struct adc_dev_init_params
 {
     char name[8];
+    uint16_t vref;                      /*!< Specifies the ADC reference voltage, unit is mv */
     uint16_t resolution;                /*!< Specifies the ADC resolution.
                                              This parameter can be a value of @ref ADC_Resolution */
     uint16_t data_align;                /*!< Specifies ADC data alignment.

@@ -155,10 +155,48 @@ static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt
     return rt_ret;
 }
 
+static rt_uint8_t _adc_get_resolution(struct rt_adc_device *device)
+{
+    rt_uint8_t resolution = 0;
+    rt_uint16_t accsel;
+
+    adc_device *p_adc_dev = rt_container_of(device, adc_device, rt_adc);
+    accsel = ADC_GetResolution(p_adc_dev->instance);
+
+    switch (accsel)
+    {
+        case 0:
+            resolution = 12;
+            break;
+        case 1:
+            resolution = 10;
+            break;
+        case 2:
+            resolution = 8;
+            break;
+        default:
+            break;
+    }
+
+    return resolution;
+}
+
+static rt_int16_t _adc_get_vref(struct rt_adc_device *device)
+{
+    rt_int16_t vref = 0;
+
+    adc_device *p_adc_dev = rt_container_of(device, adc_device, rt_adc);
+    vref = p_adc_dev->init.vref;
+
+    return vref;
+}
+
 static struct rt_adc_ops g_adc_ops =
 {
     _adc_enable,
     _adc_convert,
+    _adc_get_resolution,
+    _adc_get_vref
 };
 
 static void _adc_clock_enable(void)

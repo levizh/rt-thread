@@ -601,6 +601,20 @@ uint16_t ADC_GetValue(const CM_ADC_TypeDef *ADCx, uint8_t u8Ch)
 }
 
 /**
+ * @brief  Get the ADC resolution.
+ * @param  [in]  ADCx                   Pointer to ADC instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_ADC or CM_ADCx:           ADC instance register base.
+ * @retval An uint16_t type value of ADC resolution.
+ */
+uint16_t ADC_GetResolution(const CM_ADC_TypeDef *ADCx)
+{
+    DDL_ASSERT(IS_ADC_UNIT(ADCx));
+
+    return (RW_MEM16((uint32_t)&ADCx->CR0) & ADC_CR0_ACCSEL)>>ADC_CR0_ACCSEL_POS;
+}
+
+/**
  * @brief  Get the status of the specified ADC flag.
  * @param  [in]  ADCx                   Pointer to ADC instance register base.
  *                                      This parameter can be a value of the following:
