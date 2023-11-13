@@ -14,9 +14,6 @@
 /******************** NAND chip information ***********************************/
 #define NAND_BYTES_PER_PAGE             2048UL
 #define NAND_SPARE_AREA_SIZE            64UL
-#define NAND_ECC_SECTOR_SIZE            512UL
-#define NAND_ECC_CODE_SIZE              3UL
-#define NAND_SPARE_FREE_SIZE            (NAND_SPARE_AREA_SIZE - (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE)
 #define NAND_PAGES_PER_BLOCK            64UL
 #define NAND_BYTES_PER_BLOCK            (NAND_PAGES_PER_BLOCK * NAND_BYTES_PER_PAGE)
 #define NAND_BLOCKS_PER_PLANE           1024UL
@@ -39,6 +36,9 @@
 
 /* row address cycle: 3 */
 #define NAND_EXMC_NFC_ROW_ADDR_CYCLE    EXMC_NFC_3_ROW_ADDR_CYCLE
+
+/* ECC mode */
+#define NAND_EXMC_NFC_ECC_MD            EXMC_NFC_1BIT_ECC
 
 /* timing configuration(EXCLK clock frequency: 60MHz@3.3V) for MT29F2G08AB */
 /* TS: ALE/CLE/CE setup time(min=10ns) */
