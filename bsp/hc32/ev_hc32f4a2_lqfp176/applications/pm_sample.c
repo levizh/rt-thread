@@ -1,3 +1,27 @@
+/*
+* 功能
+*   展示RTT休眠模式的进入和退出
+*   hc32 drv_pm 支持的RTT休眠模式包括： idle、deep、standby、shutdown
+*   每种休眠模式与芯片低功耗模式的对应关系是：
+*       RTT                    |   HC32
+*       -----------------------|----------
+*       PM_SLEEP_MODE_IDLE     | 睡眠模式
+*       PM_SLEEP_MODE_DEEP     | 停止模式
+*       PM_SLEEP_MODE_STANDBY  | 掉电模式1或2（可配，默认配置是模式1）
+*       PM_SLEEP_MODE_SHUTDOWN | 掉电模式3或4（可配，默认配置是模式3）
+*
+* 操作步骤：
+*   1）按下按键K10：  MCU进入休眠模式
+*   2）再按下按键K10：MCU退出休眠模式
+*   3）重复上述按键操作，MCU循环进入休眠模式(idle、deep、standby、shutdown)和退出对应的休眠模式。
+*   每次进入休眠模式前，MCU打印 "sleep:" + 休眠模式名称
+*   每次退出休眠模式后，MCU打印 "wake from sleep:" + 休眠模式名称
+*
+* 代码使用方法
+*   在 main 函数 while 循环之前调用pm_sample_init()
+*   在 main 函数 while 循环之内调用pm_sample_func()
+*/
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
@@ -102,6 +126,7 @@ void KEY10_IrqHandler(void)
         __DSB();
         __ISB();
     }
+
     if (g_wkup_flag)
     {
         g_wkup_flag = RT_FALSE;
@@ -110,7 +135,7 @@ void KEY10_IrqHandler(void)
 
     g_keycnt_cmd++;
     // rt_kprintf("g_keycnt_cmd =%d, ", g_keycnt_cmd);
-    rt_kprintf("recv sleep request\n");
+    // rt_kprintf("recv sleep request\n");
     NVIC_DisableIRQ(IRQN_KEY10);
     INTC_EventCmd(INTC_EVT1, ENABLE);
 }
@@ -217,8 +242,7 @@ void _sleep_enter_event_deep(void)
 #endif
     _wkup_cfg_sleep_deep();
     rt_kprintf("sleep: deep\n");
-    rt_thread_delay(500);
-    return;
+    DDL_DelayMS(50);
 }
 
 void _sleep_enter_event_standby(void)
@@ -227,7 +251,7 @@ void _sleep_enter_event_standby(void)
     PWC_BKR_Write(0, g_keycnt_cmd & 0xFF);
     *KEYCNT_BACKUP_ADDR = g_keycnt_cmd;
     rt_kprintf("sleep: standby\n");
-    rt_thread_delay(500);
+    DDL_DelayMS(50);
 }
 
 void _sleep_enter_event_shutdown(void)
@@ -235,8 +259,8 @@ void _sleep_enter_event_shutdown(void)
     NVIC_EnableIRQ(IRQN_WKTM);
     _wkup_cfg_sleep_shutdown();
     *KEYCNT_BACKUP_ADDR = g_keycnt_cmd;
-    rt_kprintf("sleep: shutdown \n");
-    rt_thread_delay(500);
+    rt_kprintf("sleep: shutdown\n");
+    DDL_DelayMS(50);
 }
 
 void _sleep_exit_event_idle(void)
@@ -369,11 +393,11 @@ void _keycnt_cmd_init_after_power_on(void)
         }
     }
 
-    rt_kprintf("KEYCNT_BACKUP_ADDR addr =0x%p,value = %d\n", KEYCNT_BACKUP_ADDR, *KEYCNT_BACKUP_ADDR);
-    rt_kprintf("wkup_from_wktm = %d\n", wkup_from_wktm);
-    rt_kprintf("wkup_from_ptwk = %d\n", wkup_from_ptwk);
-    rt_kprintf("bakram_pd = %d\n", bakram_pd);
-    rt_kprintf("bkr0 = %d\n", bkr0);
+    // rt_kprintf("KEYCNT_BACKUP_ADDR addr =0x%p,value = %d\n", KEYCNT_BACKUP_ADDR, *KEYCNT_BACKUP_ADDR);
+    // rt_kprintf("wkup_from_wktm = %d\n", wkup_from_wktm);
+    // rt_kprintf("wkup_from_ptwk = %d\n", wkup_from_ptwk);
+    // rt_kprintf("bakram_pd = %d\n", bakram_pd);
+    // rt_kprintf("bkr0 = %d\n", bkr0);
 }
 
 void _vbat_init(void)
@@ -383,12 +407,12 @@ void _vbat_init(void)
     {
         rt_thread_sleep(10);
     }
-    rt_kprintf("vbat reset done\n");
+    // rt_kprintf("vbat reset done\n");
 }
 
 void pm_sample_init(void)
 {
-    rt_kprintf("pm_sample_init\n");
+    // rt_kprintf("pm_sample_init\n\n");
 
     _keycnt_cmd_init_after_power_on();
     _vbat_init();
