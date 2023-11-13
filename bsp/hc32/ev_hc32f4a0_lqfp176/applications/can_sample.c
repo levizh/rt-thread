@@ -1,3 +1,49 @@
+/*
+* 功能
+*   展示 CAN1、CAN2 接收消息和回发消息。
+* 代码使用方法
+*   在 main 函数 while 循环之前调用can_sample_init()
+*
+* 默认波特率
+*   仲裁段:波特率500K,采样率80%,
+*   数据段:波特率为4M,采样率80%
+*
+* 接收和发送消息
+*  CAN1:
+*  仅接收满足以下过滤条件的消息，并发送接收到的消息
+*   1）标准帧：match ID:0x100~0x1ff
+*   2）扩展帧：match ID:0x12345100~0x123451ff
+*   3）固定ID帧: match ID: 0x555
+*  测试设备发送满足以上过滤条件的消息后，需确认可接收到相同的消息，否则测试失败。
+*
+*  CAN2:
+*  仅接收满足以下过滤条件的消息，并发送接收到的消息
+*   1）标准帧：match ID:0x200~0x2ff
+*   2）扩展帧：match ID:0x1abcd100~0x1abcd1ff
+*   3）固定ID帧: match ID: 0x666
+*  测试设备发送满足以上过滤条件的消息后，需确认可接收到相同的消息，否则测试失败。
+*
+* 命令行命令
+*   1）设置时序：
+*       注意：使用此项设置前，需修改 MSH 最大参数格式为 20
+*           （menuconfig-->RT-Thread Compone-->MSH: command shell-->The number of arguments for a shell command）
+*       格式：
+*           can set_bittiming <channel> <count> <rt_can_bit_timing_norminal> <rt_can_bit_timing_data>
+*       示例:
+*           MSH >can set_bittiming 2 1 1 64 16 16 0 (设置can2 仲裁段波特率500K)
+*           MSH >can set_bittiming 2 2 1 64 16 16 0 1 16 4 4 16 (设置can2 仲裁段波特率500K,数据段波特率2M)
+*   2）设置仲裁段波特率：
+*       格式：
+*           can set_baud <channel> <baud>
+*       示例：
+*           MSH >can set_baud 1 1000000 （设置can1仲裁段波特率1M）
+*   3）设置数据段波特率：
+*       格式：
+*           can set_baudfd <channel> <baudfd>
+*       示例：
+*           MSH >can set_baudfd 1 2000000 （设置can1数据段波特率2M）
+*/
+
 #include <rtthread.h>
 #include "rtdevice.h"
 #include "drv_can.h"
@@ -79,8 +125,7 @@ static void can_rx_thread(void *parameter)
     rt_size_t  size;
     while (1)
     {
-        rxmsg.hdr = -1;
-        rt_memset(&rxmsg,0,sizeof(struct rt_can_msg));
+        rt_memset(&rxmsg, 0, sizeof(struct rt_can_msg));
         rt_sem_take(&rx_sem[ch], RT_WAITING_FOREVER);
         rt_mutex_take(can_mutex[ch], RT_WAITING_FOREVER);
         rt_device_read(can_dev[ch], 0, &rxmsg, sizeof(rxmsg));
@@ -274,7 +319,7 @@ int can_sample_init(void)
 
         res = rt_device_open(can_dev[ch], RT_DEVICE_FLAG_INT_TX | RT_DEVICE_FLAG_INT_RX);
         RT_ASSERT(res == RT_EOK);
-        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD, (void*)CANFD_ARBITRATION_BAUD_500K);
+        res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD, (void *)CANFD_ARBITRATION_BAUD_500K);
         RT_ASSERT(res == RT_EOK);
         res = rt_device_control(can_dev[ch], RT_CAN_CMD_SET_BAUD_FD, (void *)CANFD_DATA_BAUD_4M);
         RT_ASSERT(res == RT_EOK);
