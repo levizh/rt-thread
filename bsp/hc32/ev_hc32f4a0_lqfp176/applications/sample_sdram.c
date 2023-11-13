@@ -1,9 +1,11 @@
 /*
- * 程序清单：SDRAM 设备使用例程
- * 例程导出了 sdram_sample 命令到控制终端
+ * 程序清单：SDRAM 设备使用例程，例程导出了sdram_sample命令到控制终端
  * 命令调用格式：sdram_sample
- * 程序功能：以8/16/32bit方式分别写读SRDRAM，比较数据是否一致
-*/
+ * 程序功能：以8/16/32bit方式分别对整个SDRAM存储空间进行写和读操作，比较数据是否一致
+ *
+ * menuconfig:
+ *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or Nand  ---->  Using SDRAM
+ */
 
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -157,13 +159,10 @@ static void sdram_thread_entry(void *parameter)
 
 static void sdram_sample(int argc, char *argv[])
 {
-    /* 创建 线程 */
     rt_thread_t thread = rt_thread_create("sdram", sdram_thread_entry, RT_NULL, 2048, 15, 10);
-    /* 创建成功则启动线程 */
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
     }
 }
-/* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(sdram_sample, sdram sample);

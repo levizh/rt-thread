@@ -1,9 +1,12 @@
 /*
- * 程序清单：SDRAM 设备使用例程
- * 例程导出了 sdram_sample 命令到控制终端
- * 命令调用格式：sdram_sample
- * 程序功能：以8/16/32bit方式分别写读SRDRAM，比较数据是否一致
-*/
+ * 程序清单：NAND 设备使用例程，例程导出了nand_sample命令到控制终端
+ * 命令调用格式：nand_sample
+ * 程序功能：对整个Nand存储空间进行擦除、写和读操作，比较数据是否一致
+ *
+ * menuconfig:
+ *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable NAND FLASH(MT29F2G08AB)
+ *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or Nand  ---->  Using Nand
+ */
 
 #include <stdlib.h>
 #include <rtthread.h>
@@ -170,7 +173,6 @@ static void nand_thread_entry(void *parameter)
                 page_oob_free_wbuf[i] = (rt_uint8_t)rand();
             }
 
-            /* 读写对比数据 */
             result = nand_erase(mtd_nand, block);
             if (result == RT_EOK)
             {
@@ -255,14 +257,10 @@ static void nand_thread_entry(void *parameter)
 
 static void nand_sample(int argc, char *argv[])
 {
-    /* 创建 线程 */
     rt_thread_t thread = rt_thread_create("nand", nand_thread_entry, RT_NULL, 2048, 15, 10);
-
-    /* 创建成功则启动线程 */
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
     }
 }
-/* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(nand_sample, nand sample);
