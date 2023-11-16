@@ -165,13 +165,13 @@ static rt_uint8_t _adc_get_resolution(struct rt_adc_device *device)
 
     switch (accsel)
     {
-        case 0:
+        case ADC_RESOLUTION_12BIT:
             resolution = 12;
             break;
-        case 1:
+        case ADC_RESOLUTION_10BIT:
             resolution = 10;
             break;
-        case 2:
+        case ADC_RESOLUTION_8BIT:
             resolution = 8;
             break;
         default:
