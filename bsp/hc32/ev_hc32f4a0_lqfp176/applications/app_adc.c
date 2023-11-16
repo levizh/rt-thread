@@ -1,7 +1,19 @@
 /*
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-11-10     CDT          first version
+ */
+
+
+/*
  * 程序清单： ADC 设备使用例程
  * 例程导出了 adc_sample 命令到控制终端
- * 命令调用格式：adc_sample
+ * 命令调用格式：adc_sample    参数选择：adc1 | adc2 | adc3
  * 程序功能：通过 ADC 设备采样电压值并转换为数值。
  *           示例代码参考电压为3.3V,转换位数为12位。
 */
