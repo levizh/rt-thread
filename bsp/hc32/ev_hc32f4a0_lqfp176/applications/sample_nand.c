@@ -12,6 +12,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+
+#if defined(BSP_USING_EXMC) && defined(BSP_USING_NAND)
 #include "nand_port.h"
 
 #define NAND_DEVICE_NAME             "nand"
@@ -264,3 +266,5 @@ static void nand_sample(int argc, char *argv[])
     }
 }
 MSH_CMD_EXPORT(nand_sample, nand sample);
+
+#endif

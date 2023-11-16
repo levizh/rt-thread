@@ -10,8 +10,9 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
-#include "sdram_port.h"
 
+#if defined(BSP_USING_EXMC) && defined(BSP_USING_SDRAM)
+#include "sdram_port.h"
 
 static rt_err_t sdram_8bit_test(void)
 {
@@ -166,3 +167,5 @@ static void sdram_sample(int argc, char *argv[])
     }
 }
 MSH_CMD_EXPORT(sdram_sample, sdram sample);
+
+#endif
