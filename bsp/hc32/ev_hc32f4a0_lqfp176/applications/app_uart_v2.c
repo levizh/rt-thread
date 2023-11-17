@@ -20,7 +20,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#define SAMPLE_UART_NAME       "uart3"      /* 串口设备名称 */
+#if defined BSP_USING_UART6
+#define SAMPLE_UART_NAME       "uart6"      /* 串口设备名称 */
 
 /* 串口接收消息结构 */
 struct rx_msg
@@ -56,21 +57,32 @@ static void serial_thread_entry(void *parameter)
     rt_err_t result;
     rt_uint32_t rx_length;
     static char rx_buffer[BSP_UART1_RX_BUFSIZE + 1];
+    rt_uint32_t put_index,put_length,buff_size = sizeof(rx_buffer);
 
     while (1)
     {
         rt_memset(&msg, 0, sizeof(msg));
         /* 从消息队列中读取消息 */
         result = rt_mq_recv(&rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
-        if (result == RT_EOK)
+        if (result > 0UL)
         {
-            /* 从串口读取数据 */
-            rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
-            rx_buffer[rx_length] = '\0';
-            /* 通过串口设备 serial 输出读取到的消息 */
-            rt_device_write(serial, 0, rx_buffer, rx_length);
-            /* 打印数据 */
-            rt_kprintf("%s\n", rx_buffer);
+            while (msg.size) {
+                /* 从串口读取数据 */
+                rx_length = rt_device_read(msg.dev, 0, rx_buffer, msg.size);
+                msg.size -= rx_length;
+                
+                put_index = 0UL;
+                while (rx_length) {
+                    if ((buff_size - put_index) >= rx_length) {
+                        put_length = rt_device_write(serial, 0, rx_buffer + put_index, rx_length);
+                    } else {
+                        put_length = rt_device_write(serial, 0, rx_buffer + put_index, buff_size - put_index);
+                    }
+                    put_index += put_length;
+                    rx_length -= put_length;
+                    put_index %= buff_size;
+                }
+            }
         }
     }
 }
@@ -107,9 +119,7 @@ int uart_dma_sample(int argc, char *argv[])
                RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
 
     /* 以 DMA 接收及轮询发送方式打开串口设备 */
-    // rt_device_open(serial, RT_DEVICE_FLAG_RX_NON_BLOCKING | RT_DEVICE_FLAG_TX_NON_BLOCKING);
-    rt_device_open(serial, RT_DEVICE_FLAG_RDWR | RT_DEVICE_FLAG_STREAM);
-
+     rt_device_open(serial, RT_DEVICE_FLAG_RX_NON_BLOCKING | RT_DEVICE_FLAG_TX_NON_BLOCKING);
     /* 设置接收回调函数 */
     rt_device_set_rx_indicate(serial, uart_input);
     /* 发送字符串 */
@@ -131,3 +141,4 @@ int uart_dma_sample(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
+#endif
