@@ -602,53 +602,77 @@ static void _sdio_iocfg(struct rt_mmcsd_host *host, struct rt_mmcsd_io_cfg *io_c
 }
 
 /**
- * @brief  Update sdio interrupt.
+ * @brief  Update the sdio interrupt.
  * @param  [in] host                    Pointer to a @ref rt_mmcsd_host structure
  * @param  [in] enable                  Enable interrupt when value is non-zero
  * @retval None
  */
-static void _sdio_irq_update(struct rt_mmcsd_host *host, rt_int32_t enable)
+static void _sdio_enable_sdio_irq(struct rt_mmcsd_host *host, rt_int32_t enable)
 {
     struct rthw_sdio *sdio = host->private_data;
     CM_SDIOC_TypeDef *instance = sdio->config->instance;
-    const rt_uint32_t int_type = (SDIOC_INT_CISTSEN | SDIOC_INT_CRMSEN | \
-                                  SDIOC_INT_CCSEN | SDIOC_INT_TCSEN | SDIOC_ERR_INT_ALL);
 
     if (enable)
     {
-        LOG_D("enable sdio irq");
+        LOG_D("enable sdio interrupt");
+        SDIOC_IntStatusCmd(instance, SDIOC_INT_CINTSEN, ENABLE);
+        SDIOC_IntCmd(instance, SDIOC_INT_CINTSEN, ENABLE);
+    }
+    else
+    {
+        LOG_D("disable sdio interrupt");
+        SDIOC_IntStatusCmd(instance, SDIOC_INT_CINTSEN, DISABLE);
+        SDIOC_IntCmd(instance, SDIOC_INT_CINTSEN, DISABLE);
+    }
+}
+
+/**
+ * @brief  update all of the using interrupt.
+ * @param  [in] host                    Pointer to a @ref rt_mmcsd_host structure
+ * @param  [in] enable                  Enable interrupt when value is non-zero
+ * @retval None
+ */
+static void _sdio_update_irq(struct rt_mmcsd_host *host, rt_int32_t enable)
+{
+    struct rthw_sdio *sdio = host->private_data;
+    CM_SDIOC_TypeDef *instance = sdio->config->instance;
+    const rt_uint32_t int_type = (SDIOC_INT_CCSEN | SDIOC_INT_TCSEN | SDIOC_ERR_INT_ALL);
+
+    if (enable)
+    {
+        LOG_D("enable all of the using interrupt");
         SDIOC_IntStatusCmd(instance, (int_type | SDIOC_INT_BRRSEN | SDIOC_INT_BWRSEN), ENABLE);
         SDIOC_IntCmd(instance, int_type, ENABLE);
     }
     else
     {
-        LOG_D("disable sdio irq");
+        LOG_D("disable all of the using interrupt");
         SDIOC_IntStatusCmd(instance, (int_type | SDIOC_INT_BRRSEN | SDIOC_INT_BWRSEN), DISABLE);
         SDIOC_IntCmd(instance, int_type, DISABLE);
     }
 }
 
 /**
- * @brief  Detect card.
+ * @brief  Get card status.
  * @param  [in] host                    Pointer to a @ref rt_mmcsd_host structure
  * @retval rt_int32_t:
  *           - 0: No card
  *           - 1: Card inserted
  */
-static rt_int32_t _sd_detect(struct rt_mmcsd_host *host)
+static rt_int32_t _sdio_get_card_status(struct rt_mmcsd_host *host)
 {
     struct rthw_sdio *sdio = host->private_data;
 
     LOG_D("try to detect device");
-    return (rt_int32_t)SDIOC_GetIntStatus(sdio->config->instance, SDIOC_HOST_FLAG_CIN);
+    return (rt_int32_t)SDIOC_GetHostStatus(sdio->config->instance, SDIOC_HOST_FLAG_CIN);
 }
 
 static const struct rt_mmcsd_host_ops _mmcsd_host_ops =
 {
     _sdio_request,
     _sdio_iocfg,
-    _sd_detect,
-    _sdio_irq_update,
+    _sdio_get_card_status,
+    _sdio_enable_sdio_irq,
 };
 
 /**
@@ -809,6 +833,12 @@ static void _sdio_irq_process(struct rt_mmcsd_host *host)
                 complete = 1;
             }
         }
+    }
+
+    if (norint_status & SDIOC_INT_FLAG_CINT)
+    {
+        SDIOC_ClearIntStatus(instance, SDIOC_INT_FLAG_CINT);
+        sdio_irq_wakeup(host);
     }
 
     if (complete)
@@ -976,7 +1006,7 @@ static struct rt_mmcsd_host *_sdio_host_create(struct hc32_sdio_config *config,
     host->private_data = sdio;
 
     /* enable interrupt */
-    _sdio_irq_update(host, 1);
+    _sdio_update_irq(host, 1);
 
     /* ready to change */
     mmcsd_change(host);
