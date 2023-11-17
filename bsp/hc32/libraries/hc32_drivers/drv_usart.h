@@ -69,7 +69,7 @@ struct hc32_uart_config
 
 #ifdef RT_SERIAL_USING_DMA
     struct hc32_uart_rxto       *rx_timeout;
-    stc_dma_llp_descriptor_t    llp_desc;
+    stc_dma_llp_descriptor_t    llp_desc[2U];
     struct dma_config           *dma_rx;
     struct hc32_uart_irq_config *tc_irq;
     struct dma_config           *dma_tx;
@@ -81,7 +81,7 @@ struct hc32_uart
 {
     struct hc32_uart_config *config;
 #ifdef RT_SERIAL_USING_DMA
-    rt_size_t               dma_rx_last_index;
+    rt_size_t               dma_rx_remain_index;
 #endif
     rt_uint16_t             uart_dma_flag;
     struct rt_serial_device serial;
