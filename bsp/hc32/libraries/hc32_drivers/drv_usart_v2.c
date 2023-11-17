@@ -36,6 +36,9 @@
 #define DMA_CH_REG(reg_base, ch)                                               \
     (*(uint32_t *)((uint32_t)(&(reg_base)) + ((ch) * 0x40UL)))
 
+#define DMA_TRANS_SET_CNT(unit, ch)                                            \
+    (READ_REG32(DMA_CH_REG((unit)->DTCTL0,(ch))) >> DMA_DTCTL_CNT_POS)
+
 #define DMA_TRANS_CNT(unit, ch)                                                \
     (READ_REG32(DMA_CH_REG((unit)->MONDTCTL0, (ch))) >> DMA_DTCTL_CNT_POS)
 
@@ -237,7 +240,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
 #endif
 
 #ifdef RT_SERIAL_USING_DMA
-    uart->dma_rx_remaining_cnt = serial->config.rx_bufsz;
+    uart->dma_rx_remaining_cnt = (serial->config.rx_bufsz <= 1UL) ? serial->config.rx_bufsz : serial->config.rx_bufsz / 2UL;
 #endif
     /* Enable USART clock */
     FCG_USART_CLK(uart->config->clock, ENABLE);
@@ -625,6 +628,7 @@ static void hc32_uart_rx_timeout(struct rt_serial_device *serial)
 
 static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
 {
+    rt_uint32_t trans_count = (serial->config.rx_bufsz <= 1UL) ? serial->config.rx_bufsz : serial->config.rx_bufsz / 2UL;
     struct hc32_uart *uart;
     stc_dma_init_t dma_init;
     struct dma_config *uart_dma;
@@ -656,7 +660,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         dma_init.u32DestAddr    = (uint32_t)rx_fifo->buffer;
         dma_init.u32DataWidth   = DMA_DATAWIDTH_8BIT;
         dma_init.u32BlockSize   = 1UL;
-        dma_init.u32TransCount  = serial->config.rx_bufsz;
+        dma_init.u32TransCount  = trans_count;
         dma_init.u32SrcAddrInc  = DMA_SRC_ADDR_FIX;
         dma_init.u32DestAddrInc = DMA_DEST_ADDR_INC;
         DMA_Init(uart_dma->Instance, uart_dma->channel, &dma_init);
@@ -668,13 +672,22 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         DMA_LlpInit(uart_dma->Instance, uart_dma->channel, &llp_init);
 
         /* Configure LLP descriptor */
-        uart->config->llp_desc.SARx  = dma_init.u32SrcAddr;
-        uart->config->llp_desc.DARx  = dma_init.u32DestAddr;
-        uart->config->llp_desc.DTCTLx = (dma_init.u32TransCount << DMA_DTCTL_CNT_POS) | (dma_init.u32BlockSize << DMA_DTCTL_BLKSIZE_POS);
-        uart->config->llp_desc.LLPx  = (uint32_t)&uart->config->llp_desc;
-        uart->config->llp_desc.CHCTLx = (dma_init.u32SrcAddrInc | dma_init.u32DestAddrInc | dma_init.u32DataWidth | \
-                                         llp_init.u32State      | llp_init.u32Mode        | dma_init.u32IntEn);
+        uart->config->llp_desc[0U].SARx  = dma_init.u32SrcAddr;
+        uart->config->llp_desc[0U].DARx  = dma_init.u32DestAddr + ((serial->config.rx_bufsz <= 1UL) ? 0UL : dma_init.u32TransCount);
+        uart->config->llp_desc[0U].DTCTLx = (((serial->config.rx_bufsz <= 1U) ? dma_init.u32TransCount : (serial->config.rx_bufsz - dma_init.u32TransCount)) << DMA_DTCTL_CNT_POS) | \
+                                            (dma_init.u32BlockSize << DMA_DTCTL_BLKSIZE_POS);
+        uart->config->llp_desc[0U].LLPx  = (serial->config.rx_bufsz <= 1U) ? (uint32_t)&uart->config->llp_desc[0U] : (uint32_t)&uart->config->llp_desc[1U];
+        uart->config->llp_desc[0U].CHCTLx = (dma_init.u32SrcAddrInc | dma_init.u32DestAddrInc | dma_init.u32DataWidth | \
+                                             llp_init.u32State      | llp_init.u32Mode        | dma_init.u32IntEn);
 
+        if (serial->config.rx_bufsz > 1UL) {
+            uart->config->llp_desc[1U].SARx  = dma_init.u32SrcAddr;
+            uart->config->llp_desc[1U].DARx  = dma_init.u32DestAddr;
+            uart->config->llp_desc[1U].DTCTLx = (dma_init.u32TransCount << DMA_DTCTL_CNT_POS) | (dma_init.u32BlockSize << DMA_DTCTL_BLKSIZE_POS);
+            uart->config->llp_desc[1U].LLPx  = (uint32_t)&uart->config->llp_desc[0U];
+            uart->config->llp_desc[1U].CHCTLx = (dma_init.u32SrcAddrInc | dma_init.u32DestAddrInc | dma_init.u32DataWidth | \
+                                                 llp_init.u32State      | llp_init.u32Mode        | dma_init.u32IntEn);
+        }
 #if defined (HC32F448)
         INTC_IntSrcCmd(uart_dma->irq_config.int_src_msk, DISABLE);
 #endif
@@ -727,26 +740,33 @@ static void hc32_uart_dma_rx_irq_handler(struct hc32_uart *uart)
     RT_ASSERT(serial != RT_NULL);
     level = rt_hw_interrupt_disable();
     recv_len = uart->dma_rx_remaining_cnt;
+    uart->dma_rx_remaining_cnt = DMA_TRANS_SET_CNT(uart->config->dma_rx->Instance, uart->config->dma_rx->channel);
     if (recv_len)
     {
         rt_hw_serial_isr(serial, RT_SERIAL_EVENT_RX_DMADONE | (recv_len << 8));
     }
-    uart->dma_rx_remaining_cnt = serial->config.rx_bufsz;
     rt_hw_interrupt_enable(level);
 }
 
 static void hc32_uart_rxto_irq_handler(struct hc32_uart *uart)
 {
     rt_base_t level;
-    rt_size_t recv_len, counter;
+    rt_size_t recv_len, counter, dam_set_count;
     struct rt_serial_device *serial;
 
     serial = &uart->serial;
     RT_ASSERT(serial != RT_NULL);
-    level = rt_hw_interrupt_disable();
-    recv_len = 0;
+
     counter = DMA_TRANS_CNT(uart->config->dma_rx->Instance, uart->config->dma_rx->channel);
-    recv_len = uart->dma_rx_remaining_cnt - counter;
+    dam_set_count = DMA_TRANS_SET_CNT(uart->config->dma_rx->Instance, uart->config->dma_rx->channel);
+    level = rt_hw_interrupt_disable();
+    
+    if (counter <= (uart->dma_rx_remaining_cnt)) {
+        recv_len = uart->dma_rx_remaining_cnt - counter;
+    } else {
+        recv_len = uart->dma_rx_remaining_cnt + dam_set_count - counter;
+    }
+
     if (recv_len)
     {
         uart->dma_rx_remaining_cnt = counter;
