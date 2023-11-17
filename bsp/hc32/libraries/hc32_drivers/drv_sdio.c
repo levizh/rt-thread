@@ -857,13 +857,50 @@ static void _sdio2_handler(void)
 #endif
 
 /**
+ * @brief  verify bus clock frequency.
+ * @param  [in] config                  Pointer to hc32_sdio_config structure
+ * @retval RT_EOK                       pass to verify
+ *         -RT_ERROR                    fail to verify
+ */
+static rt_err_t _sdio_verify_bus_clock_frequency(struct hc32_sdio_config *config)
+{
+    rt_err_t ret = RT_EOK;
+
+#if defined (HC32F4A0)
+    rt_uint32_t pclk1;
+    rt_uint32_t exlck;
+
+    (void)config;
+    /* ensure bus frequency condition: EXCLK >= PCLK1 */
+    pclk1 = CLK_GetBusClockFreq(CLK_BUS_PCLK1);
+    exlck = CLK_GetBusClockFreq(CLK_BUS_EXCLK);
+    if (exlck < pclk1)
+    {
+        LOG_E("bus frequency error: EXCLK < PCLK1. Please meet the bus frequency condition: EXCLK >= PCLK1");
+        ret = -RT_ERROR;
+    }
+#endif
+
+    return ret;
+}
+
+/**
  * @brief  Enable SDIO clock.
  * @param  [in] config                  Pointer to hc32_sdio_config structure
- * @retval None
+ * @retval RT_EOK                       pass to enable SDIO clock
+ *         -RT_ERROR                    fail to enable SDIO clock
  */
-static void _sdio_clock_enable(struct hc32_sdio_config *config)
+static rt_err_t _sdio_clock_enable(struct hc32_sdio_config *config)
 {
+    /* verify bus clock frequency */
+    if (_sdio_verify_bus_clock_frequency(config) != RT_EOK)
+    {
+        LOG_E("[%s] fail to verify bus clock frequency", __func__);
+        return -RT_ERROR;
+    }
+
     FCG_Fcg1PeriphClockCmd(config->clock, ENABLE);
+    return RT_EOK;
 }
 
 /**
@@ -964,7 +1001,12 @@ int rt_hw_sdio_init(void)
     {
         sdio_config = &_sdio_config[i];
 
-        _sdio_clock_enable(sdio_config);
+        if (_sdio_clock_enable(sdio_config) != RT_EOK)
+        {
+            LOG_E("clock enable fail");
+            return -1;
+        }
+
         host = _sdio_host_create(sdio_config, _sdio_cache_buf[i], &sdio_des);
         if (host == RT_NULL)
         {
