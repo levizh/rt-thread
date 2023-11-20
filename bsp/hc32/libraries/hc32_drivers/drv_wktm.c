@@ -42,7 +42,7 @@ static rt_uint32_t cmpval = CMPVAL_MAX;
 /**
  * This function get current count value of WKTM
  * @param  None
- * @return the count vlaue
+ * @return the count value
  */
 rt_uint32_t hc32_wktm_get_current_tick(void)
 {
@@ -110,7 +110,7 @@ int hc32_hw_wktm_init(void)
 
     /* Wake up by WKTM */
     PWC_PD_WakeupCmd(PWC_PD_WKUP_WKTM, ENABLE);
-    /* Disable WKTM inadvance */
+    /* Disable WKTM in advance */
     PWC_WKT_Cmd(DISABLE);
     /* WKTM init */
     PWC_WKT_Config(PWC_WKT_CLK_SRC, CMPVAL_MAX);
