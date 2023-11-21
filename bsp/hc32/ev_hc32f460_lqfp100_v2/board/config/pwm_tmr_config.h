@@ -36,7 +36,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -67,7 +66,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -98,7 +96,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -129,7 +126,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -160,7 +156,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -191,7 +186,6 @@ extern "C" {
                 .u8CountMode            = TMRA_MD_SAWTOOTH,     \
                 .u8CountDir             = TMRA_DIR_DOWN,        \
             },                                                  \
-            .u8CountReload              = TMRA_CNT_RELOAD_ENABLE\
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -323,34 +317,27 @@ extern "C" {
             {                                                   \
                 .u32ClockDiv            = TMR6_CLK_DIV1,        \
                 .u32CountMode           = TMR6_MD_SAWTOOTH,     \
-                .u32CountDir            = TMR6_CNT_DOWN,        \
+                .u32CountDir            = TMR6_CNT_UP,          \
             },                                                  \
             .u32PeriodValue             = 0xFFFF,               \
-            .u32CountReload             = TMR6_CNT_RELOAD_ON,   \
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
-                .u32StartPolarity           = TMR6_PWM_LOW,     \
-                .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HIGH,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32StartPolarity           = TMR6_PWM_HIGH,    \
+                .u32StopPolarity            = TMR6_PWM_HIGH,    \
+                .u32CompareMatchPolarity    = TMR6_PWM_LOW,     \
+                .u32PeriodMatchPolarity     = TMR6_PWM_HIGH,    \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
-                .u32StartPolarity           = TMR6_PWM_LOW,     \
-                .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HOLD,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32StartPolarity           = TMR6_PWM_HIGH,    \
+                .u32StopPolarity            = TMR6_PWM_HIGH,    \
+                .u32CompareMatchPolarity    = TMR6_PWM_LOW,     \
+                .u32PeriodMatchPolarity     = TMR6_PWM_HIGH,    \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             }                                                   \
         },                                                      \
     }
@@ -373,7 +360,6 @@ extern "C" {
                 .u32CountDir            = TMR6_CNT_DOWN,        \
             },                                                  \
             .u32PeriodValue             = 0xFFFF,               \
-            .u32CountReload             = TMR6_CNT_RELOAD_ON,   \
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -381,23 +367,17 @@ extern "C" {
                 .u32CompareValue            = 0x0000,           \
                 .u32StartPolarity           = TMR6_PWM_LOW,     \
                 .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HIGH,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32CompareMatchPolarity    = TMR6_PWM_HIGH,    \
+                .u32PeriodMatchPolarity     = TMR6_PWM_LOW,     \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
                 .u32StartPolarity           = TMR6_PWM_LOW,     \
                 .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HOLD,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32CompareMatchPolarity    = TMR6_PWM_HIGH,    \
+                .u32PeriodMatchPolarity     = TMR6_PWM_LOW,     \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             }                                                   \
         },                                                      \
     }
@@ -420,7 +400,6 @@ extern "C" {
                 .u32CountDir            = TMR6_CNT_DOWN,        \
             },                                                  \
             .u32PeriodValue             = 0xFFFF,               \
-            .u32CountReload             = TMR6_CNT_RELOAD_ON,   \
         },                                                      \
         .stcPwmInit =                                           \
         {                                                       \
@@ -428,23 +407,17 @@ extern "C" {
                 .u32CompareValue            = 0x0000,           \
                 .u32StartPolarity           = TMR6_PWM_LOW,     \
                 .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HIGH,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32CompareMatchPolarity    = TMR6_PWM_HIGH,    \
+                .u32PeriodMatchPolarity     = TMR6_PWM_LOW,     \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
                 .u32StartPolarity           = TMR6_PWM_LOW,     \
                 .u32StopPolarity            = TMR6_PWM_LOW,     \
-                .u32CountUpMatchAPolarity   = TMR6_PWM_HOLD,    \
-                .u32CountDownMatchAPolarity = TMR6_PWM_HOLD,    \
-                .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
-                .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
-                .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32CompareMatchPolarity    = TMR6_PWM_HIGH,    \
+                .u32PeriodMatchPolarity     = TMR6_PWM_LOW,     \
+                .u32StartStopHold   = TMR6_PWM_START_STOP_HOLD, \
             }                                                   \
         },                                                      \
     }
