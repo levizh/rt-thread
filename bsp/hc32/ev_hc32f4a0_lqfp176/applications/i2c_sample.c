@@ -19,7 +19,7 @@
 #define EE_ADDR                 0x50
 #define TEST_PAGE_CNT           8               // Test 8 pages
 
-#define EE24C256
+#define EE24C02
 
 #if defined (EE24C1024)
 /* 24C1024 not tested yet */
@@ -37,7 +37,7 @@
 #define EE_WORD_ADR_SIZE        1     // 1 word addr
 #endif
 
-#define HW_I2C          "i2c3"
+#define HW_I2C          "i2c1"
 
 static rt_uint8_t trans_buf[EE_PAGE_SIZE * TEST_PAGE_CNT];
 static rt_uint8_t recv_buf[EE_PAGE_SIZE * TEST_PAGE_CNT];
@@ -147,7 +147,9 @@ static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
     msg[0].flags = RT_I2C_WR;
     msg[0].len   = EE_PAGE_SIZE + EE_WORD_ADR_SIZE;
     msg[0].buf   = TxBuf;
-    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
+    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,TxBuf,msg[0].len/2);
+    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_START,TxBuf + msg[0].len/2,msg[0].len - msg[0].len/2);
+//    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
 
     /* write cycle 5ms */
     rt_thread_mdelay(5);
@@ -183,7 +185,9 @@ static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
     msg[1].len   = EE_PAGE_SIZE;
     msg[1].buf   = pBuf;
 
-    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
+    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,readAddr,EE_WORD_ADR_SIZE);
+    rt_i2c_master_recv(hc32_i2c,EE_ADDR,0,pBuf,EE_PAGE_SIZE);
+//    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
 }
 
 void eeprom_test(void)
