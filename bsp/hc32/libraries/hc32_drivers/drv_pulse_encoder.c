@@ -13,8 +13,10 @@
 
 #ifdef RT_USING_PULSE_ENCODER
 
+#include "drv_irq.h"
+
 // #define DRV_DEBUG
-#define LOG_TAG             "drv.pulse_encoder"
+#define LOG_TAG             "drv_pulse_encoder"
 #include <drv_log.h>
 
 #if defined(BSP_USING_TIMERA_PULSE_ENCODER)
@@ -338,7 +340,7 @@ static void hc32_get_pulse_encoder_tima_callback(void)
 rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
 {
     stc_tmra_init_t stcTmraInit;
-    stc_irq_signin_config_t stcIrq;
+    struct hc32_irq_config irq_config;
     struct hc32_pulse_encoder_tima_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
 
@@ -354,21 +356,21 @@ rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
     (void)TMRA_Init(hc32_device->tim_handler, &stcTmraInit);
 
     /* OVF interrupt configuration */
-    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_OVF;
-    stcIrq.enIRQn      = hc32_device->isr.enIRQn_OVF;
-    stcIrq.pfnCallback = hc32_device->isr.irq_Ovf_callback;
-    (void)INTC_IrqSignIn(&stcIrq);
-    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
-    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_OVF);
-    NVIC_EnableIRQ(stcIrq.enIRQn);
+    irq_config.irq_num = hc32_device->isr.enIRQn_OVF;
+    irq_config.int_src = hc32_device->isr.enIntSrc_OVF;
+    irq_config.irq_prio = hc32_device->isr.u8Int_Prio_OVF;
+    /* register interrupt */
+    hc32_install_irq_handler(&irq_config,
+                             hc32_device->isr.irq_Ovf_callback,
+                             RT_TRUE);
     /* UDF interrupt configuration */
-    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_UDF;
-    stcIrq.enIRQn      = hc32_device->isr.enIRQn_UDF;
-    stcIrq.pfnCallback = hc32_device->isr.irq_Udf_callback;
-    (void)INTC_IrqSignIn(&stcIrq);
-    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
-    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_UDF);
-    NVIC_EnableIRQ(stcIrq.enIRQn);
+    irq_config.irq_num = hc32_device->isr.enIRQn_UDF;
+    irq_config.int_src = hc32_device->isr.enIntSrc_UDF;
+    irq_config.irq_prio = hc32_device->isr.u8Int_Prio_UDF;
+    /* register interrupt */
+    hc32_install_irq_handler(&irq_config,
+                             hc32_device->isr.irq_Udf_callback,
+                             RT_TRUE);
 
     /* Enable the specified interrupts of TimerA. */
     TMRA_IntCmd(hc32_device->tim_handler, TMRA_INT_OVF | TMRA_INT_UDF, ENABLE);
@@ -662,7 +664,7 @@ static void hc32_get_pulse_encoder_tim6_callback(void)
 rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
 {
     stc_tmr6_init_t stcTmr6Init;
-    stc_irq_signin_config_t stcIrq;
+    struct hc32_irq_config irq_config;
     struct hc32_pulse_encoder_tim6_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
 
@@ -678,21 +680,21 @@ rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
     (void)TMR6_Init(hc32_device->tim_handler, &stcTmr6Init);
 
     /* OVF interrupt configuration */
-    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_OVF;
-    stcIrq.enIRQn      = hc32_device->isr.enIRQn_OVF;
-    stcIrq.pfnCallback = hc32_device->isr.irq_Ovf_callback;
-    (void)INTC_IrqSignIn(&stcIrq);
-    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
-    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_OVF);
-    NVIC_EnableIRQ(stcIrq.enIRQn);
+    irq_config.irq_num = hc32_device->isr.enIRQn_OVF;
+    irq_config.int_src = hc32_device->isr.enIntSrc_OVF;
+    irq_config.irq_prio = hc32_device->isr.u8Int_Prio_OVF;
+    /* register interrupt */
+    hc32_install_irq_handler(&irq_config,
+                             hc32_device->isr.irq_Ovf_callback,
+                             RT_TRUE);
     /* UDF interrupt configuration */
-    stcIrq.enIntSrc    = hc32_device->isr.enIntSrc_UDF;
-    stcIrq.enIRQn      = hc32_device->isr.enIRQn_UDF;
-    stcIrq.pfnCallback = hc32_device->isr.irq_Udf_callback;
-    (void)INTC_IrqSignIn(&stcIrq);
-    NVIC_ClearPendingIRQ(stcIrq.enIRQn);
-    NVIC_SetPriority(stcIrq.enIRQn, hc32_device->isr.u8Int_Prio_UDF);
-    NVIC_EnableIRQ(stcIrq.enIRQn);
+    irq_config.irq_num = hc32_device->isr.enIRQn_UDF;
+    irq_config.int_src = hc32_device->isr.enIntSrc_UDF;
+    irq_config.irq_prio = hc32_device->isr.u8Int_Prio_UDF;
+    /* register interrupt */
+    hc32_install_irq_handler(&irq_config,
+                             hc32_device->isr.irq_Udf_callback,
+                             RT_TRUE);
 
     /* Enable the specified interrupts of Timer6. */
     TMR6_IntCmd(hc32_device->tim_handler, TMR6_INT_OVF | TMR6_INT_UDF, ENABLE);

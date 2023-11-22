@@ -230,8 +230,8 @@
             #define PWM_TIM6_1_A_PIN_FUNC           (GPIO_FUNC_3)
         #endif
         #if defined(BSP_USING_PWM_TIM6_1_B)
-            #define PWM_TIM6_1_B_PORT               (GPIO_PORT_E)
-            #define PWM_TIM6_1_B_PIN                (GPIO_PIN_08)
+            #define PWM_TIM6_1_B_PORT               (GPIO_PORT_A)
+            #define PWM_TIM6_1_B_PIN                (GPIO_PIN_07)
             #define PWM_TIM6_1_B_PIN_FUNC           (GPIO_FUNC_3)
         #endif
     #endif
@@ -299,8 +299,8 @@
 
     #if defined(BSP_USING_TIMER6_PULSE_ENCODER)
         #if defined(BSP_USING_PULSE_ENCODER_TIM6_1)
-            #define PULSE_ENCODER_TIM6_1_A_PORT      (GPIO_PORT_A)
-            #define PULSE_ENCODER_TIM6_1_A_PIN       (GPIO_PIN_08)
+            #define PULSE_ENCODER_TIM6_1_A_PORT      (GPIO_PORT_E)
+            #define PULSE_ENCODER_TIM6_1_A_PIN       (GPIO_PIN_09)
             #define PULSE_ENCODER_TIM6_1_A_PIN_FUNC  (GPIO_FUNC_3)
             #define PULSE_ENCODER_TIM6_1_B_PORT      (GPIO_PORT_E)
             #define PULSE_ENCODER_TIM6_1_B_PIN       (GPIO_PIN_08)
