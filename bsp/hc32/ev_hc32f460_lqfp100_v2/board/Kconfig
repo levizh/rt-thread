@@ -594,11 +594,8 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_HWTIMER
         if BSP_USING_HWTIMER
-            config BSP_USING_TIM0_1A
-                bool "Use Timer0_1 CHA As The Hw Timer"
-                default n
             config BSP_USING_TIM0_1B
-                bool "Use Timer0_1 CHB As The Hw Timer"
+                bool "Use Timer0_1 CHB As The Hw Timer(Timer0_1 CHA Not Support!)"
                 default n
             config BSP_USING_TIM0_2A
                 bool "Use Timer0_2 CHA As The Hw Timer"

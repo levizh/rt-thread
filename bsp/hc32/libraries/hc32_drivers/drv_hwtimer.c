@@ -11,11 +11,13 @@
 #include <rtdevice.h>
 #include "drv_config.h"
 
-#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv.hwtimer"
 #include <drv_log.h>
 
 #ifdef BSP_USING_HWTIMER
+
+#include "drv_irq.h"
 
 enum
 {
@@ -69,26 +71,31 @@ static struct hc32_hwtimer hc32_hwtimer_obj[] =
 static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
 {
     stc_tmr0_init_t stcTmr0Init;
-    stc_irq_signin_config_t stcIrqSignConfig;
-    struct hc32_hwtimer *tim_device = RT_NULL;
+    struct hc32_irq_config irq_config;
+    struct hc32_hwtimer *tim_device = (struct hc32_hwtimer *)timer;
 
     RT_ASSERT(timer != RT_NULL);
-    if (state)
+
+    /* Interrupt configuration */
+    irq_config.irq_num = tim_device->isr.enIRQn;
+    irq_config.int_src = tim_device->isr.enIntSrc;
+    irq_config.irq_prio = tim_device->isr.u8Int_Prio;
+
+    if (state)  //open
     {
-        tim_device = (struct hc32_hwtimer *)timer;
+        /* Counter Frequency Fixed at maxfreq */
+        timer->freq = timer->info->maxfreq;
+
         /* Enable timer0 clock */
         FCG_Fcg2PeriphClockCmd(tim_device->u32Fcg2Periph, ENABLE);
 
         /* TIMER0 configuration */
         (void)TMR0_StructInit(&stcTmr0Init);
         stcTmr0Init.u32ClockSrc     = TMR0_CLK_SRC_INTERN_CLK;
-        stcTmr0Init.u32ClockDiv     = TMR0_CLK_DIV64;
+        stcTmr0Init.u32ClockDiv     = TMR0_CLK_DIV32;
         stcTmr0Init.u32Func         = TMR0_FUNC_CMP;
         stcTmr0Init.u16CompareValue = timer->info->maxcnt;
         (void)TMR0_Init(tim_device->tim_handle, tim_device->u32Ch, &stcTmr0Init);
-
-        /* Counter Frequency Fixed to maxfreq */
-        timer->freq = timer->info->maxfreq;
 
         if (tim_device->u32Ch == TMR0_CH_A)
         {
@@ -98,14 +105,13 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         {
             TMR0_IntCmd(tim_device->tim_handle, TMR0_INT_CMP_B, ENABLE);
         }
-        /* Interrupt configuration */
-        stcIrqSignConfig.enIntSrc    = tim_device->isr.enIntSrc;
-        stcIrqSignConfig.enIRQn      = tim_device->isr.enIRQn;
-        stcIrqSignConfig.pfnCallback = tim_device->isr.irq_callback;
-        (void)INTC_IrqSignIn(&stcIrqSignConfig);
-        NVIC_ClearPendingIRQ(stcIrqSignConfig.enIRQn);
-        NVIC_SetPriority(stcIrqSignConfig.enIRQn, tim_device->isr.u8Int_Prio);
-        NVIC_EnableIRQ(stcIrqSignConfig.enIRQn);
+        hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_TRUE);
+    }
+    else    //close
+    {
+        TMR0_DeInit(tim_device->tim_handle);
+        hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_FALSE);
+        FCG_Fcg2PeriphClockCmd(tim_device->u32Fcg2Periph, DISABLE);
     }
 }
 
@@ -118,10 +124,12 @@ static rt_err_t timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_
 
     tim_device = (struct hc32_hwtimer *)timer;
 
-    /* set tim cnt */
-    TMR0_SetCountValue(tim_device->tim_handle, tim_device->u32Ch, 0);
-    /* set tim arr */
-    TMR0_SetCompareValue(tim_device->tim_handle, tim_device->u32Ch, t - 1);
+    /* stop timer */
+    TMR0_Stop(tim_device->tim_handle, tim_device->u32Ch);
+    /* reset timer cnt */
+    TMR0_SetCountValue(tim_device->tim_handle, tim_device->u32Ch, 0U);
+    /* set timer arr */
+    TMR0_SetCompareValue(tim_device->tim_handle, tim_device->u32Ch, t - 1U);
     /* start timer */
     TMR0_Start(tim_device->tim_handle, tim_device->u32Ch);
 
@@ -138,8 +146,8 @@ static void timer_stop(rt_hwtimer_t *timer)
 
     /* stop timer */
     TMR0_Stop(tim_device->tim_handle, tim_device->u32Ch);
-    /* set tim cnt */
-    TMR0_SetCountValue(tim_device->tim_handle, tim_device->u32Ch, 0);
+    /* reset timer cnt */
+    TMR0_SetCountValue(tim_device->tim_handle, tim_device->u32Ch, 0U);
 }
 
 static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
@@ -221,9 +229,10 @@ static void TMR0_2B_callback(void)
 static struct rt_hwtimer_info _info;
 void tmr0_get_info_callback(void)
 {
-    _info.maxcnt  = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64 / 1000; //Period = 1ms
-    _info.maxfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64;
-    _info.minfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 64 / _info.maxcnt;
+    /* Div = 32 */
+    _info.maxcnt  = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 32U / 1000U; //Period = 1ms
+    _info.maxfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 32U;
+    _info.minfreq = CLK_GetBusClockFreq(CLK_BUS_PCLK1) / 32U / _info.maxcnt;
     _info.cntmode = HWTIMER_CNTMODE_UP;
 
 #ifdef BSP_USING_TIM0_1A
@@ -251,7 +260,7 @@ static const struct rt_hwtimer_ops _ops =
 
 static int hc32_hwtimer_init(void)
 {
-    int i = 0;
+    int i;
     int result = RT_EOK;
 
     tmr0_get_info_callback();
