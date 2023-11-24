@@ -53,7 +53,10 @@ struct pm_run_mode_config
  */
 struct pm_sleep_mode_idle_config
 {
-    uint8_t wait_for_type;
+    uint8_t wait_for_type;              /*!< WFI/WFE selection for entering sleep mode
+                                            @ref WFI_WFE_SELECTION */
+    rt_bool_t set_event_on_pending;     /*!< RT_TRUE: set SEVONPEND bit in SCR register
+                                            RT_FALSE: clear SEVONPEND bit in SCR register */
 };
 
 /**
@@ -62,7 +65,10 @@ struct pm_sleep_mode_idle_config
 struct pm_sleep_mode_deep_config
 {
     stc_pwc_stop_mode_config_t cfg;
-    uint8_t wait_for_type;
+    uint8_t wait_for_type;              /*!< WFI/WFE selection for entering sleep mode
+                                            @ref WFI_WFE_SELECTION */
+    rt_bool_t set_event_on_pending;     /*!< RT_TRUE: set SEVONPEND bit in SCR register
+                                            RT_FALSE: clear SEVONPEND bit in SCR register */
 };
 
 /**
@@ -114,7 +120,7 @@ struct pm_sleep_mode_shutdown_config
 * please make sure the state of the peripherals meet the requirements of entering the specified sleep mode,
 * otherwise system may not entering the right sleep mode or something unexpected may happen.
 * PM_SLEEP_CHECK is a demo of requirements and may not be comprehensive,
-* please refer user manual to known all the requirements in detail.
+* please refer user manual to know all the requirements in detail.
 */
 #define PM_SLEEP_CHECK(mode)                                        \
 (                                       (mode ==  PM_SLEEP_MODE_STANDBY && PM_SLEEP_SHUTDOWN_CHECK()) || \
@@ -122,8 +128,15 @@ struct pm_sleep_mode_shutdown_config
                                         (mode ==  PM_SLEEP_MODE_DEEP && PM_SLEEP_DEEP_CHECK())|| \
                                         (mode <=  PM_SLEEP_MODE_IDLE)))
 
-#define PM_SLEEP_WAIT_FOR_INT           (0U)
-#define PM_SLEEP_WAIT_FOR_EVT           (1U)
+/**
+ * @defgroup WFI_WFE_SELECTION
+ * @{
+ */
+#define PM_SLEEP_WAIT_FOR_INT           (0U)                /*!< entering sleep mode by WFI */
+#define PM_SLEEP_WAIT_FOR_EVT           (1U)                /*!< entering sleep mode by WFE */
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Global function prototypes (definition in C source)

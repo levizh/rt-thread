@@ -21,6 +21,12 @@ extern "C" {
 #ifdef BSP_USING_PM
 extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 
+#ifndef PM_TICKLESS_TIMER_ENABLE_MASK
+#define PM_TICKLESS_TIMER_ENABLE_MASK                                          \
+(   (1UL << PM_SLEEP_MODE_IDLE)  |                                             \
+    (1UL << PM_SLEEP_MODE_DEEP))
+#endif
+
 #ifndef PM_RUN_MODE_CFG
 #define PM_RUN_MODE_CFG                                                        \
     {                                                                          \
@@ -32,6 +38,7 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 #define PM_SLEEP_IDLE_CFG                                                      \
 {                                                                              \
     .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
+    .set_event_on_pending = RT_TRUE,                                          \
 }
 #endif /*PM_SLEEP_IDLE_CFG*/
 
@@ -44,6 +51,7 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
         .u16FlashWait = PWC_STOP_FLASH_WAIT_ON,                                \
     },                                                                         \
     .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
+    .set_event_on_pending = RT_TRUE,                                          \
 }
 #endif /*PM_SLEEP_DEEP_CFG*/
 
