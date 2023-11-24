@@ -85,6 +85,14 @@ static void __sleep_enter_idle(void)
     }
     else
     {
+        if (sleep_idle_cfg.set_event_on_pending)
+        {
+            SET_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
+        }
+        else
+        {
+            CLR_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
+        }
         __SEV();
         __WFE();
         __WFE();
@@ -104,8 +112,16 @@ static void __sleep_enter_deep(void)
     (void)PWC_STOP_Config(&sleep_deep_cfg.cfg);
     if (sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
     {
-        u8StopType = PWC_STOP_WFE_EVT;
+        if (sleep_deep_cfg.set_event_on_pending)
+        {
+            u8StopType = PWC_STOP_WFE_INT;
+        }
+        else
+        {
+            u8StopType = PWC_STOP_WFE_EVT;
+        }
     }
+
     PWC_STOP_Enter(u8StopType);
 }
 
@@ -183,7 +199,7 @@ static void run(struct rt_pm *pm, uint8_t mode)
 }
 
 /**
- * This function caculate the PM tick from OS tick
+ * This function calculate the PM tick from OS tick
  *
  * @param tick OS tick
  *
@@ -197,7 +213,7 @@ static rt_tick_t __wakeup_timer_tick_from_os_tick(rt_tick_t tick)
 }
 
 /**
- * This function caculate the OS tick from PM tick
+ * This function calculate the OS tick from PM tick
  *
  * @param tick PM tick
  *
@@ -276,10 +292,10 @@ int drv_pm_hw_init(void)
         run,
         __wakeup_timer_start,
         __wakeup_timer_stop,
-        __wakeup_timer_get_tick
+        RT_NULL
     };
 
-    rt_uint8_t timer_mask = 0;
+    rt_uint8_t timer_mask = PM_TICKLESS_TIMER_ENABLE_MASK;
     /* initialize system pm module */
     rt_system_pm_init(&_ops, timer_mask, RT_NULL);
     return 0;
