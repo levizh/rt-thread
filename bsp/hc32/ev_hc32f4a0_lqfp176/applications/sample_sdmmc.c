@@ -1,12 +1,12 @@
 /*
- * ³ÌÐòÇåµ¥£ºSD/MMC¿¨ Éè±¸Ê¹ÓÃÀý³Ì
- * Àý³Ìµ¼³öÁË sample_sdmmc ÃüÁîµ½¿ØÖÆÖÕ¶Ë
- * ÃüÁîµ÷ÓÃ¸ñÊ½£ºsdmmc_sample
- * ³ÌÐò¹¦ÄÜ£º¶ÔÕû¸öSD/MMC¿¨½øÐÐÐ´ºÍ¶Á²Ù×÷£¬±È½ÏÊý¾ÝÊÇ·ñÒ»ÖÂ
+ * ç¨‹åºæ¸…å•ï¼šSD/MMCå¡ è®¾å¤‡ä½¿ç”¨ä¾‹ç¨‹
+ * ä¾‹ç¨‹å¯¼å‡ºäº† sample_sdmmc å‘½ä»¤åˆ°æŽ§åˆ¶ç»ˆç«¯
+ * å‘½ä»¤è°ƒç”¨æ ¼å¼ï¼šsdmmc_sample
+ * ç¨‹åºåŠŸèƒ½ï¼šå¯¹æ•´ä¸ªSD/MMCå¡è¿›è¡Œå†™å’Œè¯»æ“ä½œï¼Œæ¯”è¾ƒæ•°æ®æ˜¯å¦ä¸€è‡´
  *
- * ×¢Òâ: ÐÞ¸Äº¯ÊýSystemClock_ConfigÏÂÃæ²ÎÊý£¬
+ * æ³¨æ„: ä¿®æ”¹å‡½æ•°SystemClock_Configä¸‹é¢å‚æ•°ï¼Œ
  *     stcPLLHInit.PLLCFGR_f.PLLN = 120UL - 1UL;
- *                    ¸ÄÎª
+ *                    æ”¹ä¸º
  *     stcPLLHInit.PLLCFGR_f.PLLN = 100UL - 1UL;
  */
 
