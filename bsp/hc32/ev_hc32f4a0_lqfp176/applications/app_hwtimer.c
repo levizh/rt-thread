@@ -15,6 +15,7 @@
  * 命令调用格式：hwtimer_sample  参数：oneshot 或者 period
  * 程序功能：硬件定时器超时回调函数周期性的打印当前tick值，2次tick值之差换算为时间等同于定时时间值。
 */
+#ifdef BSP_USING_HWTIMER
 
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -94,3 +95,4 @@ static int hwtimer_sample(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(hwtimer_sample, hwtimer sample: < oneshot | period >);
+#endif

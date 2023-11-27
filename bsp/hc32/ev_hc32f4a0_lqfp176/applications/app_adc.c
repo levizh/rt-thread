@@ -17,6 +17,7 @@
  * 程序功能：通过 ADC 设备采样电压值并转换为数值。
  *           示例代码参考电压为3.3V,转换位数为12位。
 */
+#ifdef RT_USING_ADC
 
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -75,3 +76,4 @@ static int adc_vol_sample(int argc, char **argv)
 
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(adc_vol_sample, adc convert sample: select < adc1 | adc2 | adc3 >);
+#endif
