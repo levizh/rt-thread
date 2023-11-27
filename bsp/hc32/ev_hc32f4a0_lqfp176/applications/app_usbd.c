@@ -61,7 +61,8 @@ static int cdc_sample(void)
     for (i = 1; i < 4; i++)
     {
         rt_kprintf("Start to send test message 3 timers :%d.\n", i);
-        if (rt_device_write(cdc_dev, 0, str_write, sizeof(str_write)) != sizeof(str_write)) {
+        if (rt_device_write(cdc_dev, 0, str_write, sizeof(str_write)) != sizeof(str_write))
+        {
             rt_kprintf("send test message failed\n");
             return RT_ERROR;
         }
@@ -155,7 +156,7 @@ MSH_CMD_EXPORT(hid_sample, usbd hid sample);
  * 
 */
 #define WINUSB_DEV_NAME   "winusb"     /* 名称 */
-uint8_t str_read[64];
+uint8_t str_read[100];
 
 static rt_err_t winusb_rx_handle(rt_device_t dev, rt_size_t size)
 {
@@ -170,7 +171,7 @@ static rt_err_t winusb_rx_handle(rt_device_t dev, rt_size_t size)
     rt_device_write(dev, 0, str_read, sizeof(str_read));
     /* prepare read config */
     rt_device_read(dev, 0, str_read, sizeof(str_read));
-		return RT_EOK;
+    return RT_EOK;
 }
 
 static int winusb_sample(void)
@@ -196,12 +197,12 @@ static int winusb_sample(void)
     rt_kprintf("Found and open success %s device!\n", WINUSB_DEV_NAME);
 
     ret = rt_device_set_rx_indicate(winusb_dev, winusb_rx_handle);
-		if(ret == RT_EOK)
-		{
+    if(ret == RT_EOK)
+    {
         /* prepare read config,set once,read once, */
         rt_device_read(winusb_dev, 0, str_read, sizeof(str_read));
-		}
-		return ret;
+    }
+    return ret;
 }
 
 /* 导出到 msh 命令列表中 */
