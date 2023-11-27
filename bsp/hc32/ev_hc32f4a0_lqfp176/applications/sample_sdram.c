@@ -1,10 +1,10 @@
 /*
- * ³ÌÐòÇåµ¥£ºSDRAM Éè±¸Ê¹ÓÃÀý³Ì£¬Àý³Ìµ¼³öÁËsdram_sampleÃüÁîµ½¿ØÖÆÖÕ¶Ë
- * ÃüÁîµ÷ÓÃ¸ñÊ½£ºsdram_sample
- * ³ÌÐò¹¦ÄÜ£ºÒÔ8/16/32bit·½Ê½·Ö±ð¶ÔÕû¸öSDRAM´æ´¢¿Õ¼ä½øÐÐÐ´ºÍ¶Á²Ù×÷£¬±È½ÏÊý¾ÝÊÇ·ñÒ»ÖÂ
+ * ç¨‹åºæ¸…å•ï¼šSDRAM è®¾å¤‡ä½¿ç”¨ä¾‹ç¨‹ï¼Œä¾‹ç¨‹å¯¼å‡ºäº†sdram_sampleå‘½ä»¤åˆ°æŽ§åˆ¶ç»ˆç«¯
+ * å‘½ä»¤è°ƒç”¨æ ¼å¼ï¼šsdram_sample
+ * ç¨‹åºåŠŸèƒ½ï¼šä»¥8/16/32bitæ–¹å¼åˆ†åˆ«å¯¹æ•´ä¸ªSDRAMå­˜å‚¨ç©ºé—´è¿›è¡Œå†™å’Œè¯»æ“ä½œï¼Œæ¯”è¾ƒæ•°æ®æ˜¯å¦ä¸€è‡´
  *
- * ×¢Òâ: ÐÞ¸Äº¯ÊýSystemClock_Config£¬µ÷ÓÃº¯ÊýCLK_SetClockDiv²ÎÊý£¬
- *     CLK_EXCLK_DIV2¸ÄÎªCLK_EXCLK_DIV4;
+ * æ³¨æ„: ä¿®æ”¹å‡½æ•°SystemClock_Configï¼Œè°ƒç”¨å‡½æ•°CLK_SetClockDivå‚æ•°ï¼Œ
+ *     CLK_EXCLK_DIV2æ”¹ä¸ºCLK_EXCLK_DIV4;
  *
  * menuconfig:
  *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or Nand  ---->  Using SDRAM

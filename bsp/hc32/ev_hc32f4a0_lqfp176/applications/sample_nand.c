@@ -1,10 +1,10 @@
 /*
- * ≥Ã–Ú«Âµ•£∫NAND …Ë±∏ π”√¿˝≥Ã£¨¿˝≥Ãµº≥ˆ¡Ànand_sample√¸¡ÓµΩøÿ÷∆÷’∂À
- * √¸¡Óµ˜”√∏Ò Ω£∫nand_sample
- * ≥Ã–Úπ¶ƒ‹£∫∂‘’˚∏ˆNand¥Ê¥¢ø’º‰Ω¯––≤¡≥˝°¢–¥∫Õ∂¡≤Ÿ◊˜£¨±»Ωœ ˝æ› «∑Ò“ª÷¬
+ * Á®ãÂ∫èÊ∏ÖÂçïÔºöNAND ËÆæÂ§á‰ΩøÁî®‰æãÁ®ãÔºå‰æãÁ®ãÂØºÂá∫‰∫Ünand_sampleÂëΩ‰ª§Âà∞ÊéßÂà∂ÁªàÁ´Ø
+ * ÂëΩ‰ª§Ë∞ÉÁî®Ê†ºÂºèÔºönand_sample
+ * Á®ãÂ∫èÂäüËÉΩÔºöÂØπÊï¥‰∏™NandÂ≠òÂÇ®Á©∫Èó¥ËøõË°åÊì¶Èô§„ÄÅÂÜôÂíåËØªÊìç‰ΩúÔºåÊØîËæÉÊï∞ÊçÆÊòØÂê¶‰∏ÄËá¥
  *
- * ◊¢“‚: –ﬁ∏ƒ∫Ø ˝SystemClock_Config£¨µ˜”√∫Ø ˝CLK_SetClockDiv≤Œ ˝£¨
- *     CLK_EXCLK_DIV2∏ƒŒ™CLK_EXCLK_DIV4;
+ * Ê≥®ÊÑè: ‰øÆÊîπÂáΩÊï∞SystemClock_ConfigÔºåË∞ÉÁî®ÂáΩÊï∞CLK_SetClockDivÂèÇÊï∞Ôºå
+ *     CLK_EXCLK_DIV2Êîπ‰∏∫CLK_EXCLK_DIV4;
  *
  * menuconfig:
  *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable NAND FLASH(MT29F2G08AB)
@@ -121,7 +121,7 @@ static void nand_thread_entry(void *parameter)
         return;
     }
 
-    /* ∂¡»°UID */
+    /* read UID */
     if (nand_read_id(mtd_nand) != RT_EOK)
     {
         rt_kprintf("fail nand_read_id!\n");
