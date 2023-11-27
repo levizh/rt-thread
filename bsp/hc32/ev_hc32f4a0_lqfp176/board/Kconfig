@@ -626,14 +626,16 @@ menu "On-chip Peripheral Drivers"
         if BSP_USING_PM
             choice
                 prompt "Select WKTM Clock Src"
-                default BSP_USING_WKTM_RTCLRC
+                default BSP_USING_WKTM_LRC
 
                 config BSP_USING_WKTM_XTAL32
                     bool "Using Xtal32"
-                config BSP_USING_WKTM_RTCLRC
-                    bool "Using RTCLRC"
-                config BSP_USING_WKTM_64HZ
-                    bool "Using 64HZ(Note:Must Enable RTC)"
+                config BSP_USING_WKTM_LRC
+                    bool "Using LRC"
+                if BSP_RTC_USING_XTAL32
+                    config BSP_USING_WKTM_64HZ
+                        bool "Using 64HZ(Note:must use XTAL32 and run RTC)"
+                endif
             endchoice
         endif
 

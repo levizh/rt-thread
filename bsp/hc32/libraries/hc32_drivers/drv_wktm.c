@@ -27,7 +27,7 @@
 #define PWC_WKT_COUNT_FRQ           (32768UL)
 #elif defined(BSP_USING_WKTM_64HZ)
 #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_64HZ)
-#define PWC_WKT_COUNT_FRQ           (64UL)
+#define PWC_WKT_COUNT_FRQ           (64U)
 #else
 #if defined(HC32F4A0)
 #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_RTCLRC)
@@ -67,6 +67,17 @@ rt_uint32_t hc32_wktm_get_tick_max(void)
  */
 rt_err_t hc32_wktm_start(rt_uint32_t reload)
 {
+    /* 64HZ must use XTAL32 and run RTC */
+#if defined(BSP_USING_WKTM_64HZ)
+#if defined(BSP_RTC_USING_XTAL32)
+    if (DISABLE == RTC_GetCounterState()) {
+        /* #error "Please start the RTC!" */
+        RT_ASSERT(0);
+    }
+#else
+    #error "Please enable XTAL32 and start the RTC!"
+#endif
+#endif
     if (reload > CMPVAL_MAX || !reload) {
         return RT_ERROR;
     }
@@ -94,9 +105,7 @@ void hc32_wktm_stop(void)
  */
 rt_uint32_t hc32_wktm_get_countfreq(void)
 {
-    rt_uint32_t freq = 0;
-    freq = PWC_WKT_COUNT_FRQ / (float)cmpval;
-    return freq;
+    return PWC_WKT_COUNT_FRQ;
 }
 
 /**
@@ -108,8 +117,6 @@ int hc32_hw_wktm_init(void)
 {
     rt_err_t ret = RT_EOK;
 
-    /* Wake up by WKTM */
-    PWC_PD_WakeupCmd(PWC_PD_WKUP_WKTM, ENABLE);
     /* Disable WKTM in advance */
     PWC_WKT_Cmd(DISABLE);
     /* WKTM init */
