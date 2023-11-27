@@ -1,10 +1,9 @@
 /*
  * 程序清单：这是 RTC 设备使用例程和 Alarm 使用示例。
- * 例程分别导出了 rtc_sample 命令和 alarm_sample 到控制终端。
- * 命令调用格式：wdt_sample wdt
- * 命令解释：命令第二个参数是要使用的WDT设备名称，为空则使用默认的"wdt"
- * 程序功能：查找、初始化WDT设备，设置超时时间后启动WDT。在经过10次Feed后
- * 移除Feed WDT的操作，等待超时重启。
+ * 例程导出了 rtc_sample 到控制终端。
+ * 命令调用格式：rtc_sample cmd_id [options]
+ * 命令解释：命令第二个参数是要使用的RTC设备命令，为空则打印命令使用说明
+ * 程序功能：查找、初始化RTC设备，设置/获取RTC日期和时间、设置/查询/删除闹钟。
 */
 
 #include <rtthread.h>
@@ -12,7 +11,6 @@
 #include <board.h>
 #include "rtconfig.h"
 #include "rtdef.h"
-// #include "alarm.h"
 
 #if defined(BSP_USING_RTC)
 
@@ -78,7 +76,7 @@ static int rtc_sample(int argc, char *argv[])
         rt_kprintf("\'2 xxxx-xx-xx\': set date with \n");
         rt_kprintf("\'3\': get time and date \n");
 #if defined(RT_USING_ALARM)
-        rt_kprintf("\'4\': set current time + 10s as alarm \n");
+        rt_kprintf("\'4\': set current time + 60s as alarm \n");
         rt_kprintf("\'5\': start alarm \n");
         rt_kprintf("\'6\': stop alarm \n");
         rt_kprintf("cmd-7 after cmd-4\n%4c\'7 o\': oneshot,%4c\'7 s\': second, %4c\'7 m\': minute \n");
