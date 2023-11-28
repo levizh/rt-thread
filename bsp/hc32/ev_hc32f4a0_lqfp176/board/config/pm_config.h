@@ -27,6 +27,9 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
     (1UL << PM_SLEEP_MODE_DEEP))
 #endif
 
+/**
+ * @brief  run mode config @ref pm_run_mode_config structure
+ */
 #ifndef PM_RUN_MODE_CFG
 #define PM_RUN_MODE_CFG                                                        \
     {                                                                          \
@@ -34,6 +37,9 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
     }
 #endif /* PM_RUN_MODE_CFG */
 
+/**
+ * @brief  sleep idle config @ref pm_sleep_mode_idle_config structure
+ */
 #ifndef PM_SLEEP_IDLE_CFG
 #define PM_SLEEP_IDLE_CFG                                                      \
 {                                                                              \
@@ -42,6 +48,9 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 }
 #endif /*PM_SLEEP_IDLE_CFG*/
 
+/**
+ * @brief  sleep deep config @ref pm_sleep_mode_deep_config structure
+ */
 #ifndef PM_SLEEP_DEEP_CFG
 #define PM_SLEEP_DEEP_CFG                                                      \
 {                                                                              \
@@ -56,6 +65,9 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 }
 #endif /*PM_SLEEP_DEEP_CFG*/
 
+/**
+ * @brief  sleep standby config @ref pm_sleep_mode_standby_config structure
+ */
 #ifndef PM_SLEEP_STANDBY_CFG
 #define PM_SLEEP_STANDBY_CFG                                                   \
 {                                                                              \
@@ -67,6 +79,9 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 }
 #endif /*PM_SLEEP_STANDBY_CFG*/
 
+/**
+ * @brief  sleep shutdown config @ref pm_sleep_mode_shutdown_config structure
+ */
 #ifndef PM_SLEEP_SHUTDOWN_CFG
 #define PM_SLEEP_SHUTDOWN_CFG                                                  \
 {                                                                              \

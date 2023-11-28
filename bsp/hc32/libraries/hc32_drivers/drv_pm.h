@@ -37,7 +37,6 @@ extern "C"
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
-typedef void (* sleep_mode_init_func)(void);
 typedef void (* run_mode_init_func)(uint8_t run_mode);
 
 /**
