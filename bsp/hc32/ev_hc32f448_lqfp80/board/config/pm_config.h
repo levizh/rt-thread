@@ -20,9 +20,16 @@ extern "C" {
 
 #ifdef BSP_USING_PM
 extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
-extern void rt_hw_board_pm_sleep_deep_init(void);
-extern void rt_hw_board_pm_sleep_shutdown_init(void);
 
+#ifndef PM_TICKLESS_TIMER_ENABLE_MASK
+#define PM_TICKLESS_TIMER_ENABLE_MASK                                          \
+(   (1UL << PM_SLEEP_MODE_IDLE)  |                                             \
+    (1UL << PM_SLEEP_MODE_DEEP))
+#endif
+
+/**
+ * @brief  run mode config @ref pm_run_mode_config structure
+ */
 #ifndef PM_RUN_MODE_CFG
 #define PM_RUN_MODE_CFG                                                        \
     {                                                                          \
@@ -30,48 +37,58 @@ extern void rt_hw_board_pm_sleep_shutdown_init(void);
     }
 #endif /* PM_RUN_MODE_CFG */
 
-#ifndef PM_SLEEP_MODE_CFG
-#define PM_SLEEP_MODE_CFG                                                      \
+/**
+ * @brief  sleep idle config @ref pm_sleep_mode_idle_config structure
+ */
+#ifndef PM_SLEEP_IDLE_CFG
+#define PM_SLEEP_IDLE_CFG                                                      \
 {                                                                              \
-    .init_func =                                                               \
-     {                                                                         \
-       RT_NULL,                                                                \
-       RT_NULL,                                                                \
-       RT_NULL,                                                                \
-       rt_hw_board_pm_sleep_deep_init,                                         \
-       RT_NULL,                                                                \
-       rt_hw_board_pm_sleep_shutdown_init,                                     \
-    } ,                                                                        \
-    .deep_mode_wait_type = PM_SLEEP_WAIT_TYPE_WFI,                             \
+    .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
+    .set_event_on_pending = RT_TRUE,                                          \
 }
-#endif
+#endif /*PM_SLEEP_IDLE_CFG*/
 
+/**
+ * @brief  sleep deep config @ref pm_sleep_mode_deep_config structure
+ */
 #ifndef PM_SLEEP_DEEP_CFG
-#define PM_SLEEP_DEEP_CFG_CLK           PWC_STOP_CLK_KEEP
 #define PM_SLEEP_DEEP_CFG                                                      \
 {                                                                              \
-    .init_func = rt_hw_board_pm_sleep_deep_init,                               \
-    .cfg =                                                                     \
     {                                                                          \
-        PM_SLEEP_DEEP_CFG_CLK,                                                 \
-        PWC_STOP_DRV_LOW,                                                      \
-        PWC_STOP_EXBUS_HIZ,                                                    \
-        PWC_STOP_FLASH_WAIT_ON,                                                \
+        .u16Clock = PWC_STOP_CLK_KEEP,                                         \
+        .u8StopDrv = PWC_STOP_DRV_HIGH,                                        \
+        .u16ExBusHold = PWC_STOP_EXBUS_HIZ,                                    \
+        .u16FlashWait = PWC_STOP_FLASH_WAIT_ON,                                \
     },                                                                         \
-    .wait_for_wakeup_type = PM_SLEEP_WAIT_TYPE_WFI,                            \
-    .wakeup_int_src = (INTC_STOP_WKUP_EXTINT_CH0 | INTC_STOP_WKUP_WKTM),       \
+    .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
+    .set_event_on_pending = RT_TRUE,                                          \
 }
 #endif /*PM_SLEEP_DEEP_CFG*/
 
+/**
+ * @brief  sleep standby config @ref pm_sleep_mode_standby_config structure
+ */
+#ifndef PM_SLEEP_STANDBY_CFG
+#define PM_SLEEP_STANDBY_CFG                                                   \
+{                                                                              \
+    {                                                                          \
+        .u8Mode = PWC_PD_MD1,                                                  \
+        .u8IOState = PWC_PD_IO_KEEP1,                                          \
+        .u8VcapCtrl = PWC_PD_VCAP_0P047UF,                                     \
+    },                                                                         \
+}
+#endif /*PM_SLEEP_STANDBY_CFG*/
+
+/**
+ * @brief  sleep shutdown config @ref pm_sleep_mode_shutdown_config structure
+ */
 #ifndef PM_SLEEP_SHUTDOWN_CFG
 #define PM_SLEEP_SHUTDOWN_CFG                                                  \
 {                                                                              \
-    .init_func = rt_hw_board_pm_sleep_shutdown_init,                           \
-    .cfg =                                                                     \
     {                                                                          \
-        PWC_PD_MD3,                                                            \
-        PWC_PD_IO_KEEP1,                                                       \
-        PWC_PD_VCAP_0P047UF,                                                   \
+        .u8Mode = PWC_PD_MD3,                                                  \
+        .u8IOState = PWC_PD_IO_KEEP1,                                          \
+        .u8VcapCtrl = PWC_PD_VCAP_0P047UF,                                     \
     },                                                                         \
 }
 #endif /*PM_SLEEP_SHUTDOWN_CFG*/
