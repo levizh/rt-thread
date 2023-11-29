@@ -17,8 +17,6 @@
  * 程序功能：通过 ADC 设备采样电压值并转换为数值。
  *           示例代码参考电压为3.3V,转换位数为12位。
 */
-#ifdef RT_USING_ADC
-
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "board_config.h"
@@ -27,6 +25,7 @@
 #define REFER_VOLTAGE       3300        /* 参考电压 3.3V,单位mv */
 #define CONVERT_BITS        (1 << 12)   /* 转换位数为12位 */
 
+#ifdef RT_USING_ADC
 static int adc_vol_sample(int argc, char **argv)
 {
     rt_adc_device_t adc_dev;            /* ADC 设备句柄 */

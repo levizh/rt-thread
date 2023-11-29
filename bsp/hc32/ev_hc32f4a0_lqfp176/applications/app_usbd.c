@@ -168,7 +168,7 @@ static rt_err_t winusb_rx_handle(rt_device_t dev, rt_size_t size)
         rt_kprintf("%x", str_read[i]);
     }
     rt_kprintf("\r\n");
-    rt_device_write(dev, 0, str_read, sizeof(str_read));
+    rt_device_write(dev, 0, str_read, size);
     /* prepare read config */
     rt_device_read(dev, 0, str_read, sizeof(str_read));
     return RT_EOK;

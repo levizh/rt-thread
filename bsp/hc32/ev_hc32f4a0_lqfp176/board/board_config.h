@@ -82,6 +82,8 @@
 #if defined(BSP_USING_DAC2)
     #define DAC2_CH1_PORT                   (GPIO_PORT_C)
     #define DAC2_CH1_PIN                    (GPIO_PIN_04)
+    #define DAC2_CH2_PORT                   (GPIO_PORT_C)
+    #define DAC2_CH2_PIN                    (GPIO_PIN_05)
 #endif
 
 /***********  CAN configure *********/
