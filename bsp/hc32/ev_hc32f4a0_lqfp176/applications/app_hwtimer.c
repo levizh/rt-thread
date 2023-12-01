@@ -15,13 +15,14 @@
  * 命令调用格式：hwtimer_sample  参数：oneshot 或者 period
  * 程序功能：硬件定时器超时回调函数周期性的打印当前tick值，2次tick值之差换算为时间等同于定时时间值。
 */
-#ifdef BSP_USING_HWTIMER
+
 
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#define HWTIMER_DEV_NAME   "tim0_1A"     /* 定时器名称 */
+#ifdef BSP_USING_HWTIMER
 
+#define HWTIMER_DEV_NAME   "tim0_1A"     /* 定时器名称 */
 
 /* 定时器超时回调函数 */
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
