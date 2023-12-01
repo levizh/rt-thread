@@ -414,7 +414,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -446,7 +446,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -478,7 +478,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -525,7 +525,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -536,7 +536,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -546,7 +546,7 @@ extern "C" {
 #ifndef PWM_TIM6_2_CONFIG
 #define PWM_TIM6_2_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t62",            \
         .instance                       = CM_TMR6_2,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -572,7 +572,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -583,7 +583,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -593,7 +593,7 @@ extern "C" {
 #ifndef PWM_TIM6_3_CONFIG
 #define PWM_TIM6_3_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t63",            \
         .instance                       = CM_TMR6_3,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -619,7 +619,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -630,7 +630,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -640,7 +640,7 @@ extern "C" {
 #ifndef PWM_TIM6_4_CONFIG
 #define PWM_TIM6_4_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t64",            \
         .instance                       = CM_TMR6_4,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -666,7 +666,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -677,7 +677,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -687,7 +687,7 @@ extern "C" {
 #ifndef PWM_TIM6_5_CONFIG
 #define PWM_TIM6_5_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t65",            \
         .instance                       = CM_TMR6_5,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -713,7 +713,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -724,7 +724,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -734,7 +734,7 @@ extern "C" {
 #ifndef PWM_TIM6_6_CONFIG
 #define PWM_TIM6_6_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t66",            \
         .instance                       = CM_TMR6_6,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -760,7 +760,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -771,7 +771,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -781,7 +781,7 @@ extern "C" {
 #ifndef PWM_TIM6_7_CONFIG
 #define PWM_TIM6_7_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t67",            \
         .instance                       = CM_TMR6_7,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -807,7 +807,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -818,7 +818,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }
@@ -828,7 +828,7 @@ extern "C" {
 #ifndef PWM_TIM6_8_CONFIG
 #define PWM_TIM6_8_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t68",            \
         .instance                       = CM_TMR6_8,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -854,7 +854,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             },                                                  \
             {                                                   \
                 .u32CompareValue            = 0x0000,           \
@@ -865,7 +865,7 @@ extern "C" {
                 .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
                 .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
                 .u32UdfPolarity             = TMR6_PWM_LOW,     \
-                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_HOLD,    \
             }                                                   \
         },                                                      \
     }

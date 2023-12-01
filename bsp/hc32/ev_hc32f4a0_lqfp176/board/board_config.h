@@ -582,8 +582,8 @@
             #define PWM_TIMA_5_CH3_PIN_FUNC         (GPIO_FUNC_5)
         #endif
         #if defined(BSP_USING_PWM_TIMA_5_CH4)
-            #define PWM_TIMA_5_CH4_PORT             (GPIO_PORT_H)
-            #define PWM_TIMA_5_CH4_PIN              (GPIO_PIN_01)
+            #define PWM_TIMA_5_CH4_PORT             (GPIO_PORT_I)
+            #define PWM_TIMA_5_CH4_PIN              (GPIO_PIN_00)
             #define PWM_TIMA_5_CH4_PIN_FUNC         (GPIO_FUNC_5)
         #endif
     #endif
@@ -886,8 +886,8 @@
     #endif
     #if defined(BSP_USING_PWM_TIM6_4)
         #if defined(BSP_USING_PWM_TIM6_4_A)
-            #define PWM_TIM6_4_A_PORT               (GPIO_PORT_A)
-            #define PWM_TIM6_4_A_PIN                (GPIO_PIN_11)
+            #define PWM_TIM6_4_A_PORT               (GPIO_PORT_G)
+            #define PWM_TIM6_4_A_PIN                (GPIO_PIN_15)
             #define PWM_TIM6_4_A_PIN_FUNC           (GPIO_FUNC_3)
         #endif
         #if defined(BSP_USING_PWM_TIM6_4_B)
@@ -899,12 +899,12 @@
     #if defined(BSP_USING_PWM_TIM6_5)
         #if defined(BSP_USING_PWM_TIM6_5_A)
             #define PWM_TIM6_5_A_PORT               (GPIO_PORT_C)
-            #define PWM_TIM6_5_A_PIN                (GPIO_PIN_04)
+            #define PWM_TIM6_5_A_PIN                (GPIO_PIN_10)
             #define PWM_TIM6_5_A_PIN_FUNC           (GPIO_FUNC_3)
         #endif
         #if defined(BSP_USING_PWM_TIM6_5_B)
-            #define PWM_TIM6_5_B_PORT               (GPIO_PORT_C)
-            #define PWM_TIM6_5_B_PIN                (GPIO_PIN_05)
+            #define PWM_TIM6_5_B_PORT               (GPIO_PORT_D)
+            #define PWM_TIM6_5_B_PIN                (GPIO_PIN_00)
             #define PWM_TIM6_5_B_PIN_FUNC           (GPIO_FUNC_3)
         #endif
     #endif
