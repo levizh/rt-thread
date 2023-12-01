@@ -1,9 +1,9 @@
 /*
  * 程序清单：这是 I2C 设备使用例程。
  * 例程导出了 i2c_sample 到控制终端。
- * 命令调用格式：i2c_sample sw/hw cmd_id [options]
- * 命令解释：命令第二个参数是要使用的Soft I2C设备的命令，为空则打印命令使用说明
- * 程序功能：查找Soft I2C设备，读写I2C设备寄存器。
+ * 命令调用格式：i2c_sample
+ * 命令解释：
+ * 程序功能：查找I2C模块，读写I2C设备。
  * 注意：测试要用逻辑分析仪或示波器抓取信号
 */
 
@@ -12,6 +12,13 @@
 #include <board.h>
 
 #if defined(RT_USING_I2C)
+
+/* 
+    to readout/write  from/into i2c device, user could use this macro to choice 
+    either rt_i2c_master_send & rt_i2c_master_recv or rt_i2c_transfer 
+*/
+
+//#define USING_RT_I2C_TRANSFER
 
 /* defined the LED_GREEN pin: PC9 */
 #define LED_GREEN_PIN GET_PIN(C, 9)
@@ -147,10 +154,13 @@ static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
     msg[0].flags = RT_I2C_WR;
     msg[0].len   = EE_PAGE_SIZE + EE_WORD_ADR_SIZE;
     msg[0].buf   = TxBuf;
+    
+#if defined(USING_RT_I2C_TRANSFER)
+    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
+#else
     rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,TxBuf,msg[0].len/2);
     rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_START,TxBuf + msg[0].len/2,msg[0].len - msg[0].len/2);
-//    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
-
+#endif
     /* write cycle 5ms */
     rt_thread_mdelay(5);
 }
@@ -158,7 +168,10 @@ static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
 static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
 {
     struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
+
+#if defined(USING_RT_I2C_TRANSFER)
     struct rt_i2c_msg msg[2];
+#endif
     uint8_t readAddr[EE_WORD_ADR_SIZE];
     if (EE_WORD_ADR_SIZE == 2)
     {
@@ -174,7 +187,8 @@ static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
 #else
     hc32_i2c = rt_i2c_bus_device_find("i2c1_sw");   //sw sim i2c
 #endif
-  
+
+#if defined(USING_RT_I2C_TRANSFER)    
     msg[0].addr  = EE_ADDR;
     msg[0].flags = RT_I2C_WR;
     msg[0].len   = EE_WORD_ADR_SIZE;
@@ -184,10 +198,11 @@ static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
     msg[1].flags = RT_I2C_RD;
     msg[1].len   = EE_PAGE_SIZE;
     msg[1].buf   = pBuf;
-
-    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,readAddr,EE_WORD_ADR_SIZE);
+    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
+#else
+    rt_i2c_master_send(hc32_i2c,EE_ADDR,0/*RT_I2C_NO_STOP*/,readAddr,EE_WORD_ADR_SIZE);
     rt_i2c_master_recv(hc32_i2c,EE_ADDR,0,pBuf,EE_PAGE_SIZE);
-//    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
+#endif
 }
 
 void eeprom_test(void)
@@ -219,47 +234,17 @@ void eeprom_test(void)
     }
     rt_kprintf("\r\n");
 }
-#if defined(RT_USING_ADC)
-void adc_test(void)
-{
-#define ADC_DEV_NAME        "adc1"      /* ADC 设备名称 */
-#define ADC_DEV_CHANNEL     3           /* ADC 通道 */
-#define REFER_VOLTAGE       330         /* 参考电压 3.3V,数据精度乘以100保留2位小数*/
-#define CONVERT_BITS        (1 << 12)   /* 转换位数为12位 */
-  
-    rt_adc_device_t adc_dev;            /* ADC 设备句柄 */
-    rt_uint32_t value, vol;
-    /* 查找设备 */
-    adc_dev = (rt_adc_device_t)rt_device_find(ADC_DEV_NAME);
-    /* 使能设备 */
-    rt_adc_enable(adc_dev, ADC_DEV_CHANNEL);
-    /* 读取采样值 */
-    value = rt_adc_read(adc_dev, ADC_DEV_CHANNEL);
-    /* 转换为对应电压值 */
-    vol = value * REFER_VOLTAGE / CONVERT_BITS;
-    rt_kprintf("the voltage is :%d.%02d \n", vol / 100, vol % 100);
-}
-#endif /* RT_USING_ADC */
 
-extern int can_sample_init(void);
-
-static int i2c_sample(int argc, char *argv[])
+static void i2c_sample(int argc, char *argv[])
 {
-    rt_uint16_t u16Times = 10;
     /* set LED_GREEN_PIN pin mode to output */
     rt_pin_mode(LED_GREEN_PIN, PIN_MODE_OUTPUT);
-
-//    can_sample_init();
-    while (u16Times--)
-    {
-        rt_pin_write(LED_GREEN_PIN, PIN_HIGH);
-        rt_thread_mdelay(500);
-        rt_pin_write(LED_GREEN_PIN, PIN_LOW);
-        rt_thread_mdelay(500);
-        i2c_test();
-        eeprom_test();
-//        adc_test();
-    }
+    rt_pin_write(LED_GREEN_PIN, PIN_HIGH);
+    rt_thread_mdelay(500);
+    rt_pin_write(LED_GREEN_PIN, PIN_LOW);
+    rt_thread_mdelay(500);
+    i2c_test();
+    eeprom_test();
 }
 
 MSH_CMD_EXPORT(i2c_sample, i2c sample);
