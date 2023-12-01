@@ -566,10 +566,43 @@ menu "On-chip Peripheral Drivers"
                 default n
         endif
 
-    config BSP_USING_WDT
+    menuconfig BSP_USING_WDT_TIM
         bool "Enable Watchdog Timer"
-        select RT_USING_WDT
         default n
+        select RT_USING_WDT
+        if BSP_USING_WDT_TIM
+            choice
+                prompt "Select SWDT/WDT"
+                default BSP_USING_SWDT
+
+                config BSP_USING_SWDT
+                    bool "SWDT(3.72hour(max))"
+                config BSP_USING_WDT
+                    bool "WDT(10.7s(max))"
+            endchoice
+
+            if BSP_USING_WDT
+                config BSP_WDT_DIV
+                    int "Select PCLK3 Div(4/64/128/256/512/1024/2048/8192)"
+                    range 4 8192
+                    default 256
+            endif
+            if BSP_USING_SWDT
+                config BSP_SWDT_DIV
+                int "Select SWDTCLK Div(1/16/32/64/128/256/2048)"
+                range 1 2048
+                default 256
+            endif
+
+            config BSP_WDT_REFRESH_RANGE
+                hex "WDT Refresh Windows Range(0x01-0x0F)"
+                range 0x01 0x0F
+                default 0x0F
+
+            config BSP_WDT_CONTINUE_COUNT
+                bool "Low Power Mode Keeps Counting"
+                default n
+        endif
 
     menuconfig BSP_USING_RTC
         bool "Enable RTC"

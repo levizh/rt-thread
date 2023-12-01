@@ -758,7 +758,6 @@ static const struct rt_pulse_encoder_ops tim6_ops =
 
 int hw_pulse_encoder_init(void)
 {
-    int i;
     int result;
 
     result = RT_EOK;
@@ -767,7 +766,7 @@ int hw_pulse_encoder_init(void)
     extern rt_err_t rt_hw_board_pulse_encoder_tmra_init(void);
     result = rt_hw_board_pulse_encoder_tmra_init();
     hc32_get_pulse_encoder_tima_callback();
-    for (i = 0; i < sizeof(hc32_pulse_encoder_tima_obj) / sizeof(hc32_pulse_encoder_tima_obj[0]); i++)
+    for (int i = 0; i < sizeof(hc32_pulse_encoder_tima_obj) / sizeof(hc32_pulse_encoder_tima_obj[0]); i++)
     {
         hc32_pulse_encoder_tima_obj[i].pulse_encoder.type = AB_PHASE_PULSE_ENCODER;
         hc32_pulse_encoder_tima_obj[i].pulse_encoder.ops = &tima_ops;
@@ -784,7 +783,7 @@ int hw_pulse_encoder_init(void)
     extern rt_err_t rt_hw_board_pulse_encoder_tmr6_init(void);
     result = rt_hw_board_pulse_encoder_tmr6_init();
     hc32_get_pulse_encoder_tim6_callback();
-    for (i = 0; i < sizeof(hc32_pulse_encoder_tim6_obj) / sizeof(hc32_pulse_encoder_tim6_obj[0]); i++)
+    for (int i = 0; i < sizeof(hc32_pulse_encoder_tim6_obj) / sizeof(hc32_pulse_encoder_tim6_obj[0]); i++)
     {
         hc32_pulse_encoder_tim6_obj[i].pulse_encoder.type = AB_PHASE_PULSE_ENCODER;
         hc32_pulse_encoder_tim6_obj[i].pulse_encoder.ops = &tim6_ops;

@@ -391,8 +391,10 @@ menu "On-chip Peripheral Drivers"
                     bool "Using Xtal32"
                 config BSP_USING_WKTM_LRC
                     bool "Using LRC"
-                config BSP_USING_WKTM_64HZ
-                    bool "Using 64HZ(Note:Must Enable RTC)"
+                if BSP_RTC_USING_XTAL32
+                    config BSP_USING_WKTM_64HZ
+                        bool "Using 64HZ(Note:must use XTAL32 and run RTC)"
+                endif
             endchoice
         endif
 
