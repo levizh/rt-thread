@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Change Logs:
- * Date           Author       Notes
- * 2022-04-28     CDT          first version
- */
+ * 程序清单：这是 I2C 设备使用例程。
+ * 例程导出了 i2c_sample 到控制终端。
+ * 命令调用格式：i2c_sample sw/hw cmd_id [options]
+ * 命令解释：命令第二个参数是要使用的Soft I2C设备的命令，为空则打印命令使用说明
+ * 程序功能：查找Soft I2C设备，读写I2C设备寄存器。
+ * 注意：测试要用逻辑分析仪或示波器抓取信号
+*/
 
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+
+#if defined(RT_USING_I2C)
 
 /* defined the LED_GREEN pin: PC9 */
 #define LED_GREEN_PIN GET_PIN(C, 9)
@@ -219,36 +219,38 @@ void eeprom_test(void)
     }
     rt_kprintf("\r\n");
 }
-
+#if defined(RT_USING_ADC)
 void adc_test(void)
 {
-#define ADC_DEV_NAME        "adc1"      /* ADC �豸���� */
-#define ADC_DEV_CHANNEL     3           /* ADC ͨ�� */
-#define REFER_VOLTAGE       330         /* �ο���ѹ 3.3V,���ݾ��ȳ���100����2λС��*/
-#define CONVERT_BITS        (1 << 12)   /* ת��λ��Ϊ12λ */
+#define ADC_DEV_NAME        "adc1"      /* ADC 设备名称 */
+#define ADC_DEV_CHANNEL     3           /* ADC 通道 */
+#define REFER_VOLTAGE       330         /* 参考电压 3.3V,数据精度乘以100保留2位小数*/
+#define CONVERT_BITS        (1 << 12)   /* 转换位数为12位 */
   
-    rt_adc_device_t adc_dev;            /* ADC �豸��� */
+    rt_adc_device_t adc_dev;            /* ADC 设备句柄 */
     rt_uint32_t value, vol;
-    /* �����豸 */
+    /* 查找设备 */
     adc_dev = (rt_adc_device_t)rt_device_find(ADC_DEV_NAME);
-    /* ʹ���豸 */
+    /* 使能设备 */
     rt_adc_enable(adc_dev, ADC_DEV_CHANNEL);
-    /* ��ȡ����ֵ */
+    /* 读取采样值 */
     value = rt_adc_read(adc_dev, ADC_DEV_CHANNEL);
-    /* ת��Ϊ��Ӧ��ѹֵ */
+    /* 转换为对应电压值 */
     vol = value * REFER_VOLTAGE / CONVERT_BITS;
     rt_kprintf("the voltage is :%d.%02d \n", vol / 100, vol % 100);
 }
+#endif /* RT_USING_ADC */
 
 extern int can_sample_init(void);
 
-int main(void)
+static int i2c_sample(int argc, char *argv[])
 {
+    rt_uint16_t u16Times = 10;
     /* set LED_GREEN_PIN pin mode to output */
     rt_pin_mode(LED_GREEN_PIN, PIN_MODE_OUTPUT);
 
 //    can_sample_init();
-    while (1)
+    while (u16Times--)
     {
         rt_pin_write(LED_GREEN_PIN, PIN_HIGH);
         rt_thread_mdelay(500);
@@ -259,6 +261,10 @@ int main(void)
 //        adc_test();
     }
 }
+
+MSH_CMD_EXPORT(i2c_sample, i2c sample);
+
+#endif/* RT_USING_I2C */
 
 /*
  EOF
