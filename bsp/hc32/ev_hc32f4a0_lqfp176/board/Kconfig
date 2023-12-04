@@ -581,24 +581,6 @@ menu "On-chip Peripheral Drivers"
                     bool "WDT(10.7s(max))"
             endchoice
 
-            if BSP_USING_WDT
-                config BSP_WDT_DIV
-                    int "Select PCLK3 Div(4/64/128/256/512/1024/2048/8192)"
-                    range 4 8192
-                    default 256
-            endif
-            if BSP_USING_SWDT
-                config BSP_SWDT_DIV
-                int "Select SWDTCLK Div(1/16/32/64/128/256/2048)"
-                range 1 2048
-                default 256
-            endif
-
-            config BSP_WDT_REFRESH_RANGE
-                hex "WDT Refresh Windows Range(0x01-0x0F)"
-                range 0x01 0x0F
-                default 0x0F
-
             config BSP_WDT_CONTINUE_COUNT
                 bool "Low Power Mode Keeps Counting"
                 default n
