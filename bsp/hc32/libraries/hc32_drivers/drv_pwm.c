@@ -1379,14 +1379,6 @@ static rt_err_t pwm_tmr6_init(struct hc32_pwm_tmr6 *device)
     {
         if ((device->channel >> i) & 0x01)
         {
-            /*#ifdef (BSP_USING_TIM6_PWM_COMPLEMENTARY)
-            if (i % 2)
-            {
-                
-                device->stcPwmInit[i].u32CountDownMatchBPolarity = TMR6_PWM_LOW;
-                device->stcPwmInit[i].u32UdfPolarity = TMR6_PWM_HIGH;
-            }
-            #endif*/
             TMR6_PWM_Init(TMR6x, i, &device->stcPwmInit[i]);
         }
     }
