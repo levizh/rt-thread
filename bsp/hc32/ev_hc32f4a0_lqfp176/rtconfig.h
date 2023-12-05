@@ -132,6 +132,12 @@
 /* CYW43012 WiFi */
 
 
+/* BL808 WiFi */
+
+
+/* CYW43439 WiFi */
+
+
 /* IoT Cloud */
 
 
@@ -247,7 +253,6 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART1
-#define BSP_USING_UART6
 
 /* Board extended module Drivers */
 
