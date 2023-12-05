@@ -519,7 +519,9 @@ rt_err_t rt_hw_usb_board_init(void)
     stcGpioCfg.u16PinAttr = PIN_ATTR_ANALOG;
     (void)GPIO_Init(USBF_DM_PORT, USBF_DM_PIN, &stcGpioCfg);
     (void)GPIO_Init(USBF_DP_PORT, USBF_DP_PIN, &stcGpioCfg);
+#if defined(BSP_USING_USBD)
     GPIO_SetFunc(USBF_VBUS_PORT, USBF_VBUS_PIN, USBF_VBUS_FUNC); /* VBUS */
+#endif
 #if defined(BSP_USING_USBH)
     GPIO_SetFunc(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN, USBF_DRVVBUS_FUNC); /* DRV VBUS */
 #endif
@@ -529,7 +531,9 @@ rt_err_t rt_hw_usb_board_init(void)
     stcGpioCfg.u16PinAttr = PIN_ATTR_ANALOG;
     (void)GPIO_Init(USBH_DM_PORT, USBH_DM_PIN, &stcGpioCfg);
     (void)GPIO_Init(USBH_DP_PORT, USBH_DP_PIN, &stcGpioCfg);
+#if defined(BSP_USING_USBD)
     GPIO_SetFunc(USBH_VBUS_PORT, USBH_VBUS_PIN, USBH_VBUS_FUNC);
+#endif
 #if defined(BSP_USING_USBH)
     GPIO_OutputCmd(USBH_DRVVBUS_PORT, USBH_DRVVBUS_PIN, ENABLE);
     GPIO_SetPins(USBH_DRVVBUS_PORT, USBH_DRVVBUS_PIN); /* DRV VBUS with GPIO funciton */
