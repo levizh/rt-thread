@@ -43,8 +43,7 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
 #ifndef PM_SLEEP_IDLE_CFG
 #define PM_SLEEP_IDLE_CFG                                                      \
 {                                                                              \
-    .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
-    .set_event_on_pending = RT_TRUE,                                          \
+    .pwc_sleep_type = PWC_SLEEP_WFE_INT,                                       \
 }
 #endif /*PM_SLEEP_IDLE_CFG*/
 
@@ -60,8 +59,7 @@ extern void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode);
         .u16ExBusHold = PWC_STOP_EXBUS_HIZ,                                    \
         .u16FlashWait = PWC_STOP_FLASH_WAIT_ON,                                \
     },                                                                         \
-    .wait_for_type = PM_SLEEP_WAIT_FOR_EVT,                                    \
-    .set_event_on_pending = RT_TRUE,                                          \
+    .pwc_stop_type = PWC_STOP_WFE_INT,                                         \
 }
 #endif /*PM_SLEEP_DEEP_CFG*/
 

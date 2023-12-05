@@ -52,11 +52,10 @@ struct pm_run_mode_config
  */
 struct pm_sleep_mode_idle_config
 {
-    uint8_t wait_for_type;              /*!< WFI/WFE selection for entering sleep mode
-                                            @ref WFI_WFE_SELECTION */
-    rt_bool_t set_event_on_pending;     /*!< RT_TRUE: set SEVONPEND bit in SCR register
-                                            RT_FALSE: clear SEVONPEND bit in SCR register */
+    uint8_t pwc_sleep_type;              /*!< WFI/WFE selection and SEVONPEND configuration
+                                            @ref PWC_Sleep_Type */
 };
+
 
 /**
  * @brief  sleep deep config @ref PM_SLEEP_DEEP_CFG
@@ -64,11 +63,10 @@ struct pm_sleep_mode_idle_config
 struct pm_sleep_mode_deep_config
 {
     stc_pwc_stop_mode_config_t cfg;
-    uint8_t wait_for_type;              /*!< WFI/WFE selection for entering sleep mode
-                                            @ref WFI_WFE_SELECTION */
-    rt_bool_t set_event_on_pending;     /*!< RT_TRUE: set SEVONPEND bit in SCR register
-                                            RT_FALSE: clear SEVONPEND bit in SCR register */
+    uint8_t pwc_stop_type;              /*!< WFI/WFE selection and SEVONPEND configuration
+                                            @ref PWC_Stop_Type */
 };
+
 
 /**
  * @brief  sleep standby config @ref PM_SLEEP_STANDBY_CFG
@@ -128,11 +126,19 @@ struct pm_sleep_mode_shutdown_config
                                         (mode <=  PM_SLEEP_MODE_IDLE)))
 
 /**
- * @defgroup WFI_WFE_SELECTION
+ * @defgroup PWC_Sleep_Type PWC sleep mode type.
  * @{
  */
-#define PM_SLEEP_WAIT_FOR_INT           (0U)                /*!< entering sleep mode by WFI */
-#define PM_SLEEP_WAIT_FOR_EVT           (1U)                /*!< entering sleep mode by WFE */
+//TODO: remove this defgroup after hc32_ll_pwc.* updated
+#ifndef PWC_SLEEP_WFI
+#define PWC_SLEEP_WFI                   (0x00U)                 /*!< Enter sleep mode by WFI, and wake-up by interrupt handle. */
+#endif
+#ifndef PWC_SLEEP_WFE_INT
+#define PWC_SLEEP_WFE_INT               (0x01U)                 /*!< Enter sleep mode by WFE, and wake-up by interrupt request(SEVONPEND=1). */
+#endif
+#ifndef PWC_SLEEP_WFE_EVT
+#define PWC_SLEEP_WFE_EVT               (0x02U)                 /*!< Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0). */
+#endif
 /**
  * @}
  */
