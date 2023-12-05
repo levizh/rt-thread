@@ -59,31 +59,29 @@ static void uart_console_reconfig(void)
     rt_device_control(rt_console_get_device(), RT_DEVICE_CTRL_CONFIG, &config);
 }
 
-static void __sleep_enter_idle(void)
+/**
+ * @brief  Enter sleep mode.
+ * @param  [in] u8SleepType specifies the type of enter sleep's command.
+ *   @arg  PWC_SLEEP_WFI            Enter sleep mode by WFI, and wake-up by interrupt handle.
+ *   @arg  PWC_SLEEP_WFE_INT        Enter sleep mode by WFE, and wake-up by interrupt request(SEVONPEND=1)
+ *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0). 
+
+ * @retval None
+ */
+__WEAKDEF void pwc_seep_enter(uint8_t u8SleepType)
 {
-    struct pm_sleep_mode_idle_config sleep_idle_cfg = PM_SLEEP_IDLE_CFG;
+    DDL_ASSERT(IS_PWC_UNLOCKED());
 
-    //TODO: replace the following code by ddl api after WFI/WFE selection is supported
-    RT_ASSERT(IS_PWC_UNLOCKED());
-    RT_ASSERT((sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT) || \
-              (sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
-             );
-
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F451) || defined (HC32F452) || defined (HC32F472) || \
-    defined (HC32F448) || defined (HC32F334)
     CLR_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
     CLR_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
-#elif defined (HC32M423) || defined (CD32Z16X) || defined (HC32M120) || defined (HC32F115) || defined (HC32F120) || defined (HC32F160) || \
-      defined (HC32F165)
-    CLR_REG8_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
-#endif
-    if (sleep_idle_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT)
+
+    if (PWC_SLEEP_WFI == u8SleepType)
     {
         __WFI();
     }
     else
     {
-        if (sleep_idle_cfg.set_event_on_pending)
+        if (PWC_SLEEP_WFE_INT == u8SleepType)
         {
             SET_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
         }
@@ -97,30 +95,21 @@ static void __sleep_enter_idle(void)
     }
 }
 
+static void __sleep_enter_idle(void)
+{
+    struct pm_sleep_mode_idle_config sleep_idle_cfg = PM_SLEEP_IDLE_CFG;
+    //TODO: replace pwc_seep_enter by PWC_SLEEP_Enter after hc32_ll_pwc.* updated
+    pwc_seep_enter(sleep_idle_cfg.pwc_sleep_type);
+}
+
 static void __sleep_enter_deep(void)
 {
     struct pm_sleep_mode_deep_config sleep_deep_cfg = PM_SLEEP_DEEP_CFG;
-    uint8_t u8StopType = PWC_STOP_WFI;
 
     RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_DEEP));
-    RT_ASSERT((sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_INT) || \
-              (sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
-             );
 
     (void)PWC_STOP_Config(&sleep_deep_cfg.cfg);
-    if (sleep_deep_cfg.wait_for_type == PM_SLEEP_WAIT_FOR_EVT)
-    {
-        if (sleep_deep_cfg.set_event_on_pending)
-        {
-            u8StopType = PWC_STOP_WFE_INT;
-        }
-        else
-        {
-            u8StopType = PWC_STOP_WFE_EVT;
-        }
-    }
-
-    PWC_STOP_Enter(u8StopType);
+    PWC_STOP_Enter(sleep_deep_cfg.pwc_stop_type);
 }
 
 static void __sleep_enter_standby(void)
@@ -211,27 +200,6 @@ static rt_tick_t __wakeup_timer_tick_from_os_tick(rt_tick_t tick)
 }
 
 /**
- * This function calculate the OS tick from PM tick
- *
- * @param tick PM tick
- *
- * @return the OS tick
- */
-static rt_tick_t __wakeup_timer_tick_to_os_tick(rt_uint32_t tick)
-{
-    static rt_uint32_t os_tick_remain = 0;
-    rt_uint32_t ret, freq;
-
-    freq = hc32_wktm_get_countfreq();
-    ret = (tick * RT_TICK_PER_SECOND + os_tick_remain) / freq;
-
-    os_tick_remain += (tick * RT_TICK_PER_SECOND);
-    os_tick_remain %= freq;
-
-    return ret;
-}
-
-/**
  * This function start the timer of pm
  *
  * @param pm Pointer to power manage structure
@@ -262,25 +230,8 @@ static void __wakeup_timer_stop(struct rt_pm *pm)
 }
 
 /**
- * This function calculate how many OS Ticks that MCU have suspended
- *
- * @param pm Pointer to power manage structure
- *
- * @return OS Ticks
- */
-static rt_tick_t __wakeup_timer_get_tick(struct rt_pm *pm)
-{
-    rt_uint32_t timer_tick;
-
-    RT_ASSERT(pm != RT_NULL);
-
-    timer_tick = hc32_wktm_get_current_tick();
-
-    return __wakeup_timer_tick_to_os_tick(timer_tick);
-}
-
-/**
  * This function initialize the power manager
+ * @note timer feature: only work as wake up timer
  */
 int drv_pm_hw_init(void)
 {
