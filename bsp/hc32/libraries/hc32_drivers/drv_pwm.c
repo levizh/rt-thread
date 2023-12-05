@@ -304,6 +304,7 @@ static rt_err_t tmra_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
             compare_value = (*(compare_value_channelx + i)) * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
             compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value-1 : compare_value;
             TMRA_SetCompareValue(TMRAx,i, compare_value);
+            tmra_duyt100or0_output(TMRAx,i,compare_value + 1);
         }
     }
 
@@ -647,8 +648,9 @@ static rt_err_t tmra_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
 
     if (!configuration->channel)    return RT_EINVAL;
-    
+
     configuration->channel = (configuration->channel - 1) % TMRA_CHANNEL_NUM_MAX;
+
     switch (cmd)
     {
     case PWM_CMD_ENABLE:
@@ -1225,9 +1227,9 @@ static void tmr6_duyt100or0_output(CM_TMR6_TypeDef *TMR6x, rt_uint32_t channel, 
     } else
     {
         #if defined(HC32F4A0)
-        TMR6_PWM_SetPolarity(TMR6x,channel,TMR6_STAT_OVF,TMR6_PWM_HOLD);
+        TMR6_PWM_SetPolarity(TMR6x,channel,TMR6_STAT_OVF,TMR6_PWM_HIGH);
         #elif defined(HC32F460)
-        TMR6_PWM_SetPolarity(TMR6x,TMR6_STAT_MATCH_PERIOD,TMR6_PWM_HOLD);
+        TMR6_PWM_SetPolarity(TMR6x,TMR6_STAT_MATCH_PERIOD,TMR6_PWM_HIGH);
         #endif
     }
 }
@@ -1327,6 +1329,7 @@ static rt_err_t tmr6_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
             compare_value = (pwm_init_t + i)->u32CompareValue * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
             compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value-1 : compare_value;
             TMR6_SetCompareValue(TMR6x, i, compare_value);
+            tmr6_duyt100or0_output(TMR6x,i,compare_value + 1);
         }
     }
     return RT_EOK;
