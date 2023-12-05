@@ -15,7 +15,7 @@
 #include <math.h>
 #include <string.h>
 
-#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv_wdt"
 #include <drv_log.h>
 
@@ -344,7 +344,7 @@ static rt_err_t swdt_init(rt_watchdog_t *swdt)
     swdt_match_init(hc32_swdt.swdtclk);
     swdt_match_sort();
     hc32_swdt.stcwdg.u32RefreshRange  = SWDT_RANGE_0TO100PCT;
-#ifdef BSP_swdt_CONTINUE_COUNT
+#ifdef BSP_WDT_CONTINUE_COUNT
     hc32_swdt.stcwdg.u32LPMCount      = SWDT_LPM_CNT_CONTINUE;
 #else
     hc32_swdt.stcwdg.u32LPMCount      = SWDT_LPM_CNT_STOP;
