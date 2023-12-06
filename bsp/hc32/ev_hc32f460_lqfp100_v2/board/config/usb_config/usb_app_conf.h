@@ -23,13 +23,7 @@ extern "C"
 #include "rtconfig.h"
 
 /* USB MODE CONFIGURATION */
-/*
-USB_FS_MODE defined comment
-(1) If only defined USB_FS_MODE:
-    MCU USBFS core work in full speed using internal PHY.
-(2) Other combination:
-    Not support, forbid!!
-*/
+
 
 #if defined(BSP_USING_USBFS)
 #define USB_FS_MODE
@@ -82,8 +76,8 @@ USB_FS_MODE defined comment
 /* USB HOST FIFO CONFIGURATION */
 #ifdef USB_FS_MODE
 #define RX_FIFO_FS_SIZE                          (128U)
-#define TXH_NP_FS_FIFOSIZ                        (32U)
-#define TXH_P_FS_FIFOSIZ                         (64U)
+#define TXH_NP_FS_FIFOSIZ                        (64U)
+#define TXH_P_FS_FIFOSIZ                         (128U)
 
 #if ((RX_FIFO_FS_SIZE + TXH_NP_FS_FIFOSIZ + TXH_P_FS_FIFOSIZ) > 320U)
 #error  "The USB max FIFO size is 320 x 4 Bytes!"

@@ -1064,10 +1064,12 @@ static rt_err_t hc32_hcd_init(rt_device_t device)
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
 #endif
+#if defined (HC32F4A0)
 #if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
 #else
     stcPortIdentify.u8PhyType = USBHS_PHY_EXT;
+#endif
 #endif
     /* BSP Config */
     rt_hw_usb_board_init();

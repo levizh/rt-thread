@@ -44,6 +44,7 @@ static struct ep_id _ep_pool[] =
     {0x4,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+#if defined (HC32F4A0)
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x7,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
@@ -64,6 +65,7 @@ static struct ep_id _ep_pool[] =
     {0xE,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0xF,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0xF,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
+#endif
     {0xFF, USB_EP_ATTR_TYPE_MASK,   USB_DIR_MASK,   0,  ID_ASSIGNED  },
 };
 
@@ -816,10 +818,12 @@ static rt_err_t _init(rt_device_t device)
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
 #endif
+#if defined (HC32F4A0)
 #if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
 #else
     stcPortIdentify.u8PhyType = USBHS_PHY_EXT;
+#endif
 #endif
     usb_setregaddr(&pdev->regs, &stcPortIdentify, &pdev->basic_cfgs);
 
