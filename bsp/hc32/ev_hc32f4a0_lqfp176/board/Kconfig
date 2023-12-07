@@ -880,17 +880,41 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_HWTIMER
         if BSP_USING_HWTIMER
-            config BSP_USING_TIM0_1A
-                bool "Use Timer0_1 CHA As The Hw Timer"
+            config BSP_USING_TIMA_1
+                bool "Use Timer_a1 As The Hw Timer"
                 default n
-            config BSP_USING_TIM0_1B
-                bool "Use Timer0_1 CHB As The Hw Timer"
+            config BSP_USING_TIMA_2
+                bool "Use Timer_a2 As The Hw Timer"
                 default n
-            config BSP_USING_TIM0_2A
-                bool "Use Timer0_2 CHA As The Hw Timer"
+            config BSP_USING_TIMA_3
+                bool "Use Timer_a3 As The Hw Timer"
                 default n
-            config BSP_USING_TIM0_2B
-                bool "Use Timer0_2 CHB As The Hw Timer"
+            config BSP_USING_TIMA_4
+                bool "Use Timer_a4 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_5
+                bool "Use Timer_a5 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_6
+                bool "Use Timer_a6 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_7
+                bool "Use Timer_a7 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_8
+                bool "Use Timer_a8 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_9
+                bool "Use Timer_a9 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_10
+                bool "Use Timer_a10 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_11
+                bool "Use Timer_a11 As The Hw Timer"
+                default n
+            config BSP_USING_TIMA_12
+                bool "Use Timer_a12 As The Hw Timer"
                 default n
         endif
 
