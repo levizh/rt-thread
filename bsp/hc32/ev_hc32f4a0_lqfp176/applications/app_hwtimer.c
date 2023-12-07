@@ -14,6 +14,7 @@
  * 例程导出了 hwtimer_sample 命令到控制终端
  * 命令调用格式：hwtimer_sample  参数：oneshot 或者 period
  * 程序功能：硬件定时器超时回调函数周期性的打印当前tick值，2次tick值之差换算为时间等同于定时时间值。
+ * timerA_12 固定频率 3.75MHZ,不可设定。
 */
 
 
@@ -22,7 +23,7 @@
 
 #ifdef BSP_USING_HWTIMER
 
-#define HWTIMER_DEV_NAME   "tim0_1A"     /* 定时器名称 */
+#define HWTIMER_DEV_NAME   "timA_12"     /* 定时器名称 */
 
 /* 定时器超时回调函数 */
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
@@ -39,8 +40,7 @@ static int hwtimer_sample(int argc, char *argv[])
     rt_err_t ret = RT_EOK;
     rt_hwtimerval_t timeout_s;                              /* 定时器超时值 */
     rt_device_t hw_dev = RT_NULL;                           /* 定时器设备句柄 */
-    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;          /* 定时器模式 */
-    rt_uint32_t freq = 10000;                               /* 计数频率 */
+    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;          /* 定时器模式 */                             /* 计数频率 */
 
     /* 查找定时器设备 */
     hw_dev = rt_device_find(HWTIMER_DEV_NAME);
@@ -58,9 +58,6 @@ static int hwtimer_sample(int argc, char *argv[])
         return ret;
     }
 
-    /* 设置计数频率(若未设置该项，默认为1Mhz 或 支持的最小计数频率) */
-    rt_device_control(hw_dev, HWTIMER_CTRL_FREQ_SET, &freq);
-
     /* 设置模式 */
     if (0 == rt_strcmp(argv[1], "oneshot"))
     {
@@ -70,7 +67,7 @@ static int hwtimer_sample(int argc, char *argv[])
         mode = HWTIMER_MODE_PERIOD;
     }
 
-    /*  设置计数频率(若未设置该项，默认为1Mhz 或 支持的最小计数频率) */
+    /*  设置模式 */
     rt_device_control(hw_dev, HWTIMER_CTRL_MODE_SET, &mode);
     /* 设置超时回调函数 */
     rt_device_set_rx_indicate(hw_dev, timeout_cb);
@@ -81,7 +78,7 @@ static int hwtimer_sample(int argc, char *argv[])
         rt_kprintf("set timeout value failed\n");
         return RT_ERROR;
     }
-
+    rt_kprintf("start tick is :%d !\n", rt_tick_get());
     for (i = 0; i < 8; i++)
     {
         /* 延时2000ms */
