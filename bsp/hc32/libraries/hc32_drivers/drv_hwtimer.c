@@ -164,7 +164,7 @@ static rt_err_t timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_
     tim_device = (struct hc32_hwtimer *)timer;
 
     /* set timer arr */
-    TMRA_SetPeriodValue(tim_device->tim_handle, t - 1);
+    TMRA_SetPeriodValue(tim_device->tim_handle, t - 1U);
     /* start timer */
     TMRA_Start(tim_device->tim_handle);
 
