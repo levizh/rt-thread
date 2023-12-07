@@ -611,7 +611,7 @@ uint16_t ADC_GetResolution(const CM_ADC_TypeDef *ADCx)
 {
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
 
-    return (RW_MEM16((uint32_t)&ADCx->CR0) & ADC_CR0_ACCSEL);
+    return (READ_REG16_BIT(ADCx->CR0, ADC_CR0_ACCSEL));
 }
 
 /**
