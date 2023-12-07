@@ -382,10 +382,20 @@ rt_err_t pulse_encoder_tima_init(struct rt_pulse_encoder_device *pulse_encoder)
 
 rt_err_t pulse_encoder_tima_clear_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
+    rt_uint8_t startFlag = RT_FALSE;
     struct hc32_pulse_encoder_tima_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tima_device *)pulse_encoder;
     hc32_device->over_under_flowcount = 0;
+    if(READ_REG8_BIT(hc32_device->tim_handler->BCSTRL, TMRA_BCSTRL_START) == TMRA_BCSTRL_START)
+    {
+        startFlag = RT_TRUE;
+    }
+    TMRA_Stop(hc32_device->tim_handler);
     TMRA_SetCountValue(hc32_device->tim_handler, 0);
+    if(RT_TRUE == startFlag)
+    {
+        TMRA_Start(hc32_device->tim_handler);
+    }
     return RT_EOK;
 }
 
@@ -706,10 +716,20 @@ rt_err_t pulse_encoder_tim6_init(struct rt_pulse_encoder_device *pulse_encoder)
 
 rt_err_t pulse_encoder_tim6_clear_count(struct rt_pulse_encoder_device *pulse_encoder)
 {
+    rt_uint8_t startFlag = RT_FALSE;
     struct hc32_pulse_encoder_tim6_device *hc32_device;
     hc32_device = (struct hc32_pulse_encoder_tim6_device *)pulse_encoder;
     hc32_device->over_under_flowcount = 0;
+    if(READ_REG32_BIT(hc32_device->tim_handler->GCONR, TMR6_GCONR_START) == TMR6_GCONR_START)
+    {
+        startFlag = RT_TRUE;
+    }
+    TMR6_Stop(hc32_device->tim_handler);
     TMR6_SetCountValue(hc32_device->tim_handler, 0);
+    if(RT_TRUE == startFlag)
+    {
+        TMR6_Start(hc32_device->tim_handler);
+    }
     return RT_EOK;
 }
 
