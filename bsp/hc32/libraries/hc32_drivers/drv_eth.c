@@ -253,7 +253,7 @@ rt_err_t rt_hc32_eth_tx(rt_device_t dev, struct pbuf *p)
         bufferOffset = bufferOffset + byteCnt;
         frameLength = frameLength + byteCnt;
     }
-    LOG_D("transmit frame length :%d", framelength);
+    LOG_D("transmit frame length :%d", frameLength);
     /* Prepare transmit descriptors to give to DMA */
     (void)ETH_DMA_SetTransFrame(&EthHandle, frameLength);
     errval = (err_t)ERR_OK;
