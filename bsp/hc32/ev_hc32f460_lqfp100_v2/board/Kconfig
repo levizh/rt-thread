@@ -331,10 +331,20 @@ menu "On-chip Peripheral Drivers"
                 default n
         endif
 
-    config BSP_USING_WDT
+    menuconfig BSP_USING_WDT_TIM
         bool "Enable Watchdog Timer"
-        select RT_USING_WDT
         default n
+        select RT_USING_WDT
+        if BSP_USING_WDT_TIM
+            config BSP_USING_WDT
+                bool "Using WDT"
+                default n
+                if BSP_USING_WDT
+                    config BSP_WDT_CONTINUE_COUNT
+                        bool "Low Power Mode Keeps Counting"
+                        default n
+                endif
+        endif
 
     menuconfig BSP_USING_RTC
         bool "Enable RTC"
@@ -379,8 +389,10 @@ menu "On-chip Peripheral Drivers"
                     bool "Using Xtal32"
                 config BSP_USING_WKTM_LRC
                     bool "Using LRC"
-                config BSP_USING_WKTM_64HZ
-                    bool "Using 64HZ(Note:Must Enable RTC)"
+                if BSP_RTC_USING_XTAL32
+                    config BSP_USING_WKTM_64HZ
+                        bool "Using 64HZ(Note:must use XTAL32 and run RTC)"
+                endif
             endchoice
         endif
 
@@ -594,11 +606,8 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_HWTIMER
         if BSP_USING_HWTIMER
-            config BSP_USING_TIM0_1A
-                bool "Use Timer0_1 CHA As The Hw Timer"
-                default n
             config BSP_USING_TIM0_1B
-                bool "Use Timer0_1 CHB As The Hw Timer"
+                bool "Use Timer0_1 CHB As The Hw Timer(Timer0_1 CHA Not Support!)"
                 default n
             config BSP_USING_TIM0_2A
                 bool "Use Timer0_2 CHA As The Hw Timer"

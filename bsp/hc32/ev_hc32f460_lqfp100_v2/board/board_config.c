@@ -377,6 +377,7 @@ rt_err_t rt_hw_board_pulse_encoder_tmra_init(void)
     GPIO_SetFunc(PULSE_ENCODER_TIMA_1_A_PORT, PULSE_ENCODER_TIMA_1_A_PIN, PULSE_ENCODER_TIMA_1_A_PIN_FUNC);
     GPIO_SetFunc(PULSE_ENCODER_TIMA_1_B_PORT, PULSE_ENCODER_TIMA_1_B_PIN, PULSE_ENCODER_TIMA_1_B_PIN_FUNC);
 #endif
+
     return RT_EOK;
 }
 #endif
@@ -388,6 +389,7 @@ rt_err_t rt_hw_board_pulse_encoder_tmr6_init(void)
     GPIO_SetFunc(PULSE_ENCODER_TIM6_1_A_PORT, PULSE_ENCODER_TIM6_1_A_PIN, PULSE_ENCODER_TIM6_1_A_PIN_FUNC);
     GPIO_SetFunc(PULSE_ENCODER_TIM6_1_B_PORT, PULSE_ENCODER_TIM6_1_B_PIN, PULSE_ENCODER_TIM6_1_B_PIN_FUNC);
 #endif
+
     return RT_EOK;
 }
 #endif
