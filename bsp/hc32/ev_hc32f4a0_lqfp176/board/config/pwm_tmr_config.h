@@ -414,7 +414,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -446,7 +446,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
@@ -478,7 +478,7 @@ extern "C" {
             .u16CompareValue            = 0x0000,               \
             .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
             .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
+            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_IMMED, \
             .u16BufLinkTransObject      = 0U,                   \
         },                                                      \
         .stcTmr4PwmInit =                                       \
