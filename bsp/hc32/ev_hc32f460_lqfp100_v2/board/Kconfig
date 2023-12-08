@@ -532,7 +532,7 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_USB_HOST if BSP_USING_USBH
         if BSP_USING_USB
             config BSP_USING_USBFS
-                bool "Use USBFS Core"
+                bool
                 default y
 
             choice
