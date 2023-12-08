@@ -3,6 +3,18 @@ import os
 
 cwd = GetCurrentDir()
 src = Glob('*.c')
+
+#lwIP: HTTP server
+lwiphttp_src=[]
+if GetDepend(['BSP_USING_ETH']):
+    lwiphttp_src = Split("""
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/altcp_proxyconnect.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/fs.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/http_client.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/httpd.c
+    """)
+src += lwiphttp_src
+
 CPPPATH = [cwd]
 
 group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
