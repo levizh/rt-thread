@@ -134,10 +134,10 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         /* Counter Frequency Fixed at maxfreq */
         timer->freq = timer->info->maxfreq;
 
-        /* Enable timer0 clock */
+        /* Enable timera clock */
         FCG_Fcg2PeriphClockCmd(tim_device->clock, ENABLE);
 
-        /* TIMER0 configuration */
+        /* TIMERA configuration */
         (void)TMRA_StructInit(&stcTmraInit);
         stcTmraInit.sw_count.u8ClockDiv = TMRA_CLK_DIV32;
         stcTmraInit.u32PeriodValue      = timer->info->maxcnt;

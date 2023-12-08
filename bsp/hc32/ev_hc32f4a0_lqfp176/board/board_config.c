@@ -124,6 +124,7 @@ rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
 #if defined(BSP_USING_DAC2)
     case (rt_uint32_t)CM_DAC2:
         (void)GPIO_Init(DAC2_CH1_PORT, DAC2_CH1_PIN, &stcGpioInit);
+        (void)GPIO_Init(DAC2_CH2_PORT, DAC2_CH2_PIN, &stcGpioInit);
         break;
 #endif
     default:
