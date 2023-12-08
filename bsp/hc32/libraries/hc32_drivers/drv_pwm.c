@@ -250,7 +250,7 @@ static rt_uint32_t tmra_auto_set_div(CM_TMRA_TypeDef *TMRAx, uint32_t period)
     rt_uint32_t u32clkFreq, division;
     rt_uint64_t period_value;
 
-    u32clkFreq = tmra_get_clk_bydiv(TMRAx);
+    u32clkFreq = tmra_get_clk_notdiv(TMRAx);
     period_value = (rt_uint64_t)period * u32clkFreq / (rt_uint64_t)1000000000UL;
     if (!period_value)
     {
