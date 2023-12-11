@@ -16,10 +16,14 @@
 #include "drv_wdt.h"
 #include "rtconfig.h"
 
-#if defined(BSP_USING_WDT)
+#if defined(BSP_USING_WDT_TIM)
 
 /* macros define */
+#if defined(BSP_USING_WDT)
 #define SAMPLE_WDT_NAME     "wdt"
+#elif defined(BSP_USING_SWDT)
+#define SAMPLE_WDT_NAME     "swdt"
+#endif
 #define WDT_FED_CNT         (10)
 
 /* variable define */
@@ -38,10 +42,30 @@ static void idle_hook(void)
     if (WDT_FED_CNT <= wdt_feed_cnt)
     {
         rt_thread_idle_delhook(idle_hook);
-        rt_kprintf("stop feed %s and waiting reboot\n", wdt_name);
+        /* stop watch dog */
+        if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_STOP, RT_NULL))
+        {
+            rt_kprintf("ctrl: stop %s failed, command is under supporting, waiting reboot\n", wdt_name);
+        }
+        else
+        {
+            rt_kprintf("%s stopped\n", wdt_name);
+        }
         return;
     }
-
+    /* Using blocking delay to avoid feed dog */
+    DDL_DelayMS(1000);
+    /* get watchdog left time before feeding */
+    if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_TIMELEFT, &wdt_timeout))
+    {
+        rt_kprintf("get %s left time failed\n", wdt_name);
+        return;
+    }
+    else
+    {
+        rt_kprintf("%s left time is %ds \n", wdt_name, wdt_timeout);
+    }
+    /* Feed watch dog */
     if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_KEEPALIVE, RT_NULL))
     {
         rt_kprintf("feed %s failed\n", wdt_name);
@@ -51,16 +75,6 @@ static void idle_hook(void)
     {
         ++wdt_feed_cnt;
         rt_kprintf("[%2u] %s fed\n", wdt_feed_cnt, wdt_name);
-    }
-
-    if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_TIMEOUT, &wdt_timeout))
-    {
-        rt_kprintf("ctrl: get timeout %s failed\n", wdt_name);
-        return;
-    }
-    else
-    {
-        rt_kprintf("%s left time is %dms\n", wdt_name, wdt_timeout);
     }
 }
 
@@ -72,7 +86,7 @@ static void idle_hook(void)
  */
 static int wdt_sample(int argc, char *argv[])
 {
-    rt_uint32_t wdt_timeout = 1;
+    rt_uint32_t wdt_timeout = 6U;
 
     if (argc == 2)
     {
@@ -96,7 +110,7 @@ static int wdt_sample(int argc, char *argv[])
         return RT_ERROR;
     }
 
-    rt_kprintf("wdt test begin...\n");
+    rt_kprintf("%s test begin...\n", SAMPLE_WDT_NAME);
 
     if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_SET_TIMEOUT, &wdt_timeout))
     {
@@ -109,14 +123,15 @@ static int wdt_sample(int argc, char *argv[])
         rt_kprintf("ctrl: start %s failed\n", wdt_name);
         return RT_ERROR;
     }
-
-    if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_STOP, RT_NULL))
+    /* Check if feeding option is effective */
+    if(RT_EOK != rt_device_control(wdt_dev, RT_DEVICE_CTRL_WDT_GET_TIMEOUT, &wdt_timeout))
     {
-        rt_kprintf("ctrl: stop %s failed, command is under supporting\n", wdt_name);
+        rt_kprintf("ctrl: get timeout %s failed\n", wdt_name);
+        return RT_ERROR;
     }
     else
     {
-        rt_kprintf("%s stopped\n", wdt_name);
+        rt_kprintf("%s left time is %ds\n", wdt_name, wdt_timeout);
     }
 
     rt_thread_idle_sethook(idle_hook);
@@ -125,7 +140,7 @@ static int wdt_sample(int argc, char *argv[])
 }
 
 /* export to function msh command list */
-MSH_CMD_EXPORT(wdt_sample, wdt device sample);
+MSH_CMD_EXPORT(wdt_sample, wdt/swdt device sample);
 
 #endif /* BSP_USING_WDT */
 /*
