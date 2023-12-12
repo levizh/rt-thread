@@ -40,19 +40,31 @@ EV_F4A0_LQ176 开发板常用 **板载资源** 如下：
 | **板载外设**  | **支持情况** |               **备注**                |
 | :------------ | :-----------: | :-----------------------------------: |
 | USB 转串口    |      支持     |          使用 UART1                  |
-| LED           |     支持     |           LED                        |
-| ETH           |     支持     |              					     |
-| ADC           |     支持     |                                       |
+| ADC           |     支持     |           电位器                      |
 | CAN           |     支持     |                                       |
+| ETH           |     支持     |              					     |
+| LED           |     支持     |           LED                        |
+| Nand | 支持 | MT29F2G08AB |
+| SDRAM | 支持 | IS42S16400J |
+
 | **片上外设**  | **支持情况** |               **备注**                |
 | :------------ | :-----------: | :-----------------------------------: |
+| Crypto | 支持 | AES, CRC, HASH, RNG, UID |
+| DAC | 支持 |  |
 | GPIO          |     支持     | PA0, PA1... PI13 ---> PIN: 0, 1...141 |
-| UART          |     支持     |              UART1~10                 |
-| SPI           |     支持     |              SPI1~6                   |
-| I2C           |     支持     |              软件 I2C                 |
-| USB | 支持 | USBFS/HS Core， device/host模式 |
+| PM | 支持 |  |
+| Lptimer | 支持 |  |
+| Hwtimer | 支持 |  |
+| Pulse_encoder | 支持 |  |
+| PWM | 支持 |  |
 | RTC | 支持 | 闹钟精度为1分钟 |
-
+| WDT | 支持 |  |
+| I2C           |     支持     |              软件、硬件 I2C                 |
+| QSPI | 支持 |  |
+| SPI           |     支持     |              SPI1~6                   |
+| SDIO | 支持 |  |
+| UART V1 & V2         |     支持     |              UART1~10                 |
+| USB | 支持 | USBFS/HS Core， device/host模式 |
 
 ## 使用说明
 
@@ -124,4 +136,4 @@ msh >
 
 维护人:
 
--  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<mcu_eco@xhsc.com.cn>
+-  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<xhsc_mcu@xhsc.com.cn>
