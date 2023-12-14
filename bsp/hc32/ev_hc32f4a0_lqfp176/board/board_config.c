@@ -187,6 +187,13 @@ rt_err_t rt_hw_spi_board_init(CM_SPI_TypeDef *CM_SPIx)
         stcGpioInit.u16PinDir   = PIN_DIR_OUT;
         GPIO_Init(SPI1_WP_PORT, SPI1_WP_PIN, &stcGpioInit);
         GPIO_Init(SPI1_HOLD_PORT, SPI1_HOLD_PIN, &stcGpioInit);
+
+        (void)GPIO_StructInit(&stcGpioInit);
+        stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
+        stcGpioInit.u16PinInputType = PIN_IN_TYPE_CMOS;
+        (void)GPIO_Init(SPI1_SCK_PORT,  SPI1_SCK_PIN,  &stcGpioInit);
+        (void)GPIO_Init(SPI1_MOSI_PORT, SPI1_MOSI_PIN, &stcGpioInit);
+        (void)GPIO_Init(SPI1_MISO_PORT, SPI1_MISO_PIN, &stcGpioInit);
         GPIO_SetFunc(SPI1_SCK_PORT,  SPI1_SCK_PIN,  SPI1_SCK_FUNC);
         GPIO_SetFunc(SPI1_MOSI_PORT, SPI1_MOSI_PIN, SPI1_MOSI_FUNC);
         GPIO_SetFunc(SPI1_MISO_PORT, SPI1_MISO_PIN, SPI1_MISO_FUNC);
