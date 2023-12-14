@@ -442,6 +442,8 @@ static void hc32_phy_link_change(void)
             {
                 hc32_eth_device.eth_speed = ETH_MAC_SPEED_10M;
             }
+            ETH_MAC_SetDuplexSpeed(hc32_eth_device.eth_mode, hc32_eth_device.eth_speed);
+            ETH_Start();
             LOG_D("link up");
             eth_device_linkchange(&hc32_eth_device.parent, RT_TRUE);
         }
@@ -449,6 +451,9 @@ static void hc32_phy_link_change(void)
         {
             LOG_I("link down");
             eth_device_linkchange(&hc32_eth_device.parent, RT_FALSE);
+            ETH_Stop();
+            (void)ETH_DMA_TxDescListInit(&EthHandle, EthDmaTxDscrTab, EthTxBuff, ETH_TX_BUF_NUM);
+            (void)ETH_DMA_RxDescListInit(&EthHandle, EthDmaRxDscrTab, EthRxBuff, ETH_RX_BUF_NUM);
         }
     }
 }
