@@ -13,10 +13,10 @@
 #include <rtdevice.h>
 #include <rtdef.h>
 #include "board_config.h"
-#include "drv_wdt.h"
 #include "rtconfig.h"
 
 #if defined(BSP_USING_WDT_TIM)
+#include "drv_wdt.h"
 
 /* macros define */
 #if defined(BSP_USING_WDT)

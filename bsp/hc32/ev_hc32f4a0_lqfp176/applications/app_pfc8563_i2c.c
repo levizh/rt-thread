@@ -9,6 +9,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
+#if defined(BSP_USING_I2C)
+
 #define PFC8563_I2C_BUS_NAME            "i2c1"  /* I2C总线设备名称 */
 #define PFC8563_ADDR                    0x51    /* 从机地址 */
 #define PFC8563_REG_SEC                 0x02    /* 校准命令 */
@@ -191,3 +193,4 @@ void i2c_pcf8563_sample(int argc, char *argv[])
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(i2c_pcf8563_sample, i2c aht10 sample);
 
+#endif

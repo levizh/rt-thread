@@ -48,6 +48,7 @@
 #include "rtdevice.h"
 #include "drv_can.h"
 
+#if defined(BSP_USING_CAN)
 
 #define CAN_DEV_CH_1                    (0)
 #define CAN_DEV_CH_2                    (1)
@@ -341,3 +342,5 @@ int can_sample_init(void)
 }
 
 MSH_CMD_EXPORT(can, can [option]);
+
+#endif 

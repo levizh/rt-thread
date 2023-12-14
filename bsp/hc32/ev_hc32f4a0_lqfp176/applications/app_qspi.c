@@ -9,6 +9,9 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "board_config.h"
+
+
+#if defined(BSP_USING_QSPI)
 #include "drv_qspi.h"
 
 #define W25Q_QSPI_DEVICE_NAME           "qspi10"
@@ -408,3 +411,5 @@ void qspi_w25q_sample(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(qspi_w25q_sample, qspi w25q sample);
+
+#endif

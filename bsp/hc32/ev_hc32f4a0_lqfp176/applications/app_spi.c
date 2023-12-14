@@ -9,8 +9,9 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include "board_config.h"
-#include "drv_spi.h"
 
+#if defined(BSP_USING_SPI)
+#include "drv_spi.h"
 
 #define W25Q_SPI_DEVICE_NAME            "spi10"
 
@@ -271,7 +272,7 @@ static void spi_thread_entry(void *parameter)
 
     cfg.data_width = 8;
     cfg.mode = RT_SPI_MASTER | RT_SPI_MODE_0 | RT_SPI_MSB;
-    cfg.max_hz = 5 * 1000 * 1000;  /* 10M */
+    cfg.max_hz = 80 * 1000 * 1000;  /* 10M */
     if (RT_EOK != rt_spi_configure(spi_dev_w25q, &cfg))
     {
         rt_kprintf("spi config failed!\n");
@@ -323,3 +324,5 @@ static void spi_w25q_sample(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(spi_w25q_sample, spi w25q sample);
+
+#endif
