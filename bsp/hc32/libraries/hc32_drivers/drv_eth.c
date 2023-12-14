@@ -253,7 +253,7 @@ rt_err_t rt_hc32_eth_tx(rt_device_t dev, struct pbuf *p)
         bufferOffset = bufferOffset + byteCnt;
         frameLength = frameLength + byteCnt;
     }
-    LOG_D("transmit frame length :%d", framelength);
+    LOG_D("transmit frame length :%d", frameLength);
     /* Prepare transmit descriptors to give to DMA */
     (void)ETH_DMA_SetTransFrame(&EthHandle, frameLength);
     errval = (err_t)ERR_OK;
@@ -442,6 +442,8 @@ static void hc32_phy_link_change(void)
             {
                 hc32_eth_device.eth_speed = ETH_MAC_SPEED_10M;
             }
+            ETH_MAC_SetDuplexSpeed(hc32_eth_device.eth_mode, hc32_eth_device.eth_speed);
+            ETH_Start();
             LOG_D("link up");
             eth_device_linkchange(&hc32_eth_device.parent, RT_TRUE);
         }
@@ -449,6 +451,9 @@ static void hc32_phy_link_change(void)
         {
             LOG_I("link down");
             eth_device_linkchange(&hc32_eth_device.parent, RT_FALSE);
+            ETH_Stop();
+            (void)ETH_DMA_TxDescListInit(&EthHandle, EthDmaTxDscrTab, EthTxBuff, ETH_TX_BUF_NUM);
+            (void)ETH_DMA_RxDescListInit(&EthHandle, EthDmaRxDscrTab, EthRxBuff, ETH_RX_BUF_NUM);
         }
     }
 }
@@ -507,12 +512,12 @@ static void hc32_phy_monitor_thread(void *parameter)
     u16RegVal = PHY_PAGE_ADDR_7;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);
-    
+
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
     MODIFY_REG16(u16RegVal, PHY_LED_SELECT, PHY_LED_SELECT_10);
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_P7_IWLFR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_P7_IWLFR, &u16RegVal);
-    
+
     u16RegVal = PHY_PAGE_ADDR_0;
     (void)ETH_PHY_WriteReg(&EthHandle, PHY_PSR, u16RegVal);
     (void)ETH_PHY_ReadReg(&EthHandle, PHY_PSR, &u16RegVal);
