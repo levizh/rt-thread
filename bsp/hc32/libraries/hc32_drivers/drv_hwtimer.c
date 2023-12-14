@@ -134,7 +134,7 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         /* Counter Frequency Fixed at maxfreq */
         timer->freq = timer->info->maxfreq;
 
-        /* Enable timera clock */
+        /* Enable TIMERA clock */
         FCG_Fcg2PeriphClockCmd(tim_device->clock, ENABLE);
 
         /* TIMERA configuration */
@@ -322,7 +322,7 @@ static struct rt_hwtimer_info _info[sizeof(hc32_hwtimer_obj) / sizeof(hc32_hwtim
 void tmra_get_info_callback(void)
 {
     /* Div = 32 */
-    for (rt_uint8_t i = 0; i < sizeof(_info) / sizeof (_info[0]); i ++)
+    for (rt_uint8_t i = 0; i < sizeof(_info) / sizeof (_info[0]); i++)
     {
         _info[i].maxcnt  = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U / 1000U; //Period = 1ms
         _info[i].maxfreq = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U;
