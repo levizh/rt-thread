@@ -222,6 +222,13 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
         usb_host_int_unmskchhltd(pdev, chnum);
     }
 #endif
+    else if (0UL != (u32hcint & USBFS_HCINT_BBERR))
+    {
+        usb_host_clrint(pdev, chnum, USBFS_HCINT_BBERR);
+        pdev->host.HC_Status[chnum] = HOST_CH_BBLERR;
+        usb_host_int_unmskchhltd(pdev, chnum);
+        usb_hchstop(&pdev->regs, chnum);
+    }
     else if (0UL != (u32hcint & USBFS_HCINT_STALL))
     {
         usb_host_int_unmskchhltd(pdev, chnum);
@@ -300,6 +307,11 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
         else if (pdev->host.HC_Status[chnum] == HOST_CH_DATATGLERR)
         {
             pdev->host.ErrCnt[chnum] = 0U;
+            pdev->host.URB_State[chnum] = HOST_CH_XFER_ERROR;
+        }
+        else if (pdev->host.HC_Status[chnum] == HOST_CH_BBLERR)
+        {
+            pdev->host.ErrCnt[chnum] ++;
             pdev->host.URB_State[chnum] = HOST_CH_XFER_ERROR;
         }
         else if (u32eptypetmp == EP_TYPE_INTR)
