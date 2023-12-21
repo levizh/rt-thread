@@ -318,8 +318,10 @@ static int32_t SPI_TxRx(CM_SPI_TypeDef *SPIx, const void *pvTxBuf, void *pvRxBuf
     __IO uint32_t u32FrameCnt;
     uint32_t u32FrameNum = READ_REG32_BIT(SPIx->CFG1, SPI_CFG1_FTHLV) + 1UL;
     __IO uint32_t u32TxAllow = 1U;
+    uint32_t u32MSMode;
     DDL_ASSERT(0UL == (u32Len % u32FrameNum));
 
+    u32MSMode = READ_REG32_BIT(SPIx->CR1, SPI_CR1_MSTR);
     /* Get data bit size, SPI_DATA_SIZE_4BIT ~ SPI_DATA_SIZE_32BIT */
     u32BitSize = READ_REG32_BIT(SPIx->CFG2, SPI_CFG2_DSIZE);
     while (u32RxCnt < u32Len) {
@@ -327,7 +329,7 @@ static int32_t SPI_TxRx(CM_SPI_TypeDef *SPIx, const void *pvTxBuf, void *pvRxBuf
         if (u32TxCnt < u32Len) {
             /* Wait TX buffer empty. */
             i32Ret = SPI_WaitStatus(SPIx, SPI_FLAG_TX_BUF_EMPTY, SPI_FLAG_TX_BUF_EMPTY, 0U);
-            if ((i32Ret == LL_OK) && (u32TxAllow == 1U)) {
+            if ((i32Ret == LL_OK) && (((u32MSMode == SPI_MASTER) && (u32TxAllow == 1U)) || (u32MSMode == SPI_SLAVE))) {
                 if (pvTxBuf != NULL) {
                     u32FrameCnt = 0UL;
                     while (u32FrameCnt < u32FrameNum) {
