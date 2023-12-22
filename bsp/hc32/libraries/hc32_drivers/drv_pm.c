@@ -22,7 +22,6 @@
 #define LOG_TAG             "drv_pm"
 #include <drv_log.h>
 
-//TODO: delete IS_PWC_UNLOCKED after TODO in __sleep_enter_idle is done
 #define IS_PWC_UNLOCKED()           ((CM_PWC->FPRC & PWC_FPRC_FPRCB1) == PWC_FPRC_FPRCB1)
 
 typedef void (* run_switch_func_type)(void);
@@ -98,7 +97,6 @@ __WEAKDEF void pwc_seep_enter(uint8_t u8SleepType)
 static void __sleep_enter_idle(void)
 {
     struct pm_sleep_mode_idle_config sleep_idle_cfg = PM_SLEEP_IDLE_CFG;
-    //TODO: replace pwc_seep_enter by PWC_SLEEP_Enter after hc32_ll_pwc.* updated
     pwc_seep_enter(sleep_idle_cfg.pwc_sleep_type);
 }
 
@@ -177,9 +175,6 @@ static void run(struct rt_pm *pm, uint8_t mode)
         run_switch_func[last_mode][mode]();
     }
 
-    /* temporary update peripheral clk here
-    * TODO: uart_console_reconfig implement in rt_device_pm_ops.frequency_change
-    * (add rt_pm_device_register in drv_usart ) */
     uart_console_reconfig();
 
     last_mode = mode;

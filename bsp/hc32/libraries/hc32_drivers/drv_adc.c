@@ -249,8 +249,7 @@ int rt_hw_adc_init(void)
                                  &g_adc_ops, (void *)g_adc_dev_array[i].instance);
         if (ret != RT_EOK)
         {
-            /* TODO err handler */
-            // LOG_E("failed register %s, err=%d", g_adc_dev_array[i].name, ret);
+            LOG_E("failed register %s, err=%d", g_adc_dev_array[i].init.name, ret);
         }
     }
     return ret;

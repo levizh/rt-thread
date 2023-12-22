@@ -129,7 +129,6 @@ struct pm_sleep_mode_shutdown_config
  * @defgroup PWC_Sleep_Type PWC sleep mode type.
  * @{
  */
-//TODO: remove this defgroup after hc32_ll_pwc.* updated
 #ifndef PWC_SLEEP_WFI
 #define PWC_SLEEP_WFI                   (0x00U)                 /*!< Enter sleep mode by WFI, and wake-up by interrupt handle. */
 #endif
