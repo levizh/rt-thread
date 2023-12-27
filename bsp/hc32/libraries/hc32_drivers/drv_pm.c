@@ -107,6 +107,14 @@ static void __sleep_enter_deep(void)
     RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_DEEP));
 
     (void)PWC_STOP_Config(&sleep_deep_cfg.cfg);
+
+    if (PWC_PWRC2_DVS == (READ_REG8(CM_PWC->PWRC2) & PWC_PWRC2_DVS))
+    {
+        CLR_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
+    } else
+    {
+        SET_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
+    }
     PWC_STOP_Enter(sleep_deep_cfg.pwc_stop_type);
 }
 
@@ -118,6 +126,7 @@ static void __sleep_enter_standby(void)
 
     (void)PWC_PD_Config(&sleep_standby_cfg.cfg);
     PWC_PD_ClearWakeupStatus(PWC_PD_WKUP_FLAG_ALL);
+    __set_FAULTMASK(1);
     PWC_PD_Enter();
 }
 
@@ -129,6 +138,7 @@ static void __sleep_enter_shutdown(void)
 
     (void)PWC_PD_Config(&sleep_shutdown_cfg.cfg);
     PWC_PD_ClearWakeupStatus(PWC_PD_WKUP_FLAG_ALL);
+    __set_FAULTMASK(1);
     PWC_PD_Enter();
 }
 

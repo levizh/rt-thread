@@ -793,10 +793,11 @@ void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
     {
     case PM_RUN_MODE_HIGH_SPEED:
     case PM_RUN_MODE_NORMAL_SPEED:
-        SystemClock_Config();
+        CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
         break;
 
     case PM_RUN_MODE_LOW_SPEED:
+        /* Ensure that system clock less than 8M */
         CLK_SetSysClockSrc(CLK_SYSCLK_SRC_XTAL);
 
     default:
