@@ -39,6 +39,23 @@ static void CLK_Delay(uint32_t u32Delay)
 }
 #endif
 
+/** System Base Configuration
+*/
+void SystemBase_Config(void)
+{
+#if defined(BSP_USING_ON_CHIP_FLASH_ICODE_CACHE)
+    EFM_ICacheCmd(ENABLE);
+#endif
+#if defined(BSP_USING_ON_CHIP_FLASH_DCODE_CACHE)
+    EFM_DCacheCmd(ENABLE);
+#endif
+#if defined(BSP_USING_ON_CHIP_FLASH_ICODE_PREFETCH)
+    EFM_PrefetchCmd(ENABLE);
+#endif
+    /* Reset the VBAT area */
+    PWC_VBAT_Reset();
+}
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)
@@ -106,8 +123,6 @@ void SystemClock_Config(void)
     (void)CLK_PLLxInit(&stcPLLAInit);
 #endif
 
-    /* Reset the VBAT area */
-    PWC_VBAT_Reset();
 #if defined(BSP_RTC_USING_XTAL32) || defined(RT_USING_PM)
     /* Xtal32 config */
     GPIO_AnalogCmd(XTAL32_PORT, XTAL32_IN_PIN | XTAL32_OUT_PIN, ENABLE);

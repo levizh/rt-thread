@@ -44,6 +44,7 @@ extern int __bss_end;
 
 void PeripheralRegister_Unlock(void);
 void PeripheralClock_Config(void);
+void SystemBase_Config(void);
 void SystemClock_Config(void);
 
 #ifdef __cplusplus

@@ -7,6 +7,23 @@ config SOC_HC32F448MC
     select RT_USING_USER_MAIN
     default y
 
+menu "On-chip Drivers"
+    menuconfig BSP_USING_ON_CHIP_FLASH_CACHE
+        bool "Enable on-chip Flash Cache"
+        default y
+        if BSP_USING_ON_CHIP_FLASH_CACHE
+            config BSP_USING_ON_CHIP_FLASH_ICODE_CACHE
+                bool "Enable on-chip Flash ICODE Cache"
+                default y
+            config BSP_USING_ON_CHIP_FLASH_DCODE_CACHE
+                bool "Enable on-chip Flash DCODE Cache"
+                default y
+            config BSP_USING_ON_CHIP_FLASH_ICODE_PREFETCH
+                bool "Enable on-chip Flash ICODE Prefetch"
+                default y
+        endif
+endmenu
+
 menu "Onboard Peripheral Drivers"
     config BSP_USING_TCA9539
         bool "Enable TCA9539"

@@ -39,6 +39,15 @@ static void CLK_Delay(uint32_t u32Delay)
 }
 #endif
 
+/** System Base Configuration
+*/
+void SystemBase_Config(void)
+{
+#if defined(BSP_USING_ON_CHIP_FLASH_CACHE)
+    EFM_CacheCmd(ENABLE);
+#endif
+}
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)

@@ -17,6 +17,21 @@
                                          LL_PERIPH_PWC_CLK_RMU | LL_PERIPH_SRAM)
 #define EXAMPLE_PERIPH_WP               (LL_PERIPH_EFM | LL_PERIPH_FCG | LL_PERIPH_SRAM)
 
+/** System Base Configuration
+*/
+void SystemBase_Config(void)
+{
+#if defined(BSP_USING_ON_CHIP_FLASH_ICODE_CACHE)
+    EFM_ICacheCmd(ENABLE);
+#endif
+#if defined(BSP_USING_ON_CHIP_FLASH_DCODE_CACHE)
+    EFM_DCacheCmd(ENABLE);
+#endif
+#if defined(BSP_USING_ON_CHIP_FLASH_ICODE_PREFETCH)
+    EFM_PrefetchCmd(ENABLE);
+#endif
+}
+
 /** System Clock Configuration
 */
 void SystemClock_Config(void)

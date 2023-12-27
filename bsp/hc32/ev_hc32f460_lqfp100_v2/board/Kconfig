@@ -7,6 +7,12 @@ config SOC_HC32F460PE
     select RT_USING_USER_MAIN
     default y
 
+menu "On-chip Drivers"
+    config BSP_USING_ON_CHIP_FLASH_CACHE
+        bool "Enable on-chip Flash Cache"
+        default y
+endmenu
+
 menu "Onboard Peripheral Drivers"
     config BSP_USING_SPI_FLASH
         bool "Enable SPI FLASH (w25q64 spi3)"
