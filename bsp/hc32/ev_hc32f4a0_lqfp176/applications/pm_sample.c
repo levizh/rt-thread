@@ -46,7 +46,7 @@
 #define SUPPORT_WKTM_WAKE
 #define WKTM_WAKE_TIMEOUT                                   (60)
 
-// #define PM_DBG
+ #define PM_DBG
 #if defined PM_DBG
     #define pm_dbg  rt_kprintf
 #else
@@ -66,82 +66,6 @@ void rt_lptimer_init(rt_lptimer_t  timer,
 
 rt_err_t rt_lptimer_start(rt_lptimer_t timer);
 rt_err_t rt_lptimer_stop(rt_lptimer_t timer);
-
-
-static void _init_sleep(rt_bool_t b_disable_unused_clk)
-{
-    CLK_Xtal32Cmd(ENABLE);
-
-    rt_tick_t tick_start = rt_tick_get_millisecond();
-    rt_err_t rt_stat = RT_EOK;
-    // Wait for flash to become idle
-    while (SET != EFM_GetStatus(EFM_FLAG_RDY))
-    {
-        if (rt_tick_get_millisecond() - tick_start > EFM_ERASE_TIME_MAX_IN_MILLISECOND)
-        {
-            rt_stat = RT_ERROR;
-            break;
-        }
-    }
-    RT_ASSERT(rt_stat == RT_EOK);
-
-    if (b_disable_unused_clk)
-    {
-        uint32_t cur_clk_src = READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW);
-
-        switch (cur_clk_src)
-        {
-        case CLK_SYSCLK_SRC_HRC:
-            CLK_PLLCmd(DISABLE);
-            CLK_MrcCmd(DISABLE);
-            CLK_LrcCmd(DISABLE);
-            CLK_XtalCmd(DISABLE);
-            PWC_LDO_Cmd(PWC_LDO_PLL, DISABLE);
-            break;
-        case CLK_SYSCLK_SRC_MRC:
-            CLK_PLLCmd(DISABLE);
-            CLK_HrcCmd(DISABLE);
-            CLK_LrcCmd(DISABLE);
-            CLK_XtalCmd(DISABLE);
-            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
-
-            break;
-        case CLK_SYSCLK_SRC_XTAL:
-            CLK_PLLCmd(DISABLE);
-            CLK_HrcCmd(DISABLE);
-            CLK_MrcCmd(DISABLE);
-            CLK_LrcCmd(DISABLE);
-            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
-
-            break;
-        case CLK_SYSCLK_SRC_XTAL32:
-            CLK_PLLCmd(DISABLE);
-            CLK_HrcCmd(DISABLE);
-            CLK_MrcCmd(DISABLE);
-            CLK_LrcCmd(DISABLE);
-            CLK_XtalCmd(DISABLE);
-            PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
-
-            break;
-        case CLK_SYSCLK_SRC_PLL:
-            if (CLK_PLL_SRC_XTAL == PLL_SRC)
-            {
-                CLK_HrcCmd(DISABLE);
-            }
-            else
-            {
-                CLK_XtalCmd(DISABLE);
-            }
-            CLK_MrcCmd(DISABLE);
-            CLK_LrcCmd(DISABLE);
-            // PWC_LDO_Cmd(PWC_LDO_HRC, DISABLE);
-
-            break;
-        default:
-            break;
-        }
-    }
-}
 
 static void KEY10_IrqHandler(void)
 {
@@ -189,15 +113,19 @@ static void WKTM_IrqHandler(void)
     NVIC_DisableIRQ(IRQN_WKTM);
 }
 
+static void irq2_handler(void)
+{
+    if (SET == EXTINT_GetExtIntStatus(EXTINT_CH02))
+    {
+        EXTINT_ClearExtIntStatus(EXTINT_CH02);
+    }
+}
+
 static void _key10_int_init(void)
 {
     stc_extint_init_t stcExtIntInit;
     stc_irq_signin_config_t stcIrqSignConfig;
     stc_gpio_init_t stcGpioInit;
-
-    // KEYSCAN_Cmd(ENABLE);
-    // rt_pin_mode(GET_PIN(A, 0), PIN_MODE_INPUT_PULLUP);
-    // rt_pin_irq_enable(GET_PIN(A, 0), RT_TRUE);
 
     /* configuration structure initialization */
     (void)GPIO_StructInit(&stcGpioInit);
@@ -205,11 +133,13 @@ static void _key10_int_init(void)
     stcGpioInit.u16PullUp = PIN_PU_ON;
     /* GPIO config */
     (void)GPIO_Init(GPIO_PORT_A, GPIO_PIN_00, &stcGpioInit);
+    (void)GPIO_Init(GPIO_PORT_A, GPIO_PIN_02, &stcGpioInit);
 
     /* Extint config */
     (void)EXTINT_StructInit(&stcExtIntInit);
     stcExtIntInit.u32Edge = EXTINT_TRIG_FALLING;
     (void)EXTINT_Init(EXTINT_CH00, &stcExtIntInit);
+    (void)EXTINT_Init(EXTINT_CH02, &stcExtIntInit);
 
     /* IRQ sign-in */
     stcIrqSignConfig.enIntSrc = INT_SRC_PORT_EIRQ0;
@@ -222,6 +152,17 @@ static void _key10_int_init(void)
     NVIC_ClearPendingIRQ(stcIrqSignConfig.enIRQn);
     NVIC_SetPriority(stcIrqSignConfig.enIRQn, DDL_IRQ_PRIO_DEFAULT);
     NVIC_EnableIRQ(stcIrqSignConfig.enIRQn);
+
+    stcIrqSignConfig.enIntSrc = INT_SRC_PORT_EIRQ2;
+    stcIrqSignConfig.enIRQn   = INT002_IRQn;
+    stcIrqSignConfig.pfnCallback = irq2_handler;
+    (void)INTC_IrqSignIn(&stcIrqSignConfig);
+
+    NVIC_ClearPendingIRQ(stcIrqSignConfig.enIRQn);
+    NVIC_SetPriority(stcIrqSignConfig.enIRQn, DDL_IRQ_PRIO_DEFAULT);
+    NVIC_EnableIRQ(stcIrqSignConfig.enIRQn);
+    
+    
 }
 
 static void _wktm_int_init(void)
@@ -283,16 +224,6 @@ static void _sleep_enter_event_idle(void)
 
 static void _sleep_enter_event_deep(void)
 {
-#if (PM_SLEEP_DEEP_CFG_CLK   == PWC_STOP_CLK_KEEP)
-    _init_sleep(RT_TRUE);
-#else
-    _init_sleep(RT_FALSE);
-    CLK_PLLCmd(DISABLE);
-    CLK_HrcCmd(DISABLE);
-    CLK_LrcCmd(DISABLE);
-    CLK_XtalCmd(DISABLE);
-    PWC_LDO_Cmd(PWC_LDO_PLL | PWC_LDO_HRC, DISABLE);
-#endif
     _wkup_cfg_sleep_deep();
     rt_kprintf("sleep: deep\n");
     DDL_DelayMS(50);
@@ -417,6 +348,37 @@ static void pm_cmd_handler(void *parameter)
     }
 }
 
+#define MCO_PORT            (GPIO_PORT_A)
+#define MCO_PIN             (GPIO_PIN_08)
+#define MCO_GPIO_FUNC       (GPIO_FUNC_1)
+
+static void pm_run_main(void *parameter)
+{
+    rt_uint8_t run_mode = PM_RUN_MODE_LOW_SPEED;
+    static rt_uint8_t run = 0;
+
+    GPIO_SetFunc(MCO_PORT, MCO_PIN, MCO_GPIO_FUNC);
+    /* Configure clock output system clock */
+    CLK_MCOConfig(CLK_MCO1, CLK_MCO_SRC_HCLK, CLK_MCO_DIV8);
+    /* MCO1 output enable */
+    CLK_MCOCmd(CLK_MCO1, ENABLE);
+    
+    while (1)
+    {
+        if (0 == run)
+        {
+            run = 1;
+            run_mode = PM_RUN_MODE_LOW_SPEED;
+        } else if (1 == run)
+        {
+            run  = 0;
+            run_mode = PM_RUN_MODE_HIGH_SPEED;
+        }
+        rt_pm_run_enter(run_mode);
+        rt_kprintf("system clock switch to %s speed\n\n",run == 0? "high" : "low");
+        rt_thread_mdelay(5000);
+    }
+}
 static void _keycnt_cmd_init_after_power_on(void)
 {
     en_flag_status_t wkup_from_wktm = PWC_PD_GetWakeupStatus(PWC_PD_WKUP_FLAG_WKTM);
@@ -501,6 +463,17 @@ int pm_sample_init(void)
     {
         rt_kprintf("create pm sample thread failed!\n");
     }
+
+    thread = rt_thread_create("pm_run_main", pm_run_main, RT_NULL, 1024, 25, 10);
+    if (thread != RT_NULL)
+    {
+        rt_thread_startup(thread);
+    }
+    else
+    {
+        rt_kprintf("create pm run thread failed!\n");
+    }
+    return RT_EOK;
 }
 
 INIT_APP_EXPORT(pm_sample_init);
