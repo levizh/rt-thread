@@ -60,6 +60,7 @@ void rt_hw_board_init()
 {
     PeripheralRegister_Unlock();
 
+    SystemBase_Config();
     SystemClock_Config();
     PeripheralClock_Config();
     /* Configure the SysTick */
