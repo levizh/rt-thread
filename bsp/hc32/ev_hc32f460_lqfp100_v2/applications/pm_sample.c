@@ -23,6 +23,8 @@
 #include <board.h>
 #include <drivers/lptimer.h>
 
+
+#if defined(BSP_USING_PM)
 #define EFM_ERASE_TIME_MAX_IN_MILLISECOND                   (20)
 #define PLL_SRC                                             ((CM_CMU->PLLCFGR & CMU_PLLCFGR_PLLSRC) >> CMU_PLLCFGR_PLLSRC_POS)
 
@@ -458,3 +460,5 @@ int pm_sample_init(void)
 }
 
 INIT_APP_EXPORT(pm_sample_init);
+
+#endif /* end of BSP_USING_PM */
