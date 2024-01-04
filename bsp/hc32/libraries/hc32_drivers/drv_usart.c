@@ -273,7 +273,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     }
 
     /* Enable error interrupt */
-#if defined (HC32F460) || defined (HC32F4A0)    
+#if defined (HC32F460) || defined (HC32F4A0)
     NVIC_EnableIRQ(uart->config->rxerr_irq.irq_config.irq_num);
 #elif defined (HC32F448)
     INTC_IntSrcCmd(uart->config->rxerr_int_src, ENABLE);
@@ -552,7 +552,7 @@ static void hc32_uart_rx_timeout(struct rt_serial_device *serial)
     TMR0_HWStartCondCmd(TMR0_Instance, ch, ENABLE);
     TMR0_HWClearCondCmd(TMR0_Instance, ch, ENABLE);
     /* Clear compare flag */
-    TMR0_ClearStatus(TMR0_Instance, (uint32_t)(0x1UL << ch));
+    TMR0_ClearStatus(TMR0_Instance, (uint32_t)(0x1UL << (ch * TMR0_STFLR_CMFB_POS)));
 
 #if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     NVIC_EnableIRQ(uart->config->rx_timeout->irq_config.irq_num);
@@ -571,6 +571,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
     struct dma_config *uart_dma;
 
     RT_ASSERT(RT_NULL != serial);
+    RT_ASSERT(RT_NULL == ((serial->config.rx_bufsz) & ((RT_ALIGN_SIZE) - 1)));
 
     uart = rt_container_of(serial, struct hc32_uart, serial);
     RT_ASSERT(RT_NULL != uart->config->Instance);
