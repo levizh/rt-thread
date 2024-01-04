@@ -14,7 +14,9 @@
 #include "rtdef.h"
 
 #if defined(RT_USING_I2C)
+
 #if defined(BSP_USING_I2C1_SW)
+
 /* using i2c1 control oled12864 */
 #define SW_I2C_NAME         "i2c1_sw"
 #define SSD1306_ADDR        (0x78U >> 1)
@@ -286,9 +288,9 @@ rt_uint8_t logo_array[][SYM_BYTE_SIZE] = {
     0x38, 0x6C, 0x44, 0x44, 0x44, 0x44, 0x24, 0x00, /*"C"*/ 
 };
 
-#endif /* BSP_USING_I2C1_SW */
-
 MSH_CMD_EXPORT(sw_i2c_sample, soft i2c sample);
+
+#endif /* BSP_USING_I2C1_SW */
 
 #endif/* RT_USING_I2C */
  /*
