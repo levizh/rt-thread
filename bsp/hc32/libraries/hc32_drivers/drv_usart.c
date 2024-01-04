@@ -571,7 +571,7 @@ static void hc32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
     struct dma_config *uart_dma;
 
     RT_ASSERT(RT_NULL != serial);
-    RT_ASSERT(RT_NULL == ((serial->config.rx_bufsz) & ((RT_ALIGN_SIZE) - 1)));
+    RT_ASSERT(RT_NULL == ((serial->config.bufsz) & ((RT_ALIGN_SIZE) - 1)));
 
     uart = rt_container_of(serial, struct hc32_uart, serial);
     RT_ASSERT(RT_NULL != uart->config->Instance);
