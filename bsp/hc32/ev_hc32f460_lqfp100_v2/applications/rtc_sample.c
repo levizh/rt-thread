@@ -12,7 +12,7 @@
 #include <board.h>
 #include "rtconfig.h"
 #include "rtdef.h"
-// #include "alarm.h"
+//#include "rtc.h"
 
 #if defined(BSP_USING_RTC)
 
