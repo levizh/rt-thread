@@ -484,7 +484,6 @@ static void usb_host_port_isr(usb_core_instance *pdev)
     u32hprt = READ_REG32(*pdev->regs.HPRT);
     u32hprt_bk = u32hprt;
     /* Clear the interrupt bits in GINTSTS */
-    //tmp_hprt_bk.b.prtovrcurrchng = 0U;
     u32hprt_bk &= ~(USBFS_HPRT_PENA | USBFS_HPRT_PCDET | USBFS_HPRT_PENCHNG);
 
     /* check if a port connect have been detected */
@@ -812,7 +811,6 @@ static uint32_t usb_host_submitrequest(usb_core_instance *pdev,
     pdev->host.hc[ch_num].xfer_buff = pbuff;
     pdev->host.hc[ch_num].xfer_len  = length;
     pdev->host.hc[ch_num].xfer_count = 0U;
-    //pdev->host.hc[ch_num].ch_num = ch_num;
     pdev->host.HC_Status[ch_num] = HOST_CH_IDLE; /* state */
     pdev->host.URB_State[ch_num] = HOST_CH_XFER_IDLE; /* urb state */
 

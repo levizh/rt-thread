@@ -119,8 +119,10 @@ static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
 
     I2cSrcClk = I2C_SRC_CLK;
     I2cClkDiv = I2cSrcClk / i2c_obj->config->baudrate / I2C_WIDTH_MAX_IMME;
-    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++) {
-        if (I2cClkDiv < (1UL << I2cClkDivReg)) {
+    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++)
+    {
+        if (I2cClkDiv < (1UL << I2cClkDivReg))
+        {
             break;
         }
     }
@@ -438,7 +440,6 @@ static int I2C_Master_Receive(struct hc32_i2c *i2c_obj,
     {
         I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
     }
-    // return I2C_ReceiveData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
     return I2C_MasterReceiveDataAndStop(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
 }
 
@@ -496,7 +497,7 @@ static rt_ssize_t hc32_i2c_master_xfer(struct rt_i2c_bus_device *bus,
         ignore_nack = msg->flags & RT_I2C_IGNORE_NACK;
         if (!(msg->flags & RT_I2C_NO_START))
         {
-            if (SET == I2C_GetStatus(i2c_obj->config->Instance,I2C_FLAG_BUSY))
+            if (SET == I2C_GetStatus(i2c_obj->config->Instance, I2C_FLAG_BUSY))
             {
                 hc32_hw_i2c_restart(i2c_obj);
             }

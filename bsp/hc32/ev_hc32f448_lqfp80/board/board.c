@@ -169,11 +169,13 @@ en_flag_status_t USART_GetFunc(CM_USART_TypeDef *USARTx, uint32_t u32Func)
 //    DDL_ASSERT(IS_USART_TIMEOUT_FUNC(USARTx, u32Func));
 
     u32BaseFunc = (u32Func & 0xFFFFUL);
-    if (u32BaseFunc > 0UL) {    
+    if (u32BaseFunc > 0UL)
+    {
         enRet = (0UL == (READ_REG32_BIT(USARTx->CR1, u32BaseFunc)) ? RESET : SET);
     }
     u32LinFunc = ((u32Func & USART_LIN_FUNC_MASK) >> USART_LIN_FUNC_OFFSET);
-    if (u32LinFunc > 0UL) {
+    if (u32LinFunc > 0UL)
+    {
         enRet |= (0UL == (READ_REG32_BIT(USARTx->CR2, u32LinFunc)) ? RESET : SET);
     }
     return enRet;

@@ -24,9 +24,9 @@
 #if defined(BSP_USING_PWM_TIMA)
 
 #if defined(HC32F460)
-#define TMRA_CHANNEL_NUM_MAX     8U
+    #define TMRA_CHANNEL_NUM_MAX     8U
 #elif defined(HC32F4A0)
-#define TMRA_CHANNEL_NUM_MAX     4U
+    #define TMRA_CHANNEL_NUM_MAX     4U
 #endif
 
 enum
@@ -137,7 +137,7 @@ static rt_uint32_t tmra_get_clk_notdiv(CM_TMRA_TypeDef *TMRAx)
         u32BusName = CLK_BUS_PCLK0;
         break;
     default:
-        u32BusName = CLK_BUS_PCLK1;     //Uint5-12
+        u32BusName = CLK_BUS_PCLK1;     /* Uint5-12 */
         break;
     }
 #elif defined(HC32F460)
@@ -200,10 +200,12 @@ static void tmra_duyt100or0_output(CM_TMRA_TypeDef *TMRAx, uint32_t channel, uin
     if ((TMRA_GetPeriodValue(TMRAx) + 1) == CompareValue)
     {
         TMRA_PWM_SetForcePolarity(TMRAx, channel, TMRA_PWM_FORCE_HIGH);
-    } else if (CompareValue <= 1)
+    }
+    else if (CompareValue <= 1)
     {
         TMRA_PWM_SetForcePolarity(TMRAx, channel, TMRA_PWM_FORCE_LOW);
-    } else 
+    }
+    else
     {
         TMRA_PWM_SetForcePolarity(TMRAx, (channel), TMRA_PWM_FORCE_INVD);
     }
@@ -219,7 +221,7 @@ static rt_err_t tmra_pwm_enable(struct rt_device_pwm *device, struct rt_pwm_conf
         return RT_EPERM;
     }
 
-    tmra_duyt100or0_output(TMRAx,configuration->channel,compare_value);
+    tmra_duyt100or0_output(TMRAx, configuration->channel, compare_value);
 
     if (enable)
     {
@@ -274,15 +276,15 @@ static rt_uint32_t tmra_auto_set_div(CM_TMRA_TypeDef *TMRAx, uint32_t period)
 
     TMRA_SetClockDiv(TMRAx, i << TMRA_BCSTRL_CKDIV_POS);
     u32clkFreq = tmra_get_clk_bydiv(TMRAx);
-    
+
     return u32clkFreq;
 }
 
 static rt_err_t tmra_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint32_t u32clkFreq;
-    rt_uint32_t period_value,compare_value;
-    rt_uint32_t *compare_value_channelx = (rt_uint32_t*)device->parent.user_data;
+    rt_uint32_t period_value, compare_value;
+    rt_uint32_t *compare_value_channelx = (rt_uint32_t *)device->parent.user_data;
     struct hc32_pwm_tmra *pwm = (struct hc32_pwm_tmra *)device;
     CM_TMRA_TypeDef *TMRAx = pwm->instance;
 
@@ -302,9 +304,9 @@ static rt_err_t tmra_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
         if (pwm->channel & (0x01UL << i))
         {
             compare_value = (*(compare_value_channelx + i)) * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
-            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value-1 : compare_value;
-            TMRA_SetCompareValue(TMRAx,i, compare_value);
-            tmra_duyt100or0_output(TMRAx,i,compare_value + 1);
+            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value - 1 : compare_value;
+            TMRA_SetCompareValue(TMRAx, i, compare_value);
+            tmra_duyt100or0_output(TMRAx, i, compare_value + 1);
         }
     }
 
@@ -314,17 +316,17 @@ static rt_err_t tmra_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
 static rt_err_t tmra_pwm_set_pulse(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint32_t u32clkFreq;
-    rt_uint32_t compare_value,period_value;
-    rt_uint32_t *compare_value_channel = (rt_uint32_t*)device->parent.user_data;
+    rt_uint32_t compare_value, period_value;
+    rt_uint32_t *compare_value_channel = (rt_uint32_t *)device->parent.user_data;
     struct hc32_pwm_tmra *pwm = (struct hc32_pwm_tmra *)device;
     CM_TMRA_TypeDef *TMRAx = pwm->instance;
 
     u32clkFreq = tmra_get_clk_bydiv(TMRAx);
     period_value = TMRA_GetPeriodValue(TMRAx) + 1;
     compare_value = configuration->pulse * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
-    compare_value = compare_value > period_value ? period_value-1 : compare_value > 1 ? compare_value-1 : compare_value;
+    compare_value = compare_value > period_value ? period_value - 1 : compare_value > 1 ? compare_value - 1 : compare_value;
     TMRA_SetCompareValue(TMRAx, configuration->channel, compare_value);
-    tmra_duyt100or0_output(TMRAx,configuration->channel,compare_value + 1);
+    tmra_duyt100or0_output(TMRAx, configuration->channel, compare_value + 1);
 
     *(compare_value_channel + configuration->channel) = configuration->pulse;
 
@@ -800,10 +802,11 @@ static rt_err_t tmr4_pwm_enable(struct rt_device_pwm *device, struct rt_pwm_conf
 
     if (enable)
     {
-        TMR4_OC_Cmd(TMR4x,configuration->channel,ENABLE);
-    } else
+        TMR4_OC_Cmd(TMR4x, configuration->channel, ENABLE);
+    }
+    else
     {
-        TMR4_OC_Cmd(TMR4x,configuration->channel,DISABLE);
+        TMR4_OC_Cmd(TMR4x, configuration->channel, DISABLE);
     }
 
     return RT_EOK;
@@ -859,8 +862,8 @@ static rt_uint32_t tmr4_auto_set_div(CM_TMR4_TypeDef *TMR4x, uint32_t period)
 static rt_err_t tmr4_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint32_t u32clkFreq;
-    rt_uint32_t period_value,compare_value;
-    rt_uint32_t *compare_value_channelx = (rt_uint32_t*)device->parent.user_data;
+    rt_uint32_t period_value, compare_value;
+    rt_uint32_t *compare_value_channelx = (rt_uint32_t *)device->parent.user_data;
     struct hc32_pwm_tmr4 *pwm = (struct hc32_pwm_tmr4 *)device;
     CM_TMR4_TypeDef *TMR4x = pwm->instance;
 
@@ -878,8 +881,8 @@ static rt_err_t tmr4_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
         if (pwm->channel & (0x01UL << i))
         {
             compare_value = (*(compare_value_channelx + i)) * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
-            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value-1 : compare_value;
-            TMR4_OC_SetCompareValue(TMR4x,i,compare_value);
+            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value - 1 : compare_value;
+            TMR4_OC_SetCompareValue(TMR4x, i, compare_value);
         }
     }
 
@@ -908,18 +911,18 @@ static void tmr4_pwm_set_cmpmode(CM_TMR4_TypeDef *TMR4x, uint32_t channel)
 static rt_err_t tmr4_pwm_set_pulse(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint32_t u32clkFreq;
-    rt_uint32_t compare_value,period_value;
-    rt_uint32_t *compare_value_channelx = (rt_uint32_t*)device->parent.user_data;
+    rt_uint32_t compare_value, period_value;
+    rt_uint32_t *compare_value_channelx = (rt_uint32_t *)device->parent.user_data;
     struct hc32_pwm_tmr4 *pwm = (struct hc32_pwm_tmr4 *)device;
     CM_TMR4_TypeDef *TMR4x = pwm->instance;
 
     u32clkFreq = tmr4_get_clk_bydiv(TMR4x);
     period_value = TMR4_GetPeriodValue(TMR4x) + 1;
     compare_value = (rt_uint64_t)configuration->pulse * u32clkFreq / (rt_uint64_t)1000000000;;
-    compare_value = compare_value > period_value ? period_value-1 : compare_value > 1 ? compare_value-1 : compare_value;
+    compare_value = compare_value > period_value ? period_value - 1 : compare_value > 1 ? compare_value - 1 : compare_value;
 
-    TMR4_OC_SetCompareValue(TMR4x,configuration->channel,compare_value);
-    *(compare_value_channelx +  configuration->channel)= configuration->pulse;
+    TMR4_OC_SetCompareValue(TMR4x, configuration->channel, compare_value);
+    *(compare_value_channelx +  configuration->channel) = configuration->pulse;
 
     return RT_EOK;
 }
@@ -1219,18 +1222,19 @@ static void tmr6_duyt100or0_output(CM_TMR6_TypeDef *TMR6x, rt_uint32_t channel, 
 {
     if (compare_value <= 1)
     {
-        #if defined(HC32F4A0)
-        TMR6_PWM_SetPolarity(TMR6x,channel,TMR6_STAT_OVF,TMR6_PWM_LOW);
-        #elif defined(HC32F460)
-        TMR6_PWM_SetPolarity(TMR6x,TMR6_STAT_MATCH_PERIOD,TMR6_PWM_LOW);
-        #endif
-    } else
+#if defined(HC32F4A0)
+        TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_OVF, TMR6_PWM_LOW);
+#elif defined(HC32F460)
+        TMR6_PWM_SetPolarity(TMR6x, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_LOW);
+#endif
+    }
+    else
     {
-        #if defined(HC32F4A0)
-        TMR6_PWM_SetPolarity(TMR6x,channel,TMR6_STAT_OVF,TMR6_PWM_HIGH);
-        #elif defined(HC32F460)
-        TMR6_PWM_SetPolarity(TMR6x,TMR6_STAT_MATCH_PERIOD,TMR6_PWM_HIGH);
-        #endif
+#if defined(HC32F4A0)
+        TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_OVF, TMR6_PWM_HIGH);
+#elif defined(HC32F460)
+        TMR6_PWM_SetPolarity(TMR6x, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_HIGH);
+#endif
     }
 }
 
@@ -1243,10 +1247,10 @@ static rt_err_t tmr6_pwm_enable(struct rt_device_pwm *device, struct rt_pwm_conf
     if (configuration->complementary)
     {
         return RT_EPERM;
-    } 
+    }
 
     compare_value = TMR6_GetCompareValue(TMR6x, configuration->channel) + 1;
-    tmr6_duyt100or0_output(TMR6x, configuration->channel,compare_value);
+    tmr6_duyt100or0_output(TMR6x, configuration->channel, compare_value);
 
     if (enable)
     {
@@ -1308,7 +1312,7 @@ static rt_uint32_t tmr6_auto_set_div(CM_TMR6_TypeDef *TMR6x, uint32_t period)
 static rt_err_t tmr6_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint8_t i;
-    rt_uint32_t compare_value,period_value;
+    rt_uint32_t compare_value, period_value;
     stc_tmr6_pwm_init_t *pwm_init_t = (stc_tmr6_pwm_init_t *)device->parent.user_data;
     struct hc32_pwm_tmr6 *pwm = (struct hc32_pwm_tmr6 *)device;
     CM_TMR6_TypeDef *TMR6x = pwm->instance;
@@ -1327,9 +1331,9 @@ static rt_err_t tmr6_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
         if (pwm->channel & (0x01UL << i))
         {
             compare_value = (pwm_init_t + i)->u32CompareValue * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
-            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value-1 : compare_value;
+            compare_value = compare_value >= period_value ? period_value : compare_value > 1 ? compare_value - 1 : compare_value;
             TMR6_SetCompareValue(TMR6x, i, compare_value);
-            tmr6_duyt100or0_output(TMR6x,i,compare_value + 1);
+            tmr6_duyt100or0_output(TMR6x, i, compare_value + 1);
         }
     }
     return RT_EOK;
@@ -1338,7 +1342,7 @@ static rt_err_t tmr6_pwm_set_period(struct rt_device_pwm *device, struct rt_pwm_
 static rt_err_t tmr6_pwm_set_pulse(struct rt_device_pwm *device, struct rt_pwm_configuration *configuration)
 {
     rt_uint32_t u32clkFreq;
-    rt_uint32_t compare_value,period_value;
+    rt_uint32_t compare_value, period_value;
     stc_tmr6_pwm_init_t *pwm_init_t = (stc_tmr6_pwm_init_t *)device->parent.user_data;
     struct hc32_pwm_tmr6 *pwm = (struct hc32_pwm_tmr6 *)device;
     CM_TMR6_TypeDef *TMR6x = pwm->instance;
@@ -1347,10 +1351,10 @@ static rt_err_t tmr6_pwm_set_pulse(struct rt_device_pwm *device, struct rt_pwm_c
     period_value = TMR6_GetPeriodValue(TMR6x, TMR6_PERIOD_REG_A) + 1;
 
     compare_value = configuration->pulse * (rt_uint64_t)u32clkFreq / (rt_uint64_t)1000000000;
-    compare_value = compare_value > period_value ? period_value-1 : compare_value > 1 ? compare_value-1 : compare_value;
+    compare_value = compare_value > period_value ? period_value - 1 : compare_value > 1 ? compare_value - 1 : compare_value;
 
     TMR6_SetCompareValue(TMR6x, configuration->channel, compare_value);
-    tmr6_duyt100or0_output(TMR6x,configuration->channel,compare_value + 1);
+    tmr6_duyt100or0_output(TMR6x, configuration->channel, compare_value + 1);
     (pwm_init_t + configuration->channel)->u32CompareValue = configuration->pulse;
 
     return RT_EOK;
@@ -1485,9 +1489,9 @@ static rt_err_t tmr6_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
 
     if (!configuration->channel)    return RT_EINVAL;
-    
+
     configuration->channel = (configuration->channel - 1) % TMR6_CHANNEL_NUM_MAX;
-    
+
     switch (cmd)
     {
     case PWM_CMD_ENABLE:

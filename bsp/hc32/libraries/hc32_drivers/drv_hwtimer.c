@@ -129,7 +129,7 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
     irq_config.int_src = tim_device->isr.enIntSrc;
     irq_config.irq_prio = tim_device->isr.u8Int_Prio;
 
-    if (state)  //open
+    if (state)  /* open */
     {
         /* Counter Frequency Fixed at maxfreq */
         timer->freq = timer->info->maxfreq;
@@ -143,10 +143,10 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         stcTmraInit.u32PeriodValue      = timer->info->maxcnt;
         (void)TMRA_Init(tim_device->tim_handle, &stcTmraInit);
 
-        TMRA_IntCmd(tim_device->tim_handle,TMRA_INT_OVF,ENABLE);
+        TMRA_IntCmd(tim_device->tim_handle, TMRA_INT_OVF, ENABLE);
         hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_TRUE);
     }
-    else    //close
+    else    /* close */
     {
         TMRA_DeInit(tim_device->tim_handle);
         hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_FALSE);
@@ -322,9 +322,9 @@ static struct rt_hwtimer_info _info[sizeof(hc32_hwtimer_obj) / sizeof(hc32_hwtim
 void tmra_get_info_callback(void)
 {
     /* Div = 32 */
-    for (rt_uint8_t i = 0; i < sizeof(_info) / sizeof (_info[0]); i++)
+    for (rt_uint8_t i = 0; i < sizeof(_info) / sizeof(_info[0]); i++)
     {
-        _info[i].maxcnt  = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U / 1000U; //Period = 1ms
+        _info[i].maxcnt  = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U / 1000U; /* Period = 1ms */
         _info[i].maxfreq = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U;
         _info[i].minfreq = CLK_GetBusClockFreq(hc32_hwtimer_obj[i].clock_source) / 32U / _info[i].maxcnt;
         _info[i].cntmode = HWTIMER_CNTMODE_UP;

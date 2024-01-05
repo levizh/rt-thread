@@ -63,7 +63,7 @@ static void uart_console_reconfig(void)
  * @param  [in] u8SleepType specifies the type of enter sleep's command.
  *   @arg  PWC_SLEEP_WFI            Enter sleep mode by WFI, and wake-up by interrupt handle.
  *   @arg  PWC_SLEEP_WFE_INT        Enter sleep mode by WFE, and wake-up by interrupt request(SEVONPEND=1)
- *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0). 
+ *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0).
 
  * @retval None
  */
@@ -110,10 +110,11 @@ static void __sleep_enter_deep(void)
 
     if (PWC_PWRC2_DVS == (READ_REG8(CM_PWC->PWRC2) & PWC_PWRC2_DVS))
     {
-        CLR_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
-    } else
+        CLR_REG8_BIT(CM_PWC->PWRC1, PWC_PWRC1_STPDAS);
+    }
+    else
     {
-        SET_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
+        SET_REG8_BIT(CM_PWC->PWRC1, PWC_PWRC1_STPDAS);
     }
     PWC_STOP_Enter(sleep_deep_cfg.pwc_stop_type);
 }

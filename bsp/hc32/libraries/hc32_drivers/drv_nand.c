@@ -101,7 +101,7 @@ static rt_err_t _nand_init(struct rt_mtd_nand_device *device)
     stc_exmc_nfc_init_t nfc_init_params;
     struct rthw_nand *hw_nand = (struct rthw_nand *)device;
     rt_uint16_t oob_free = (rt_uint16_t)(NAND_SPARE_AREA_SIZE - \
-                           (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE);
+                                         (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE);
 
     RT_ASSERT(device != RT_NULL);
 
