@@ -776,7 +776,7 @@ static const struct rt_pulse_encoder_ops tim6_ops =
 
 #endif /* BSP_USING_TIMER6_PULSE_ENCODER */
 
-int hw_pulse_encoder_init(void)
+static int rt_hw_pulse_encoder_init(void)
 {
     int result;
 
@@ -818,6 +818,6 @@ int hw_pulse_encoder_init(void)
 
     return result;
 }
-INIT_BOARD_EXPORT(hw_pulse_encoder_init);
+INIT_BOARD_EXPORT(rt_hw_pulse_encoder_init);
 
 #endif /* RT_USING_PULSE_ENCODER */

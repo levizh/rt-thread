@@ -377,7 +377,7 @@ static const struct rt_hwtimer_ops _ops =
     .control = timer_ctrl,
 };
 
-static int hc32_hwtimer_init(void)
+static int rt_hw_hwtimer_init(void)
 {
     int i;
     int result = RT_EOK;
@@ -401,6 +401,6 @@ static int hc32_hwtimer_init(void)
 
     return result;
 }
-INIT_BOARD_EXPORT(hc32_hwtimer_init);
+INIT_BOARD_EXPORT(rt_hw_hwtimer_init);
 
 #endif /* BSP_USING_HWTIMER */

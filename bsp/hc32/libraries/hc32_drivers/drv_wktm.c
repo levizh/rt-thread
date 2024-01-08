@@ -114,7 +114,7 @@ rt_uint32_t hc32_wktm_get_countfreq(void)
  * @param  None
  * @retval type code
  */
-int hc32_hw_wktm_init(void)
+int rt_hw_wktm_init(void)
 {
     rt_err_t ret = RT_EOK;
 
@@ -133,7 +133,7 @@ int hc32_hw_wktm_init(void)
     return ret;
 }
 
-INIT_DEVICE_EXPORT(hc32_hw_wktm_init);
+INIT_DEVICE_EXPORT(rt_hw_wktm_init);
 
 #endif
 

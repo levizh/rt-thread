@@ -422,7 +422,7 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
     return RT_EOK;
 }
 
-int rt_swdt_init(void)
+static int rt_hw_swdt_init(void)
 {
     ops.init = &swdt_init;
     ops.control = &swdt_control;
@@ -437,7 +437,7 @@ int rt_swdt_init(void)
     LOG_D("swdt device register success.");
     return RT_EOK;
 }
-INIT_BOARD_EXPORT(rt_swdt_init);
+INIT_BOARD_EXPORT(rt_hw_swdt_init);
 
 #endif  /* BSP_USING_SWDT */
 

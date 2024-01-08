@@ -497,7 +497,7 @@ static const struct rt_hwcrypto_ops _ops =
     .reset = _crypto_reset,
 };
 
-int hc32_hw_crypto_device_init(void)
+static int rt_hw_crypto_device_init(void)
 {
     static struct hc32_hwcrypto_device _crypto_dev;
 
@@ -525,6 +525,6 @@ int hc32_hw_crypto_device_init(void)
     rt_mutex_init(&_crypto_dev.mutex, RT_HWCRYPTO_DEFAULT_NAME, RT_IPC_FLAG_PRIO);
     return RT_EOK;
 }
-INIT_DEVICE_EXPORT(hc32_hw_crypto_device_init);
+INIT_DEVICE_EXPORT(rt_hw_crypto_device_init);
 
 #endif
