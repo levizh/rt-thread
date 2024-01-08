@@ -11,7 +11,7 @@
 
 #include "board.h"
 
-#ifdef BSP_USING_WDT_TIM
+#ifdef BSP_USING_WDT_TMR
 #include <math.h>
 #include <string.h>
 

@@ -8,8 +8,8 @@
  * 2023-02-22     CDT               first version
  */
 
-#ifndef __PWM_TIM_CONFIG_H__
-#define __PWM_TIM_CONFIG_H__
+#ifndef __PWM_TMR_CONFIG_H__
+#define __PWM_TMR_CONFIG_H__
 
 #include <rtthread.h>
 
@@ -17,11 +17,11 @@
 extern "C" {
 #endif
 
-#ifdef BSP_USING_PWM_TIMA
+#ifdef BSP_USING_PWM_TMRA
 
-#ifdef BSP_USING_PWM_TIMA_1
-#ifndef PWM_TIMA_1_CONFIG
-#define PWM_TIMA_1_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_1
+#ifndef PWM_TMRA_1_CONFIG
+#define PWM_TMRA_1_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a1",             \
         .instance                       = CM_TMRA_1,            \
@@ -46,12 +46,12 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_1_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_1 */
+#endif /* PWM_TMRA_1_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_1 */
 
-#ifdef BSP_USING_PWM_TIMA_2
-#ifndef PWM_TIMA_2_CONFIG
-#define PWM_TIMA_2_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_2
+#ifndef PWM_TMRA_2_CONFIG
+#define PWM_TMRA_2_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a2",             \
         .instance                       = CM_TMRA_2,            \
@@ -76,12 +76,12 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_2_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_2 */
+#endif /* PWM_TMRA_2_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_2 */
 
-#ifdef BSP_USING_PWM_TIMA_3
-#ifndef PWM_TIMA_3_CONFIG
-#define PWM_TIMA_3_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_3
+#ifndef PWM_TMRA_3_CONFIG
+#define PWM_TMRA_3_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a3",             \
         .instance                       = CM_TMRA_3,            \
@@ -106,12 +106,12 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_3_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_3 */
+#endif /* PWM_TMRA_3_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_3 */
 
-#ifdef BSP_USING_PWM_TIMA_4
-#ifndef PWM_TIMA_4_CONFIG
-#define PWM_TIMA_4_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_4
+#ifndef PWM_TMRA_4_CONFIG
+#define PWM_TMRA_4_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a4",             \
         .instance                       = CM_TMRA_4,            \
@@ -136,12 +136,12 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_4_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_4 */
+#endif /* PWM_TMRA_4_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_4 */
 
-#ifdef BSP_USING_PWM_TIMA_5
-#ifndef PWM_TIMA_5_CONFIG
-#define PWM_TIMA_5_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_5
+#ifndef PWM_TMRA_5_CONFIG
+#define PWM_TMRA_5_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a5",             \
         .instance                       = CM_TMRA_5,            \
@@ -166,12 +166,12 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_5_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_5 */
+#endif /* PWM_TMRA_5_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_5 */
 
-#ifdef BSP_USING_PWM_TIMA_6
-#ifndef PWM_TIMA_6_CONFIG
-#define PWM_TIMA_6_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMRA_6
+#ifndef PWM_TMRA_6_CONFIG
+#define PWM_TMRA_6_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_a6",             \
         .instance                       = CM_TMRA_6,            \
@@ -196,16 +196,16 @@ extern "C" {
             .u16PeriodMatchPolarity     = TMRA_PWM_LOW,         \
         },                                                      \
     }
-#endif /* PWM_TIMA_6_CONFIG */
-#endif /* BSP_USING_PWM_TIMA_6 */
+#endif /* PWM_TMRA_6_CONFIG */
+#endif /* BSP_USING_PWM_TMRA_6 */
 
-#endif /* BSP_USING_PWM_TIMA */
+#endif /* BSP_USING_PWM_TMRA */
 
-#ifdef BSP_USING_PWM_TIM4
+#ifdef BSP_USING_PWM_TMR4
 
-#ifdef BSP_USING_PWM_TIM4_1
-#ifndef PWM_TIM4_1_CONFIG
-#define PWM_TIM4_1_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMR4_1
+#ifndef PWM_TMR4_1_CONFIG
+#define PWM_TMR4_1_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t41",            \
         .instance                       = CM_TMR4_1,            \
@@ -232,12 +232,12 @@ extern "C" {
             .u16Polarity           = TMR4_PWM_OXH_HOLD_OXL_HOLD,\
         },                                                      \
     }
-#endif /* PWM_TIM4_1_CONFIG */
-#endif /* BSP_USING_PWM_TIM4_1 */
+#endif /* PWM_TMR4_1_CONFIG */
+#endif /* BSP_USING_PWM_TMR4_1 */
 
-#ifdef BSP_USING_PWM_TIM4_2
-#ifndef PWM_TIM4_2_CONFIG
-#define PWM_TIM4_2_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMR4_2
+#ifndef PWM_TMR4_2_CONFIG
+#define PWM_TMR4_2_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t42",            \
         .instance                       = CM_TMR4_2,            \
@@ -264,12 +264,12 @@ extern "C" {
             .u16Polarity           = TMR4_PWM_OXH_HOLD_OXL_HOLD,\
         },                                                      \
     }
-#endif /* PWM_TIM4_2_CONFIG */
-#endif /* BSP_USING_PWM_TIM4_2 */
+#endif /* PWM_TMR4_2_CONFIG */
+#endif /* BSP_USING_PWM_TMR4_2 */
 
-#ifdef BSP_USING_PWM_TIM4_3
-#ifndef PWM_TIM4_3_CONFIG
-#define PWM_TIM4_3_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMR4_3
+#ifndef PWM_TMR4_3_CONFIG
+#define PWM_TMR4_3_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t43",            \
         .instance                       = CM_TMR4_3,            \
@@ -296,16 +296,16 @@ extern "C" {
             .u16Polarity           = TMR4_PWM_OXH_HOLD_OXL_HOLD,\
         },                                                      \
     }
-#endif /* PWM_TIM4_3_CONFIG */
-#endif /* BSP_USING_PWM_TIM4_3 */
+#endif /* PWM_TMR4_3_CONFIG */
+#endif /* BSP_USING_PWM_TMR4_3 */
 
-#endif /* BSP_USING_PWM_TIM4 */
+#endif /* BSP_USING_PWM_TMR4 */
 
-#ifdef BSP_USING_PWM_TIM6
+#ifdef BSP_USING_PWM_TMR6
 
-#ifdef BSP_USING_PWM_TIM6_1
-#ifndef PWM_TIM6_1_CONFIG
-#define PWM_TIM6_1_CONFIG                                       \
+#ifdef BSP_USING_PWM_TMR6_1
+#ifndef PWM_TMR6_1_CONFIG
+#define PWM_TMR6_1_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t61",            \
         .instance                       = CM_TMR6_1,            \
@@ -341,11 +341,11 @@ extern "C" {
             }                                                   \
         },                                                      \
     }
-#endif /* PWM_TIM6_1_CONFIG */
-#endif /* BSP_USING_PWM_TIM6_1 */
-#ifdef BSP_USING_PWM_TIM6_2
-#ifndef PWM_TIM6_2_CONFIG
-#define PWM_TIM6_2_CONFIG                                       \
+#endif /* PWM_TMR6_1_CONFIG */
+#endif /* BSP_USING_PWM_TMR6_1 */
+#ifdef BSP_USING_PWM_TMR6_2
+#ifndef PWM_TMR6_2_CONFIG
+#define PWM_TMR6_2_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t61",            \
         .instance                       = CM_TMR6_2,            \
@@ -381,11 +381,11 @@ extern "C" {
             }                                                   \
         },                                                      \
     }
-#endif /* PWM_TIM6_2_CONFIG */
-#endif /* BSP_USING_PWM_TIM6_2 */
-#ifdef BSP_USING_PWM_TIM6_3
-#ifndef PWM_TIM6_3_CONFIG
-#define PWM_TIM6_3_CONFIG                                       \
+#endif /* PWM_TMR6_2_CONFIG */
+#endif /* BSP_USING_PWM_TMR6_2 */
+#ifdef BSP_USING_PWM_TMR6_3
+#ifndef PWM_TMR6_3_CONFIG
+#define PWM_TMR6_3_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t61",            \
         .instance                       = CM_TMR6_3,            \
@@ -421,13 +421,13 @@ extern "C" {
             }                                                   \
         },                                                      \
     }
-#endif /* PWM_TIM6_3_CONFIG */
-#endif /* BSP_USING_PWM_TIM6_3 */
+#endif /* PWM_TMR6_3_CONFIG */
+#endif /* BSP_USING_PWM_TMR6_3 */
 
-#endif /* BSP_USING_PWM_TIM6 */
+#endif /* BSP_USING_PWM_TMR6 */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __PWM_TIMA_CONFIG_H__ */
+#endif /* __PWM_TMRA_CONFIG_H__ */

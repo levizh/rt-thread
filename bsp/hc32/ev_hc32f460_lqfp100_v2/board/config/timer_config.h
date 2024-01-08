@@ -8,8 +8,8 @@
  * 2023-06-21     CDT               first version
  */
 
-#ifndef __TIM_CONFIG_H__
-#define __TIM_CONFIG_H__
+#ifndef __TMR_CONFIG_H__
+#define __TMR_CONFIG_H__
 
 #include <rtthread.h>
 
@@ -17,118 +17,118 @@
 extern "C" {
 #endif
 
-#ifdef BSP_USING_TIMA_1
-#ifndef TIMA_1_CONFIG
-#define TIMA_1_CONFIG                                       \
+#ifdef BSP_USING_TMRA_1
+#ifndef TMRA_1_CONFIG
+#define TMRA_1_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_1,                        \
+       .tmr_handle      = CM_TMRA_1,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_1,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_1_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_1_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_1_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_1_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_1_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_1"                          \
+       .name            = "tmra_1"                          \
     }
-#endif /* TIMA_1_CONFIG */
-#endif /* BSP_USING_TIMA_1 */
+#endif /* TMRA_1_CONFIG */
+#endif /* BSP_USING_TMRA_1 */
 
-#ifdef BSP_USING_TIMA_2
-#ifndef TIMA_2_CONFIG
-#define TIMA_2_CONFIG                                       \
+#ifdef BSP_USING_TMRA_2
+#ifndef TMRA_2_CONFIG
+#define TMRA_2_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_2,                        \
+       .tmr_handle      = CM_TMRA_2,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_2,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_2_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_2_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_2_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_2_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_2_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_2"                          \
+       .name            = "tmra_2"                          \
     }
-#endif /* TIMA_2_CONFIG */
-#endif /* BSP_USING_TIMA_2 */
+#endif /* TMRA_2_CONFIG */
+#endif /* BSP_USING_TMRA_2 */
 
-#ifdef BSP_USING_TIMA_3
-#ifndef TIMA_3_CONFIG
-#define TIMA_3_CONFIG                                       \
+#ifdef BSP_USING_TMRA_3
+#ifndef TMRA_3_CONFIG
+#define TMRA_3_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_3,                        \
+       .tmr_handle      = CM_TMRA_3,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_3,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_3_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_3_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_3_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_3_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_3_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_3"                          \
+       .name            = "tmra_3"                          \
     }
-#endif /* TIMA_3_CONFIG */
-#endif /* BSP_USING_TIMA_3 */
+#endif /* TMRA_3_CONFIG */
+#endif /* BSP_USING_TMRA_3 */
 
-#ifdef BSP_USING_TIMA_4
-#ifndef TIMA_4_CONFIG
-#define TIMA_4_CONFIG                                       \
+#ifdef BSP_USING_TMRA_4
+#ifndef TMRA_4_CONFIG
+#define TMRA_4_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_4,                        \
+       .tmr_handle      = CM_TMRA_4,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_4,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_4_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_4_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_4_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_4_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_4_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_4"                          \
+       .name            = "tmra_4"                          \
     }
-#endif /* TIMA_4_CONFIG */
-#endif /* BSP_USING_TIMA_4 */
+#endif /* TMRA_4_CONFIG */
+#endif /* BSP_USING_TMRA_4 */
 
-#ifdef BSP_USING_TIMA_5
-#ifndef TIMA_5_CONFIG
-#define TIMA_5_CONFIG                                       \
+#ifdef BSP_USING_TMRA_5
+#ifndef TMRA_5_CONFIG
+#define TMRA_5_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_5,                        \
+       .tmr_handle      = CM_TMRA_5,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_5,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_5_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_5_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_5_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_5_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_5_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_5"                          \
+       .name            = "tmra_5"                          \
     }
-#endif /* TIMA_5_CONFIG */
-#endif /* BSP_USING_TIMA_5 */
+#endif /* TMRA_5_CONFIG */
+#endif /* BSP_USING_TMRA_5 */
 
-#ifdef BSP_USING_TIMA_6
-#ifndef TIMA_6_CONFIG
-#define TIMA_6_CONFIG                                       \
+#ifdef BSP_USING_TMRA_6
+#ifndef TMRA_6_CONFIG
+#define TMRA_6_CONFIG                                       \
     {                                                       \
-       .tim_handle      = CM_TMRA_6,                        \
+       .tmr_handle      = CM_TMRA_6,                        \
        .clock_source    = CLK_BUS_PCLK1,                    \
        .clock           = FCG2_PERIPH_TMRA_6,               \
        .flag            = TMRA_FLAG_OVF,                    \
        .isr             =                                   \
        {                                                    \
             .enIntSrc   = INT_SRC_TMRA_6_OVF,               \
-            .enIRQn     = BSP_USING_TIMA_6_IRQ_NUM,         \
-            .u8Int_Prio = BSP_USING_TIMA_6_IRQ_PRIO,        \
+            .enIRQn     = BSP_USING_TMRA_6_IRQ_NUM,         \
+            .u8Int_Prio = BSP_USING_TMRA_6_IRQ_PRIO,        \
        },                                                   \
-       .name            = "timA_6"                          \
+       .name            = "tmra_6"                          \
     }
-#endif /* TIMA_6_CONFIG */
-#endif /* BSP_USING_TIMA_6 */
+#endif /* TMRA_6_CONFIG */
+#endif /* BSP_USING_TMRA_6 */
 
-#endif /* __TIM_CONFIG_H__ */
+#endif /* __TMR_CONFIG_H__ */

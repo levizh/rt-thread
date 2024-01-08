@@ -21,48 +21,48 @@
 
 enum
 {
-#ifdef BSP_USING_TIMA_1
-    TIMA_1_INDEX,
+#ifdef BSP_USING_TMRA_1
+    TMRA_1_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_2
-    TIMA_2_INDEX,
+#ifdef BSP_USING_TMRA_2
+    TMRA_2_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_3
-    TIMA_3_INDEX,
+#ifdef BSP_USING_TMRA_3
+    TMRA_3_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_4
-    TIMA_4_INDEX,
+#ifdef BSP_USING_TMRA_4
+    TMRA_4_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_5
-    TIMA_5_INDEX,
+#ifdef BSP_USING_TMRA_5
+    TMRA_5_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_6
-    TIMA_6_INDEX,
+#ifdef BSP_USING_TMRA_6
+    TMRA_6_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_7
-    TIMA_7_INDEX,
+#ifdef BSP_USING_TMRA_7
+    TMRA_7_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_8
-    TIMA_8_INDEX,
+#ifdef BSP_USING_TMRA_8
+    TMRA_8_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_9
-    TIMA_9_INDEX,
+#ifdef BSP_USING_TMRA_9
+    TMRA_9_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_10
-    TIMA_10_INDEX,
+#ifdef BSP_USING_TMRA_10
+    TMRA_10_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_11
-    TIMA_11_INDEX,
+#ifdef BSP_USING_TMRA_11
+    TMRA_11_INDEX,
 #endif
-#ifdef BSP_USING_TIMA_12
-    TIMA_12_INDEX,
+#ifdef BSP_USING_TMRA_12
+    TMRA_12_INDEX,
 #endif
 };
 
 struct hc32_hwtimer
 {
     rt_hwtimer_t time_device;
-    CM_TMRA_TypeDef *tim_handle;
+    CM_TMRA_TypeDef *tmr_handle;
     rt_uint32_t clock_source;
     rt_uint32_t clock;
     rt_uint32_t flag;
@@ -78,41 +78,41 @@ struct hc32_hwtimer
 
 static struct hc32_hwtimer hc32_hwtimer_obj[] =
 {
-#ifdef BSP_USING_TIMA_1
-    TIMA_1_CONFIG,
+#ifdef BSP_USING_TMRA_1
+    TMRA_1_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_2
-    TIMA_2_CONFIG,
+#ifdef BSP_USING_TMRA_2
+    TMRA_2_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_3
-    TIMA_3_CONFIG,
+#ifdef BSP_USING_TMRA_3
+    TMRA_3_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_4
-    TIMA_4_CONFIG,
+#ifdef BSP_USING_TMRA_4
+    TMRA_4_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_5
-    TIMA_5_CONFIG,
+#ifdef BSP_USING_TMRA_5
+    TMRA_5_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_6
-    TIMA_6_CONFIG,
+#ifdef BSP_USING_TMRA_6
+    TMRA_6_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_7
-    TIMA_7_CONFIG,
+#ifdef BSP_USING_TMRA_7
+    TMRA_7_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_8
-    TIMA_8_CONFIG,
+#ifdef BSP_USING_TMRA_8
+    TMRA_8_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_9
-    TIMA_9_CONFIG,
+#ifdef BSP_USING_TMRA_9
+    TMRA_9_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_10
-    TIMA_10_CONFIG,
+#ifdef BSP_USING_TMRA_10
+    TMRA_10_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_11
-    TIMA_11_CONFIG,
+#ifdef BSP_USING_TMRA_11
+    TMRA_11_CONFIG,
 #endif
-#ifdef BSP_USING_TIMA_12
-    TIMA_12_CONFIG,
+#ifdef BSP_USING_TMRA_12
+    TMRA_12_CONFIG,
 #endif
 };
 
@@ -120,14 +120,14 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
 {
     stc_tmra_init_t stcTmraInit;
     struct hc32_irq_config irq_config;
-    struct hc32_hwtimer *tim_device = (struct hc32_hwtimer *)timer;
+    struct hc32_hwtimer *tmr_device = (struct hc32_hwtimer *)timer;
 
     RT_ASSERT(timer != RT_NULL);
 
     /* Interrupt configuration */
-    irq_config.irq_num = tim_device->isr.enIRQn;
-    irq_config.int_src = tim_device->isr.enIntSrc;
-    irq_config.irq_prio = tim_device->isr.u8Int_Prio;
+    irq_config.irq_num = tmr_device->isr.enIRQn;
+    irq_config.int_src = tmr_device->isr.enIntSrc;
+    irq_config.irq_prio = tmr_device->isr.u8Int_Prio;
 
     if (state)  /* open */
     {
@@ -135,54 +135,54 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         timer->freq = timer->info->maxfreq;
 
         /* Enable TIMERA clock */
-        FCG_Fcg2PeriphClockCmd(tim_device->clock, ENABLE);
+        FCG_Fcg2PeriphClockCmd(tmr_device->clock, ENABLE);
 
         /* TIMERA configuration */
         (void)TMRA_StructInit(&stcTmraInit);
         stcTmraInit.sw_count.u8ClockDiv = TMRA_CLK_DIV32;
         stcTmraInit.u32PeriodValue      = timer->info->maxcnt;
-        (void)TMRA_Init(tim_device->tim_handle, &stcTmraInit);
+        (void)TMRA_Init(tmr_device->tmr_handle, &stcTmraInit);
 
-        TMRA_IntCmd(tim_device->tim_handle, TMRA_INT_OVF, ENABLE);
-        hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_TRUE);
+        TMRA_IntCmd(tmr_device->tmr_handle, TMRA_INT_OVF, ENABLE);
+        hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_TRUE);
     }
     else    /* close */
     {
-        TMRA_DeInit(tim_device->tim_handle);
-        hc32_install_irq_handler(&irq_config, tim_device->isr.irq_callback, RT_FALSE);
-        FCG_Fcg2PeriphClockCmd(tim_device->clock, DISABLE);
+        TMRA_DeInit(tmr_device->tmr_handle);
+        hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_FALSE);
+        FCG_Fcg2PeriphClockCmd(tmr_device->clock, DISABLE);
     }
 }
 
 static rt_err_t timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_t opmode)
 {
     rt_err_t result = RT_EOK;
-    struct hc32_hwtimer *tim_device = RT_NULL;
+    struct hc32_hwtimer *tmr_device = RT_NULL;
 
     RT_ASSERT(timer != RT_NULL);
 
-    tim_device = (struct hc32_hwtimer *)timer;
+    tmr_device = (struct hc32_hwtimer *)timer;
 
     /* set timer arr */
-    TMRA_SetPeriodValue(tim_device->tim_handle, t - 1U);
+    TMRA_SetPeriodValue(tmr_device->tmr_handle, t - 1U);
     /* start timer */
-    TMRA_Start(tim_device->tim_handle);
+    TMRA_Start(tmr_device->tmr_handle);
 
     return result;
 }
 
 static void timer_stop(rt_hwtimer_t *timer)
 {
-    struct hc32_hwtimer *tim_device = RT_NULL;
+    struct hc32_hwtimer *tmr_device = RT_NULL;
 
     RT_ASSERT(timer != RT_NULL);
 
-    tim_device = (struct hc32_hwtimer *)timer;
+    tmr_device = (struct hc32_hwtimer *)timer;
 
     /* stop timer */
-    TMRA_Stop(tim_device->tim_handle);
+    TMRA_Stop(tmr_device->tmr_handle);
     /* reset timer cnt */
-    TMRA_SetCountValue(tim_device->tim_handle, 0U);
+    TMRA_SetCountValue(tmr_device->tmr_handle, 0U);
 }
 
 static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
@@ -220,100 +220,100 @@ static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
 
 static rt_uint32_t timer_counter_get(rt_hwtimer_t *timer)
 {
-    struct hc32_hwtimer *tim_device = RT_NULL;
+    struct hc32_hwtimer *tmr_device = RT_NULL;
     rt_uint32_t Counter;
 
     RT_ASSERT(timer != RT_NULL);
 
-    tim_device = (struct hc32_hwtimer *)timer;
+    tmr_device = (struct hc32_hwtimer *)timer;
 
-    Counter = TMRA_GetCountValue(tim_device->tim_handle);
+    Counter = TMRA_GetCountValue(tmr_device->tmr_handle);
 
     return Counter;
 }
 
-#ifdef BSP_USING_TIMA_1
+#ifdef BSP_USING_TMRA_1
 static void TMRA_1_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_1_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_1_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_1_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_1_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_1_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_1_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_2
+#ifdef BSP_USING_TMRA_2
 static void TMRA_2_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_2_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_2_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_2_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_2_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_2_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_2_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_3
+#ifdef BSP_USING_TMRA_3
 static void TMRA_3_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_3_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_3_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_3_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_3_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_3_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_3_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_4
+#ifdef BSP_USING_TMRA_4
 static void TMRA_4_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_4_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_4_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_4_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_4_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_4_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_4_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_5
+#ifdef BSP_USING_TMRA_5
 static void TMRA_5_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_5_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_5_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_5_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_5_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_5_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_5_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_6
+#ifdef BSP_USING_TMRA_6
 static void TMRA_6_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_6_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_6_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_6_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_6_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_6_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_6_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_7
+#ifdef BSP_USING_TMRA_7
 static void TMRA_7_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_7_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_7_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_7_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_7_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_7_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_7_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_8
+#ifdef BSP_USING_TMRA_8
 static void TMRA_8_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_8_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_8_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_8_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_8_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_8_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_8_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_9
+#ifdef BSP_USING_TMRA_9
 static void TMRA_9_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_9_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_9_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_9_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_9_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_9_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_9_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_10
+#ifdef BSP_USING_TMRA_10
 static void TMRA_10_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_10_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_10_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_10_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_10_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_10_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_10_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_11
+#ifdef BSP_USING_TMRA_11
 static void TMRA_11_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_11_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_11_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_11_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_11_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_11_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_11_INDEX].time_device);
 }
 #endif
-#ifdef BSP_USING_TIMA_12
+#ifdef BSP_USING_TMRA_12
 static void TMRA_12_callback(void)
 {
-    TMRA_ClearStatus(hc32_hwtimer_obj[TIMA_12_INDEX].tim_handle, hc32_hwtimer_obj[TIMA_12_INDEX].flag);
-    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TIMA_12_INDEX].time_device);
+    TMRA_ClearStatus(hc32_hwtimer_obj[TMRA_12_INDEX].tmr_handle, hc32_hwtimer_obj[TMRA_12_INDEX].flag);
+    rt_device_hwtimer_isr(&hc32_hwtimer_obj[TMRA_12_INDEX].time_device);
 }
 #endif
 
@@ -330,41 +330,41 @@ void tmra_get_info_callback(void)
         _info[i].cntmode = HWTIMER_CNTMODE_UP;
     }
 
-#ifdef BSP_USING_TIMA_1
-    hc32_hwtimer_obj[TIMA_1_INDEX].isr.irq_callback = TMRA_1_callback;
+#ifdef BSP_USING_TMRA_1
+    hc32_hwtimer_obj[TMRA_1_INDEX].isr.irq_callback = TMRA_1_callback;
 #endif
-#ifdef BSP_USING_TIMA_2
-    hc32_hwtimer_obj[TIMA_2_INDEX].isr.irq_callback = TMRA_2_callback;
+#ifdef BSP_USING_TMRA_2
+    hc32_hwtimer_obj[TMRA_2_INDEX].isr.irq_callback = TMRA_2_callback;
 #endif
-#ifdef BSP_USING_TIMA_3
-    hc32_hwtimer_obj[TIMA_3_INDEX].isr.irq_callback = TMRA_3_callback;
+#ifdef BSP_USING_TMRA_3
+    hc32_hwtimer_obj[TMRA_3_INDEX].isr.irq_callback = TMRA_3_callback;
 #endif
-#ifdef BSP_USING_TIMA_4
-    hc32_hwtimer_obj[TIMA_4_INDEX].isr.irq_callback = TMRA_4_callback;
+#ifdef BSP_USING_TMRA_4
+    hc32_hwtimer_obj[TMRA_4_INDEX].isr.irq_callback = TMRA_4_callback;
 #endif
-#ifdef BSP_USING_TIMA_5
-    hc32_hwtimer_obj[TIMA_5_INDEX].isr.irq_callback = TMRA_5_callback;
+#ifdef BSP_USING_TMRA_5
+    hc32_hwtimer_obj[TMRA_5_INDEX].isr.irq_callback = TMRA_5_callback;
 #endif
-#ifdef BSP_USING_TIMA_6
-    hc32_hwtimer_obj[TIMA_6_INDEX].isr.irq_callback = TMRA_6_callback;
+#ifdef BSP_USING_TMRA_6
+    hc32_hwtimer_obj[TMRA_6_INDEX].isr.irq_callback = TMRA_6_callback;
 #endif
-#ifdef BSP_USING_TIMA_7
-    hc32_hwtimer_obj[TIMA_7_INDEX].isr.irq_callback = TMRA_7_callback;
+#ifdef BSP_USING_TMRA_7
+    hc32_hwtimer_obj[TMRA_7_INDEX].isr.irq_callback = TMRA_7_callback;
 #endif
-#ifdef BSP_USING_TIMA_8
-    hc32_hwtimer_obj[TIMA_8_INDEX].isr.irq_callback = TMRA_8_callback;
+#ifdef BSP_USING_TMRA_8
+    hc32_hwtimer_obj[TMRA_8_INDEX].isr.irq_callback = TMRA_8_callback;
 #endif
-#ifdef BSP_USING_TIMA_9
-    hc32_hwtimer_obj[TIMA_9_INDEX].isr.irq_callback = TMRA_9_callback;
+#ifdef BSP_USING_TMRA_9
+    hc32_hwtimer_obj[TMRA_9_INDEX].isr.irq_callback = TMRA_9_callback;
 #endif
-#ifdef BSP_USING_TIMA_10
-    hc32_hwtimer_obj[TIMA_10_INDEX].isr.irq_callback = TMRA_10_callback;
+#ifdef BSP_USING_TMRA_10
+    hc32_hwtimer_obj[TMRA_10_INDEX].isr.irq_callback = TMRA_10_callback;
 #endif
-#ifdef BSP_USING_TIMA_11
-    hc32_hwtimer_obj[TIMA_11_INDEX].isr.irq_callback = TMRA_11_callback;
+#ifdef BSP_USING_TMRA_11
+    hc32_hwtimer_obj[TMRA_11_INDEX].isr.irq_callback = TMRA_11_callback;
 #endif
-#ifdef BSP_USING_TIMA_12
-    hc32_hwtimer_obj[TIMA_12_INDEX].isr.irq_callback = TMRA_12_callback;
+#ifdef BSP_USING_TMRA_12
+    hc32_hwtimer_obj[TMRA_12_INDEX].isr.irq_callback = TMRA_12_callback;
 #endif
 }
 
@@ -388,7 +388,7 @@ static int rt_hw_hwtimer_init(void)
         hc32_hwtimer_obj[i].time_device.info = &_info[i];
         hc32_hwtimer_obj[i].time_device.ops  = &_ops;
         if (rt_device_hwtimer_register(&hc32_hwtimer_obj[i].time_device,
-                                       hc32_hwtimer_obj[i].name, &hc32_hwtimer_obj[i].tim_handle) == RT_EOK)
+                                       hc32_hwtimer_obj[i].name, &hc32_hwtimer_obj[i].tmr_handle) == RT_EOK)
         {
             LOG_D("%s register success", hc32_hwtimer_obj[i].name);
         }
