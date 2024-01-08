@@ -127,7 +127,7 @@ typedef struct
 } can_bit_timing_table_t;
 
 #ifndef RT_CAN_USING_CANFD
-static const struct can_baud_rate_tab g_baudrate_tab[] =
+static const struct can_baud_rate_tab _g_baudrate_tab[] =
 {
     {CAN1MBaud,   CAN_BIT_TIME_CONFIG_1M_BAUD},
     {CAN800kBaud, CAN_BIT_TIME_CONFIG_800K_BAUD},
@@ -150,7 +150,7 @@ typedef struct
 } can_device;
 
 #ifdef RT_CAN_USING_CANFD
-static const can_bit_timing_table_t s_can_bit_timing_tbl[3] =
+static const can_bit_timing_table_t _g_can_bit_timing_tbl[3] =
 {
     {
         .tq_min = NUM_TQ_MIN_FOR_CAN2_0,
@@ -187,7 +187,7 @@ static const can_bit_timing_table_t s_can_bit_timing_tbl[3] =
     }
 };
 
-static const struct canfd_baud_rate_tab g_baudrate_fd[] =
+static const struct canfd_baud_rate_tab _g_baudrate_fd[] =
 {
     {CAN_CLOCK_SRC_20M, CAN_BIT_TIMING_CANFD_ARBITRATION, CANFD_ARBITRATION_BAUD_250K, 1U, 64U, 16U, 16U},
     {CAN_CLOCK_SRC_20M, CAN_BIT_TIMING_CANFD_ARBITRATION, CANFD_ARBITRATION_BAUD_500K, 1U, 32U, 8U, 8U},
@@ -212,7 +212,7 @@ static const struct canfd_baud_rate_tab g_baudrate_fd[] =
 };
 #endif
 
-static can_device g_can_dev_array[] =
+static can_device _g_can_dev_array[] =
 {
 #if defined(HC32F4A0) || defined(HC32F4A2)
 #ifdef BSP_USING_CAN1
@@ -249,10 +249,10 @@ static rt_uint32_t _get_can_baud_index(rt_uint32_t baud)
 {
     rt_uint32_t len, index;
 
-    len = sizeof(g_baudrate_tab) / sizeof(g_baudrate_tab[0]);
+    len = sizeof(_g_baudrate_tab) / sizeof(_g_baudrate_tab[0]);
     for (index = 0; index < len; index++)
     {
-        if (g_baudrate_tab[index].baud_rate == baud)
+        if (_g_baudrate_tab[index].baud_rate == baud)
             return index;
     }
 
@@ -414,14 +414,14 @@ static rt_bool_t _get_can_bit_timing_default(uint32_t can_clk, rt_uint32_t baud,
     rt_uint32_t len, index;
     rt_bool_t found = RT_FALSE;
 
-    len = sizeof(g_baudrate_fd) / sizeof(g_baudrate_fd[0]);
+    len = sizeof(_g_baudrate_fd) / sizeof(_g_baudrate_fd[0]);
     for (index = 0; index < len; index++)
     {
-        if ((g_baudrate_fd[index].clk_src == can_clk) && \
-                ((g_baudrate_fd[index].phase & option) == option) \
+        if ((_g_baudrate_fd[index].clk_src == can_clk) && \
+                ((_g_baudrate_fd[index].phase & option) == option) \
            )
         {
-            if (g_baudrate_fd[index].baud == baud)
+            if (_g_baudrate_fd[index].baud == baud)
             {
                 found = RT_TRUE;
                 break;
@@ -430,7 +430,7 @@ static rt_bool_t _get_can_bit_timing_default(uint32_t can_clk, rt_uint32_t baud,
     }
     if (found)
     {
-        rt_memcpy(p_stc_bit_cfg, &g_baudrate_fd[index].ll_bt, sizeof(stc_can_bit_time_config_t));
+        rt_memcpy(p_stc_bit_cfg, &_g_baudrate_fd[index].ll_bt, sizeof(stc_can_bit_time_config_t));
     }
 
     return found;
@@ -518,7 +518,7 @@ static rt_err_t _calc_can_bit_timing(CM_CAN_TypeDef *CANx, int option, uint32_t 
             break;
         }
 
-        const can_bit_timing_table_t *tbl = &s_can_bit_timing_tbl[(uint8_t) idx];
+        const can_bit_timing_table_t *tbl = &_g_can_bit_timing_tbl[(uint8_t) idx];
         if (can_clk / baudrate < tbl->tq_min)
         {
             break;
@@ -600,7 +600,7 @@ static rt_err_t _config_can20_baud(can_device *p_can_dev, void *arg)
     }
 
     baud_index = _get_can_baud_index(argval);
-    p_can_dev->ll_init.stcBitCfg = g_baudrate_tab[baud_index].ll_sbt;
+    p_can_dev->ll_init.stcBitCfg = _g_baudrate_tab[baud_index].ll_sbt;
 
     /* init can */
     CAN_Init(p_can_dev->instance, &p_can_dev->ll_init);
@@ -822,7 +822,7 @@ static rt_err_t _canfd_control(can_device *p_can_dev, int cmd, void *arg)
 }
 #endif
 
-static rt_err_t _ops_can_config(struct rt_can_device *can, struct can_configure *cfg)
+static rt_err_t _can_config(struct rt_can_device *can, struct can_configure *cfg)
 {
     can_device *p_can_dev;
     rt_err_t rt_ret = RT_EOK;
@@ -865,7 +865,7 @@ static rt_err_t _ops_can_config(struct rt_can_device *can, struct can_configure 
 #else
     RT_ASSERT(IS_VALID_BAUD_RATE_CAN2_0(cfg->baud_rate));
     rt_uint32_t baud_index = _get_can_baud_index(cfg->baud_rate);
-    p_can_dev->ll_init.stcBitCfg = g_baudrate_tab[baud_index].ll_sbt;
+    p_can_dev->ll_init.stcBitCfg = _g_baudrate_tab[baud_index].ll_sbt;
 #endif
 
     /* init can */
@@ -887,7 +887,7 @@ static rt_err_t _ops_can_config(struct rt_can_device *can, struct can_configure 
     return rt_ret;
 }
 
-static rt_err_t _ops_can_control(struct rt_can_device *can, int cmd, void *arg)
+static rt_err_t _can_control(struct rt_can_device *can, int cmd, void *arg)
 {
     can_device *p_can_dev;
 
@@ -937,7 +937,7 @@ static rt_err_t _ops_can_control(struct rt_can_device *can, int cmd, void *arg)
     return RT_EOK;
 }
 
-static rt_ssize_t _ops_can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t box_num)
+static rt_ssize_t _can_sendmsg(struct rt_can_device *can, const void *buf, rt_uint32_t box_num)
 {
     struct rt_can_msg *pmsg = (struct rt_can_msg *) buf;
     stc_can_tx_frame_t stc_tx_frame = {0};
@@ -986,7 +986,7 @@ static rt_ssize_t _ops_can_sendmsg(struct rt_can_device *can, const void *buf, r
     return RT_EOK;
 }
 
-static rt_ssize_t _ops_can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
+static rt_ssize_t _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
 {
     int32_t ll_ret;
     struct rt_can_msg *pmsg;
@@ -1036,12 +1036,12 @@ static rt_ssize_t _ops_can_recvmsg(struct rt_can_device *can, void *buf, rt_uint
     return RT_EOK;
 }
 
-static const struct rt_can_ops _ops_can =
+static const struct rt_can_ops _can_ops =
 {
-    _ops_can_config,
-    _ops_can_control,
-    _ops_can_sendmsg,
-    _ops_can_recvmsg,
+    _can_config,
+    _can_control,
+    _can_sendmsg,
+    _can_recvmsg,
 };
 
 rt_inline void _isr_can_rx(can_device *p_can_dev)
@@ -1209,7 +1209,7 @@ static void _isr_can(can_device *p_can_dev)
 static void _irq_handler_can1(void)
 {
     rt_interrupt_enter();
-    _isr_can(&g_can_dev_array[CAN1_INDEX]);
+    _isr_can(&_g_can_dev_array[CAN1_INDEX]);
     rt_interrupt_leave();
 }
 #endif
@@ -1218,7 +1218,7 @@ static void _irq_handler_can1(void)
 static void _irq_handler_can2(void)
 {
     rt_interrupt_enter();
-    _isr_can(&g_can_dev_array[CAN2_INDEX]);
+    _isr_can(&_g_can_dev_array[CAN2_INDEX]);
     rt_interrupt_leave();
 }
 #endif
@@ -1317,15 +1317,15 @@ int rt_hw_can_init(void)
     uint32_t i = 0;
     for (; i < CAN_INDEX_MAX; i++)
     {
-        CAN_StructInit(&g_can_dev_array[i].ll_init);
-        _init_struct_by_static_cfg(&g_can_dev_array[i]);
+        CAN_StructInit(&_g_can_dev_array[i].ll_init);
+        _init_struct_by_static_cfg(&_g_can_dev_array[i]);
 
         /* register CAN device */
-        rt_hw_board_can_init(g_can_dev_array[i].instance);
-        rt_hw_can_register(&g_can_dev_array[i].rt_can,
-                           g_can_dev_array[i].init.name,
-                           &_ops_can,
-                           &g_can_dev_array[i]);
+        rt_hw_board_can_init(_g_can_dev_array[i].instance);
+        rt_hw_can_register(&_g_can_dev_array[i].rt_can,\
+                           _g_can_dev_array[i].init.name,
+                           &_can_ops,
+                           &_g_can_dev_array[i]);
     }
 
     return result;
