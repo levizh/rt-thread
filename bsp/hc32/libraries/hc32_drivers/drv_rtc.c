@@ -109,7 +109,7 @@ static int32_t _hc32_rtc_rw_check(void)
 }
 #endif
 
-static rt_err_t hc32_rtc_get_timeval(struct timeval *tv)
+static rt_err_t _rtc_get_timeval(struct timeval *tv)
 {
 
     stc_rtc_time_t stcRtcTime = {0};
@@ -171,7 +171,7 @@ static rt_err_t hc32_rtc_set_time_stamp(time_t time_stamp)
     return RT_EOK;
 }
 
-static rt_err_t hc32_rtc_init(void)
+static rt_err_t _rtc_init(void)
 {
     stc_rtc_init_t stcRtcInit;
 
@@ -223,18 +223,18 @@ static rt_err_t hc32_rtc_init(void)
     return RT_EOK;
 }
 
-static rt_err_t hc32_rtc_get_secs(time_t *sec)
+static rt_err_t _rtc_get_secs(time_t *sec)
 {
     struct timeval tv;
 
-    hc32_rtc_get_timeval(&tv);
+    _rtc_get_timeval(&tv);
     *(time_t *) sec = tv.tv_sec;
     LOG_D("RTC: get rtc_time %d", *sec);
 
     return RT_EOK;
 }
 
-static rt_err_t hc32_rtc_set_secs(time_t *sec)
+static rt_err_t _rtc_set_secs(time_t *sec)
 {
     rt_err_t result = RT_EOK;
 
@@ -251,7 +251,7 @@ static rt_err_t hc32_rtc_set_secs(time_t *sec)
 
 #ifdef RT_USING_ALARM
 
-void _rtc_alarm_irq_handler(void)
+static void _rtc_alarm_irq_handler(void)
 {
     rt_interrupt_enter();
     RTC_ClearStatus(RTC_FLAG_ALARM);
@@ -278,7 +278,7 @@ static void hc32_rtc_alarm_disable(void)
 }
 #endif
 
-static rt_err_t hc32_rtc_get_alarm(struct rt_rtc_wkalarm *alarm)
+static rt_err_t _rtc_get_alarm(struct rt_rtc_wkalarm *alarm)
 {
 #ifdef RT_USING_ALARM
     stc_rtc_alarm_t stcRtcAlarm;
@@ -294,7 +294,7 @@ static rt_err_t hc32_rtc_get_alarm(struct rt_rtc_wkalarm *alarm)
 #endif
 }
 
-static rt_err_t hc32_rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
+static rt_err_t _rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
 {
 #ifdef RT_USING_ALARM
     stc_rtc_alarm_t stcRtcAlarm;
@@ -336,12 +336,12 @@ static rt_err_t hc32_rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
 
 const static struct rt_rtc_ops hc32_rtc_ops =
 {
-    hc32_rtc_init,
-    hc32_rtc_get_secs,
-    hc32_rtc_set_secs,
-    hc32_rtc_get_alarm,
-    hc32_rtc_set_alarm,
-    hc32_rtc_get_timeval,
+    _rtc_init,
+    _rtc_get_secs,
+    _rtc_set_secs,
+    _rtc_get_alarm,
+    _rtc_set_alarm,
+    _rtc_get_timeval,
     RT_NULL
 };
 

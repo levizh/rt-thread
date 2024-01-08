@@ -27,7 +27,7 @@
 extern rt_err_t rt_hw_usb_board_init(void);
 extern void rt_hw_us_delay(rt_uint32_t us);
 
-static usb_core_instance _hc32_usb;
+static usb_core_instance _hc32_usbd;
 static struct udcd _hc32_udc;
 
 
@@ -79,7 +79,7 @@ void usb_mdelay(const uint32_t msec)
     rt_thread_mdelay(msec);
 }
 
-void usb_opendevep(usb_core_instance *pdev, uint8_t ep_addr, uint16_t ep_mps, uint8_t ep_type)
+static void usb_opendevep(usb_core_instance *pdev, uint8_t ep_addr, uint16_t ep_mps, uint8_t ep_type)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1, tmp_2;
@@ -113,7 +113,7 @@ void usb_opendevep(usb_core_instance *pdev, uint8_t ep_addr, uint16_t ep_mps, ui
     usb_epactive(&pdev->regs, ep);
 }
 
-void usb_shutdevep(usb_core_instance *pdev, uint8_t  ep_addr)
+static void usb_shutdevep(usb_core_instance *pdev, uint8_t  ep_addr)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1, tmp_2;
@@ -133,14 +133,14 @@ void usb_shutdevep(usb_core_instance *pdev, uint8_t  ep_addr)
     usb_epdeactive(&pdev->regs, ep);
 }
 
-void usb_readytorx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t buf_len)
+static void usb_readytorx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t buf_len)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1;
 
     tmp_1 = ep_addr & 0x7FU;   /* EP number */
     ep = &pdev->dev.out_ep[tmp_1];
-    /*setup and start the Xfer */
+    /* setup and start the Xfer */
     ep->xfer_buff = pbuf;
     ep->xfer_len = (uint32_t)buf_len;
     ep->xfer_count = 0UL;
@@ -162,8 +162,7 @@ void usb_readytorx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint
     }
 }
 
-
-void usb_deveptx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t buf_len)
+static void usb_deveptx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32_t buf_len)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1;
@@ -189,7 +188,7 @@ void usb_deveptx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint32
     }
 }
 
-void usb_stalldevep(usb_core_instance *pdev, uint8_t epnum)
+static void usb_stalldevep(usb_core_instance *pdev, uint8_t epnum)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1, tmp_2;
@@ -220,7 +219,7 @@ void usb_stalldevep(usb_core_instance *pdev, uint8_t epnum)
     usb_setepstall(&pdev->regs, ep);
 }
 
-void usb_clrstall(usb_core_instance *pdev, uint8_t epnum)
+static void usb_clrstall(usb_core_instance *pdev, uint8_t epnum)
 {
     USB_DEV_EP *ep;
     __IO uint8_t tmp_1, tmp_2;
@@ -250,7 +249,7 @@ void usb_clrstall(usb_core_instance *pdev, uint8_t epnum)
     usb_clearepstall(&pdev->regs, ep);
 }
 
-void usb_dev_rst(usb_core_instance *pdev)
+static void usb_dev_rst(usb_core_instance *pdev)
 {
     usb_opendevep(pdev, 0x00U, USB_MAX_EP0_SIZE, EP_TYPE_CTRL);
     usb_opendevep(pdev, 0x80U, USB_MAX_EP0_SIZE, EP_TYPE_CTRL);
@@ -258,7 +257,7 @@ void usb_dev_rst(usb_core_instance *pdev)
     LOG_D("USB Reset");
 }
 
-void usb_ctrlconn(usb_core_instance *pdev, uint8_t conn)
+static void usb_ctrlconn(usb_core_instance *pdev, uint8_t conn)
 {
     __IO uint8_t tmp_1;
     tmp_1 = conn;
@@ -274,27 +273,27 @@ void usb_ctrlconn(usb_core_instance *pdev, uint8_t conn)
     }
 }
 
-void usb_dev_susp(usb_core_instance *pdev)
+static void usb_dev_susp(usb_core_instance *pdev)
 {
     LOG_D("USB Suspend");
 }
 
-void usb_dev_resume(usb_core_instance *pdev)
+static void usb_dev_resume(usb_core_instance *pdev)
 {
     LOG_D("USB Resume");
 }
 
-void usb_sof_process(usb_core_instance *pdev)
+static void usb_sof_process(usb_core_instance *pdev)
 {
     rt_usbd_sof_handler(&_hc32_udc);
 }
 
-void usb_setup_process(usb_core_instance *pdev)
+static void usb_setup_process(usb_core_instance *pdev)
 {
     rt_usbd_ep0_setup_handler(&_hc32_udc, (struct urequest *)pdev->dev.setup_pkt_buf);
 }
 
-void usb_dataout_process(usb_core_instance *pdev, uint8_t epnum)
+static void usb_dataout_process(usb_core_instance *pdev, uint8_t epnum)
 {
     if (epnum != 0)
     {
@@ -306,7 +305,7 @@ void usb_dataout_process(usb_core_instance *pdev, uint8_t epnum)
     }
 }
 
-void usb_datain_process(usb_core_instance *pdev, uint8_t epnum)
+static void usb_datain_process(usb_core_instance *pdev, uint8_t epnum)
 {
     if (epnum == 0)
     {
@@ -318,12 +317,12 @@ void usb_datain_process(usb_core_instance *pdev, uint8_t epnum)
     }
 }
 
-void usb_isoinincomplt_process(usb_core_instance *pdev)
+static void usb_isoinincomplt_process(usb_core_instance *pdev)
 {
     /* reserved */
 }
 
-void usb_isooutincomplt_process(usb_core_instance *pdev)
+static void usb_isooutincomplt_process(usb_core_instance *pdev)
 {
     /* reserved */
 }
@@ -342,7 +341,7 @@ static usb_dev_int_cbk_typedef dev_int_cbk =
     &usb_isooutincomplt_process
 };
 
-usb_dev_int_cbk_typedef  *dev_int_cbkpr = &dev_int_cbk;
+static usb_dev_int_cbk_typedef  *dev_int_cbkpr = &dev_int_cbk;
 
 static uint32_t usb_rddevinep(usb_core_instance *pdev, uint8_t epnum)
 {
@@ -653,7 +652,7 @@ static void usb_isooutincomplt_isr(usb_core_instance *pdev)
     WRITE_REG32(pdev->regs.GREGS->GINTSTS, USBFS_GINTSTS_IPXFR_INCOMPISOOUT);
 }
 
-void usb_isr_handler(usb_core_instance *pdev)
+static void usb_isr_handler(usb_core_instance *pdev)
 {
     uint32_t u32gintsts;
 
@@ -717,89 +716,89 @@ void usb_isr_handler(usb_core_instance *pdev)
     }
 }
 
-void usbd_irq_handler(void)
+static void usbd_irq_handler(void)
 {
     rt_interrupt_enter();
-    usb_isr_handler(&_hc32_usb);
+    usb_isr_handler(&_hc32_usbd);
     rt_interrupt_leave();
 }
 
-static rt_err_t _ep_set_stall(rt_uint8_t address)
+static rt_err_t _usbd_ep_set_stall(rt_uint8_t address)
 {
-    usb_stalldevep(&_hc32_usb, address);
+    usb_stalldevep(&_hc32_usbd, address);
     return RT_EOK;
 }
 
-static rt_err_t _ep_clear_stall(rt_uint8_t address)
+static rt_err_t _usbd_ep_clear_stall(rt_uint8_t address)
 {
-    usb_clrstall(&_hc32_usb, address);
+    usb_clrstall(&_hc32_usbd, address);
     return RT_EOK;
 }
 
-static rt_err_t _set_address(rt_uint8_t address)
+static rt_err_t _usbd_set_address(rt_uint8_t address)
 {
-    usb_devaddrset(&_hc32_usb.regs, address);
+    usb_devaddrset(&_hc32_usbd.regs, address);
     return RT_EOK;
 }
 
-static rt_err_t _set_config(rt_uint8_t address)
+static rt_err_t _usbd_set_config(rt_uint8_t address)
 {
     return RT_EOK;
 }
 
-static rt_err_t _ep_enable(uep_t ep)
+static rt_err_t _usbd_ep_enable(uep_t ep)
 {
     RT_ASSERT(ep != RT_NULL);
     RT_ASSERT(ep->ep_desc != RT_NULL);
-    usb_opendevep(&_hc32_usb, ep->ep_desc->bEndpointAddress,
+    usb_opendevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress,
                   ep->ep_desc->wMaxPacketSize, ep->ep_desc->bmAttributes);
     return RT_EOK;
 }
 
-static rt_err_t _ep_disable(uep_t ep)
+static rt_err_t _usbd_ep_disable(uep_t ep)
 {
     RT_ASSERT(ep != RT_NULL);
     RT_ASSERT(ep->ep_desc != RT_NULL);
-    usb_shutdevep(&_hc32_usb, ep->ep_desc->bEndpointAddress);
+    usb_shutdevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress);
     return RT_EOK;
 }
 
-static rt_size_t _ep_read(rt_uint8_t address, void *buffer)
+static rt_size_t _usbd_ep_read(rt_uint8_t address, void *buffer)
 {
     rt_size_t size = 0;
     RT_ASSERT(buffer != RT_NULL);
     return size;
 }
 
-static rt_size_t _ep_read_prepare(rt_uint8_t address, void *buffer, rt_size_t size)
+static rt_size_t _usbd_ep_read_prepare(rt_uint8_t address, void *buffer, rt_size_t size)
 {
-    usb_readytorx(&_hc32_usb, address, buffer, size);
+    usb_readytorx(&_hc32_usbd, address, buffer, size);
     return size;
 }
 
-static rt_size_t _ep_write(rt_uint8_t address, void *buffer, rt_size_t size)
+static rt_size_t _usbd_ep_write(rt_uint8_t address, void *buffer, rt_size_t size)
 {
-    usb_deveptx(&_hc32_usb, address, buffer, size);
+    usb_deveptx(&_hc32_usbd, address, buffer, size);
     return size;
 }
 
-static rt_err_t _ep0_send_status(void)
+static rt_err_t _usbd_ep0_send_status(void)
 {
-    usb_deveptx(&_hc32_usb, 0x00, NULL, 0);
+    usb_deveptx(&_hc32_usbd, 0x00, NULL, 0);
     return RT_EOK;
 }
 
-static rt_err_t _suspend(void)
-{
-    return RT_EOK;
-}
-
-static rt_err_t _wakeup(void)
+static rt_err_t _usbd_suspend(void)
 {
     return RT_EOK;
 }
 
-static rt_err_t _init(rt_device_t device)
+static rt_err_t _usbd_wakeup(void)
+{
+    return RT_EOK;
+}
+
+static rt_err_t _usbd_init(rt_device_t device)
 {
     usb_core_instance *pdev;
     stc_usb_port_identify stcPortIdentify;
@@ -853,24 +852,24 @@ static rt_err_t _init(rt_device_t device)
 
 const static struct udcd_ops _udc_ops =
 {
-    _set_address,
-    _set_config,
-    _ep_set_stall,
-    _ep_clear_stall,
-    _ep_enable,
-    _ep_disable,
-    _ep_read_prepare,
-    _ep_read,
-    _ep_write,
-    _ep0_send_status,
-    _suspend,
-    _wakeup,
+    _usbd_set_address,
+    _usbd_set_config,
+    _usbd_ep_set_stall,
+    _usbd_ep_clear_stall,
+    _usbd_ep_enable,
+    _usbd_ep_disable,
+    _usbd_ep_read_prepare,
+    _usbd_ep_read,
+    _usbd_ep_write,
+    _usbd_ep0_send_status,
+    _usbd_suspend,
+    _usbd_wakeup,
 };
 
 #ifdef RT_USING_DEVICE_OPS
 const static struct rt_device_ops _ops =
 {
-    _init,
+    _usbd_init,
     RT_NULL,
     RT_NULL,
     RT_NULL,
@@ -879,16 +878,16 @@ const static struct rt_device_ops _ops =
 };
 #endif
 
-int hc32_usbd_register(void)
+int rt_hw_usbd_init(void)
 {
     rt_memset((void *)&_hc32_udc, 0, sizeof(struct udcd));
     _hc32_udc.parent.type = RT_Device_Class_USBDevice;
 #ifdef RT_USING_DEVICE_OPS
     _hc32_udc.parent.ops = &_ops;
 #else
-    _hc32_udc.parent.init = _init;
+    _hc32_udc.parent.init = _usbd_init;
 #endif
-    _hc32_udc.parent.user_data = &_hc32_usb;
+    _hc32_udc.parent.user_data = &_hc32_usbd;
     _hc32_udc.ops = &_udc_ops;
     /* Register endpoint infomation */
     _hc32_udc.ep_pool = _ep_pool;
@@ -900,6 +899,6 @@ int hc32_usbd_register(void)
     rt_usb_device_init();
     return RT_EOK;
 }
-INIT_DEVICE_EXPORT(hc32_usbd_register);
+INIT_DEVICE_EXPORT(rt_hw_usbd_init);
 
 #endif /* BSP_USING_USBD */
