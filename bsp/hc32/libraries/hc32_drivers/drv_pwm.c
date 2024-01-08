@@ -645,7 +645,7 @@ static void enable_tmra_unit_clk(void)
 #endif
 }
 
-static rt_err_t tmra_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
+static rt_err_t _tmra_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
 {
     struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
 
@@ -672,9 +672,9 @@ static rt_err_t tmra_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     }
 }
 
-static struct rt_pwm_ops tmra_ops =
+static struct rt_pwm_ops _tmra_ops =
 {
-    tmra_pwm_control
+    _tmra_pwm_control
 };
 
 #endif  /* BSP_USING_PWM_TMRA */
@@ -1040,7 +1040,7 @@ static void pwm_tmr4_get_channel(void)
 #endif
 }
 
-static rt_err_t tmr4_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
+static rt_err_t _tmr4_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
 {
     struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
 
@@ -1067,9 +1067,9 @@ static rt_err_t tmr4_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     }
 }
 
-static struct rt_pwm_ops tmr4_ops =
+static struct rt_pwm_ops _tmr4_ops =
 {
-    tmr4_pwm_control
+    _tmr4_pwm_control
 };
 
 #endif  /* BSP_USING_PWM_TMR4 */
@@ -1484,7 +1484,7 @@ static void pwm_tmr6_get_channel(void)
 #endif
 }
 
-static rt_err_t tmr6_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
+static rt_err_t _tmr6_pwm_control(struct rt_device_pwm *device, int cmd, void *arg)
 {
     struct rt_pwm_configuration *configuration = (struct rt_pwm_configuration *)arg;
 
@@ -1511,9 +1511,9 @@ static rt_err_t tmr6_pwm_control(struct rt_device_pwm *device, int cmd, void *ar
     }
 }
 
-static struct rt_pwm_ops tmr6_ops =
+static struct rt_pwm_ops _tmr6_ops =
 {
-    tmr6_pwm_control
+    _tmr6_pwm_control
 };
 
 #endif  /* BSP_USING_PWM_TMR6 */
@@ -1534,7 +1534,7 @@ static int rt_hw_pwm_tmr_init(void)
         extern rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef * TMRAx);
         rt_hw_board_pwm_tmra_init(g_pwm_tmra_array[i].instance);
         /* register pwm device */
-        result = rt_device_pwm_register(&g_pwm_tmra_array[i].pwm_device, g_pwm_tmra_array[i].name, &tmra_ops, &g_pwm_tmra_array[i].CompareValue[0]);
+        result = rt_device_pwm_register(&g_pwm_tmra_array[i].pwm_device, g_pwm_tmra_array[i].name, &_tmra_ops, &g_pwm_tmra_array[i].CompareValue[0]);
         RT_ASSERT(result == RT_EOK);
     }
 #endif
@@ -1550,7 +1550,7 @@ static int rt_hw_pwm_tmr_init(void)
         extern rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef * TMR4x);
         rt_hw_board_pwm_tmr4_init(g_pwm_tmr4_array[i].instance);
         /* register pwm device */
-        result = rt_device_pwm_register(&g_pwm_tmr4_array[i].pwm_device, g_pwm_tmr4_array[i].name, &tmr4_ops, &g_pwm_tmr4_array[i].CompareValue[0]);
+        result = rt_device_pwm_register(&g_pwm_tmr4_array[i].pwm_device, g_pwm_tmr4_array[i].name, &_tmr4_ops, &g_pwm_tmr4_array[i].CompareValue[0]);
         RT_ASSERT(result == RT_EOK);
     }
 #endif
@@ -1566,7 +1566,7 @@ static int rt_hw_pwm_tmr_init(void)
         extern rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef * TMR6x);
         rt_hw_board_pwm_tmr6_init(g_pwm_tmr6_array[i].instance);
         /* register pwm device */
-        result = rt_device_pwm_register(&g_pwm_tmr6_array[i].pwm_device, g_pwm_tmr6_array[i].name, &tmr6_ops, &g_pwm_tmr6_array[i].stcPwmInit[0]);
+        result = rt_device_pwm_register(&g_pwm_tmr6_array[i].pwm_device, g_pwm_tmr6_array[i].name, &_tmr6_ops, &g_pwm_tmr6_array[i].stcPwmInit[0]);
         RT_ASSERT(result == RT_EOK);
     }
 #endif

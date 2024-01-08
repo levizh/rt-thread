@@ -25,7 +25,7 @@ enum
     WDT_INIT_OVER,
     WDT_IS_ENABLE
 };
-static struct rt_watchdog_ops ops;
+static struct rt_watchdog_ops _ops;
 
 #ifdef BSP_USING_WDT
 struct hc32_wdt_obj
@@ -147,7 +147,7 @@ static rt_uint32_t wdt_get_timeleft_s(void)
     return ((rt_uint32_t)(WDT_GetCountValue() * wdt_match[hc32_wdt.index].u32ClockDiv / (float)hc32_wdt.pclk3));
 }
 
-static rt_err_t wdt_init(rt_watchdog_t *wdt)
+static rt_err_t _wdt_init(rt_watchdog_t *wdt)
 {
     hc32_wdt.pclk3 = CLK_GetBusClockFreq(CLK_BUS_PCLK3);
     if (!hc32_wdt.pclk3)
@@ -170,7 +170,7 @@ static rt_err_t wdt_init(rt_watchdog_t *wdt)
     return RT_EOK;
 }
 
-static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
+static rt_err_t _wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
 {
     switch (cmd)
     {
@@ -220,9 +220,9 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
 
 int rt_wdt_init(void)
 {
-    ops.init = &wdt_init;
-    ops.control = &wdt_control;
-    hc32_wdt.watchdog.ops = &ops;
+    _ops.init = &_wdt_init;
+    _ops.control = &_wdt_control;
+    hc32_wdt.watchdog.ops = &_ops;
 
     /* register watchdog device */
     if (rt_hw_watchdog_register(&hc32_wdt.watchdog, "wdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK)
@@ -424,9 +424,9 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
 
 static int rt_hw_swdt_init(void)
 {
-    ops.init = &swdt_init;
-    ops.control = &swdt_control;
-    hc32_swdt.watchdog.ops = &ops;
+    _ops.init = &swdt_init;
+    _ops.control = &swdt_control;
+    hc32_swdt.watchdog.ops = &_ops;
 
     /* register watchdog device */
     if (rt_hw_watchdog_register(&hc32_swdt.watchdog, "swdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK)

@@ -334,7 +334,7 @@ static rt_err_t _rtc_set_alarm(struct rt_rtc_wkalarm *alarm)
 #endif
 }
 
-const static struct rt_rtc_ops hc32_rtc_ops =
+const static struct rt_rtc_ops _ops =
 {
     _rtc_init,
     _rtc_get_secs,
@@ -354,7 +354,7 @@ int rt_hw_rtc_init(void)
     hc32_install_irq_handler(&hc32_alarm_irq.irq_config, hc32_alarm_irq.irq_callback, RT_FALSE);
 #endif
 
-    rtc_dev.ops = &hc32_rtc_ops;
+    rtc_dev.ops = &_ops;
     result = rt_hw_rtc_register(&rtc_dev, "rtc", RT_DEVICE_FLAG_RDWR, RT_NULL);
     if (result != RT_EOK)
     {

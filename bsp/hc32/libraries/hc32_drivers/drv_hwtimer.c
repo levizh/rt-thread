@@ -116,7 +116,7 @@ static struct hc32_hwtimer hc32_hwtimer_obj[] =
 #endif
 };
 
-static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
+static void _timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
 {
     stc_tmra_init_t stcTmraInit;
     struct hc32_irq_config irq_config;
@@ -154,7 +154,7 @@ static void timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
     }
 }
 
-static rt_err_t timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_t opmode)
+static rt_err_t _timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_t opmode)
 {
     rt_err_t result = RT_EOK;
     struct hc32_hwtimer *tmr_device = RT_NULL;
@@ -171,7 +171,7 @@ static rt_err_t timer_start(rt_hwtimer_t *timer, rt_uint32_t t, rt_hwtimer_mode_
     return result;
 }
 
-static void timer_stop(rt_hwtimer_t *timer)
+static void _timer_stop(rt_hwtimer_t *timer)
 {
     struct hc32_hwtimer *tmr_device = RT_NULL;
 
@@ -185,7 +185,7 @@ static void timer_stop(rt_hwtimer_t *timer)
     TMRA_SetCountValue(tmr_device->tmr_handle, 0U);
 }
 
-static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
+static rt_err_t _timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
 {
     rt_err_t result = -RT_ERROR;
     uint32_t freq = *(uint32_t *)arg;
@@ -218,7 +218,7 @@ static rt_err_t timer_ctrl(rt_hwtimer_t *timer, rt_uint32_t cmd, void *arg)
     return result;
 }
 
-static rt_uint32_t timer_counter_get(rt_hwtimer_t *timer)
+static rt_uint32_t _timer_counter_get(rt_hwtimer_t *timer)
 {
     struct hc32_hwtimer *tmr_device = RT_NULL;
     rt_uint32_t Counter;
@@ -370,11 +370,11 @@ void tmra_get_info_callback(void)
 
 static const struct rt_hwtimer_ops _ops =
 {
-    .init = timer_init,
-    .start = timer_start,
-    .stop = timer_stop,
-    .count_get = timer_counter_get,
-    .control = timer_ctrl,
+    .init = _timer_init,
+    .start = _timer_start,
+    .stop = _timer_stop,
+    .count_get = _timer_counter_get,
+    .control = _timer_ctrl,
 };
 
 static int rt_hw_hwtimer_init(void)
