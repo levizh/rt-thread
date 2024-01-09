@@ -758,22 +758,22 @@ menu "On-chip Peripheral Drivers"
                         default n
                         if BSP_USING_PWM_TMR4_1
                             config BSP_USING_PWM_TMR4_1_OUH
-                                bool "Enable TMR4_1_OUH channel0"
+                                bool "Enable TMR4_1_OUH channel1"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OUL
-                                bool "Enable TMR4_1_OUL channel1"
+                                bool "Enable TMR4_1_OUL channel2"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OVH
-                                bool "Enable TMR4_1_OVH channel2"
+                                bool "Enable TMR4_1_OVH channel3"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OVL
-                                bool "Enable TMR4_1_OVL channel3"
+                                bool "Enable TMR4_1_OVL channel4"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OWH
-                                bool "Enable TMR4_1_OWH channel4"
+                                bool "Enable TMR4_1_OWH channel5"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OWL
-                                bool "Enable TMR4_1_OWL channel5"
+                                bool "Enable TMR4_1_OWL channel6"
                                 default n
                         endif
                 endif
@@ -786,10 +786,10 @@ menu "On-chip Peripheral Drivers"
                         default n
                         if BSP_USING_PWM_TMR6_1
                             config BSP_USING_PWM_TMR6_1_A
-                                bool "Enable TMR6_1_A channel0"
+                                bool "Enable TMR6_1_A channel1"
                                 default n
                             config BSP_USING_PWM_TMR6_1_B
-                                bool "Enable TMR6_1_B channel1"
+                                bool "Enable TMR6_1_B channel2"
                                 default n
                         endif
                 endif
