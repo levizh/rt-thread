@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -1322,7 +1322,7 @@ int rt_hw_can_init(void)
 
         /* register CAN device */
         rt_hw_board_can_init(_g_can_dev_array[i].instance);
-        rt_hw_can_register(&_g_can_dev_array[i].rt_can,\
+        rt_hw_can_register(&_g_can_dev_array[i].rt_can, \
                            _g_can_dev_array[i].init.name,
                            &_can_ops,
                            &_g_can_dev_array[i]);
