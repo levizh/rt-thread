@@ -99,7 +99,7 @@ static struct hc32_i2c i2c_objs[sizeof(i2c_config) / sizeof(i2c_config[0])] = {0
  ******************************************************************************/
 static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
 {
-    int ret = RT_ERROR;
+    int ret = -RT_ERROR;
     stc_i2c_init_t i2c_init;
     float32_t f32Error = 0.0F;
     rt_uint32_t I2cSrcClk;
@@ -152,7 +152,7 @@ static int hc32_hw_i2c_start(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Start(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
 
     return RT_EOK;
@@ -162,7 +162,7 @@ static int hc32_hw_i2c_restart(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Restart(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
 
     return RT_EOK;
@@ -174,7 +174,7 @@ static int hc32_hw_i2c_send_addr(struct hc32_i2c *i2c_obj,
     rt_uint8_t dir = ((msg->flags & RT_I2C_RD) == RT_I2C_RD) ? (I2C_DIR_RX) : (I2C_DIR_TX);
     if (LL_OK != I2C_TransAddr(i2c_obj->config->Instance, msg->addr, dir, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     return RT_EOK;
 }
@@ -183,7 +183,7 @@ static int hc32_hw_i2c_stop(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Stop(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     return RT_EOK;
 }
@@ -333,7 +333,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
     }
     /* wait last I2C data transfer completed */
@@ -345,7 +345,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     return RT_EOK;
 }
@@ -378,7 +378,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
     }
     if (msg->len > 1U)
@@ -392,7 +392,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
         I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
         msg->buf[msg->len - 2U] = I2C_ReadData(i2c_obj->config->Instance);
@@ -406,7 +406,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     /* Stop before read last data */
     I2C_ClearStatus(i2c_obj->config->Instance, I2C_FLAG_STOP);
@@ -421,7 +421,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     I2C_AckConfig(i2c_obj->config->Instance, I2C_ACK);
     return RT_EOK;
@@ -553,7 +553,7 @@ static const struct rt_i2c_bus_device_ops hc32_i2c_ops =
 
 int hc32_hw_i2c_init(void)
 {
-    int ret = RT_ERROR;
+    int ret = -RT_ERROR;
     rt_size_t obj_num = sizeof(i2c_objs) / sizeof(struct hc32_i2c);
     I2C_PRINT_DBG("%s start\n", __func__);
 
