@@ -200,7 +200,7 @@ static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
     msg[1].buf   = pBuf;
     rt_i2c_transfer(hc32_i2c, &msg[0], 2);
 #else
-    rt_i2c_master_send(hc32_i2c,EE_ADDR,0/*RT_I2C_NO_STOP*/,readAddr,EE_WORD_ADR_SIZE);
+    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,readAddr,EE_WORD_ADR_SIZE);
     rt_i2c_master_recv(hc32_i2c,EE_ADDR,0,pBuf,EE_PAGE_SIZE);
 #endif
 }
