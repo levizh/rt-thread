@@ -316,6 +316,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
 
     if (msg->len > 1U)
     {
+        DMA_ClearTransCompleteStatus(i2c_tx_dma->Instance,i2c_tx_dma->flag);
         (void)DMA_SetTransCount(i2c_tx_dma->Instance, i2c_tx_dma->channel, msg->len - 1U);
         (void)DMA_SetSrcAddr(i2c_tx_dma->Instance, i2c_tx_dma->channel, (uint32_t)(&msg->buf[1]));
         (void)DMA_ChCmd(i2c_tx_dma->Instance, i2c_tx_dma->channel, ENABLE);
@@ -330,7 +331,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
             rt_thread_mdelay(1);
             timeCnt++;
         }
-        if (timeCnt > i2c_obj->config->timeout)
+        if (timeCnt >= i2c_obj->config->timeout)
         {
             return RT_ETIMEOUT;
         }
@@ -342,7 +343,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
         rt_thread_mdelay(1);
         timeCnt++;
     }
-    if (timeCnt > i2c_obj->config->timeout)
+    if (timeCnt >= i2c_obj->config->timeout)
     {
         return RT_ETIMEOUT;
     }
@@ -361,6 +362,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     else if (msg->len > 2U)
     {
+        DMA_ClearTransCompleteStatus(i2c_rx_dma->Instance,i2c_rx_dma->flag);
         (void)DMA_SetTransCount(i2c_rx_dma->Instance, i2c_rx_dma->channel, msg->len - 2U);
         (void)DMA_SetDestAddr(i2c_rx_dma->Instance, i2c_rx_dma->channel, (uint32_t)(&msg->buf[0]));
         (void)DMA_ChCmd(i2c_rx_dma->Instance, i2c_rx_dma->channel, ENABLE);
@@ -374,7 +376,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
             /* Need add timeout release process here */
             rt_thread_mdelay(1);
             timeCnt++;
-            if (timeCnt > i2c_obj->config->timeout)
+            if (timeCnt >= i2c_obj->config->timeout)
             {
                 return RT_ETIMEOUT;
             }
@@ -389,7 +391,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
             rt_thread_mdelay(1);
             timeCnt++;
         }
-        if (timeCnt > i2c_obj->config->timeout)
+        if (timeCnt >= i2c_obj->config->timeout)
         {
             return RT_ETIMEOUT;
         }
@@ -403,7 +405,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         rt_thread_mdelay(1);
         timeCnt++;
     }
-    if (timeCnt > i2c_obj->config->timeout)
+    if (timeCnt >= i2c_obj->config->timeout)
     {
         return RT_ETIMEOUT;
     }
@@ -418,7 +420,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         rt_thread_mdelay(1);
         timeCnt++;
     }
-    if (timeCnt > i2c_obj->config->timeout)
+    if (timeCnt >= i2c_obj->config->timeout)
     {
         return RT_ETIMEOUT;
     }
