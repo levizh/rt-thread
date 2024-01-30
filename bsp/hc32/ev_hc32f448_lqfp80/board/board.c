@@ -72,10 +72,6 @@ void SystemClock_Config(void)
     stcPLLHInit.PLLCFGR_f.PLLSRC = CLK_PLL_SRC_XTAL;
     (void)CLK_PLLInit(&stcPLLHInit);
 
-    /* Highspeed SRAM, SRAM0 set to 0 Read/Write wait cycle */
-    SRAM_SetWaitCycle((SRAM_SRAMH | SRAM_SRAM0), SRAM_WAIT_CYCLE0, SRAM_WAIT_CYCLE0);
-    /* SRAMB set to 1 Read/Write wait cycle */
-    SRAM_SetWaitCycle(SRAM_SRAMB, SRAM_WAIT_CYCLE1, SRAM_WAIT_CYCLE1);
     /* 3 cycles for 150 ~ 200MHz */
     (void)EFM_SetWaitCycle(EFM_WAIT_CYCLE3);
     /* 3 cycles for 150 ~ 200MHz */
