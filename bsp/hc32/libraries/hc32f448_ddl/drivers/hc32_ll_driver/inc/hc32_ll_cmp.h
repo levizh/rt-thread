@@ -1,8 +1,8 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_cmp.h
- * @brief Head file for CMP module.
- *
+ * @brief This file contains all the functions prototypes of the CMP driver
+ *        library.
  @verbatim
    Change Logs:
    Date             Author          Notes
@@ -400,7 +400,7 @@ SRC16   TIM4_1_OXL      TIM4_1_OXL      TIM4_2_OXL      TIM4_2_OXL
  * @defgroup CMP_BlankWindow_Valid_Edge CMP Blank Windows valid edge for edge mode
  * @{
  */
-#define CMP_BLANKWIN_VALID_EDGE_NONE    (0U)        /*!< Blank window valid edge none */
+#define CMP_BLANKWIN_VALID_EDGE_NONE    (0U)                                    /*!< Blank window valid edge none */
 #define CMP_BLANKWIN_VALID_EDGE_RISING  (CMP_BWSR2_TWEG_0)                      /*!< Blank window rising edge valid */
 #define CMP_BLANKWIN_VALID_EDGE_FALLING (CMP_BWSR2_TWEG_1)                      /*!< Blank window falling edge valid */
 #define CMP_BLANKWIN_VALID_EDGE_ALL     (CMP_BWSR2_TWEG_0 | CMP_BWSR2_TWEG_1)   /*!< Blank window all edge valid */

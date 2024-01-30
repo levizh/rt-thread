@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-12-15       CDT             Add null pointer check
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -45,7 +46,14 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
+/**
+ * @defgroup 24CXX_Local_Macros 24CXX Local Macros
+ * @{
+ */
 #define EE_24CXX_WAIT_TIMEOUT           (0x20000UL)
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
@@ -58,8 +66,15 @@
 /*******************************************************************************
  * Local variable definitions ('static')
  ******************************************************************************/
+/**
+ * @defgroup 24CXX_Local_Types 24CXX Local Types
+ * @{
+ */
 static uint32_t u32PageSize;
 static uint32_t u32Capacity;
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Function implementation - global ('extern') and local ('static')
@@ -80,7 +95,8 @@ static uint32_t u32Capacity;
 int32_t EE_24CXX_Init(const stc_24cxx_ll_t *pstc24cxxLL)
 {
     int32_t i32Ret;
-    if ((pstc24cxxLL == NULL) || (pstc24cxxLL->u32PageSize == 0U) || (pstc24cxxLL->u32Capacity == 0U)) {
+    if ((pstc24cxxLL == NULL) || (pstc24cxxLL->u32PageSize == 0U) || (pstc24cxxLL->u32Capacity == 0U) ||
+        (pstc24cxxLL->Init == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         u32PageSize = pstc24cxxLL->u32PageSize;
@@ -100,7 +116,7 @@ int32_t EE_24CXX_Init(const stc_24cxx_ll_t *pstc24cxxLL)
 int32_t EE_24CXX_DeInit(const stc_24cxx_ll_t *pstc24cxxLL)
 {
     int32_t i32Ret = LL_OK;
-    if (pstc24cxxLL == NULL) {
+    if ((pstc24cxxLL == NULL) || (pstc24cxxLL->DeInit == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         pstc24cxxLL->DeInit();
@@ -118,14 +134,15 @@ int32_t EE_24CXX_DeInit(const stc_24cxx_ll_t *pstc24cxxLL)
  *         - LL_OK:                 Success
  *         - LL_ERR:                Receive NACK
  *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *         - LL_ERR_INVD_PARAM:     Invalid parameter
  */
 int32_t EE_24CXX_Read(const stc_24cxx_ll_t *pstc24cxxLL, uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len)
 {
     int32_t i32Ret;
 
-    if ((u16Addr + u32Len) > u32Capacity) {
-        i32Ret = LL_ERR;
+    if (((u16Addr + u32Len) > u32Capacity) || (pstc24cxxLL == NULL) || (pstc24cxxLL->Read == NULL) ||
+        (pu8Buf == NULL)) {
+        i32Ret = LL_ERR_INVD_PARAM;
     } else {
         i32Ret = pstc24cxxLL->Read(u16Addr, pu8Buf, u32Len);
     }
@@ -142,7 +159,7 @@ int32_t EE_24CXX_Read(const stc_24cxx_ll_t *pstc24cxxLL, uint16_t u16Addr, uint8
  *         - LL_OK:                 Success
  *         - LL_ERR:                Receive NACK
  *         - LL_ERR_TIMEOUT:        Timeout
- *         - LL_ERR_INVD_PARAM:     pu8Buf is NULL
+ *         - LL_ERR_INVD_PARAM:     Invalid parameter
  */
 int32_t EE_24CXX_Write(const stc_24cxx_ll_t *pstc24cxxLL, uint16_t u16Addr, const uint8_t *pu8Buf, uint32_t u32Len)
 {
@@ -155,8 +172,9 @@ int32_t EE_24CXX_Write(const stc_24cxx_ll_t *pstc24cxxLL, uint16_t u16Addr, cons
     int32_t i32Ret = LL_OK;
     uint32_t i;
 
-    if (((u16Addr + u32Len) > u32Capacity) || (u32PageSize == 0U)) {
-        return LL_ERR;
+    if (((u16Addr + u32Len) > u32Capacity) || (u32PageSize == 0U) || (pstc24cxxLL == NULL) ||
+        (pstc24cxxLL->WritePage == NULL) || (pstc24cxxLL->Delay == NULL) || (pu8Buf == NULL)) {
+        return LL_ERR_INVD_PARAM;
     }
 
     /* If start write address is align with page size */
@@ -220,11 +238,16 @@ int32_t EE_24CXX_Write(const stc_24cxx_ll_t *pstc24cxxLL, uint16_t u16Addr, cons
  * @retval int32_t:
  *         - LL_OK:                 Success
  *         - LL_ERR_TIMEOUT:        Failed
+ *         - LL_ERR_INVD_PARAM:     Invalid parameter
  */
 int32_t EE_24CXX_WaitIdle(const stc_24cxx_ll_t *pstc24cxxLL)
 {
     int32_t i32Ret = LL_OK;
     volatile uint32_t u32Tmp = 0UL;
+
+    if ((pstc24cxxLL == NULL) || (pstc24cxxLL->GetStatus == NULL)) {
+        return LL_ERR_INVD_PARAM;
+    }
     while (LL_OK != pstc24cxxLL->GetStatus()) {
         if (EE_24CXX_WAIT_TIMEOUT == u32Tmp++) {
             i32Ret = LL_ERR_TIMEOUT;

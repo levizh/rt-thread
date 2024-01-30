@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -219,7 +220,7 @@ int32_t CTC_CT_StructInit(stc_ctc_ct_init_t *pstcCtcInit)
 }
 
 /**
- * @brief  Initialize CTC function.
+ * @brief  Initialize CTC continuous trim function.
  * @param  [in] pstcCtcInit             Pointer to a @ref stc_ctc_ct_init_t structure.
  * @retval int32_t:
  *           - LL_OK:                   Initialize successfully.
@@ -308,7 +309,7 @@ int32_t CTC_ST_StructInit(stc_ctc_st_init_t *pstcCtcInit)
 }
 
 /**
- * @brief  Initialize CTC function.
+ * @brief  Initialize CTC single trim function.
  * @param  [in] pstcCtcInit             Pointer to a @ref stc_ctc_st_init_t structure.
  * @retval int32_t:
  *           - LL_OK:                   Initialize successfully.
@@ -378,12 +379,11 @@ int32_t CTC_ST_Init(const stc_ctc_st_init_t *pstcCtcInit)
  */
 int32_t CTC_DeInit(void)
 {
-    int32_t i32Ret;
     __IO uint32_t u32TimeOut = 0U;
+    int32_t i32Ret = LL_OK;
 
     DDL_ASSERT((CM_PWC->FPRC & PWC_FPRC_FPRCB1) == PWC_FPRC_FPRCB1);
 
-    i32Ret = LL_OK;
     CLR_REG32_BIT(CM_RMU->FRST0, RMU_FRST0_CTC);
     /* Ensure reset procedure is completed */
     while (RMU_FRST0_CTC != READ_REG32_BIT(CM_RMU->FRST0, RMU_FRST0_CTC)) {

@@ -7,6 +7,9 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Remove API DBGC_GetChipID()
+                                    Add macro definition DBGC_Trace_Mode
+                                    Add declaration of API DBGC_TraceIoCmd,DBGC_TraceModeConfig
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -49,41 +52,13 @@ extern "C"
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
-/**
- * @defgroup DBGC_Global_Types DBGC Global Types
- * @{
- */
-/**
- * @brief DBGC authenticate ID definition
- */
-typedef struct {
-    uint32_t            u32AuthID0;     /*!< auth ID 0.       */
-    uint32_t            u32AuthID1;     /*!< auth ID 1.       */
-    uint32_t            u32AuthID2;     /*!< auth ID 2.       */
-} stc_dbgc_auth_id_t;
-/**
- * @}
- */
+
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
 /**
  * @defgroup DBGC_Global_Macros DBGC Global Macros
  * @{
- */
-
-/**
- * @defgroup DBGC_MCU_Security_Flag DBGC MCU Security Status flag
- * @{
- */
-#define DBGC_SECURITY_AUTH_SUCCESS          (DBGC_MCUSTAT_AUTHFG)       /*!< AUTHID register equal security password */
-#define DBGC_SECURITY_LOCK_LVL1             (DBGC_MCUSTAT_PRTLV1)       /*!< Security lock level 1 */
-#define DBGC_SECURITY_LOCK_LVL2             (DBGC_MCUSTAT_PRTLV2)       /*!< Security lock level 2 */
-#define DBGC_SECURITY_LOCK_LVL3             (DBGC_MCUSTAT_PRTLV3)       /*!< Security lock level 3 */
-#define DBGC_SECURITY_ALL                   (DBGC_MCUSTAT_AUTHFG | DBGC_MCUSTAT_PRTLV1 | DBGC_MCUSTAT_PRTLV2 | \
-                                             DBGC_MCUSTAT_PRTLV3)
-/**
- * @}
  */
 
 /**
@@ -118,6 +93,18 @@ typedef struct {
  */
 
 /**
+ * @defgroup DBGC_Trace_Mode DBGC trace mode
+ * @{
+ */
+#define DBGC_TRACE_ASYNC                    (0UL)
+#define DBGC_TRACE_SYNC_1BIT                (DBGC_MCUTRACECTL_TRACEMODE_0)
+#define DBGC_TRACE_SYNC_2BIT                (DBGC_MCUTRACECTL_TRACEMODE_1)
+#define DBGC_TRACE_SYNC_4BIT                (DBGC_MCUTRACECTL_TRACEMODE)
+/**
+ * @}
+ */
+
+/**
  * @}
  */
 
@@ -132,12 +119,10 @@ typedef struct {
  * @addtogroup DBGC_Global_Functions
  * @{
  */
-en_flag_status_t DBGC_GetSecurityStatus(uint32_t u32Flag);
-int32_t DBGC_FlashErase(uint32_t u32Timeout);
-void DBGC_GetAuthID(stc_dbgc_auth_id_t *pstcAuthID);
 void DBGC_PeriphCmd(uint32_t u32Periph, en_functional_state_t enNewState);
 void DBGC_Periph2Cmd(uint32_t u32Periph, en_functional_state_t enNewState);
-uint32_t DBGC_GetChipID(void);
+void DBGC_TraceIoCmd(en_functional_state_t enNewState);
+void DBGC_TraceModeConfig(uint32_t u32TraceMode);
 /**
  * @}
  */

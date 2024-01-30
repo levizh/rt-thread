@@ -1,12 +1,14 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_tmr6.h
- * @brief Head file for TMR6 module.
- *
+ * @brief This file contains all the functions prototypes of the TMR6 driver
+ *        library.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Modify macro define for group TMR6_Emb_Ch_Define
+   2023-12-15       CDT             Modify for headfile update: CM_TMR6CR -> CM_TMR6_COMMON
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -408,7 +410,7 @@ typedef struct {
  * @defgroup TMR6_Emb_Ch_Define TMR6 EMB Event Channel
  * @{
  */
-#define TMR6_EMB_EVT_CH0                    (0x00U)
+#define TMR6_EMB_EVT_CH0                    (0x00UL)
 /**
  * @}
  */
@@ -484,9 +486,10 @@ typedef struct {
  * @defgroup TMR6_SW_Sync_Unit_define TMR6 Software Synchronization Start/Stop/Clear/Update Unit Number Define
  * @{
  */
-#define TMR6_SW_SYNC_U1                     (TMR6CR_SSTAR_SSTA1)
-#define TMR6_SW_SYNC_U2                     (TMR6CR_SSTAR_SSTA2)
+#define TMR6_SW_SYNC_U1                     (TMR6_COMMON_SSTAR_SSTA1)
+#define TMR6_SW_SYNC_U2                     (TMR6_COMMON_SSTAR_SSTA2)
 #define TMR6_SW_SYNC_ALL                    (0x03UL)
+
 /**
  * @}
  */
@@ -751,7 +754,7 @@ typedef struct {
  */
 __STATIC_INLINE uint32_t TMR6_GetSWSyncStartStatus(void)
 {
-    return READ_REG32(CM_TMR6CR->SSTAR);
+    return READ_REG32(CM_TMR6_COMMON->SSTAR);
 }
 
 /* Base count */

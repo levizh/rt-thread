@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Optimize MPU_ClearStatus function
+   2023-12-15       CDT             Add API MPU_UnitInit(), MPU_UnitStructInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -82,6 +84,10 @@
 #define IS_MPU_UNIT(x)                                                         \
 (   ((x) != 0UL)                                &&                             \
     (((x) | MPU_UNIT_ALL) == MPU_UNIT_ALL))
+
+#define IS_MPU_INIT_UNIT(x)                                                    \
+(   ((x) == MPU_UNIT_DMA1)                      ||                             \
+    ((x) == MPU_UNIT_DMA2))
 
 #define IS_MPU_REGION(x)                        ((x) <= MPU_REGION_NUM15)
 
@@ -275,6 +281,60 @@ int32_t MPU_StructInit(stc_mpu_init_t *pstcMpuInit)
 }
 
 /**
+ * @brief  Initialize MPU Unit.
+ * @param  [in] u32Unit                 The type of MPU unit.
+ *         This parameter can be one or any combination of the following values:
+ *           @arg @ref MPU_Unit_Type
+ * @param  [in] pstcUnitInit            Pointer to a @ref stc_mpu_unit_init_t structure
+ * @retval int32_t:
+ *           - LL_OK: Initialize success
+ *           - LL_ERR_INVD_PARAM: Invalid parameter
+ */
+int32_t MPU_UnitInit(uint32_t u32Unit, stc_mpu_unit_init_t *pstcUnitInit)
+{
+    __IO uint32_t *CR;
+    uint32_t u32UnitPos;
+    int32_t i32Ret = LL_OK;
+
+    if (NULL == pstcUnitInit) {
+        i32Ret = LL_ERR_INVD_PARAM;
+    } else {
+        /* Check parameters */
+        DDL_ASSERT(IS_MPU_UNLOCK());
+        DDL_ASSERT(IS_MPU_INIT_UNIT(u32Unit));
+
+        u32UnitPos = __CLZ(__RBIT(u32Unit));
+
+        CR = MPU_CR_ADDR(u32UnitPos);
+        WRITE_REG32(*CR, pstcUnitInit->u32MpuState        | pstcUnitInit->u32ExceptionType | \
+                    pstcUnitInit->u32BackgroundWrite | pstcUnitInit->u32BackgroundRead);
+    }
+    return i32Ret;
+}
+
+/**
+ * @brief  Fills each stc_mpu_unit_init_t member with default value.
+ * @param  [out] pstcUnitInit           Pointer to a @ref stc_mpu_unit_init_t structure
+ * @retval int32_t:
+ *           - LL_OK: stc_mpu_unit_init_t member initialize success
+ *           - LL_ERR_INVD_PARAM: Invalid parameter
+ */
+int32_t MPU_UnitStructInit(stc_mpu_unit_init_t *pstcUnitInit)
+{
+    int32_t i32Ret = LL_OK;
+
+    if (NULL == pstcUnitInit) {
+        i32Ret = LL_ERR_INVD_PARAM;
+    } else {
+        pstcUnitInit->u32MpuState        = MPU_UNIT_DISABLE;
+        pstcUnitInit->u32ExceptionType   = MPU_EXP_TYPE_NONE;
+        pstcUnitInit->u32BackgroundWrite = MPU_BACKGROUND_WR_DISABLE;
+        pstcUnitInit->u32BackgroundRead  = MPU_BACKGROUND_RD_DISABLE;
+    }
+    return i32Ret;
+}
+
+/**
  * @brief  Set the exception type of the unit.
  * @param  [in] u32Unit                 The type of MPU unit.
  *         This parameter can be one or any combination of the following values:
@@ -444,7 +504,7 @@ void MPU_ClearStatus(uint32_t u32Flag)
     /* Check parameters */
     DDL_ASSERT(IS_MPU_FLAG(u32Flag));
 
-    SET_REG32_BIT(CM_MPU->ECLR, u32Flag);
+    WRITE_REG32(CM_MPU->ECLR, u32Flag);
 }
 
 /**

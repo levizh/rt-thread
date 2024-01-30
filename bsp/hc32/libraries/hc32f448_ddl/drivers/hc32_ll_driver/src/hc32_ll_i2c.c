@@ -7,6 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Move macro define I2C_SRC_CLK to head file
+   2023-12-15       CDT             Remove API I2C_FIFO_ClearRequestStatus() & I2C_FIFO_GetStatus
+                                    Modify I2C_Restart()
+                                    Refine I2C Flag & API I2C_SlaveAddrConfig/I2C_SlaveMaskAddrConfig
+                                    Fix I2C_Deinit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -60,14 +65,14 @@
  * @{
  */
 
-#define IS_I2C_UNIT(x)                  (((x) == CM_I2C1) || ((x) == CM_I2C2))
+#define IS_I2C_UNIT(x)                                                         \
+(   ((x) == CM_I2C1)                        ||                                 \
+    ((x) == CM_I2C2))
 
 #define IS_I2C_DIG_FILTER_CLK(x)        ((x) <= I2C_DIG_FILTER_CLK_DIV4)
 
 #define IS_I2C_7BIT_ADDR(x)             ((x) <= I2C_7BIT_MAX)
 #define IS_I2C_10BIT_ADDR(x)            ((x) <= I2C_10BIT_MAX)
-
-#define I2C_SRC_CLK                     (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK0S) >> CMU_SCFGR_PCLK0S_POS))
 
 #define IS_I2C_SPEED(x)                                                        \
 (   ((x) != 0U)                                     &&                         \
@@ -81,7 +86,7 @@
 (   ((x) != 0U)                                     &&                         \
     (((x) | I2C_FLAG_CLR_ALL) == I2C_FLAG_CLR_ALL))
 
-#define IS_I2C_INT_FLAG(x)                                                     \
+#define IS_I2C_INT(x)                                                          \
 (   ((x) != 0U)                                     &&                         \
     (((x) | I2C_INT_ALL) == I2C_INT_ALL))
 
@@ -112,10 +117,6 @@
 #define IS_I2C_FLAG_STD(x)                                                     \
 (   ((x) == RESET)                                  ||                         \
     ((x) == SET))
-
-#define IS_I2C_FIFO_FLAG(x)                                                    \
-(   ((x) != 0U)                                     &&                         \
-    (((x) | I2C_FIFO_FLAG_ALL) == I2C_FIFO_FLAG_ALL))
 /**
  * @}
  */
@@ -285,7 +286,7 @@ int32_t I2C_BaudrateConfig(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cIn
             Divsum = 3UL;
         }
 
-        if (I2cDivClk != 0UL) {
+        if (I2cDivClk != 0UL) { /* Judge for misra */
             WidthTotal = (float32_t)I2cSrcClk / (float32_t)Baudrate / (float32_t)I2cDivClk;
             SumTotal = (2.0F * (float32_t)Divsum) + (2.0F * (float32_t)Dnfsum) + (float32_t)SclCnt;
             WidthHL = WidthTotal - SumTotal;
@@ -330,16 +331,18 @@ int32_t I2C_BaudrateConfig(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cIn
  * @param [in] I2Cx                 Pointer to I2C instance register base.
  *                                  This parameter can be a value of the following:
  *         @arg CM_I2C or CM_I2Cx:  I2C instance register base.
- * @retval None
+ * @retval int32_t:
+ *           - LL_OK:                   No error occurred.
  */
-void I2C_DeInit(CM_I2C_TypeDef *I2Cx)
+int32_t I2C_DeInit(CM_I2C_TypeDef *I2Cx)
 {
     /* Check parameters */
     DDL_ASSERT(IS_I2C_UNIT(I2Cx));
-
     /* RESET peripheral register and internal status*/
     CLR_REG32_BIT(I2Cx->CR1, I2C_CR1_PE);
     SET_REG32_BIT(I2Cx->CR1, I2C_CR1_SWRST);
+
+    return LL_OK;
 }
 
 /**
@@ -423,10 +426,10 @@ void I2C_SlaveAddrConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, uint32_t u32
     } else {
         if (I2C_ADDR_10BIT == u32AddrMode) {
             MODIFY_REG32(*pu32SLRx, I2C_SLR0_SLADDR0EN | I2C_SLR0_ADDRMOD0 | I2C_SLR0_SLADDR0,
-                         u32AddrMode + u32Addr);
+                         u32AddrMode | u32Addr);
         } else {
             MODIFY_REG32(*pu32SLRx, I2C_SLR0_SLADDR0EN | I2C_SLR0_ADDRMOD0 | I2C_SLR0_SLADDR0,
-                         u32AddrMode + (u32Addr << 1U));
+                         u32AddrMode | (u32Addr << 1U));
         }
     }
 }
@@ -471,10 +474,10 @@ void I2C_SlaveMaskAddrConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, uint32_t
 
     if (I2C_ADDR_10BIT == u32AddrMode) {
         MODIFY_REG32(*pu32SLRx, I2C_SLR0_ADDRMOD0 | I2C_SLR0_MSLADDR0,
-                     u32AddrMode + (u32MaskAddr << I2C_SLR0_MSLADDR0_POS));
+                     u32AddrMode | (u32MaskAddr << I2C_SLR0_MSLADDR0_POS));
     } else {
         MODIFY_REG32(*pu32SLRx, I2C_SLR0_ADDRMOD0 | I2C_SLR0_MSLADDR0,
-                     u32AddrMode + (u32MaskAddr << (I2C_SLR0_MSLADDR0_POS + 1U)));
+                     u32AddrMode | (u32MaskAddr << (I2C_SLR0_MSLADDR0_POS + 1U)));
     }
 }
 
@@ -677,21 +680,8 @@ en_flag_status_t I2C_GetStatus(const CM_I2C_TypeDef *I2Cx, uint32_t u32Flag)
  * @param [in] I2Cx                 Pointer to I2C instance register base.
  *                                  This parameter can be a value of the following:
  *         @arg CM_I2C or CM_I2Cx:  I2C instance register base.
- * @param [in] u32Flag              Specifies the flag to clear, This parameter
- *                                  can be any combination of the following values
- *         @arg I2C_FLAG_START              : Start flag clear
- *         @arg I2C_FLAG_MATCH_ADDR0        : Address 0 detected flag clear
- *         @arg I2C_FLAG_MATCH_ADDR1        : Address 1 detected flag clear
- *         @arg I2C_FLAG_TX_CPLT            : Transfer end flag clear
- *         @arg I2C_FLAG_STOP               : Stop flag clear
- *         @arg I2C_FLAG_RX_FULL            : Receive buffer full flag clear
- *         @arg I2C_FLAG_TX_EMPTY           : Transfer buffer empty flag clear
- *         @arg I2C_FLAG_ARBITRATE_FAIL     : Arbitration fails flag clear
- *         @arg I2C_FLAG_NACKF              : Nack detected flag clear
- *         @arg I2C_FLAG_GENERAL_CALL       : General call address detected flag clear
- *         @arg I2C_FLAG_SMBUS_DEFAULT_MATCH: Smbus default address detected flag clear
- *         @arg I2C_FLAG_SMBUS_HOST_MATCH   : Smbus host address detected flag clear
- *         @arg I2C_FLAG_SMBUS_ALARM_MATCH  : Smbus alarm address detected flag clear
+ * @param [in] u32Flag              Specifies the flag to clear, This parameter can be any combination of the member from
+ *                                  @ref I2C_Flag_Clear
  * @retval None
  */
 void I2C_ClearStatus(CM_I2C_TypeDef *I2Cx, uint32_t u32Flag)
@@ -715,36 +705,6 @@ void I2C_FIFO_Cmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState)
     DDL_ASSERT(IS_I2C_UNIT(I2Cx));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
     MODIFY_REG32(I2Cx->FSTR, I2C_FSTR_FEN, (uint32_t)enNewState << I2C_FSTR_FEN_POS);
-}
-
-/**
- * @brief Clear I2C receive FIFO request flag
- * @param [in] I2Cx                 Pointer to I2C instance register base.
- *                                  This parameter can be a value of the following:
- *         @arg CM_I2C or CM_I2Cx:  I2C instance register base.
- * @retval None
- */
-void I2C_FIFO_ClearRequestStatus(CM_I2C_TypeDef *I2Cx)
-{
-    DDL_ASSERT(IS_I2C_UNIT(I2Cx));
-    WRITE_REG32(I2Cx->CLR, I2C_CLR_RFREQCLR);
-}
-
-/**
- * @brief I2C FIFO flags status get
- * @param [in] I2Cx                 Pointer to I2C instance register base.
- *                                  This parameter can be a value of the following:
- *         @arg CM_I2C or CM_I2Cx:  I2C instance register base.
- * @param [in] u32Flag              Specify the flags to check, This parameter can be any combination of the member from
- *                                  @ref I2C_FIFO_Flag
- * @retval An @ref en_flag_status_t enumeration type value.
- */
-en_flag_status_t I2C_FIFO_GetStatus(const CM_I2C_TypeDef *I2Cx, uint32_t u32Flag)
-{
-    DDL_ASSERT(IS_I2C_UNIT(I2Cx));
-    DDL_ASSERT(IS_I2C_FIFO_FLAG(u32Flag));
-
-    return ((0UL != READ_REG32_BIT(I2Cx->SR, u32Flag)) ? SET : RESET);
 }
 
 /**
@@ -872,7 +832,7 @@ void I2C_SWResetCmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState)
 void I2C_IntCmd(CM_I2C_TypeDef *I2Cx, uint32_t u32IntType, en_functional_state_t enNewState)
 {
     DDL_ASSERT(IS_I2C_UNIT(I2Cx));
-    DDL_ASSERT(IS_I2C_INT_FLAG(u32IntType));
+    DDL_ASSERT(IS_I2C_INT(u32IntType));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
     if (ENABLE == enNewState) {
@@ -1060,12 +1020,16 @@ int32_t I2C_Restart(CM_I2C_TypeDef *I2Cx, uint32_t u32Timeout)
 
     DDL_ASSERT(IS_I2C_UNIT(I2Cx));
 
-    /* Clear start status flag */
-    I2C_ClearStatus(I2Cx, I2C_FLAG_START);
-    /* Send restart condition */
-    I2C_GenerateRestart(I2Cx);
-    /* Judge if start success*/
-    i32Ret = I2C_WaitStatus(I2Cx, (I2C_FLAG_BUSY | I2C_FLAG_START), SET, u32Timeout);
+    i32Ret = I2C_WaitStatus(I2Cx, I2C_FLAG_BUSY, SET, u32Timeout);
+
+    if (LL_OK == i32Ret) {
+        /* Clear start status flag */
+        I2C_ClearStatus(I2Cx, I2C_FLAG_CLR_START);
+        /* Send restart condition */
+        I2C_GenerateRestart(I2Cx);
+        /* Judge if start success*/
+        i32Ret = I2C_WaitStatus(I2Cx, (I2C_FLAG_BUSY | I2C_FLAG_START), SET, u32Timeout);
+    }
 
     return i32Ret;
 }
@@ -1163,7 +1127,7 @@ int32_t I2C_Trans10BitAddr(CM_I2C_TypeDef *I2Cx, uint16_t u16Addr, uint8_t u8Dir
 
     if ((u8Dir == I2C_DIR_RX) && (LL_OK == i32Ret)) {
         /* Restart */
-        I2C_ClearStatus(I2Cx, I2C_FLAG_START);
+        I2C_ClearStatus(I2Cx, I2C_FLAG_CLR_START);
         I2C_GenerateRestart(I2Cx);
         i32Ret = I2C_WaitStatus(I2Cx, I2C_FLAG_START, SET, u32Timeout);
 
@@ -1214,10 +1178,10 @@ int32_t I2C_TransData(CM_I2C_TypeDef *I2Cx, uint8_t const au8TxData[], uint32_t 
                 /* Send one byte data */
                 I2C_WriteData(I2Cx, au8TxData[u32Count]);
 
-                /* Wait transfer end*/
+                /* Wait transfer end */
                 i32Ret = I2C_WaitStatus(I2Cx, I2C_FLAG_TX_CPLT, SET, u32Timeout);
 
-                /* If receive NACK*/
+                /* If receive NACK */
                 if (I2C_GetStatus(I2Cx, I2C_FLAG_NACKF) == SET) {
                     break;
                 }
@@ -1324,7 +1288,7 @@ int32_t I2C_MasterReceiveDataAndStop(CM_I2C_TypeDef *I2Cx, uint8_t au8RxData[], 
             if (i32Ret == LL_OK) {
                 /* Stop before read last data */
                 if (i == (u32Size - 1UL)) {
-                    I2C_ClearStatus(I2Cx, I2C_FLAG_STOP);
+                    I2C_ClearStatus(I2Cx, I2C_FLAG_CLR_STOP);
                     I2C_GenerateStop(I2Cx);
                 }
                 /* read data from register */
@@ -1364,7 +1328,7 @@ int32_t I2C_Stop(CM_I2C_TypeDef *I2Cx, uint32_t u32Timeout)
 
     /* Clear stop flag */
     while ((SET == I2C_GetStatus(I2Cx, I2C_FLAG_STOP)) && (u32Timeout > 0UL)) {
-        I2C_ClearStatus(I2Cx, I2C_FLAG_STOP);
+        I2C_ClearStatus(I2Cx, I2C_FLAG_CLR_STOP);
         u32Timeout--;
     }
     I2C_GenerateStop(I2Cx);

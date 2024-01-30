@@ -57,16 +57,16 @@ extern "C"
  * @brief  FCM Init structure definition
  */
 typedef struct {
-    uint16_t u16LowerLimit;     /*!< FCM lower limit value */
-    uint16_t u16UpperLimit;     /*!< FCM upper limit value */
-    uint32_t u32TargetClock;    /*!< FCM target clock source selection, @ref FCM_Target_Clock_Src */
-    uint32_t u32TargetClockDiv; /*!< FCM target clock source division selection, @ref FCM_Target_Clock_Div */
+    uint16_t u16LowerLimit;         /*!< FCM lower limit value */
+    uint16_t u16UpperLimit;         /*!< FCM upper limit value */
+    uint32_t u32TargetClock;        /*!< FCM target clock source selection, @ref FCM_Target_Clock_Src */
+    uint32_t u32TargetClockDiv;     /*!< FCM target clock source division selection, @ref FCM_Target_Clock_Div */
     uint32_t u32ExtRefClockEnable;  /*!< FCM external reference clock function config, @ref FCM_Ext_Ref_Clock_Config */
-    uint32_t u32RefClockEdge;   /*!< FCM reference clock trigger edge selection, @ref FCM_Ref_Clock_Edge */
-    uint32_t u32DigitalFilter;  /*!< FCM digital filter function config, @ref FCM_Digital_Filter_Config */
-    uint32_t u32RefClock;       /*!< FCM reference clock source selection, @ref FCM_Ref_Clock_Src */
-    uint32_t u32RefClockDiv;    /*!< FCM reference clock source division selection, @ref FCM_Ref_Clock_Div */
-    uint32_t u32ExceptionType;  /*!< FCM exception type select,  @ref FCM_Exception_Type */
+    uint32_t u32RefClockEdge;       /*!< FCM reference clock trigger edge selection, @ref FCM_Ref_Clock_Edge */
+    uint32_t u32DigitalFilter;      /*!< FCM digital filter function config, @ref FCM_Digital_Filter_Config */
+    uint32_t u32RefClock;           /*!< FCM reference clock source selection, @ref FCM_Ref_Clock_Src */
+    uint32_t u32RefClockDiv;        /*!< FCM reference clock source division selection, @ref FCM_Ref_Clock_Div */
+    uint32_t u32ExceptionType;      /*!< FCM exception type select,  @ref FCM_Exception_Type */
 } stc_fcm_init_t;
 
 /**

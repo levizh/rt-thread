@@ -7,6 +7,9 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Rename EFM_DataCacheResetCmd() as EFM_CacheRamReset() and modify comment
+                                    Optimized macro group EFM_Remap_Size definitions
+                                    Add structure of stc_efm_location_t and declaration of API EFM_GetWaferID(), EFM_GetLocation(), EFM_GetLotID()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -67,6 +70,15 @@ typedef struct {
     uint32_t u32Addr;
     uint32_t u32Size;
 } stc_efm_remap_init_t;
+
+/**
+ * @brief EFM location definition
+ */
+typedef struct {
+    uint8_t             u8X_Location;      /*!< X location.       */
+    uint8_t             u8Y_Location;      /*!< Y location.       */
+} stc_efm_location_t;
+
 /**
  * @}
  */
@@ -85,8 +97,8 @@ typedef struct {
 #define EFM_START_ADDR                  (0x00000000UL)    /*!< Flash start address */
 
 #define EFM_END_ADDR                    (0x0003FFFFUL)    /*!< Flash end address */
-#define EFM_OTP_START_ADDR1             (0x00000000UL)    /*!< OTP start address1 */
 #define EFM_OTP_END_ADDR1               (0x00001FFFUL)    /*!< OTP end address1 */
+#define EFM_OTP_START_ADDR1             (0x00000000UL)    /*!< OTP start address1 */
 #define EFM_OTP_START_ADDR              (0x03000C00UL)    /*!< OTP start address */
 #define EFM_OTP_END_ADDR                (0x03000FFFUL)    /*!< OTP end address */
 #define EFM_OTP_LOCK_ADDR_START         (0x03000A80UL)    /*!< OTP lock address */
@@ -95,7 +107,6 @@ typedef struct {
 #define EFM_OTP_ENABLE_ADDR             (0x03000A00UL)    /*!< OTP Enable address */
 #define EFM_SECURITY_START_ADDR         (0x03002040UL)    /*!< Flash security start address */
 #define EFM_SECURITY_END_ADDR           (0x0300204BUL)    /*!< Flash security end address */
-
 /**
  * @}
  */
@@ -218,7 +229,6 @@ typedef struct {
  * @{
  */
 #define SECTOR_SIZE                     (0x2000UL)
-
 /**
  * @}
  */
@@ -308,7 +318,7 @@ typedef struct {
 #define EFM_REMAP_64K               (16UL)
 #define EFM_REMAP_128K              (17UL)
 #define EFM_REMAP_256K              (18UL)
-#define EFM_REMAP_512K              (19UL)
+#define EFM_REMAP_SIZE_MAX          EFM_REMAP_256K
 /**
  * @}
  */
@@ -444,8 +454,11 @@ int32_t EFM_ChipErase(uint8_t u8Chip);
 en_flag_status_t EFM_GetAnyStatus(uint32_t u32Flag);
 en_flag_status_t EFM_GetStatus(uint32_t u32Flag);
 void EFM_GetUID(stc_efm_unique_id_t *pstcUID);
+uint8_t EFM_GetWaferID(void);
+void EFM_GetLocation(stc_efm_location_t *pstcLocation);
+uint64_t EFM_GetLotID(void);
 
-void EFM_DataCacheResetCmd(en_functional_state_t enNewState);
+void EFM_CacheRamReset(en_functional_state_t enNewState);
 void EFM_PrefetchCmd(en_functional_state_t enNewState);
 void EFM_DCacheCmd(en_functional_state_t enNewState);
 void EFM_ICacheCmd(en_functional_state_t enNewState);

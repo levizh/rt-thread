@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Modify the timing: EXCLK 100MHz -> 40MHz
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -144,12 +145,14 @@ int32_t BSP_IS61LV6416_Init(void)
         stcSmcInit.stcChipConfig.u32BLS = EXMC_SMC_BLS_SYNC_CS;
         stcSmcInit.stcChipConfig.u32AddrMatch = BSP_IS61LV6416_MATCH_ADDR;
         stcSmcInit.stcChipConfig.u32AddrMask = BSP_IS61LV6416_MASK_ADDR;
-        stcSmcInit.stcTimingConfig.u8RC = 4U;
+
+        /* EXCLK bus frequency@40MHz: 3.3V */
+        stcSmcInit.stcTimingConfig.u8RC = 5U;
         stcSmcInit.stcTimingConfig.u8WC = 4U;
         stcSmcInit.stcTimingConfig.u8CEOE = 3U;
         stcSmcInit.stcTimingConfig.u8WP = 1U;
         stcSmcInit.stcTimingConfig.u8TR = 1U;
-        stcSmcInit.stcTimingConfig.u8ADV = 2U;
+        stcSmcInit.stcTimingConfig.u8ADV = 1U;
         (void)EXMC_SMC_Init(BSP_IS61LV6416_CHIP, &stcSmcInit);
 
         /* Set DATA/ADD Pin mux */

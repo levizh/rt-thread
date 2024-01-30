@@ -149,7 +149,6 @@ typedef struct {
 #define EP_FCLK_DIV8        (1UL << AOS_PEVNTNFCR_DIVS1_POS)    /*!< PCLK div8 as EP filter clock source */
 #define EP_FCLK_DIV32       (2UL << AOS_PEVNTNFCR_DIVS1_POS)    /*!< PCLK div32 as EP filter clock source */
 #define EP_FCLK_DIV64       (3UL << AOS_PEVNTNFCR_DIVS1_POS)    /*!< PCLK div64 as EP filter clock source */
-
 /**
  * @}
  */
@@ -162,7 +161,6 @@ typedef struct {
 #define EP_TRIG_FALLING     (1UL)       /*!< Trigger by falling edge */
 #define EP_TRIG_RISING      (2UL)       /*!< Trigger by rising edge */
 #define EP_TRIG_BOTH        (3UL)       /*!< Trigger by falling and rising edge */
-
 /**
  * @}
  */

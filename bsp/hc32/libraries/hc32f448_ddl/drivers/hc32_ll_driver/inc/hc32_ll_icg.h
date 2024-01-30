@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Modify macro define:ICG_SWDT_LPM_CNT_CONTINUE -> ICG_SWDT_LPM_CNT_CONT
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -134,7 +135,7 @@ extern "C"
  * @brief    Counting control of SWDT in sleep/stop mode
  * @{
  */
-#define ICG_SWDT_LPM_CNT_CONTINUE               (0UL)                   /*!< Continue counting in sleep/stop mode */
+#define ICG_SWDT_LPM_CNT_CONT                   (0UL)                   /*!< Continue counting in sleep/stop mode */
 #define ICG_SWDT_LPM_CNT_STOP                   (ICG_ICG0_SWDTSLPOFF)   /*!< Stop counting in sleep/stop mode     */
 /**
  * @}
@@ -222,7 +223,7 @@ extern "C"
  * @brief    Counting control of WDT in sleep mode
  * @{
  */
-#define ICG_WDT_LPM_CNT_CONTINUE                (0UL)                   /*!< Continue counting in sleep mode */
+#define ICG_WDT_LPM_CNT_CONT                    (0UL)                   /*!< Continue counting in sleep mode */
 #define ICG_WDT_LPM_CNT_STOP                    (ICG_ICG0_WDTSLPOFF)    /*!< Stop counting in sleep mode     */
 /**
  * @}

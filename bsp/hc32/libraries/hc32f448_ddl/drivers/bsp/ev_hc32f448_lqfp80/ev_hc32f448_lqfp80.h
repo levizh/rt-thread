@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Add include file named hc32_ll_fcm.h and add declaration of BSP_XTAL32_Init()
+                                    Modify I2C baudrate: 400000 -> 100000
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -34,6 +36,7 @@ extern "C"
 #include "hc32_ll_clk.h"
 #include "hc32_ll_efm.h"
 #include "hc32_ll_fcg.h"
+#include "hc32_ll_fcm.h"
 #include "hc32_ll_gpio.h"
 #include "hc32_ll_i2c.h"
 #include "hc32_ll_interrupts.h"
@@ -73,7 +76,7 @@ extern "C"
  * @defgroup BSP_I2C_Configuration BSP I2C Configuration
  * @{
  */
-#define BSP_I2C_BAUDRATE        (400000UL)
+#define BSP_I2C_BAUDRATE        (100000UL)
 #define BSP_I2C_TIMEOUT         (0x40000U)
 /**
  * @}
@@ -199,6 +202,7 @@ extern "C"
  * @addtogroup BSP_Global_Functions
  * @{
  */
+int32_t BSP_XTAL32_Init(void);
 void BSP_CLK_Init(void);
 
 void BSP_KEY_Init(void);

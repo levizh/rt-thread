@@ -51,6 +51,11 @@ extern "C"
  * Global type definitions ('typedef')
  ******************************************************************************/
 /**
+ * @defgroup TCA9539_Global_Types TCA9539 Global Types
+ * @{
+ */
+
+/**
  * @brief TCA9539 low layer structure definition
  */
 typedef struct {
@@ -61,6 +66,10 @@ typedef struct {
     void (*Reset)(void);
     void (*IntInit)(void);
 } stc_tca9539_ll_t;
+
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')

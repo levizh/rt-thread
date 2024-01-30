@@ -7,6 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Function EMB_TMR4_Init don't call EMB_DeInit
+                                    Function EMB_TMR6_Init don't call EMB_DeInit
+   2023-12-15       CDT             Modify stc_emb_monitor_sys_t structure relevant code
+                                    Modify API EMB_ClearStatus assert
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -146,7 +150,6 @@
     ((x) == EMB_PORT1_FILTER_DISABLE))
 
 #define IS_EMB_PORT1_FILTER_DIV(x)          (((x) & (~EMB_PORT1_FILTER_CLK_DIV_MASK)) == 0UL)
-
 #define IS_EMB_PORT2_STAT(x)                                                   \
 (   ((x) == EMB_PORT2_ENABLE)               ||                                 \
     ((x) == EMB_PORT2_DISABLE))
@@ -174,7 +177,6 @@
     ((x) == EMB_PORT3_FILTER_DISABLE))
 
 #define IS_EMB_PORT3_FILTER_DIV(x)          (((x) & (~EMB_PORT3_FILTER_CLK_DIV_MASK)) == 0UL)
-
 #define IS_EMB_PORT4_STAT(x)                                                   \
 (   ((x) == EMB_PORT4_ENABLE)               ||                                 \
     ((x) == EMB_PORT4_DISABLE))
@@ -212,6 +214,10 @@
 #define IS_EMB_FLAG(x)                                                         \
 (   ((x) != 0UL)                            &&                                 \
     (((x) | EMB_FLAG_ALL) == EMB_FLAG_ALL))
+
+#define IS_EMB_CLR_FLAG(x)                                                         \
+(   ((x) != 0UL)                            &&                                 \
+    (((x) | EMB_FLAG_CLR_ALL) == EMB_FLAG_CLR_ALL))
 
 #define IS_EMB_RELEASE_PWM_COND(x)                                             \
 (   ((x) == EMB_RELEASE_PWM_COND_FLAG_ZERO) ||                                 \
@@ -271,8 +277,6 @@ int32_t EMB_TMR4_StructInit(stc_emb_tmr4_init_t *pstcEmbInit)
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
     if (NULL != pstcEmbInit) {
-        /* OSC */
-        pstcEmbInit->stcOsc.u32OscState = EMB_OSC_DISABLE;
 
         /* CMP */
         pstcEmbInit->stcCmp.u32Cmp1State = EMB_CMP1_DISABLE;
@@ -308,10 +312,12 @@ int32_t EMB_TMR4_StructInit(stc_emb_tmr4_init_t *pstcEmbInit)
         pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmState = EMB_TMR4_PWM_X_DISABLE;
         pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmLevel = EMB_DETECT_TMR4_PWM_X_BOTH_LOW;
 
-        pstcEmbInit->u32SramEccError    = EMB_SRAM_ECC_ERR_DISABLE;
-        pstcEmbInit->u32SramParityError = EMB_SRAM_PARITY_ERR_DISABLE;
-        pstcEmbInit->u32Lockup          = EMB_LOCKUP_DISABLE;
-        pstcEmbInit->u32Lvd             = EMB_LVD_DISABLE;
+        /* System */
+        pstcEmbInit->stcSys.u32Osc             = EMB_OSC_DISABLE;
+        pstcEmbInit->stcSys.u32SramEccError    = EMB_SRAM_ECC_ERR_DISABLE;
+        pstcEmbInit->stcSys.u32SramParityError = EMB_SRAM_PARITY_ERR_DISABLE;
+        pstcEmbInit->stcSys.u32Lockup          = EMB_LOCKUP_DISABLE;
+        pstcEmbInit->stcSys.u32Lvd             = EMB_LVD_DISABLE;
         i32Ret = LL_OK;
     }
 
@@ -336,11 +342,14 @@ int32_t EMB_TMR4_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr4_init_t *pstcEmbIn
 
     if (NULL != pstcEmbInit) {
         DDL_ASSERT(IS_EMB_TMR4_GROUP(EMBx));
-        DDL_ASSERT(IS_EMB_OSC_STAT(pstcEmbInit->stcOsc.u32OscState));
         DDL_ASSERT(IS_EMB_CMP1_STAT(pstcEmbInit->stcCmp.u32Cmp1State));
         DDL_ASSERT(IS_EMB_CMP2_STAT(pstcEmbInit->stcCmp.u32Cmp2State));
         DDL_ASSERT(IS_EMB_CMP3_STAT(pstcEmbInit->stcCmp.u32Cmp3State));
         DDL_ASSERT(IS_EMB_CMP4_STAT(pstcEmbInit->stcCmp.u32Cmp4State));
+        DDL_ASSERT(IS_EMB_PORT1_STAT(pstcEmbInit->stcPort.stcPort1.u32PortState));
+        DDL_ASSERT(IS_EMB_PORT1_DETECT_LVL(pstcEmbInit->stcPort.stcPort1.u32PortLevel));
+        DDL_ASSERT(IS_EMB_PORT1_FILTER_DIV(pstcEmbInit->stcPort.stcPort1.u32PortFilterDiv));
+        DDL_ASSERT(IS_EMB_PORT1_FILTER_STAT(pstcEmbInit->stcPort.stcPort1.u32PortFilterState));
         DDL_ASSERT(IS_EMB_PORT1_STAT(pstcEmbInit->stcPort.stcPort1.u32PortState));
         DDL_ASSERT(IS_EMB_PORT1_DETECT_LVL(pstcEmbInit->stcPort.stcPort1.u32PortLevel));
         DDL_ASSERT(IS_EMB_PORT1_FILTER_DIV(pstcEmbInit->stcPort.stcPort1.u32PortFilterDiv));
@@ -365,18 +374,17 @@ int32_t EMB_TMR4_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr4_init_t *pstcEmbIn
         DDL_ASSERT(IS_EMB_DETECT_TMR4_PWM_W_LVL(pstcEmbInit->stcTmr4.stcTmr4PwmW.u32PwmLevel));
         DDL_ASSERT(IS_EMB_TMR4_PWM_X_STAT(pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmState));
         DDL_ASSERT(IS_EMB_DETECT_TMR4_PWM_X_LVL(pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmLevel));
-        DDL_ASSERT(IS_EMB_SRAM_ECC_ERR_STAT(pstcEmbInit->u32SramEccError));
-        DDL_ASSERT(IS_EMB_SRAM_PARITY_ERR_STAT(pstcEmbInit->u32SramParityError));
-        DDL_ASSERT(IS_EMB_LOCKUP_STAT(pstcEmbInit->u32Lockup));
-        DDL_ASSERT(IS_EMB_LVD_STAT(pstcEmbInit->u32Lvd));
+        DDL_ASSERT(IS_EMB_OSC_STAT(pstcEmbInit->stcSys.u32Osc));
+        DDL_ASSERT(IS_EMB_SRAM_ECC_ERR_STAT(pstcEmbInit->stcSys.u32SramEccError));
+        DDL_ASSERT(IS_EMB_SRAM_PARITY_ERR_STAT(pstcEmbInit->stcSys.u32SramParityError));
+        DDL_ASSERT(IS_EMB_LOCKUP_STAT(pstcEmbInit->stcSys.u32Lockup));
+        DDL_ASSERT(IS_EMB_LVD_STAT(pstcEmbInit->stcSys.u32Lvd));
 
-        /* OSC */
-        u32Reg1Value = pstcEmbInit->stcOsc.u32OscState;
         u32Reg2Value = 0UL;
 
         /* PWM */
-        u32Reg1Value |= (pstcEmbInit->stcTmr4.stcTmr4PwmU.u32PwmState | pstcEmbInit->stcTmr4.stcTmr4PwmV.u32PwmState | \
-                         pstcEmbInit->stcTmr4.stcTmr4PwmW.u32PwmState | pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmState);
+        u32Reg1Value = (pstcEmbInit->stcTmr4.stcTmr4PwmU.u32PwmState | pstcEmbInit->stcTmr4.stcTmr4PwmV.u32PwmState | \
+                        pstcEmbInit->stcTmr4.stcTmr4PwmW.u32PwmState | pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmState);
         u32Reg2Value |= (pstcEmbInit->stcTmr4.stcTmr4PwmU.u32PwmLevel | pstcEmbInit->stcTmr4.stcTmr4PwmV.u32PwmLevel | \
                          pstcEmbInit->stcTmr4.stcTmr4PwmW.u32PwmLevel | pstcEmbInit->stcTmr4.stcTmr4PwmX.u32PwmLevel);
 
@@ -394,10 +402,13 @@ int32_t EMB_TMR4_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr4_init_t *pstcEmbIn
                          pstcEmbInit->stcPort.stcPort3.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort3.u32PortFilterState | \
                          pstcEmbInit->stcPort.stcPort4.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort4.u32PortFilterState);
 
-        u32Reg1Value |= (pstcEmbInit->u32SramEccError | pstcEmbInit->u32SramParityError | \
-                         pstcEmbInit->u32Lockup | pstcEmbInit->u32Lvd);
-        if ((pstcEmbInit->stcOsc.u32OscState != 0UL) || (pstcEmbInit->u32SramParityError != 0UL) || \
-            (pstcEmbInit->u32SramEccError != 0UL) || (pstcEmbInit->u32Lockup != 0UL) || (pstcEmbInit->u32Lvd != 0UL)) {
+        /* System */
+        u32Reg1Value |= (pstcEmbInit->stcSys.u32Osc    | pstcEmbInit->stcSys.u32SramEccError    | \
+                         pstcEmbInit->stcSys.u32Lockup | pstcEmbInit->stcSys.u32SramParityError | \
+                         pstcEmbInit->stcSys.u32Lvd);
+        if ((pstcEmbInit->stcSys.u32Osc != 0UL)          || (pstcEmbInit->stcSys.u32SramParityError != 0UL) || \
+            (pstcEmbInit->stcSys.u32SramEccError != 0UL) || (pstcEmbInit->stcSys.u32Lockup != 0UL)          || \
+            (pstcEmbInit->stcSys.u32Lvd != 0UL)) {
             u32Reg1Value |= EMB_CTL1_SYSEN;
         }
 
@@ -421,8 +432,6 @@ int32_t EMB_TMR6_StructInit(stc_emb_tmr6_init_t *pstcEmbInit)
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
     if (NULL != pstcEmbInit) {
-        /* OSC */
-        pstcEmbInit->stcOsc.u32OscState = EMB_OSC_DISABLE;
 
         /* CMP */
         pstcEmbInit->stcCmp.u32Cmp1State = EMB_CMP1_DISABLE;
@@ -447,17 +456,18 @@ int32_t EMB_TMR6_StructInit(stc_emb_tmr6_init_t *pstcEmbInit)
         pstcEmbInit->stcPort.stcPort4.u32PortLevel = EMB_PORT4_DETECT_LVL_HIGH;
         pstcEmbInit->stcPort.stcPort4.u32PortFilterDiv = EMB_PORT4_FILTER_CLK_DIV1;
         pstcEmbInit->stcPort.stcPort4.u32PortFilterState = EMB_PORT4_FILTER_DISABLE;
-
         /* PWM */
         pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmLevel = EMB_DETECT_TMR6_1_PWM_BOTH_LOW;
         pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmState = EMB_TMR6_1_PWM_DISABLE;
         pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmLevel = EMB_DETECT_TMR6_2_PWM_BOTH_LOW;
         pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmState = EMB_TMR6_2_PWM_DISABLE;
 
-        pstcEmbInit->u32SramEccError = EMB_SRAM_ECC_ERR_DISABLE;
-        pstcEmbInit->u32SramParityError = EMB_SRAM_PARITY_ERR_DISABLE;
-        pstcEmbInit->u32Lockup = EMB_LOCKUP_DISABLE;
-        pstcEmbInit->u32Lvd = EMB_LVD_DISABLE;
+        /* System */
+        pstcEmbInit->stcSys.u32Osc             = EMB_OSC_DISABLE;
+        pstcEmbInit->stcSys.u32SramEccError    = EMB_SRAM_ECC_ERR_DISABLE;
+        pstcEmbInit->stcSys.u32SramParityError = EMB_SRAM_PARITY_ERR_DISABLE;
+        pstcEmbInit->stcSys.u32Lockup          = EMB_LOCKUP_DISABLE;
+        pstcEmbInit->stcSys.u32Lvd             = EMB_LVD_DISABLE;
         i32Ret = LL_OK;
     }
 
@@ -482,7 +492,6 @@ int32_t EMB_TMR6_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr6_init_t *pstcEmbIn
 
     if (NULL != pstcEmbInit) {
         DDL_ASSERT(IS_EMB_TMR6_GROUP(EMBx));
-        DDL_ASSERT(IS_EMB_OSC_STAT(pstcEmbInit->stcOsc.u32OscState));
         DDL_ASSERT(IS_EMB_CMP1_STAT(pstcEmbInit->stcCmp.u32Cmp1State));
         DDL_ASSERT(IS_EMB_CMP2_STAT(pstcEmbInit->stcCmp.u32Cmp2State));
         DDL_ASSERT(IS_EMB_CMP3_STAT(pstcEmbInit->stcCmp.u32Cmp3State));
@@ -507,17 +516,16 @@ int32_t EMB_TMR6_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr6_init_t *pstcEmbIn
         DDL_ASSERT(IS_EMB_DETECT_TMR6_1_PWM_LVL(pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmLevel));
         DDL_ASSERT(IS_EMB_TMR6_2_PWM_STAT(pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmState));
         DDL_ASSERT(IS_EMB_DETECT_TMR6_2_PWM_LVL(pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmLevel));
-        DDL_ASSERT(IS_EMB_SRAM_ECC_ERR_STAT(pstcEmbInit->u32SramEccError));
-        DDL_ASSERT(IS_EMB_SRAM_PARITY_ERR_STAT(pstcEmbInit->u32SramParityError));
-        DDL_ASSERT(IS_EMB_LOCKUP_STAT(pstcEmbInit->u32Lockup));
-        DDL_ASSERT(IS_EMB_LVD_STAT(pstcEmbInit->u32Lvd));
+        DDL_ASSERT(IS_EMB_OSC_STAT(pstcEmbInit->stcSys.u32Osc));
+        DDL_ASSERT(IS_EMB_SRAM_ECC_ERR_STAT(pstcEmbInit->stcSys.u32SramEccError));
+        DDL_ASSERT(IS_EMB_SRAM_PARITY_ERR_STAT(pstcEmbInit->stcSys.u32SramParityError));
+        DDL_ASSERT(IS_EMB_LOCKUP_STAT(pstcEmbInit->stcSys.u32Lockup));
+        DDL_ASSERT(IS_EMB_LVD_STAT(pstcEmbInit->stcSys.u32Lvd));
 
-        /* OSC */
         u32Reg2Value = 0UL;
-        u32Reg1Value = pstcEmbInit->stcOsc.u32OscState;
 
         /* PWM */
-        u32Reg1Value |= (pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmState | pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmState);
+        u32Reg1Value = (pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmState | pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmState);
         u32Reg2Value |= (pstcEmbInit->stcTmr6.stcTmr6_1.u32PwmLevel | pstcEmbInit->stcTmr6.stcTmr6_2.u32PwmLevel);
 
         /* CMP */
@@ -534,10 +542,12 @@ int32_t EMB_TMR6_Init(CM_EMB_TypeDef *EMBx, const stc_emb_tmr6_init_t *pstcEmbIn
                          pstcEmbInit->stcPort.stcPort3.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort3.u32PortFilterState | \
                          pstcEmbInit->stcPort.stcPort4.u32PortFilterDiv | pstcEmbInit->stcPort.stcPort4.u32PortFilterState);
 
-        u32Reg1Value |= (pstcEmbInit->u32SramEccError | pstcEmbInit->u32SramParityError | \
-                         pstcEmbInit->u32Lockup | pstcEmbInit->u32Lvd);
-        if ((pstcEmbInit->stcOsc.u32OscState != 0UL) || (pstcEmbInit->u32SramParityError != 0UL) || \
-            (pstcEmbInit->u32SramEccError != 0UL) || (pstcEmbInit->u32Lockup != 0UL) || (pstcEmbInit->u32Lvd != 0UL)) {
+        u32Reg1Value |= (pstcEmbInit->stcSys.u32Osc    | pstcEmbInit->stcSys.u32SramEccError    | \
+                         pstcEmbInit->stcSys.u32Lockup | pstcEmbInit->stcSys.u32SramParityError | \
+                         pstcEmbInit->stcSys.u32Lvd);
+        if ((pstcEmbInit->stcSys.u32Osc != 0UL)          || (pstcEmbInit->stcSys.u32SramParityError != 0UL) || \
+            (pstcEmbInit->stcSys.u32SramEccError != 0UL) || (pstcEmbInit->stcSys.u32Lockup != 0UL)          || \
+            (pstcEmbInit->stcSys.u32Lvd != 0UL)) {
             u32Reg1Value |= EMB_CTL1_SYSEN;
         }
 
@@ -589,7 +599,7 @@ void EMB_IntCmd(CM_EMB_TypeDef *EMBx, uint32_t u32IntType, en_functional_state_t
 }
 
 /**
- * @brief  Get EMB flag status.
+ * @brief  Clear EMB flag status.
  * @param  [in] EMBx                    Pointer to EMB instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_EMBx:              EMB group instance register base
@@ -602,13 +612,13 @@ void EMB_ClearStatus(CM_EMB_TypeDef *EMBx, uint32_t u32Flag)
 {
     /* Check parameters */
     DDL_ASSERT(IS_EMB_GROUP(EMBx));
-    DDL_ASSERT(IS_EMB_FLAG(u32Flag));
+    DDL_ASSERT(IS_EMB_CLR_FLAG(u32Flag));
 
     SET_REG32_BIT(EMBx->STATCLR, u32Flag);
 }
 
 /**
- * @brief  Clear EMB flag status.
+ * @brief  Get EMB flag status.
  * @param  [in] EMBx                    Pointer to EMB instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_EMBx:              EMB group instance register base

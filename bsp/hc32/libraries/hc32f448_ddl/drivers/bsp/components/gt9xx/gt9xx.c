@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-12-31       CDT             First version
+   2023-12-15       CDT             Add null pointer check
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -79,7 +80,7 @@ void GT9XX_REG_Read(const stc_gt9xx_ll_t *pstcGt9xxLL, uint16_t u16Reg, uint8_t 
 {
     uint8_t au8RegAddr[2];
 
-    if ((NULL != pstcGt9xxLL) && (NULL != pstcGt9xxLL->Read)) {
+    if ((NULL != pstcGt9xxLL) && (NULL != pstcGt9xxLL->Read) && (NULL != pu8RegValue)) {
         au8RegAddr[0] = (uint8_t)((u16Reg & 0xFF00U) >> 8);
         au8RegAddr[1] = (uint8_t)(u16Reg & 0x00FFU);
         (void)pstcGt9xxLL->Read(au8RegAddr, ARRAY_SZ(au8RegAddr), pu8RegValue, u32Len);
@@ -98,7 +99,7 @@ void GT9XX_REG_Write(const stc_gt9xx_ll_t *pstcGt9xxLL, uint16_t u16Reg, const u
 {
     uint8_t au8RegAddr[2];
 
-    if ((NULL != pstcGt9xxLL) && (NULL != pstcGt9xxLL->Write)) {
+    if ((NULL != pstcGt9xxLL) && (NULL != pstcGt9xxLL->Write) && (NULL != pu8RegValue)) {
         au8RegAddr[0] = (uint8_t)((u16Reg & 0xFF00U) >> 8);
         au8RegAddr[1] = (uint8_t)(u16Reg & 0x00FFU);
         (void)pstcGt9xxLL->Write(au8RegAddr, ARRAY_SZ(au8RegAddr), pu8RegValue, u32Len);

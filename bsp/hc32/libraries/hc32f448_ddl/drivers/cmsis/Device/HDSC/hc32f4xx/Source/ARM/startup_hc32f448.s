@@ -123,13 +123,13 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     SWDT_Handler
                 DCD     TMR6_1_GCmp_Handler
                 DCD     TMR6_1_Ovf_Udf_Handler
-                DCD     TMR6_1_GDet_Handler
+                DCD     TMR6_1_Dte_Handler
                 DCD     TMR6_1_SCmp_Handler
                 DCD     TMRA_1_Ovf_Udf_Handler
                 DCD     TMRA_1_Cmp_Handler
                 DCD     TMR6_2_GCmp_Handler
                 DCD     TMR6_2_Ovf_Udf_Handler
-                DCD     TMR6_2_GDet_Handler
+                DCD     TMR6_2_Dte_Handler
                 DCD     TMR6_2_SCmp_Handler
                 DCD     TMRA_2_Ovf_Udf_Handler
                 DCD     TMRA_2_Cmp_Handler
@@ -320,13 +320,13 @@ Default_Handler PROC
                 EXPORT  SWDT_Handler                    [WEAK]
                 EXPORT  TMR6_1_GCmp_Handler             [WEAK]
                 EXPORT  TMR6_1_Ovf_Udf_Handler          [WEAK]
-                EXPORT  TMR6_1_GDet_Handler             [WEAK]
+                EXPORT  TMR6_1_Dte_Handler              [WEAK]
                 EXPORT  TMR6_1_SCmp_Handler             [WEAK]
                 EXPORT  TMRA_1_Ovf_Udf_Handler          [WEAK]
                 EXPORT  TMRA_1_Cmp_Handler              [WEAK]
                 EXPORT  TMR6_2_GCmp_Handler             [WEAK]
                 EXPORT  TMR6_2_Ovf_Udf_Handler          [WEAK]
-                EXPORT  TMR6_2_GDet_Handler             [WEAK]
+                EXPORT  TMR6_2_Dte_Handler              [WEAK]
                 EXPORT  TMR6_2_SCmp_Handler             [WEAK]
                 EXPORT  TMRA_2_Ovf_Udf_Handler          [WEAK]
                 EXPORT  TMRA_2_Cmp_Handler              [WEAK]
@@ -453,13 +453,13 @@ PWC_WKTM_Handler
 SWDT_Handler
 TMR6_1_GCmp_Handler
 TMR6_1_Ovf_Udf_Handler
-TMR6_1_GDet_Handler
+TMR6_1_Dte_Handler
 TMR6_1_SCmp_Handler
 TMRA_1_Ovf_Udf_Handler
 TMRA_1_Cmp_Handler
 TMR6_2_GCmp_Handler
 TMR6_2_Ovf_Udf_Handler
-TMR6_2_GDet_Handler
+TMR6_2_Dte_Handler
 TMR6_2_SCmp_Handler
 TMRA_2_Ovf_Udf_Handler
 TMRA_2_Cmp_Handler

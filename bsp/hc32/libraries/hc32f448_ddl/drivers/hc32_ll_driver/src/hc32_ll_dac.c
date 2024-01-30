@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Refine data validation
+   2023-09-30       CDT             Add assert for set DAC source and modify IS_AMP_CTRL_ALLOWED()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -73,7 +75,16 @@
 #define IS_VALID_RIGHT_ALIGNED_DATA(data)       (((data) & ~DAC_DATA_RIGHT_ALIGN_MASK) == 0U)
 #define IS_VALID_LEFT_ALIGNED_DATA(data)        (((data) & ~DAC_DATA_LEFT_ALIGN_MASK) == 0U)
 
-#define IS_ADP_CTRL_ALLOWED(x,src1,src2)  (((x) == DISABLE) || ((src1) == 0U) && ((src2) == 0U))
+#define IS_ADP_CTRL_ALLOWED(x,src1,src2)  (((x) == DISABLE) ||                 \
+    (((src1) == (DAC_DATA_SRC_DATAREG)) && ((src2) == (DAC_DATA_SRC_DATAREG))))
+
+#define IS_AMP_CTRL_ALLOWED(x,Ch)                                              \
+(   (READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL1 << (Ch)) == 0U) ||            \
+    ((x) == DISABLE))
+
+#define IS_SRC_SET_ALLOWED(Ch, src)                                            \
+(  (READ_REG16_BIT(DACx->DACR, DAC_DACR_DAAMP1 << (Ch)) == 0U) || ((src) == (DAC_DATA_SRC_DATAREG)))
+
 /**
  * @}
  */
@@ -123,6 +134,7 @@ void DAC_SetDataSrc(CM_DAC_TypeDef *DACx, uint16_t u16Ch, uint16_t u16Src)
     DDL_ASSERT(IS_VALID_UNIT(DACx));
     DDL_ASSERT(IS_VALID_CH(u16Ch));
     DDL_ASSERT(IS_VALID_DATA_SRC(u16Src));
+    DDL_ASSERT(IS_SRC_SET_ALLOWED(u16Ch, u16Src));
 
     MODIFY_REG16(DACx->DACR, DAC_DACR_EXTDSL1 << u16Ch, u16Src << u16Ch);
 }
@@ -194,7 +206,7 @@ void DAC_AMPCmd(CM_DAC_TypeDef *DACx, uint16_t u16Ch, en_functional_state_t enNe
     DDL_ASSERT(IS_VALID_UNIT(DACx));
     DDL_ASSERT(IS_VALID_CH(u16Ch));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
-
+    DDL_ASSERT(IS_AMP_CTRL_ALLOWED(enNewState, u16Ch));
     u16Cmd = (uint16_t)(1UL << (DAC_DACR_DAAMP1_POS + u16Ch));
 
     if (ENABLE == enNewState) {
@@ -215,13 +227,17 @@ void DAC_AMPCmd(CM_DAC_TypeDef *DACx, uint16_t u16Ch, en_functional_state_t enNe
  */
 void DAC_ADCPrioCmd(CM_DAC_TypeDef *DACx, en_functional_state_t enNewState)
 {
-    DDL_ASSERT(IS_VALID_UNIT(DACx));
-    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 #ifdef __DEBUG
-    uint16_t u16DataSrc1 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL1);
-    uint16_t u16DataSrc2 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL2);
+    uint16_t u16DataSrc1;
+    uint16_t u16DataSrc2;
 #endif
+    DDL_ASSERT(IS_VALID_UNIT(DACx));
+#ifdef __DEBUG
+    u16DataSrc1 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL1);
+    u16DataSrc2 = READ_REG16_BIT(DACx->DACR, DAC_DACR_EXTDSL2);
     DDL_ASSERT(IS_ADP_CTRL_ALLOWED(enNewState, u16DataSrc1, u16DataSrc2));
+#endif
+    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
     if (ENABLE == enNewState) {
         SET_REG16_BIT(DACx->DAADPCR, DAC_DAADPCR_ADPEN);
@@ -468,9 +484,10 @@ int32_t DAC_StructInit(stc_dac_init_t *pstcDacInit)
  * @param  [in] DACx       Pointer to the DAC peripheral register.
  *         This parameter can be a value of the following:
  *         @arg CM_DAC or CM_DACx
- * @param  [in] u16Ch      Specify the DAC channel @ref DAC_CH.
+ * @param  [in] u16Ch  Specify DAC channel @ref DAC_CH.
  *         This parameter can be a value of the following:
- *         @arg DAC_CH or DAC_CH_x
+ *         @arg DAC_CH1
+ *         @arg DAC_CH2
  * @param  [in] pstcDacInit   pointer to a stc_dac_init_t structure that contains
  *         the configuration information for the specified DAC channel.
  * @retval int32_t:
@@ -484,9 +501,8 @@ int32_t DAC_Init(CM_DAC_TypeDef *DACx, uint16_t u16Ch, const stc_dac_init_t *pst
     if (pstcDacInit != NULL) {
         DDL_ASSERT(IS_VALID_UNIT(DACx));
         DDL_ASSERT(IS_VALID_CH(u16Ch));
-        DDL_ASSERT(IS_VALID_DATA_SRC(pstcDacInit->u16Src));
         DDL_ASSERT(IS_FUNCTIONAL_STATE(pstcDacInit->enOutput));
-
+        DDL_ASSERT(IS_VALID_DATA_SRC(pstcDacInit->u16Src));
         DAC_SetDataSrc(DACx, u16Ch, pstcDacInit->u16Src);
         DAC_OutputCmd(DACx, u16Ch, pstcDacInit->enOutput);
         i32Ret = LL_OK;

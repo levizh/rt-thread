@@ -7,6 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify return type of function USART_DeInit()
+   2023-09-30       CDT             Modify USART_SmartCard_Init() for stc_usart_smartcard_init_t has modified(u32StopBit has removed)
+                                    Fix bug: did not enable MP while USART_MultiProcessor_Init()
+                                    API refined: USART_SetBaudrate()
+   2023-12-15       CDT             Add API USART_GetFuncState()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -42,6 +47,26 @@
  * Local type definitions ('typedef')
  ******************************************************************************/
 
+/**
+ * @defgroup USART_Local_Types USART Local Types
+ * @{
+ */
+
+/**
+ * @brief usart BRR division calculate structure definition
+ */
+typedef struct {
+    uint32_t u32UsartClock;             /*!< USART clock. */
+    uint32_t u32Baudrate;               /*!< USART baudrate. */
+    uint32_t u32Integer;                /*!< Pointer to BRR integer division value. */
+    uint32_t u32Fraction;               /*!< Pointer to BRR fraction division value. */
+    float32_t f32Error;                 /*!< E(%) baudrate error rate. */
+} stc_usart_brr_t;
+
+/**
+ * @}
+ */
+
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
@@ -66,7 +91,6 @@
     ((x) == CM_USART4)                  ||                                     \
     ((x) == CM_USART5)                  ||                                     \
     ((x) == CM_USART6))
-#define IS_USART_INTEGER_UNIT(x)        (!IS_USART_UNIT(x))
 #define IS_USART_SMARTCARD_UNIT(x)                                             \
 (   ((x) == CM_USART1)                  ||                                     \
     ((x) == CM_USART2)                  ||                                     \
@@ -259,17 +283,6 @@
  */
 
 /**
- * @defgroup USART_Redefine_Bits USART Redefine Bits
- * @{
- */
-#define USART_CR_SCEN                   (0x00000020UL)
-#define USART_CR_FBME                   (0x20000000UL)
-#define USART_BRR_DIV_FRACTION_MASK     (0x0000007FUL)
-/**
- * @}
- */
-
-/**
  * @defgroup USART_BRR_Division_Max USART BRR Register Division Max
  * @{
  */
@@ -365,497 +378,246 @@ static int32_t USART_WaitStatus(const CM_USART_TypeDef *USARTx,
 }
 
 /**
- * @brief  Calculate baudrate integer division for UART mode.
+ * @brief  Calculate baudrate division for UART mode.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pf32Error              E(%) baudrate error rate
+ * @param  [in] pstcUartBrr             Pointer to a stc_usart_brr_t structure.
  * @retval int32_t:
  *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
+ *           - LL_ERR:                  Set unsuccessfully.
  */
-static int32_t UART_CalculateDivInteger(const CM_USART_TypeDef *USARTx,
-                                        uint32_t u32UsartClk, uint32_t u32Baudrate,
-                                        uint32_t *pu32DivInteger, float32_t *pf32Error)
+static int32_t UART_CalculateBrr(const CM_USART_TypeDef *USARTx, stc_usart_brr_t *pstcUartBrr)
 {
     uint32_t B;
     uint32_t C;
     uint32_t OVER8;
-    uint64_t u64Temp;
-    uint32_t DIV_Integer;
-    float32_t f32Err;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
-
-    DDL_ASSERT(IS_USART_UNIT(USARTx));
-
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (C > 0UL) && (B > 0UL)) {
-        OVER8 = (0UL == READ_REG32_BIT(USARTx->CR1, USART_CR1_OVER8)) ? 0UL : 1UL;
-
-        /* UART mode baudrate integer calculation formula:      */
-        /*      B = C / (8 * (2 - OVER8) * (DIV_Integer + 1))   */
-        /*      DIV_Integer = (C / (B * 8 * (2 - OVER8))) - 1   */
-        DIV_Integer = ((((C * 10UL) / (B * 8UL * (2UL - OVER8))) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
-
-        if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
-            *pu32DivInteger = DIV_Integer;
-
-            if (NULL != pf32Error) {
-                /* E(%) = C / (8 * (2 - OVER8) * (DIV_Integer + 1) * B) - 1 */
-
-                /* u64Temp = (8 * (2 - OVER8) * (DIV_Integer + 1) * B)  */
-                u64Temp = (uint64_t)((uint64_t)8UL * ((uint64_t)2UL - (uint64_t)OVER8) * ((uint64_t)DIV_Integer + \
-                                     (uint64_t)1UL) * (uint64_t)B);
-                f32Err = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
-
-                *pf32Error = f32Err;
-            }
-
-            i32Ret = LL_OK;
-        }
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate integer division for clock synchronization mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
- */
-static int32_t ClockSync_CalculateDivInteger(const CM_USART_TypeDef *USARTx,
-        uint32_t u32UsartClk, uint32_t u32Baudrate,
-        uint32_t *pu32DivInteger, float32_t *pf32Error)
-{
-    uint32_t B;
-    uint32_t C;
-    float32_t f32Err;
-    uint64_t u64Temp;
-    uint32_t DIV_Integer;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
-
-    DDL_ASSERT(IS_USART_UNIT(USARTx));
-
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (C > 0UL) && (B > 0UL)) {
-        /* Clock sync mode baudrate integer calculation formula:    */
-        /*          B = C / (4 * (DIV_Integer + 1))                 */
-        /*          DIV_Integer = (C / (B * 4)) - 1                 */
-        DIV_Integer = ((((C * 10UL) / (B * 4UL)) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
-
-        if ((DIV_Integer > 0UL) && (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX)) {
-            *pu32DivInteger = DIV_Integer;
-
-            if (NULL != pf32Error) {
-                /* E(%) = C / (4 * (DIV_Integer + 1) * B) - 1 */
-
-                /* u64Temp = 4 * (DIV_Integer + 1) * B */
-                u64Temp = (uint64_t)((uint64_t)4U * ((uint64_t)DIV_Integer + (uint64_t)1UL) * (uint64_t)B);
-                f32Err = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
-
-                *pf32Error = f32Err;
-            }
-
-            i32Ret = LL_OK;
-        }
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate integer division for smart-card mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
- */
-static int32_t SmartCard_CalculateDivInteger(const CM_USART_TypeDef *USARTx,
-        uint32_t u32UsartClk, uint32_t u32Baudrate,
-        uint32_t *pu32DivInteger, float32_t *pf32Error)
-{
-    uint32_t B;
-    uint32_t C;
-    uint32_t BCN;
-    uint64_t u64Temp;
-    uint32_t DIV_Integer;
-    const uint16_t au16EtuClkCnts[] = {32U, 64U, 93U, 128U, 186U, 256U, 372U, 512U};
-    float32_t f32Err;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
-
-    DDL_ASSERT(IS_USART_SMARTCARD_UNIT(USARTx));
-
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (C > 0UL) && (B > 0UL)) {
-        /* Smartcard mode baudrate integer calculation formula: */
-        /*      B = C / (2 * BCN * (DIV_Integer + 1))           */
-        /*      DIV_Integer = (C / (B * 2 * BCN)) - 1           */
-
-        BCN = READ_REG32_BIT(USARTx->CR3, USART_CR3_BCN);
-        DDL_ASSERT(IS_USART_SMARTCARD_ETU_CLK(BCN));
-        BCN = au16EtuClkCnts[BCN >> USART_CR3_BCN_POS];
-
-        DIV_Integer = (((C * 10UL) / (B * BCN * 2UL) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
-
-        if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
-            *pu32DivInteger = DIV_Integer;
-
-            if (NULL != pf32Error) {
-                /* E(%) = C / (2 * BCN * (DIV_Integer + 1) * B) - 1 */
-
-                /* u64Temp = 4 * (DIV_Integer + 1) * B */
-                u64Temp = (uint64_t)((uint64_t)2UL * BCN * ((uint64_t)DIV_Integer + (uint64_t)1UL) * B);
-                f32Err = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
-
-                *pf32Error = f32Err;
-            }
-
-            i32Ret = LL_OK;
-        }
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate fraction division for UART mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
- */
-static int32_t UART_CalculateDivFraction(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-        uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-        uint32_t *pu32DivFraction, float32_t *pf32Error)
-{
-    uint32_t B;
-    uint32_t C;
-    uint32_t OVER8;
-    float32_t f32Err;
     uint64_t u64Temp;
     uint64_t u64Temp0;
     uint64_t u64Dividend;
     uint32_t DIV_Integer;
+    uint32_t DIV_IntegerMod;
     uint32_t DIV_Fraction;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
+    float32_t f32CalcError;
+    uint32_t u32FractionFlag = 1UL;
+    int32_t i32Ret = LL_ERR;
 
-    /* Check parameter */
     DDL_ASSERT(IS_USART_UNIT(USARTx));
-
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (NULL != pu32DivFraction) && (C > 0UL) && (B > 0UL)) {
-        OVER8 = (0UL == READ_REG32_BIT(USARTx->CR1, USART_CR1_OVER8)) ? 0UL : 1UL;
+    C = pstcUartBrr->u32UsartClock;
+    B = pstcUartBrr->u32Baudrate;
+    if ((C > 0UL) && (B > 0UL)) {
+        OVER8 = READ_REG32_BIT(USARTx->CR1, USART_CR1_OVER8) >> USART_CR1_OVER8_POS;
 
         /* UART mode baudrate integer calculation formula:      */
         /*      B = C / (8 * (2 - OVER8) * (DIV_Integer + 1))   */
         /*      DIV_Integer = (C / (B * 8 * (2 - OVER8))) - 1   */
-        DIV_Integer = (C / (B * 8UL * (2UL - OVER8))) - 1UL;
-
+        DIV_Integer = (C / (B * 8UL * (2UL - OVER8))) - 1U;
         if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
-            /* UART mode baudrate fraction calculation formula:                                 */
-            /*      B = C * (128 + DIV_Fraction) / (8 * (2 - OVER8) * (DIV_Integer + 1) * 256)  */
-            /*      DIV_Fraction = (256 * (8 * (2 - OVER8) * (DIV_Integer + 1) * B) / C) - 128  */
-
-            /* u64Temp = (8 * (2 - OVER8) * (DIV_Integer + 1) * B)  */
-            u64Temp0 = (uint64_t)((uint64_t)8UL * ((uint64_t)2UL - (uint64_t)OVER8) * ((uint64_t)DIV_Integer + \
-                                  (uint64_t)1UL) * (uint64_t)B);
-
-            /* u64Temp = u64Temp0 *256 + C/2 */
-            u64Temp0 = (u64Temp0 << 8);
-            u64Temp = u64Temp0 + ((uint64_t)C >> 1);    /*  +(C >> 1) for rounding off */
-            if (u64Temp > (uint64_t)(UINT32_MAX)) {
-                DIV_Fraction = (uint32_t)(u64Temp / C) - 128UL;
+            pstcUartBrr->u32Integer = DIV_Integer;
+            DIV_IntegerMod = C % (B * 8UL * (2UL - OVER8));
+            if (0UL == DIV_IntegerMod) {
+                /* Get accurate baudrate without fraction */
+                pstcUartBrr->f32Error = (float32_t)0.0F;
+                i32Ret = LL_OK;
             } else {
-                DIV_Fraction = ((uint32_t)u64Temp) / C - 128UL;
-            }
+                /* UART mode baudrate fraction calculation formula:                                 */
+                /*      B = C * (128 + DIV_Fraction) / (8 * (2 - OVER8) * (DIV_Integer + 1) * 256)  */
+                /*      DIV_Fraction = (256 * (8 * (2 - OVER8) * (DIV_Integer + 1) * B) / C) - 128  */
+                /* u64Temp = (8 * (2 - OVER8) * (DIV_Integer + 1) * B)  */
+                u64Temp0 = (uint64_t)((uint64_t)8UL * ((uint64_t)2UL - (uint64_t)OVER8) * \
+                                      ((uint64_t)DIV_Integer + (uint64_t)1UL) * (uint64_t)B);
 
-            if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
-                *pu32DivInteger = DIV_Integer;
-                *pu32DivFraction = DIV_Fraction;
-
-                if (NULL != pf32Error) {
+                /* u64Temp = u64Temp0 *256 + C/2 */
+                u64Temp0 = (u64Temp0 << 8UL);
+                u64Temp = u64Temp0 + ((uint64_t)C >> 1);    /*  +(C >> 1) for rounding off */
+                if (u64Temp > (uint64_t)(UINT32_MAX)) {
+                    DIV_Fraction = (uint32_t)(u64Temp / C) - 128UL;
+                } else {
+                    DIV_Fraction = ((uint32_t)u64Temp) / C - 128UL;
+                }
+                if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
+                    pstcUartBrr->u32Fraction = DIV_Fraction;
                     /* E(%) = C * (128 + DIV_Fraction) / (256 * (8 * (2 - OVER8) * (DIV_Integer + 1) * B)) - 1 */
                     u64Temp = u64Temp0;
                     u64Dividend = (uint64_t)C * ((uint64_t)128UL + (uint64_t)DIV_Fraction);
-                    f32Err = (float32_t)((float64_t)(u64Dividend) / (float64_t)(u64Temp)) - 1.0F;
-
-                    *pf32Error = f32Err;
+                    f32CalcError = (float32_t)((float64_t)(u64Dividend) / (float64_t)(u64Temp)) - 1.0F;
+                    pstcUartBrr->f32Error = f32CalcError;
+                    i32Ret = LL_OK;
+                } else {
+                    u32FractionFlag = 0UL;
                 }
-
+            }
+        }
+        if (0UL == u32FractionFlag) {
+            /* Integer rounding off */
+            DIV_Integer = ((((C * 10UL) / (B * 8UL * (2UL - OVER8))) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
+            if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
+                pstcUartBrr->u32Integer = DIV_Integer;
+                /* E(%) = C / (8 * (2 - OVER8) * (DIV_Integer + 1) * B) - 1 */
+                /* u64Temp = (8 * (2 - OVER8) * (DIV_Integer + 1) * B)  */
+                u64Temp = (uint64_t)((uint64_t)8UL * ((uint64_t)2UL - (uint64_t)OVER8) * ((uint64_t)DIV_Integer + \
+                                                                                          (uint64_t)1UL) * (uint64_t)B);
+                f32CalcError = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
+                pstcUartBrr->f32Error = f32CalcError;
                 i32Ret = LL_OK;
             }
         }
     }
-
     return i32Ret;
 }
 
 /**
- * @brief  Calculate baudrate fraction division for clock synchronization mode.
+ * @brief  Calculate baudrate division for UART mode.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
+ * @param  [in] pstcClockSyncBrr        Pointer to a stc_usart_brr_t structure.
  * @retval int32_t:
  *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
+ *           - LL_ERR:                  Set unsuccessfully.
  */
-static int32_t ClockSync_CalculateDivFraction(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-        uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-        uint32_t *pu32DivFraction, float32_t *pf32Error)
+static int32_t ClockSync_CalculateBrr(const CM_USART_TypeDef *USARTx, stc_usart_brr_t *pstcClockSyncBrr)
 {
     uint32_t B;
     uint32_t C;
-    float32_t f32Err;
     uint64_t u64Temp;
     uint64_t u64Dividend;
     uint32_t DIV_Integer;
+    uint32_t DIV_IntegerMod;
     uint32_t DIV_Fraction;
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
+    float32_t f32CalcError;
+    uint32_t u32FractionFlag = 1UL;
+    int32_t i32Ret = LL_ERR;
 
-    /* Check parameter */
     DDL_ASSERT(IS_USART_UNIT(USARTx));
 
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (NULL != pu32DivFraction) && (C > 0UL) && (B > 0UL)) {
+    C = pstcClockSyncBrr->u32UsartClock;
+    B = pstcClockSyncBrr->u32Baudrate;
+    if ((C > 0UL) && (B > 0UL)) {
         /* Clock sync mode baudrate integer calculation formula:    */
         /*          B = C / (4 * (DIV_Integer + 1))                 */
         /*          DIV_Integer = (C / (B * 4)) - 1                 */
         DIV_Integer = (C / (B * 4UL)) - 1UL;
+        if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
+            pstcClockSyncBrr->u32Integer = DIV_Integer;
+            DIV_IntegerMod = C % (B * 4UL);
+            if (0UL == DIV_IntegerMod) {
+                /* Get accurate baudrate without fraction */
+                pstcClockSyncBrr->f32Error = (float32_t)0.0F;
+                i32Ret = LL_OK;
+            } else {
+                /* Clock sync mode baudrate fraction calculation formula:               */
+                /*      B = C * (128 + DIV_Fraction) / (4 * (DIV_Integer + 1) * 256)    */
+                /*      DIV_Fraction = 256 * (4 * (DIV_Integer + 1) * B) / C - 128       */
 
-        if ((DIV_Integer > 0UL) && (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX)) {
-            /* Clock sync mode baudrate fraction calculation formula:               */
-            /*      B = C * (128 + DIV_Fraction) / (4 * (DIV_Integer + 1) * 256)    */
-            /*      DIV_Fraction = 256 * (4 * (DIV_Integer + 1) * B) / C - 128       */
-
-            /* u64Temp = (4 * (DIV_Integer + 1) * B)  */
-            u64Temp = (uint64_t)((uint64_t)4U * ((uint64_t)DIV_Integer + (uint64_t)1UL) * (uint64_t)B);
-
-            DIV_Fraction = (uint32_t)((256UL * u64Temp + ((uint64_t)C >> 1)) / C - 128UL);  /*  +(C >> 1) for rounding off */
-
-            if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
-                *pu32DivInteger = DIV_Integer;
-                *pu32DivFraction = DIV_Fraction;
-
-                if (NULL != pf32Error) {
+                /* u64Temp = (4 * (DIV_Integer + 1) * B)  */
+                u64Temp = (uint64_t)((uint64_t)4U * ((uint64_t)DIV_Integer + (uint64_t)1UL) * (uint64_t)B);
+                DIV_Fraction = (uint32_t)((256UL * u64Temp + ((uint64_t)C >> 1)) / C - 128UL);  /*  +(C >> 1) for rounding off */
+                if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
+                    pstcClockSyncBrr->u32Fraction = DIV_Fraction;
                     /* E(%) = C * (128 + DIV_Fraction) / (4 * (DIV_Integer + 1) * B * 256) - 1 */
                     u64Temp *= (uint64_t)256UL;
                     u64Dividend = (uint64_t)C * ((uint64_t)128UL + (uint64_t)DIV_Fraction);
-                    f32Err = (float32_t)((float64_t)(u64Dividend) / (float64_t)(u64Temp)) - 1.0F;
-
-                    *pf32Error = f32Err;
+                    f32CalcError = (float32_t)((float64_t)(u64Dividend) / (float64_t)(u64Temp)) - 1.0F;
+                    pstcClockSyncBrr->f32Error = f32CalcError;
+                    i32Ret = LL_OK;
+                } else {
+                    u32FractionFlag = 0UL;
                 }
-
+            }
+        }
+        if (0UL == u32FractionFlag) {
+            /* Integer rounding off */
+            DIV_Integer = ((((C * 10UL) / (B * 4UL)) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
+            if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
+                pstcClockSyncBrr->u32Integer = DIV_Integer;
+                /* E(%) = C / (4 * (DIV_Integer + 1) * B) - 1 */
+                /* u64Temp = 4 * (DIV_Integer + 1) * B */
+                u64Temp = (uint64_t)((uint64_t)4U * ((uint64_t)DIV_Integer + (uint64_t)1UL) * (uint64_t)B);
+                f32CalcError = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
+                pstcClockSyncBrr->f32Error = f32CalcError;
                 i32Ret = LL_OK;
             }
         }
     }
-
     return i32Ret;
 }
 
 /**
- * @brief  Calculate baudrate fraction division for clock synchronization mode.
+ * @brief  Calculate baudrate division for UART mode.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
  *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
+ * @param  [in] pstcSmartCardBrr            Pointer to a stc_usart_brr_t structure.
  * @retval int32_t:
  *           - LL_OK:                   Set successfully.
- *           - LL_ERR_INVD_PARAM:       Set unsuccessfully.
+ *           - LL_ERR:                  Set unsuccessfully.
  */
-static int32_t SmartCard_CalculateDivFraction(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-        uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-        uint32_t *pu32DivFraction, float32_t *pf32Error)
+static int32_t SmartCard_CalculateBrr(const CM_USART_TypeDef *USARTx, stc_usart_brr_t *pstcSmartCardBrr)
 {
     uint32_t B;
     uint32_t C;
     uint32_t BCN;
-    float32_t f32Err;
     uint64_t u64Temp;
     uint64_t u64Dividend;
     uint32_t DIV_Integer;
+    uint32_t DIV_IntegerMod;
     uint32_t DIV_Fraction;
+    float32_t f32CalcError;
     const uint16_t au16EtuClkCnts[] = {32U, 64U, 93U, 128U, 186U, 256U, 372U, 512U};
-    int32_t i32Ret = LL_ERR_INVD_PARAM;
+    int32_t i32Ret = LL_ERR;
 
-    DDL_ASSERT(IS_USART_UNIT(USARTx));
+    DDL_ASSERT(IS_USART_SMARTCARD_UNIT(USARTx));
 
-    C = u32UsartClk;
-    B = u32Baudrate;
-
-    if ((NULL != pu32DivInteger) && (NULL != pu32DivFraction) && (C > 0UL) && (B > 0UL)) {
+    C = pstcSmartCardBrr->u32UsartClock;
+    B = pstcSmartCardBrr->u32Baudrate;
+    if ((C > 0UL) && (B > 0UL)) {
         BCN = READ_REG32_BIT(USARTx->CR3, USART_CR3_BCN);
         DDL_ASSERT(IS_USART_SMARTCARD_ETU_CLK(BCN));
         BCN = au16EtuClkCnts[BCN >> USART_CR3_BCN_POS];
-
         /* Smartcard mode baudrate integer calculation formula: */
         /*      B = C / (2 * BCN * (DIV_Integer + 1))           */
         /*      DIV_Integer = (C / (B * 2 * BCN)) - 1           */
         DIV_Integer = (C / (B * BCN * 2UL)) - 1UL;
-
         if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
-            /* Smartcard mode baudrate fraction calculation formula:                        */
-            /*      B = C * (128 + DIV_Fraction) / ((2 * BCN) * (DIV_Integer + 1) * 256)    */
-            /*      DIV_Fraction = (256 * (2 * BCN * (DIV_Integer + 1) * B) / C) - 128      */
+            pstcSmartCardBrr->u32Integer = DIV_Integer;
+            DIV_IntegerMod = C % (B * BCN * 2UL);
+            if (0UL == DIV_IntegerMod) {
+                /* Get accurate baudrate without fraction */
+                pstcSmartCardBrr->f32Error = (float32_t)0.0F;
+                i32Ret = LL_OK;
+            } else {
+                /* Smartcard mode baudrate fraction calculation formula:                        */
+                /*      B = C * (128 + DIV_Fraction) / ((2 * BCN) * (DIV_Integer + 1) * 256)    */
+                /*      DIV_Fraction = (256 * (2 * BCN * (DIV_Integer + 1) * B) / C) - 128      */
 
-            /* u64Temp = (2 * BCN * (DIV_Integer + 1) * B)  */
-            u64Temp = (uint64_t)((uint64_t)2UL * BCN * ((uint64_t)DIV_Integer + (uint64_t)1UL) * B);
-
-            DIV_Fraction = (uint32_t)((256UL * u64Temp + ((uint64_t)C >> 1)) / C - 128UL);  /*  +(C >> 1) for rounding off */
-            if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
-                *pu32DivInteger = DIV_Integer;
-                *pu32DivFraction = DIV_Fraction;
-
-                if (NULL != pf32Error) {
+                /* u64Temp = (2 * BCN * (DIV_Integer + 1) * B)  */
+                u64Temp = (uint64_t)((uint64_t)2UL * BCN * ((uint64_t)DIV_Integer + (uint64_t)1UL) * B);
+                DIV_Fraction = (uint32_t)((256UL * u64Temp + ((uint64_t)C >> 1)) / C - 128UL);  /*  +(C >> 1) for rounding off */
+                if (DIV_Fraction <= USART_BRR_DIV_FRACTION_MAX) {
+                    pstcSmartCardBrr->u32Fraction = DIV_Fraction;
                     /* E(%) = C * (128 + DIV_Fraction) / (4 * (DIV_Integer + 1) * B * 256) - 1 */
                     u64Temp *= (uint64_t)256UL;
                     u64Dividend = (uint64_t)C * ((uint64_t)128UL + (uint64_t)DIV_Fraction);
-                    f32Err = (float32_t)((float64_t)u64Dividend / (float64_t)(u64Temp)) - 1.0F;
-
-                    *pf32Error = f32Err;
+                    f32CalcError = (float32_t)((float64_t)u64Dividend / (float64_t)(u64Temp)) - 1.0F;
+                    pstcSmartCardBrr->f32Error = f32CalcError;
+                    i32Ret = LL_OK;
                 }
+            }
+        }
+        if (LL_ERR == i32Ret) {
+            /* Integer rounding off */
+            DIV_Integer = (((C * 10UL) / (B * BCN * 2UL) + 5UL) / 10UL) - 1UL; /*  +5UL for rounding off */
+            if (DIV_Integer <= USART_BRR_DIV_INTEGER_MAX) {
+                pstcSmartCardBrr->u32Integer = DIV_Integer;
+                /* E(%) = C / (2 * BCN * (DIV_Integer + 1) * B) - 1 */
+                /* u64Temp = 4 * (DIV_Integer + 1) * B */
+                u64Temp = (uint64_t)((uint64_t)2UL * BCN * ((uint64_t)DIV_Integer + (uint64_t)1UL) * B);
+                f32CalcError = (float32_t)((float64_t)C / (float64_t)u64Temp) - 1.0F;
+                pstcSmartCardBrr->f32Error = f32CalcError;
                 i32Ret = LL_OK;
             }
         }
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate fraction division for UART mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR:                  Set unsuccessfully.
- *           - LL_ERR_INVD_PARAM:       The parameters invalid.
- */
-static int32_t UART_CalculateDiv(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-                                 uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-                                 uint32_t *pu32DivFraction, float32_t *pf32Error)
-{
-    int32_t i32Ret = LL_ERR;
-
-    if (!IS_USART_INTEGER_UNIT(USARTx)) {
-        i32Ret = UART_CalculateDivFraction(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pu32DivFraction, pf32Error);
-    }
-
-    if (LL_OK != i32Ret) {
-        i32Ret = UART_CalculateDivInteger(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pf32Error);
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate fraction division for UART mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR:                  Set unsuccessfully.
- *           - LL_ERR_INVD_PARAM:       The parameters invalid.
- */
-static int32_t ClockSync_CalculateDiv(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-                                      uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-                                      uint32_t *pu32DivFraction, float32_t *pf32Error)
-{
-    int32_t i32Ret = LL_ERR;
-
-    if (!IS_USART_INTEGER_UNIT(USARTx)) {
-        i32Ret = ClockSync_CalculateDivFraction(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pu32DivFraction, pf32Error);
-    }
-
-    if (LL_OK != i32Ret) {
-        i32Ret = ClockSync_CalculateDivInteger(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pf32Error);
-    }
-
-    return i32Ret;
-}
-
-/**
- * @brief  Calculate baudrate fraction division for UART mode.
- * @param  [in] USARTx                  Pointer to USART instance register base
- *         This parameter can be one of the following values:
- *           @arg CM_USARTx:            USART unit instance register base
- * @param  [in] u32UsartClk             USART clock
- * @param  [in] u32Baudrate             UART baudrate
- * @param  [out] pu32DivInteger         Pointer to BRR integer division value
- * @param  [out] pu32DivFraction        Pointer to BRR fraction division value
- * @param  [out] pf32Error              E(%) baudrate error rate
- * @retval int32_t:
- *           - LL_OK:                   Set successfully.
- *           - LL_ERR:                  Set unsuccessfully.
- *           - LL_ERR_INVD_PARAM:       The parameters invalid.
- */
-static int32_t SmartCard_CalculateDiv(const CM_USART_TypeDef *USARTx, uint32_t u32UsartClk,
-                                      uint32_t u32Baudrate, uint32_t *pu32DivInteger,
-                                      uint32_t *pu32DivFraction, float32_t *pf32Error)
-{
-    int32_t i32Ret = LL_ERR;
-
-    if (!IS_USART_INTEGER_UNIT(USARTx)) {
-        i32Ret = SmartCard_CalculateDivFraction(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pu32DivFraction, pf32Error);
-    }
-
-    if (LL_OK != i32Ret) {
-        i32Ret = SmartCard_CalculateDivInteger(USARTx, u32UsartClk, u32Baudrate, pu32DivInteger, pf32Error);
     }
     return i32Ret;
 }
@@ -989,7 +751,7 @@ int32_t USART_ClockSync_Init(CM_USART_TypeDef *USARTx,
         if (USART_CLK_SRC_INTERNCLK == pstcClockSyncInit->u32ClockSrc) {
             u32CR2Value |= USART_CK_OUTPUT_ENABLE;
         }
-        u32CR3Value = (pstcClockSyncInit->u32HWFlowControl == USART_HW_FLOWCTRL_CTS) ? USART_HW_FLOWCTRL_CTS : 0UL;
+        u32CR3Value = pstcClockSyncInit->u32HWFlowControl;
 
         /* Set control register: CR1/CR2/CR3 */
         WRITE_REG32(USARTx->CR1, u32CR1Value);
@@ -1072,9 +834,9 @@ int32_t USART_MultiProcessor_Init(CM_USART_TypeDef *USARTx,
 
         u32CR1Value = (pstcMultiProcessorInit->u32DataWidth | pstcMultiProcessorInit->u32OverSampleBit | \
                        pstcMultiProcessorInit->u32FirstBit  | pstcMultiProcessorInit->u32StartBitPolarity);
-        u32CR2Value = (USART_CR2_RST_VALUE | pstcMultiProcessorInit->u32ClockSrc | \
+        u32CR2Value = (USART_CR2_RST_VALUE | USART_CR2_MPE | pstcMultiProcessorInit->u32ClockSrc | \
                        pstcMultiProcessorInit->u32CKOutput | pstcMultiProcessorInit->u32StopBit);
-        u32CR3Value = (pstcMultiProcessorInit->u32HWFlowControl == USART_HW_FLOWCTRL_CTS) ? USART_HW_FLOWCTRL_CTS : 0UL;
+        u32CR3Value = pstcMultiProcessorInit->u32HWFlowControl;
 
         /* Set control register: CR1/CR2/CR3 */
         WRITE_REG32(USARTx->CR1, u32CR1Value);
@@ -1160,7 +922,7 @@ int32_t USART_UART_Init(CM_USART_TypeDef *USARTx, const stc_usart_uart_init_t *p
                        pstcUartInit->u32OverSampleBit | pstcUartInit->u32StartBitPolarity);
         u32CR2Value = (USART_CR2_RST_VALUE | pstcUartInit->u32ClockSrc | \
                        pstcUartInit->u32CKOutput | pstcUartInit->u32StopBit);
-        u32CR3Value = (pstcUartInit->u32HWFlowControl == USART_HW_FLOWCTRL_CTS) ? USART_HW_FLOWCTRL_CTS : 0UL;
+        u32CR3Value = pstcUartInit->u32HWFlowControl;
 
         /* Set control register: CR1/CR2/CR3 */
         WRITE_REG32(USARTx->CR1, u32CR1Value);
@@ -1225,6 +987,10 @@ int32_t USART_LIN_StructInit(stc_usart_lin_init_t *pstcLinInit)
         pstcLinInit->u32CKOutput = USART_CK_OUTPUT_DISABLE;
         pstcLinInit->u32Baudrate = USART_DEFAULT_BAUDRATE;
         pstcLinInit->u32OverSampleBit = USART_OVER_SAMPLE_16BIT;
+        pstcLinInit->u32BmcClockDiv = USART_LIN_BMC_CLK_DIV1;
+        pstcLinInit->u32DetectBreakLen = USART_LIN_DETECT_BREAK_10BIT;
+        pstcLinInit->u32SendBreakLen = USART_LIN_SEND_BREAK_10BIT;
+        pstcLinInit->u32SendBreakMode = USART_LIN_SEND_BREAK_MD_SBK;
         i32Ret = LL_OK;
     }
 
@@ -1304,7 +1070,6 @@ int32_t USART_SmartCard_StructInit(stc_usart_smartcard_init_t *pstcSmartCardInit
         pstcSmartCardInit->u32ClockDiv = USART_CLK_DIV1;
         pstcSmartCardInit->u32CKOutput = USART_CK_OUTPUT_DISABLE;
         pstcSmartCardInit->u32Baudrate = USART_DEFAULT_BAUDRATE;
-        pstcSmartCardInit->u32StopBit = USART_STOPBIT_1BIT;
         pstcSmartCardInit->u32FirstBit = USART_FIRST_BIT_LSB;
         i32Ret = LL_OK;
     }
@@ -1335,10 +1100,9 @@ int32_t USART_SmartCard_Init(CM_USART_TypeDef *USARTx,
         DDL_ASSERT(IS_USART_CK_OUTPUT(pstcSmartCardInit->u32CKOutput));
         DDL_ASSERT(IS_USART_CLK_DIV(pstcSmartCardInit->u32ClockDiv));
         DDL_ASSERT(IS_USART_FIRST_BIT(pstcSmartCardInit->u32FirstBit));
-        DDL_ASSERT(IS_USART_STOPBIT(pstcSmartCardInit->u32StopBit));
 
         u32CR1Value = (pstcSmartCardInit->u32FirstBit | USART_CR1_PCE | USART_CR1_SBS);
-        u32CR2Value = (pstcSmartCardInit->u32CKOutput | pstcSmartCardInit->u32StopBit | USART_CR2_RST_VALUE);
+        u32CR2Value = (pstcSmartCardInit->u32CKOutput | USART_CR2_RST_VALUE);
         u32CR3Value = USART_CR3_SCEN | USART_SC_ETU_CLK372;
 
         /* Set control register: CR1/CR2/CR3 */
@@ -1436,6 +1200,44 @@ void USART_FuncCmd(CM_USART_TypeDef *USARTx, uint32_t u32Func, en_functional_sta
 }
 
 /**
+ * @brief  Enable/disable USART Transmit/Receive Function.
+ * @param  [in] USARTx                  Pointer to USART instance register base
+ *         This parameter can be one of the following values:
+ *           @arg CM_USARTx:            USART unit instance register base
+ * @param  [in] u32Func                 USART function type
+ *         This parameter can be any composed value of the macros group @ref USART_Function.
+ * @retval An @ref en_functional_state_t enumeration value.
+ *           - ENABLE: DVP capture started
+ *           - DISABLE: DVP capture stopped
+ * @note   In clock synchronization mode, the bit TE or RE of register USART_CR can only be
+ *         written to 1 when TE = 0 and RE = 0 (transmit and receive disabled)
+ */
+en_functional_state_t USART_GetFuncState(CM_USART_TypeDef *USARTx, uint32_t u32Func)
+{
+    uint32_t u32BaseFunc;
+    en_functional_state_t enNewState = DISABLE;
+
+    DDL_ASSERT(IS_USART_UNIT(USARTx));
+    DDL_ASSERT(IS_USART_FUNC(u32Func));
+    DDL_ASSERT(IS_USART_LIN_FUNC(USARTx, u32Func));
+    DDL_ASSERT(IS_USART_TIMEOUT_FUNC(USARTx, u32Func));
+
+    u32BaseFunc = (u32Func & 0xFFFFUL);
+    if (0UL != u32BaseFunc) {
+        if (0UL != READ_REG32_BIT(USARTx->CR1, u32BaseFunc)) {
+            enNewState = ENABLE;
+        }
+    }
+    u32BaseFunc = u32Func >> USART_LIN_FUNC_OFFSET;
+    if (0UL != u32BaseFunc) {
+        if (0UL != READ_REG32_BIT(USARTx->CR2, u32BaseFunc)) {
+            enNewState = ENABLE;
+        }
+    }
+    return enNewState;
+}
+
+/**
  * @brief  Get USART flag.
  * @param  [in] USARTx                  Pointer to USART instance register base
  *         This parameter can be one of the following values:
@@ -1473,6 +1275,19 @@ void USART_ClearStatus(CM_USART_TypeDef *USARTx, uint32_t u32Flag)
     /* Timeout flag */
     if ((u32Flag & USART_FLAG_RX_TIMEOUT) > 0UL) {
         SET_REG32_BIT(USARTx->CR1, USART_CR1_CRTOF);
+    }
+
+    /* LIN flag */
+    if ((u32Flag & USART_FLAG_LIN_ERR) > 0UL) {
+        SET_REG32_BIT(USARTx->CR1, USART_CR1_CBE);
+    }
+
+    if ((u32Flag & USART_FLAG_LIN_WKUP) > 0UL) {
+        SET_REG32_BIT(USARTx->CR1, USART_CR1_CWKUP);
+    }
+
+    if ((u32Flag & USART_FLAG_LIN_BREAK) > 0UL) {
+        SET_REG32_BIT(USARTx->CR1, USART_CR1_CLBD);
     }
 
     /* Transmission complete flag */
@@ -1801,38 +1616,47 @@ void USART_WriteID(CM_USART_TypeDef *USARTx, uint16_t u16ID)
 int32_t USART_SetBaudrate(CM_USART_TypeDef *USARTx, uint32_t u32Baudrate, float32_t *pf32Error)
 {
     uint32_t u32Mode;
-    uint32_t u32UsartClock;
-    uint32_t u32Integer = 0UL;
-    uint32_t u32Fraction = 0xFFFFUL;
+    stc_usart_brr_t stcUsartBrr;
     int32_t i32Ret;
 
     DDL_ASSERT(u32Baudrate > 0UL);
     DDL_ASSERT(IS_USART_UNIT(USARTx));
 
     /* Get USART clock frequency */
-    u32UsartClock = USART_GetUsartClockFreq(USARTx);
+    stcUsartBrr.u32UsartClock = USART_GetUsartClockFreq(USARTx);
+    stcUsartBrr.u32Baudrate   = u32Baudrate;
+    stcUsartBrr.f32Error      = 0.0F;
+    stcUsartBrr.u32Fraction   = 0xFFUL;
 
-    /* Calculate baudrate for BRR */
+    /* Get usart mode */
     u32Mode = READ_REG32_BIT(USARTx->CR1, USART_CR1_MS);
+    /* Calculate baudrate for BRR */
     if (0UL == u32Mode) {
-        u32Mode = READ_REG32_BIT(USARTx->CR3, USART_CR_SCEN);
-        if (0UL == u32Mode) {
-            i32Ret = UART_CalculateDiv(USARTx, u32UsartClock, u32Baudrate, &u32Integer, &u32Fraction, pf32Error);
+        if (0UL == READ_REG32_BIT(USARTx->CR3, USART_CR3_SCEN)) {
+            /* uart mode */
+            i32Ret = UART_CalculateBrr(USARTx, &stcUsartBrr);
         } else {
-            /* Smartcard function */
-            i32Ret = SmartCard_CalculateDiv(USARTx, u32UsartClock, u32Baudrate, &u32Integer, &u32Fraction, pf32Error);
+            /* Smart_card function */
+            i32Ret = SmartCard_CalculateBrr(USARTx, &stcUsartBrr);
         }
     } else {
-        i32Ret = ClockSync_CalculateDiv(USARTx, u32UsartClock, u32Baudrate, &u32Integer, &u32Fraction, pf32Error);
+        /* Clock sync mode */
+        i32Ret = ClockSync_CalculateBrr(USARTx, &stcUsartBrr);
     }
 
     if (LL_OK == i32Ret) {
-        MODIFY_REG32(USARTx->BRR, USART_BRR_DIV_INTEGER, (u32Integer << USART_BRR_DIV_INTEGER_POS));
+        /* Set BRR value(integer & fraction) */
+        MODIFY_REG32(USARTx->BRR, (USART_BRR_DIV_INTEGER | USART_BRR_DIV_FRACTION), \
+                     (stcUsartBrr.u32Fraction | (stcUsartBrr.u32Integer << USART_BRR_DIV_INTEGER_POS)));
 
-        if (u32Fraction <= USART_BRR_DIV_FRACTION_MASK) {
-            SET_REG32_BIT(USARTx->CR1, USART_CR_FBME);
-            MODIFY_REG32(USARTx->BRR, USART_BRR_DIV_FRACTION_MASK, u32Fraction);
+        if (0xFFUL != stcUsartBrr.u32Fraction) {
+            SET_REG32_BIT(USARTx->CR1, USART_CR1_FBME);
         }
+    } else {
+        /* rsvd */
+    }
+    if (NULL != pf32Error) {
+        *pf32Error = stcUsartBrr.f32Error;
     }
 
     return i32Ret;

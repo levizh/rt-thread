@@ -7,6 +7,7 @@
    Date             Author          Notes
    2022-03-31       CDT             First version
    2022-12-31       CDT             Compliant LCD drive IC: NT35310
+   2023-12-15       CDT             Add null pointer check
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -1247,39 +1248,41 @@ void NT35510_Init(stc_lcd_controller_t *pstcLCD)
 {
     uint16_t u16ID;
 
-    /* NOP */
-    NT35510_WriteRegData(pstcLCD, 0x0000U, 0x00U);
+    if (NULL != pstcLCD) {
+        /* NOP */
+        NT35510_WriteRegData(pstcLCD, 0x0000U, 0x00U);
 
-    /* Read ID */
-    u16ID = NT35510_ReadID(pstcLCD);
+        /* Read ID */
+        u16ID = NT35510_ReadID(pstcLCD);
 
-    if (0x5310U == u16ID) {
-        LCD_NT35310_Config(pstcLCD);
-        m_stcLcdDevice.u16Width   = 320U;
-        m_stcLcdDevice.u16Height  = 480U;
-        m_stcLcdDevice.u16WRamCmd = 0x2CU;
-        m_stcLcdDevice.u16SetXCmd = 0x2AU;
-        m_stcLcdDevice.u16SetYCmd = 0x2BU;
-    } else if (0x5510U == u16ID) {
-        LCD_NT35510_Config(pstcLCD);
-        m_stcLcdDevice.u16Width   = 480U;
-        m_stcLcdDevice.u16Height  = 800U;
-        m_stcLcdDevice.u16WRamCmd = 0x2C00U;
-        m_stcLcdDevice.u16SetXCmd = 0x2A00U;
-        m_stcLcdDevice.u16SetYCmd = 0x2B00U;
-    } else {
-        /* Unsupported LCD */
+        if (0x5310U == u16ID) {
+            LCD_NT35310_Config(pstcLCD);
+            m_stcLcdDevice.u16Width   = 320U;
+            m_stcLcdDevice.u16Height  = 480U;
+            m_stcLcdDevice.u16WRamCmd = 0x2CU;
+            m_stcLcdDevice.u16SetXCmd = 0x2AU;
+            m_stcLcdDevice.u16SetYCmd = 0x2BU;
+        } else if (0x5510U == u16ID) {
+            LCD_NT35510_Config(pstcLCD);
+            m_stcLcdDevice.u16Width   = 480U;
+            m_stcLcdDevice.u16Height  = 800U;
+            m_stcLcdDevice.u16WRamCmd = 0x2C00U;
+            m_stcLcdDevice.u16SetXCmd = 0x2A00U;
+            m_stcLcdDevice.u16SetYCmd = 0x2B00U;
+        } else {
+            /* Unsupported LCD */
+        }
+
+        m_stcLcdDevice.u16ID = u16ID;
+
+        NT35510_SetDisplayDir(pstcLCD, LCD_DISPLAY_VERTICAL);
+
+        /* Set cursor */
+        NT35510_SetCursor(pstcLCD, 0U, 0U);
+
+        /* Prepare to write to LCD RAM */
+        NT35510_PrepareWriteRAM(pstcLCD);
     }
-
-    m_stcLcdDevice.u16ID = u16ID;
-
-    NT35510_SetDisplayDir(pstcLCD, LCD_DISPLAY_VERTICAL);
-
-    /* Set cursor */
-    NT35510_SetCursor(pstcLCD, 0U, 0U);
-
-    /* Prepare to write to LCD RAM */
-    NT35510_PrepareWriteRAM(pstcLCD);
 }
 
 /**
@@ -1290,7 +1293,9 @@ void NT35510_Init(stc_lcd_controller_t *pstcLCD)
  */
 void NT35510_WriteData(stc_lcd_controller_t *pstcLCD, uint16_t u16Data)
 {
-    pstcLCD->u16RAM = u16Data;
+    if (NULL != pstcLCD) {
+        pstcLCD->u16RAM = u16Data;
+    }
 }
 
 /**
@@ -1301,7 +1306,9 @@ void NT35510_WriteData(stc_lcd_controller_t *pstcLCD, uint16_t u16Data)
  */
 void NT35510_WriteReg(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg)
 {
-    pstcLCD->u16REG = u16Reg;
+    if (NULL != pstcLCD) {
+        pstcLCD->u16REG = u16Reg;
+    }
 }
 
 /**
@@ -1311,7 +1318,13 @@ void NT35510_WriteReg(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg)
  */
 uint16_t NT35510_ReadData(stc_lcd_controller_t *pstcLCD)
 {
-    return pstcLCD->u16RAM;
+    uint16_t u16Val = 0U;
+
+    if (NULL != pstcLCD) {
+        u16Val = pstcLCD->u16RAM;
+    }
+
+    return u16Val;
 }
 
 /**
@@ -1323,11 +1336,12 @@ uint16_t NT35510_ReadData(stc_lcd_controller_t *pstcLCD)
  */
 void NT35510_WriteRegData(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg, uint16_t u16Data)
 {
-    /* Write 16-bit index */
-    pstcLCD->u16REG = u16Reg;
-
-    /* Write 16-bit Reg */
-    pstcLCD->u16RAM = u16Data;
+    if (NULL != pstcLCD) {
+        /* Write 16-bit index */
+        pstcLCD->u16REG = u16Reg;
+        /* Write 16-bit Reg */
+        pstcLCD->u16RAM = u16Data;
+    }
 }
 
 /**
@@ -1338,10 +1352,15 @@ void NT35510_WriteRegData(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg, uint16
  */
 uint16_t NT35510_ReadRegData(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg)
 {
-    /* Write 16-bit index*/
-    pstcLCD->u16REG = u16Reg;
+    uint16_t u16Val = 0U;
 
-    return pstcLCD->u16RAM;
+    if (NULL != pstcLCD) {
+        /* Write 16-bit index*/
+        pstcLCD->u16REG = u16Reg;
+        u16Val = pstcLCD->u16RAM;
+    }
+
+    return u16Val;
 }
 
 /**
@@ -1351,43 +1370,45 @@ uint16_t NT35510_ReadRegData(stc_lcd_controller_t *pstcLCD, uint16_t u16Reg)
  */
 uint16_t NT35510_ReadID(stc_lcd_controller_t *pstcLCD)
 {
-    uint16_t u16ID;
+    uint16_t u16ID = 0U;
 
-    /* Try to read ID: 0x9341 */
-    NT35510_WriteReg(pstcLCD, 0xD3U);
-    (void)NT35510_ReadData(pstcLCD);                /* dummy read */
-    (void)NT35510_ReadData(pstcLCD);                /* read: 0x00 */
-    u16ID  = NT35510_ReadData(pstcLCD) << 8;        /* read: 0x93 */
-    u16ID |= NT35510_ReadData(pstcLCD);             /* read: 0x41 */
-    if (u16ID != 0x9341U) {
-        /* Try to read ID: 0x8552 */
-        NT35510_WriteReg(pstcLCD, 0x04U);
-        (void)NT35510_ReadData(pstcLCD);            /* dummy read */
-        (void)NT35510_ReadData(pstcLCD);            /* read: 0x85 */
-        u16ID  = NT35510_ReadData(pstcLCD) << 8;    /* read: 0x85 */
-        u16ID |= NT35510_ReadData(pstcLCD);         /* read: 0x41 */
-        if (u16ID == 0x8552U) {
-            u16ID = 0x7789U;                        /* ID convert to: 0x7789 */
-        } else {
-            /* Try to read ID: 0x5310 (NT35310) */
-            NT35510_WriteReg(pstcLCD, 0xD4U);
+    if (NULL != pstcLCD) {
+        /* Try to read ID: 0x9341 */
+        NT35510_WriteReg(pstcLCD, 0xD3U);
+        (void)NT35510_ReadData(pstcLCD);                /* dummy read */
+        (void)NT35510_ReadData(pstcLCD);                /* read: 0x00 */
+        u16ID  = NT35510_ReadData(pstcLCD) << 8;        /* read: 0x93 */
+        u16ID |= NT35510_ReadData(pstcLCD);             /* read: 0x41 */
+        if (u16ID != 0x9341U) {
+            /* Try to read ID: 0x8552 */
+            NT35510_WriteReg(pstcLCD, 0x04U);
             (void)NT35510_ReadData(pstcLCD);            /* dummy read */
-            (void)NT35510_ReadData(pstcLCD);            /* read: 0x01 */
-            u16ID  = NT35510_ReadData(pstcLCD) << 8;    /* read: 0x53 */
-            u16ID |= NT35510_ReadData(pstcLCD);         /* read: 0x10 */
-            if (u16ID != 0x5310U) {
-                /* Try to read ID: 0x008000 (NT35510) */
-                NT35510_WriteReg(pstcLCD, 0xDA00);
-                (void)NT35510_ReadData(pstcLCD);        /* read 0xDA00: 0x0000 */
-                NT35510_WriteReg(pstcLCD, 0xDB00U);
-                u16ID = NT35510_ReadData(pstcLCD) << 8; /* read 0xDB00: 0x0080 */
-                NT35510_WriteReg(pstcLCD, 0xDC00U);
-                u16ID |= NT35510_ReadData(pstcLCD);     /* read 0xDC00: 0x0000 */
-                /* Read ID: ID=008000H (5510H) */
-                if (u16ID == 0x008000UL) {
-                    u16ID = 0x5510U;                    /* ID convert to: 0x5510 */
-                } else {
-                    u16ID = 0U;                         /* Unsupported LCD */
+            (void)NT35510_ReadData(pstcLCD);            /* read: 0x85 */
+            u16ID  = NT35510_ReadData(pstcLCD) << 8;    /* read: 0x85 */
+            u16ID |= NT35510_ReadData(pstcLCD);         /* read: 0x41 */
+            if (u16ID == 0x8552U) {
+                u16ID = 0x7789U;                        /* ID convert to: 0x7789 */
+            } else {
+                /* Try to read ID: 0x5310 (NT35310) */
+                NT35510_WriteReg(pstcLCD, 0xD4U);
+                (void)NT35510_ReadData(pstcLCD);            /* dummy read */
+                (void)NT35510_ReadData(pstcLCD);            /* read: 0x01 */
+                u16ID  = NT35510_ReadData(pstcLCD) << 8;    /* read: 0x53 */
+                u16ID |= NT35510_ReadData(pstcLCD);         /* read: 0x10 */
+                if (u16ID != 0x5310U) {
+                    /* Try to read ID: 0x008000 (NT35510) */
+                    NT35510_WriteReg(pstcLCD, 0xDA00);
+                    (void)NT35510_ReadData(pstcLCD);        /* read 0xDA00: 0x0000 */
+                    NT35510_WriteReg(pstcLCD, 0xDB00U);
+                    u16ID = NT35510_ReadData(pstcLCD) << 8; /* read 0xDB00: 0x0080 */
+                    NT35510_WriteReg(pstcLCD, 0xDC00U);
+                    u16ID |= NT35510_ReadData(pstcLCD);     /* read 0xDC00: 0x0000 */
+                    /* Read ID: ID=008000H (5510H) */
+                    if (u16ID == 0x008000UL) {
+                        u16ID = 0x5510U;                    /* ID convert to: 0x5510 */
+                    } else {
+                        u16ID = 0U;                         /* Unsupported LCD */
+                    }
                 }
             }
         }
@@ -1403,10 +1424,12 @@ uint16_t NT35510_ReadID(stc_lcd_controller_t *pstcLCD)
  */
 void NT35510_DisplayOn(stc_lcd_controller_t *pstcLCD)
 {
-    if (m_stcLcdDevice.u16ID == 0x5510U) {
-        NT35510_WriteReg(pstcLCD, 0x2900U);     /* 5510 */
-    } else {
-        NT35510_WriteReg(pstcLCD, 0x29U);       /* 9341/5310/1963/7789 */
+    if (NULL != pstcLCD) {
+        if (m_stcLcdDevice.u16ID == 0x5510U) {
+            NT35510_WriteReg(pstcLCD, 0x2900U);     /* 5510 */
+        } else {
+            NT35510_WriteReg(pstcLCD, 0x29U);       /* 9341/5310/1963/7789 */
+        }
     }
 }
 
@@ -1417,10 +1440,12 @@ void NT35510_DisplayOn(stc_lcd_controller_t *pstcLCD)
  */
 void NT35510_DisplayOff(stc_lcd_controller_t *pstcLCD)
 {
-    if (m_stcLcdDevice.u16ID == 0x5510U) {
-        NT35510_WriteReg(pstcLCD, 0x2800U);     /* 5510 */
-    } else {
-        NT35510_WriteReg(pstcLCD, 0x28U);       /* 9341/5310/1963/7789 */
+    if (NULL != pstcLCD) {
+        if (m_stcLcdDevice.u16ID == 0x5510U) {
+            NT35510_WriteReg(pstcLCD, 0x2800U);     /* 5510 */
+        } else {
+            NT35510_WriteReg(pstcLCD, 0x28U);       /* 9341/5310/1963/7789 */
+        }
     }
 }
 
@@ -1465,128 +1490,130 @@ void NT35510_SetScanDir(stc_lcd_controller_t *pstcLCD, uint16_t u16Dir)
     uint16_t dirreg;
     uint16_t regval = 0U;
 
-    /* when display dir is VERTICAL, 1963 IC change scan-direction, other IC don't change
-       when display dir is HORIZONTAL, 1963 IC don't change scan-direction, other IC change */
-    if (((0U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID == 0x1963U)) || \
-        ((1U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID != 0x1963U))) {
-        if (0U == u16Dir) {
-            u16Dir = 6U;
-        } else if (1U == u16Dir) {
-            u16Dir = 7U;
-        } else if (2U == u16Dir) {
-            u16Dir = 4U;
-        } else if (3UL == u16Dir) {
-            u16Dir = 5U;
-        } else if (4U == u16Dir) {
-            u16Dir = 1U;
-        } else if (5U == u16Dir) {
-            u16Dir = 0U;
-        } else if (6U == u16Dir) {
-            u16Dir = 3U;
-        } else if (7U == u16Dir) {
-            u16Dir = 2U;
-        } else {
-            u16Dir = 6U;
-        }
-    }
-
-    switch (u16Dir) {
-        case LCD_SCAN_DIR_L2R_U2D:
-            regval |= ((0U << 7) | (0U << 6) | (0U << 5));
-            break;
-        case LCD_SCAN_DIR_L2R_D2U:
-            regval |= ((1U << 7) | (0U << 6) | (0U << 5));
-            break;
-        case LCD_SCAN_DIR_R2L_U2D:
-            regval |= ((0U << 7) | (1U << 6) | (0U << 5));
-            break;
-        case LCD_SCAN_DIR_R2L_D2U:
-            regval |= ((1U << 7) | (1U << 6) | (0U << 5));
-            break;
-        case LCD_SCAN_DIR_U2D_L2R:
-            regval |= ((0U << 7) | (0U << 6) | (1U << 5));
-            break;
-        case LCD_SCAN_DIR_U2D_R2L:
-            regval |= ((0U << 7) | (1U << 6) | (1U << 5));
-            break;
-        case LCD_SCAN_DIR_D2U_L2R:
-            regval |= ((1U << 7) | (0U << 6) | (1U << 5));
-            break;
-        case LCD_SCAN_DIR_D2U_R2L:
-            regval |= ((1U << 7) | (1U << 6) | (1U << 5));
-            break;
-        default:
-            break;
-    }
-
-    if (0x5510U == m_stcLcdDevice.u16ID) {
-        dirreg = 0x3600U;
-    } else {
-        dirreg = 0x36U;
-    }
-
-    /* 0x9341 & 0x7789 set BGR bit */
-    if ((0x9341U == m_stcLcdDevice.u16ID) || (0x7789U == m_stcLcdDevice.u16ID)) {
-        regval |= 0x08U;
-    }
-
-    NT35510_WriteRegData(pstcLCD, dirreg, regval);
-
-    /* 1963 don't handle coordinate */
-    if (m_stcLcdDevice.u16ID != 0x1963U) {
-        if ((regval & 0x20U) > 0U) {
-            /* swap X,Y */
-            if (m_stcLcdDevice.u16Width < m_stcLcdDevice.u16Height) {
-                u16Temp = m_stcLcdDevice.u16Width;
-                m_stcLcdDevice.u16Width = m_stcLcdDevice.u16Height;
-                m_stcLcdDevice.u16Height = u16Temp;
-            }
-        } else {
-            /* swap X,Y */
-            if (m_stcLcdDevice.u16Width > m_stcLcdDevice.u16Height) {
-                u16Temp = m_stcLcdDevice.u16Width;
-                m_stcLcdDevice.u16Width = m_stcLcdDevice.u16Height;
-                m_stcLcdDevice.u16Height = u16Temp;
+    if (NULL != pstcLCD) {
+        /* when display dir is VERTICAL, 1963 IC change scan-direction, other IC don't change
+           when display dir is HORIZONTAL, 1963 IC don't change scan-direction, other IC change */
+        if (((0U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID == 0x1963U)) || \
+            ((1U == m_stcLcdDevice.u16Dir) && (m_stcLcdDevice.u16ID != 0x1963U))) {
+            if (0U == u16Dir) {
+                u16Dir = 6U;
+            } else if (1U == u16Dir) {
+                u16Dir = 7U;
+            } else if (2U == u16Dir) {
+                u16Dir = 4U;
+            } else if (3UL == u16Dir) {
+                u16Dir = 5U;
+            } else if (4U == u16Dir) {
+                u16Dir = 1U;
+            } else if (5U == u16Dir) {
+                u16Dir = 0U;
+            } else if (6U == u16Dir) {
+                u16Dir = 3U;
+            } else if (7U == u16Dir) {
+                u16Dir = 2U;
+            } else {
+                u16Dir = 6U;
             }
         }
-    }
 
-    /* Set display window size */
-    if (0x5510U == m_stcLcdDevice.u16ID) {
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
-        NT35510_WriteData(pstcLCD, 0U);
+        switch (u16Dir) {
+            case LCD_SCAN_DIR_L2R_U2D:
+                regval |= ((0U << 7) | (0U << 6) | (0U << 5));
+                break;
+            case LCD_SCAN_DIR_L2R_D2U:
+                regval |= ((1U << 7) | (0U << 6) | (0U << 5));
+                break;
+            case LCD_SCAN_DIR_R2L_U2D:
+                regval |= ((0U << 7) | (1U << 6) | (0U << 5));
+                break;
+            case LCD_SCAN_DIR_R2L_D2U:
+                regval |= ((1U << 7) | (1U << 6) | (0U << 5));
+                break;
+            case LCD_SCAN_DIR_U2D_L2R:
+                regval |= ((0U << 7) | (0U << 6) | (1U << 5));
+                break;
+            case LCD_SCAN_DIR_U2D_R2L:
+                regval |= ((0U << 7) | (1U << 6) | (1U << 5));
+                break;
+            case LCD_SCAN_DIR_D2U_L2R:
+                regval |= ((1U << 7) | (0U << 6) | (1U << 5));
+                break;
+            case LCD_SCAN_DIR_D2U_R2L:
+                regval |= ((1U << 7) | (1U << 6) | (1U << 5));
+                break;
+            default:
+                break;
+        }
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 1U);
-        NT35510_WriteData(pstcLCD, 0U);
+        if (0x5510U == m_stcLcdDevice.u16ID) {
+            dirreg = 0x3600U;
+        } else {
+            dirreg = 0x36U;
+        }
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 2U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8U);
+        /* 0x9341 & 0x7789 set BGR bit */
+        if ((0x9341U == m_stcLcdDevice.u16ID) || (0x7789U == m_stcLcdDevice.u16ID)) {
+            regval |= 0x08U;
+        }
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 3U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
+        NT35510_WriteRegData(pstcLCD, dirreg, regval);
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
-        NT35510_WriteData(pstcLCD, 0U);
+        /* 1963 don't handle coordinate */
+        if (m_stcLcdDevice.u16ID != 0x1963U) {
+            if ((regval & 0x20U) > 0U) {
+                /* swap X,Y */
+                if (m_stcLcdDevice.u16Width < m_stcLcdDevice.u16Height) {
+                    u16Temp = m_stcLcdDevice.u16Width;
+                    m_stcLcdDevice.u16Width = m_stcLcdDevice.u16Height;
+                    m_stcLcdDevice.u16Height = u16Temp;
+                }
+            } else {
+                /* swap X,Y */
+                if (m_stcLcdDevice.u16Width > m_stcLcdDevice.u16Height) {
+                    u16Temp = m_stcLcdDevice.u16Width;
+                    m_stcLcdDevice.u16Width = m_stcLcdDevice.u16Height;
+                    m_stcLcdDevice.u16Height = u16Temp;
+                }
+            }
+        }
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 1U);
-        NT35510_WriteData(pstcLCD, 0U);
+        /* Set display window size */
+        if (0x5510U == m_stcLcdDevice.u16ID) {
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
+            NT35510_WriteData(pstcLCD, 0U);
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 2U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8U);
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 1U);
+            NT35510_WriteData(pstcLCD, 0U);
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 3U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
-    } else {
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
-        NT35510_WriteData(pstcLCD, 0U);
-        NT35510_WriteData(pstcLCD, 0U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
-        NT35510_WriteData(pstcLCD, 0U);
-        NT35510_WriteData(pstcLCD, 0U);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 2U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8U);
+
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd + 3U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
+
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
+            NT35510_WriteData(pstcLCD, 0U);
+
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 1U);
+            NT35510_WriteData(pstcLCD, 0U);
+
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 2U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8U);
+
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd + 3U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
+        } else {
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
+            NT35510_WriteData(pstcLCD, 0U);
+            NT35510_WriteData(pstcLCD, 0U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
+            NT35510_WriteData(pstcLCD, 0U);
+            NT35510_WriteData(pstcLCD, 0U);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
+        }
     }
 }
 
@@ -1601,66 +1628,68 @@ void NT35510_SetScanDir(stc_lcd_controller_t *pstcLCD, uint16_t u16Dir)
  */
 void NT35510_SetDisplayDir(stc_lcd_controller_t *pstcLCD, uint16_t u16Dir)
 {
-    if (LCD_DISPLAY_VERTICAL == u16Dir) { /* Vertical */
-        if (0x1963U == m_stcLcdDevice.u16ID) {
-            m_stcLcdDevice.u16WRamCmd = 0x2CU;
-            m_stcLcdDevice.u16SetXCmd = 0x2BU;
-            m_stcLcdDevice.u16SetYCmd = 0x2AU;
-            m_stcLcdDevice.u16Width  = 480U;
-            m_stcLcdDevice.u16Height = 800U;
-        } else if (0x5510U == m_stcLcdDevice.u16ID) {
-            /* NT35510 */
-            m_stcLcdDevice.u16WRamCmd = 0x2C00U;
-            m_stcLcdDevice.u16SetXCmd = 0x2A00U;
-            m_stcLcdDevice.u16SetYCmd = 0x2B00U;
-            m_stcLcdDevice.u16Width  = 480U;
-            m_stcLcdDevice.u16Height = 800U;
-        } else {
-            /* NT35310 / 9341 / 5310 / 7789 etc */
-            m_stcLcdDevice.u16WRamCmd = 0x2CU;
-            m_stcLcdDevice.u16SetXCmd = 0x2AU;
-            m_stcLcdDevice.u16SetYCmd = 0x2BU;
-            if (0x5310U == m_stcLcdDevice.u16ID) {
-                /* NT35310 */
-                m_stcLcdDevice.u16Width  = 320U;
+    if (NULL != pstcLCD) {
+        if (LCD_DISPLAY_VERTICAL == u16Dir) { /* Vertical */
+            if (0x1963U == m_stcLcdDevice.u16ID) {
+                m_stcLcdDevice.u16WRamCmd = 0x2CU;
+                m_stcLcdDevice.u16SetXCmd = 0x2BU;
+                m_stcLcdDevice.u16SetYCmd = 0x2AU;
+                m_stcLcdDevice.u16Width  = 480U;
+                m_stcLcdDevice.u16Height = 800U;
+            } else if (0x5510U == m_stcLcdDevice.u16ID) {
+                /* NT35510 */
+                m_stcLcdDevice.u16WRamCmd = 0x2C00U;
+                m_stcLcdDevice.u16SetXCmd = 0x2A00U;
+                m_stcLcdDevice.u16SetYCmd = 0x2B00U;
+                m_stcLcdDevice.u16Width  = 480U;
+                m_stcLcdDevice.u16Height = 800U;
+            } else {
+                /* NT35310 / 9341 / 5310 / 7789 etc */
+                m_stcLcdDevice.u16WRamCmd = 0x2CU;
+                m_stcLcdDevice.u16SetXCmd = 0x2AU;
+                m_stcLcdDevice.u16SetYCmd = 0x2BU;
+                if (0x5310U == m_stcLcdDevice.u16ID) {
+                    /* NT35310 */
+                    m_stcLcdDevice.u16Width  = 320U;
+                    m_stcLcdDevice.u16Height = 480U;
+                } else {
+                    m_stcLcdDevice.u16Width  = 240U;
+                    m_stcLcdDevice.u16Height = 320U;
+                }
+            }
+        } else { /* Horizontal */
+            if (0x1963U == m_stcLcdDevice.u16ID) {
+                m_stcLcdDevice.u16WRamCmd = 0x2CU;
+                m_stcLcdDevice.u16SetXCmd = 0x2AU;
+                m_stcLcdDevice.u16SetYCmd = 0x2BU;
+                m_stcLcdDevice.u16Width  = 800U;
+                m_stcLcdDevice.u16Height = 480U;
+            } else if (0x5510U == m_stcLcdDevice.u16ID) {
+                /* NT35510 */
+                m_stcLcdDevice.u16WRamCmd = 0x2C00U;
+                m_stcLcdDevice.u16SetXCmd = 0x2A00U;
+                m_stcLcdDevice.u16SetYCmd = 0x2B00U;
+                m_stcLcdDevice.u16Width  = 800U;
                 m_stcLcdDevice.u16Height = 480U;
             } else {
-                m_stcLcdDevice.u16Width  = 240U;
-                m_stcLcdDevice.u16Height = 320U;
+                /* NT35310 / 9341 / 5310 / 7789 etc */
+                m_stcLcdDevice.u16WRamCmd = 0x2CU;
+                m_stcLcdDevice.u16SetXCmd = 0x2AU;
+                m_stcLcdDevice.u16SetYCmd = 0x2BU;
+                if (0x5310U == m_stcLcdDevice.u16ID) {
+                    /* NT35310 */
+                    m_stcLcdDevice.u16Width  = 480U;
+                    m_stcLcdDevice.u16Height = 320U;
+                } else {
+                    m_stcLcdDevice.u16Width  = 320U;
+                    m_stcLcdDevice.u16Height = 240U;
+                }
             }
         }
-    } else { /* Horizontal */
-        if (0x1963U == m_stcLcdDevice.u16ID) {
-            m_stcLcdDevice.u16WRamCmd = 0x2CU;
-            m_stcLcdDevice.u16SetXCmd = 0x2AU;
-            m_stcLcdDevice.u16SetYCmd = 0x2BU;
-            m_stcLcdDevice.u16Width  = 800U;
-            m_stcLcdDevice.u16Height = 480U;
-        } else if (0x5510U == m_stcLcdDevice.u16ID) {
-            /* NT35510 */
-            m_stcLcdDevice.u16WRamCmd = 0x2C00U;
-            m_stcLcdDevice.u16SetXCmd = 0x2A00U;
-            m_stcLcdDevice.u16SetYCmd = 0x2B00U;
-            m_stcLcdDevice.u16Width  = 800U;
-            m_stcLcdDevice.u16Height = 480U;
-        } else {
-            /* NT35310 / 9341 / 5310 / 7789 etc */
-            m_stcLcdDevice.u16WRamCmd = 0x2CU;
-            m_stcLcdDevice.u16SetXCmd = 0x2AU;
-            m_stcLcdDevice.u16SetYCmd = 0x2BU;
-            if (0x5310U == m_stcLcdDevice.u16ID) {
-                /* NT35310 */
-                m_stcLcdDevice.u16Width  = 480U;
-                m_stcLcdDevice.u16Height = 320U;
-            } else {
-                m_stcLcdDevice.u16Width  = 320U;
-                m_stcLcdDevice.u16Height = 240U;
-            }
-        }
-    }
 
-    m_stcLcdDevice.u16Dir = u16Dir;
-    NT35510_SetScanDir(pstcLCD, LCD_SCAN_DIR);
+        m_stcLcdDevice.u16Dir = u16Dir;
+        NT35510_SetScanDir(pstcLCD, LCD_SCAN_DIR);
+    }
 }
 
 /**
@@ -1670,7 +1699,9 @@ void NT35510_SetDisplayDir(stc_lcd_controller_t *pstcLCD, uint16_t u16Dir)
  */
 void NT35510_PrepareWriteRAM(stc_lcd_controller_t *pstcLCD)
 {
-    NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16WRamCmd);
+    if (NULL != pstcLCD) {
+        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16WRamCmd);
+    }
 }
 
 /**
@@ -1684,13 +1715,15 @@ void NT35510_SetBackLight(stc_lcd_controller_t *pstcLCD, uint8_t u8PWM)
 {
     float32_t f32PWM = ((float32_t)u8PWM * 2.55F);
 
-    NT35510_WriteReg(pstcLCD, 0xBEU);
-    NT35510_WriteData(pstcLCD, 0x05U);
-    NT35510_WriteData(pstcLCD, (uint16_t)f32PWM);
-    NT35510_WriteData(pstcLCD, 0x01U);
-    NT35510_WriteData(pstcLCD, 0xFFU);
-    NT35510_WriteData(pstcLCD, 0x00U);
-    NT35510_WriteData(pstcLCD, 0x00U);
+    if (NULL != pstcLCD) {
+        NT35510_WriteReg(pstcLCD, 0xBEU);
+        NT35510_WriteData(pstcLCD, 0x05U);
+        NT35510_WriteData(pstcLCD, (uint16_t)f32PWM);
+        NT35510_WriteData(pstcLCD, 0x01U);
+        NT35510_WriteData(pstcLCD, 0xFFU);
+        NT35510_WriteData(pstcLCD, 0x00U);
+        NT35510_WriteData(pstcLCD, 0x00U);
+    }
 }
 
 /**
@@ -1702,40 +1735,42 @@ void NT35510_SetBackLight(stc_lcd_controller_t *pstcLCD, uint8_t u8PWM)
  */
 void NT35510_SetCursor(stc_lcd_controller_t *pstcLCD, uint16_t u16Xpos, uint16_t u16Ypos)
 {
-    if (0x1963U == m_stcLcdDevice.u16ID) {
-        /* Convert X coordinate */
-        if (m_stcLcdDevice.u16Dir == 0U) {
-            u16Xpos = m_stcLcdDevice.u16Width - 1U - u16Xpos;
-            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
-            NT35510_WriteData(pstcLCD, 0U);
-            NT35510_WriteData(pstcLCD, 0U);
-            NT35510_WriteData(pstcLCD, u16Xpos >> 8);
-            NT35510_WriteData(pstcLCD, u16Xpos & 0xFFU);
-        } else {
-            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
-            NT35510_WriteData(pstcLCD, u16Xpos >> 8);
-            NT35510_WriteData(pstcLCD, u16Xpos & 0xFFU);
-            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8);
-            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
-        }
+    if (NULL != pstcLCD) {
+        if (0x1963U == m_stcLcdDevice.u16ID) {
+            /* Convert X coordinate */
+            if (m_stcLcdDevice.u16Dir == 0U) {
+                u16Xpos = m_stcLcdDevice.u16Width - 1U - u16Xpos;
+                NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
+                NT35510_WriteData(pstcLCD, 0U);
+                NT35510_WriteData(pstcLCD, 0U);
+                NT35510_WriteData(pstcLCD, u16Xpos >> 8);
+                NT35510_WriteData(pstcLCD, u16Xpos & 0xFFU);
+            } else {
+                NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
+                NT35510_WriteData(pstcLCD, u16Xpos >> 8);
+                NT35510_WriteData(pstcLCD, u16Xpos & 0xFFU);
+                NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) >> 8);
+                NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Width - 1U) & 0xFFU);
+            }
 
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
-        NT35510_WriteData(pstcLCD, u16Ypos >> 8);
-        NT35510_WriteData(pstcLCD, u16Ypos & 0xFFU);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8);
-        NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
-    } else if (0x5510U == m_stcLcdDevice.u16ID) {
-        NT35510_WriteRegData(pstcLCD, m_stcLcdDevice.u16SetXCmd, (u16Xpos >> 8U));
-        NT35510_WriteRegData(pstcLCD, (m_stcLcdDevice.u16SetXCmd + 1U), (u16Xpos & 0xFFU));
-        NT35510_WriteRegData(pstcLCD, m_stcLcdDevice.u16SetYCmd, (u16Ypos >> 8U));
-        NT35510_WriteRegData(pstcLCD, (m_stcLcdDevice.u16SetYCmd + 1U), (u16Ypos & 0xFFU));
-    } else {    /* NT35310 / 9341 / 5310 / 7789 etc */
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
-        NT35510_WriteData(pstcLCD, (u16Xpos >> 8));
-        NT35510_WriteData(pstcLCD, (u16Xpos & 0xFFU));
-        NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
-        NT35510_WriteData(pstcLCD, (u16Ypos >> 8));
-        NT35510_WriteData(pstcLCD, (u16Ypos & 0xFFU));
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
+            NT35510_WriteData(pstcLCD, u16Ypos >> 8);
+            NT35510_WriteData(pstcLCD, u16Ypos & 0xFFU);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) >> 8);
+            NT35510_WriteData(pstcLCD, (m_stcLcdDevice.u16Height - 1U) & 0xFFU);
+        } else if (0x5510U == m_stcLcdDevice.u16ID) {
+            NT35510_WriteRegData(pstcLCD, m_stcLcdDevice.u16SetXCmd, (u16Xpos >> 8U));
+            NT35510_WriteRegData(pstcLCD, (m_stcLcdDevice.u16SetXCmd + 1U), (u16Xpos & 0xFFU));
+            NT35510_WriteRegData(pstcLCD, m_stcLcdDevice.u16SetYCmd, (u16Ypos >> 8U));
+            NT35510_WriteRegData(pstcLCD, (m_stcLcdDevice.u16SetYCmd + 1U), (u16Ypos & 0xFFU));
+        } else {    /* NT35310 / 9341 / 5310 / 7789 etc */
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetXCmd);
+            NT35510_WriteData(pstcLCD, (u16Xpos >> 8));
+            NT35510_WriteData(pstcLCD, (u16Xpos & 0xFFU));
+            NT35510_WriteReg(pstcLCD, m_stcLcdDevice.u16SetYCmd);
+            NT35510_WriteData(pstcLCD, (u16Ypos >> 8));
+            NT35510_WriteData(pstcLCD, (u16Ypos & 0xFFU));
+        }
     }
 }
 
@@ -1749,13 +1784,15 @@ void NT35510_SetCursor(stc_lcd_controller_t *pstcLCD, uint16_t u16Xpos, uint16_t
  */
 void NT35510_WritePixel(stc_lcd_controller_t *pstcLCD, uint16_t u16Xpos, uint16_t u16Ypos, uint16_t u16RGBCode)
 {
-    /* Set cursor */
-    NT35510_SetCursor(pstcLCD, u16Xpos, u16Ypos);
+    if (NULL != pstcLCD) {
+        /* Set cursor */
+        NT35510_SetCursor(pstcLCD, u16Xpos, u16Ypos);
 
-    /* Prepare to write to LCD RAM */
-    NT35510_PrepareWriteRAM(pstcLCD);
+        /* Prepare to write to LCD RAM */
+        NT35510_PrepareWriteRAM(pstcLCD);
 
-    NT35510_WriteData(pstcLCD, u16RGBCode);
+        NT35510_WriteData(pstcLCD, u16RGBCode);
+    }
 }
 
 /**
@@ -1782,49 +1819,51 @@ void NT35510_DrawLine(stc_lcd_controller_t *pstcLCD, uint16_t u16X1, uint16_t u1
     int16_t Row;
     int16_t Col;
 
-    Row = (int16_t)u16X1;
-    Col = (int16_t)u16Y1;
-    delta_x = ((int16_t)u16X2 - (int16_t)u16X1);      /* calc delta X, Y*/
-    delta_y = ((int16_t)u16Y2 - (int16_t)u16Y1);
+    if (NULL != pstcLCD) {
+        Row = (int16_t)u16X1;
+        Col = (int16_t)u16Y1;
+        delta_x = ((int16_t)u16X2 - (int16_t)u16X1);      /* calc delta X, Y*/
+        delta_y = ((int16_t)u16Y2 - (int16_t)u16Y1);
 
-    if (delta_x > 0) {
-        incx = 1;           /* forward u8Direction */
-    } else if (delta_x == 0) {
-        incx = 0;           /* vertical line */
-    } else {
-        incx = -1;          /* reverse direction */
-        delta_x = -delta_x;
-    }
-
-    if (delta_y > 0) {
-        incy = 1;             /* downward direction */
-    } else if (delta_y == 0) {
-        incy = 0;             /* horizontal line */
-    } else {
-        incy = -1;            /* upward direction */
-        delta_y = -delta_y;
-    }
-
-    if (delta_x > delta_y) {
-        distance = delta_x; /* set axis */
-    } else {
-        distance = delta_y;
-    }
-
-    for (t = 0; t <= (distance + 1); t++) {
-        NT35510_WritePixel(pstcLCD, (uint16_t)Row, (uint16_t)Col, u16RGBCode);   /* draw pixel */
-
-        xerr += delta_x ;
-        yerr += delta_y ;
-
-        if (xerr > distance) {
-            xerr -= distance;
-            Row += incx;
+        if (delta_x > 0) {
+            incx = 1;           /* forward u8Direction */
+        } else if (delta_x == 0) {
+            incx = 0;           /* vertical line */
+        } else {
+            incx = -1;          /* reverse direction */
+            delta_x = -delta_x;
         }
 
-        if (yerr > distance) {
-            yerr -= distance;
-            Col += incy;
+        if (delta_y > 0) {
+            incy = 1;             /* downward direction */
+        } else if (delta_y == 0) {
+            incy = 0;             /* horizontal line */
+        } else {
+            incy = -1;            /* upward direction */
+            delta_y = -delta_y;
+        }
+
+        if (delta_x > delta_y) {
+            distance = delta_x; /* set axis */
+        } else {
+            distance = delta_y;
+        }
+
+        for (t = 0; t <= (distance + 1); t++) {
+            NT35510_WritePixel(pstcLCD, (uint16_t)Row, (uint16_t)Col, u16RGBCode);   /* draw pixel */
+
+            xerr += delta_x ;
+            yerr += delta_y ;
+
+            if (xerr > distance) {
+                xerr -= distance;
+                Row += incx;
+            }
+
+            if (yerr > distance) {
+                yerr -= distance;
+                Col += incy;
+            }
         }
     }
 }
@@ -1845,26 +1884,28 @@ void NT35510_DrawCircle(stc_lcd_controller_t *pstcLCD, uint16_t u16Xpos, uint16_
     uint32_t current_x;      /* Current X Value */
     uint32_t current_y;      /* Current Y Value */
 
-    decision = 3 - ((int32_t)u16Radius * 2);
-    current_x = 0U;
-    current_y = u16Radius;
+    if (NULL != pstcLCD) {
+        decision = 3 - ((int32_t)u16Radius * 2);
+        current_x = 0U;
+        current_y = u16Radius;
 
-    while (current_x <= current_y) {
-        NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_x), (u16Ypos - (uint16_t)current_y), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_y), (u16Ypos - (uint16_t)current_x), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_y), (u16Ypos + (uint16_t)current_x), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_x), (u16Ypos + (uint16_t)current_y), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_x), (u16Ypos + (uint16_t)current_y), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_y), (u16Ypos + (uint16_t)current_x), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_x), (u16Ypos - (uint16_t)current_y), u16RGBCode);
-        NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_y), (u16Ypos - (uint16_t)current_x), u16RGBCode);
-        current_x++;
-        /* Bresenham algorithm */
-        if (decision < 0) {
-            decision += ((4 * (int32_t)current_x) + 6);
-        } else {
-            decision += (10 + (4 * ((int32_t)current_x - (int32_t)current_y)));
-            current_y--;
+        while (current_x <= current_y) {
+            NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_x), (u16Ypos - (uint16_t)current_y), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_y), (u16Ypos - (uint16_t)current_x), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_y), (u16Ypos + (uint16_t)current_x), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos + (uint16_t)current_x), (u16Ypos + (uint16_t)current_y), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_x), (u16Ypos + (uint16_t)current_y), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_y), (u16Ypos + (uint16_t)current_x), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_x), (u16Ypos - (uint16_t)current_y), u16RGBCode);
+            NT35510_WritePixel(pstcLCD, (u16Xpos - (uint16_t)current_y), (u16Ypos - (uint16_t)current_x), u16RGBCode);
+            current_x++;
+            /* Bresenham algorithm */
+            if (decision < 0) {
+                decision += ((4 * (int32_t)current_x) + 6);
+            } else {
+                decision += (10 + (4 * ((int32_t)current_x - (int32_t)current_y)));
+                current_y--;
+            }
         }
     }
 }
@@ -1898,74 +1939,76 @@ void NT35510_FillTriangle(stc_lcd_controller_t *pstcLCD, uint16_t u16X1, uint16_
     uint16_t numpixels;
     uint16_t curpixel;
 
-    xoff = (int16_t)u16X1;                  /* Start x off at the first pixel */
-    yoff = (int16_t)u16Y1;                  /* Start y off at the first pixel */
+    if (NULL != pstcLCD) {
+        xoff = (int16_t)u16X1;                  /* Start x off at the first pixel */
+        yoff = (int16_t)u16Y1;                  /* Start y off at the first pixel */
 
-    /* The difference between the x's */
-    if (u16X2 > u16X1) {
-        deltax = (u16X2 - u16X1);
-    } else {
-        deltax = (u16X1 - u16X2);
-    }
-
-    /* The difference between the y's */
-    if (u16Y2 > u16Y1) {
-        deltay = (u16Y2 - u16Y1);
-    } else {
-        deltay = (u16Y1 - u16Y2);
-    }
-
-    if (u16X2 >= u16X1) {
-        /* The x-values are increasing */
-        xinc1 = 1;
-        xinc2 = 1;
-    } else {
-        /* The x-values are decreasing */
-        xinc1 = -1;
-        xinc2 = -1;
-    }
-
-    if (u16Y2 >= u16Y1) {
-        /* The y-values are increasing */
-        yinc1 = 1;
-        yinc2 = 1;
-    } else {
-        /* The y-values are decreasing */
-        yinc1 = -1;
-        yinc2 = -1;
-    }
-
-    /* There is at least one x-value for every y-value */
-    if (deltax >= deltay) {
-        xinc1 = 0;                  /* Don't change the x when numerator >= denominator */
-        yinc2 = 0;                  /* Don't change the y for every iteration */
-        den = deltax;
-        num = (deltax / 2U);
-        numadd = deltay;
-        numpixels = deltax;         /* There are more x-values than y-values */
-    } else {
-        /* There is at least one y-value for every x-value */
-        xinc2 = 0;                  /* Don't change the x for every iteration */
-        yinc1 = 0;                  /* Don't change the y when numerator >= denominator */
-        den = deltay;
-        num = (deltay / 2U);
-        numadd = deltax;
-        numpixels = deltay;         /* There are more y-values than x-values */
-    }
-
-    for (curpixel = 0U; curpixel <= numpixels; curpixel++) {
-        NT35510_DrawLine(pstcLCD, (uint16_t)xoff, (uint16_t)yoff, u16X3, u16Y3, u16RGBCode);
-
-        num += numadd;              /* Increase the numerator by the top of the fraction */
-
-        /* Check if numerator >= denominator */
-        if (num >= den) {
-            num -= den;             /* Calculate the new numerator value */
-            xoff += xinc1;          /* Change the x as appropriate */
-            yoff += yinc1;          /* Change the y as appropriate */
+        /* The difference between the x's */
+        if (u16X2 > u16X1) {
+            deltax = (u16X2 - u16X1);
+        } else {
+            deltax = (u16X1 - u16X2);
         }
-        xoff += xinc2;              /* Change the x as appropriate */
-        yoff += yinc2;              /* Change the y as appropriate */
+
+        /* The difference between the y's */
+        if (u16Y2 > u16Y1) {
+            deltay = (u16Y2 - u16Y1);
+        } else {
+            deltay = (u16Y1 - u16Y2);
+        }
+
+        if (u16X2 >= u16X1) {
+            /* The x-values are increasing */
+            xinc1 = 1;
+            xinc2 = 1;
+        } else {
+            /* The x-values are decreasing */
+            xinc1 = -1;
+            xinc2 = -1;
+        }
+
+        if (u16Y2 >= u16Y1) {
+            /* The y-values are increasing */
+            yinc1 = 1;
+            yinc2 = 1;
+        } else {
+            /* The y-values are decreasing */
+            yinc1 = -1;
+            yinc2 = -1;
+        }
+
+        /* There is at least one x-value for every y-value */
+        if (deltax >= deltay) {
+            xinc1 = 0;                  /* Don't change the x when numerator >= denominator */
+            yinc2 = 0;                  /* Don't change the y for every iteration */
+            den = deltax;
+            num = (deltax / 2U);
+            numadd = deltay;
+            numpixels = deltax;         /* There are more x-values than y-values */
+        } else {
+            /* There is at least one y-value for every x-value */
+            xinc2 = 0;                  /* Don't change the x for every iteration */
+            yinc1 = 0;                  /* Don't change the y when numerator >= denominator */
+            den = deltay;
+            num = (deltay / 2U);
+            numadd = deltax;
+            numpixels = deltay;         /* There are more y-values than x-values */
+        }
+
+        for (curpixel = 0U; curpixel <= numpixels; curpixel++) {
+            NT35510_DrawLine(pstcLCD, (uint16_t)xoff, (uint16_t)yoff, u16X3, u16Y3, u16RGBCode);
+
+            num += numadd;              /* Increase the numerator by the top of the fraction */
+
+            /* Check if numerator >= denominator */
+            if (num >= den) {
+                num -= den;             /* Calculate the new numerator value */
+                xoff += xinc1;          /* Change the x as appropriate */
+                yoff += yinc1;          /* Change the y as appropriate */
+            }
+            xoff += xinc2;              /* Change the x as appropriate */
+            yoff += yinc2;              /* Change the y as appropriate */
+        }
     }
 }
 
@@ -1982,10 +2025,12 @@ void NT35510_FillTriangle(stc_lcd_controller_t *pstcLCD, uint16_t u16X1, uint16_
 void NT35510_DrawRectangle(stc_lcd_controller_t *pstcLCD, uint16_t u16X1, uint16_t u16Y1,
                            uint16_t u16X2, uint16_t u16Y2, uint16_t u16RGBCode)
 {
-    NT35510_DrawLine(pstcLCD, u16X1, u16Y1, u16X2, u16Y1, u16RGBCode);
-    NT35510_DrawLine(pstcLCD, u16X1, u16Y1, u16X1, u16Y2, u16RGBCode);
-    NT35510_DrawLine(pstcLCD, u16X1, u16Y2, u16X2, u16Y2, u16RGBCode);
-    NT35510_DrawLine(pstcLCD, u16X2, u16Y1, u16X2, u16Y2, u16RGBCode);
+    if (NULL != pstcLCD) {
+        NT35510_DrawLine(pstcLCD, u16X1, u16Y1, u16X2, u16Y1, u16RGBCode);
+        NT35510_DrawLine(pstcLCD, u16X1, u16Y1, u16X1, u16Y2, u16RGBCode);
+        NT35510_DrawLine(pstcLCD, u16X1, u16Y2, u16X2, u16Y2, u16RGBCode);
+        NT35510_DrawLine(pstcLCD, u16X2, u16Y1, u16X2, u16Y2, u16RGBCode);
+    }
 }
 
 /**
@@ -1999,16 +2044,16 @@ void NT35510_Clear(stc_lcd_controller_t *pstcLCD, uint16_t u16RGBCode)
     uint32_t i;
     uint32_t u32TotalPoint;
 
-    /* Set cursor */
-    NT35510_SetCursor(pstcLCD, 0U, 0U);
+    if (NULL != pstcLCD) {
+        /* Set cursor */
+        NT35510_SetCursor(pstcLCD, 0U, 0U);
+        /* Prepare to write to LCD RAM */
+        NT35510_PrepareWriteRAM(pstcLCD);
 
-    /* Prepare to write to LCD RAM */
-    NT35510_PrepareWriteRAM(pstcLCD);
-
-    u32TotalPoint = (uint32_t)m_stcLcdDevice.u16Width * (uint32_t)m_stcLcdDevice.u16Height;
-
-    for (i = 0UL; i < u32TotalPoint; i++) {
-        NT35510_WriteData(pstcLCD, u16RGBCode);
+        u32TotalPoint = (uint32_t)m_stcLcdDevice.u16Width * (uint32_t)m_stcLcdDevice.u16Height;
+        for (i = 0UL; i < u32TotalPoint; i++) {
+            NT35510_WriteData(pstcLCD, u16RGBCode);
+        }
     }
 }
 

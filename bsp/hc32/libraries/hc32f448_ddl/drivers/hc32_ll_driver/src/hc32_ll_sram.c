@@ -6,6 +6,9 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             API fixed: SRAM_ClearStatus()
+   2023-12-15       CDT             Refine SRAM_SetEccMode, and refine SRAM_SetErrorMode() as SRAM_SetExceptionType
+                                    Remove wait cycle relevant code
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -53,8 +56,27 @@
  * @defgroup SRAM_Configuration_Bits_Mask SRAM Configuration Bits Mask
  * @{
  */
-#define SRAM_ECC_MD_MASK            (SRAMC_CKCR_ECCMOD)
 #define SRAM_CYCLE_MASK             (0x00000007UL)
+/**
+ * @}
+ */
+
+#define SRAM_EI_BIT_MASK            (0x7FFFFFFFFFUL)
+
+/**
+ * @defgroup SRAM_Ecc_Mode_Mask SRAM ecc mode mask
+ * @{
+ */
+#define SRAM_ECC_MD_MASK                (SRAMC_CKCR_ECCMOD | SRAMC_CKCR_BECCMOD)
+/**
+ * @}
+ */
+
+/**
+ * @defgroup SRAM_Exception_Type_Mask SRAM exception type mask
+ * @{
+ */
+#define SRAM_EXP_TYPE_MASK              (SRAMC_CKCR_ECCOAD | SRAMC_CKCR_BECCOAD | SRAMC_CKCR_PYOAD)
 /**
  * @}
  */
@@ -65,29 +87,43 @@
  */
 #define IS_SRAM_BIT_MASK(x, mask)   (((x) != 0U) && (((x) | (mask)) == (mask)))
 
-#define IS_SRAM_ERR_MD(x)           (((x) == SRAM_ERR_MD_NMI) || ((x) == SRAM_ERR_MD_RST))
-
+/* Parameter valid check for SRAM wait cycle */
 #define IS_SRAM_WAIT_CYCLE(x)       ((x) <= SRAM_WAIT_CYCLE7)
 
+/* Parameter valid check for SRAM selection */
 #define IS_SRAM_SEL(x)              IS_SRAM_BIT_MASK(x, SRAM_SRAM_ALL)
 
-#define IS_SRAM_ECC_SRAM(x)         IS_SRAM_BIT_MASK(x, SRAM_ECC_SRAM0 | SRAM_ECC_SRAMB)
+/* Parameter valid check for SRAM ECC SRAM */
+#define IS_SRAM_ECC_SRAM(x)         IS_SRAM_BIT_MASK(x, SRAM_ECC_SRAM_ALL)
 
+/* Parameter valid check for SRAM ECC SRAM */
+#define IS_SRAM_CHECK_SRAM(x)       IS_SRAM_BIT_MASK(x, SRAM_CHECK_SRAM_ALL)
+
+/* Parameter valid check for SRAM flag */
 #define IS_SRAM_FLAG(x)             IS_SRAM_BIT_MASK(x, SRAM_FLAG_ALL)
 
-#define IS_SRAM_WTPR_UNLOCK()       (CM_SRAMC->WTPR == SRAM_REG_UNLOCK_KEY)
-
+/* Check SRAM CKPR register lock status. */
 #define IS_SRAM_CKPR_UNLOCK()       (CM_SRAMC->CKPR == SRAM_REG_UNLOCK_KEY)
 
+/* Parameter valid check for SRAM exception type mode */
+#define IS_SRAM_EXP_TYPE(x)                                                    \
+(   ((x) == SRAM_EXP_TYPE_NMI)                  ||                             \
+    ((x) == SRAM_EXP_TYPE_RST))
+
+/* Parameter valid check for SRAM ECC mode */
 #define IS_SRAM_ECC_MD(x)                                                      \
-(   ((x) == SRAM_ECC_MD_INVD)               ||                                 \
-    ((x) == SRAM_ECC_MD1)                   ||                                 \
-    ((x) == SRAM_ECC_MD2)                   ||                                 \
-    ((x) == SRAM_ECC_MD3))
+(   (((x) | SRAM_ECC_MD_MASK) == 0xFFFFFFFFUL)  ||                             \
+    (((x) | SRAM_ECC_MD_MASK) == SRAM_ECC_MD_MASK))
 
-#define IS_SRAM_EI_SRAM(x)          IS_SRAM_BIT_MASK(x, SRAM_ECC_SRAM0 | SRAM_ECC_SRAMB)
-#define IS_SRAM_EI_BIT_RANGE(x)     (((x) == SRAM_ERR_INJECT_BIT0_TO_BIT31) || ((x) == SRAM_ERR_INJECT_BIT32_TO_BIT38))
+/* Parameter valid check for SRAM error inject bit */
+#define IS_SRAM_EI_BIT(x)                                                      \
+(   ((x) != 0x00UL)                         &&                                 \
+    (((x) | SRAM_EI_BIT_MASK) == SRAM_EI_BIT_MASK))
 
+/* Parameter valid check for SRAM ECC SRAM */
+#define IS_SRAM_ECC_SRAM_ONLY(x)                                               \
+(   ((x) == SRAM_ECC_SRAM0)                 ||                                 \
+    ((x) == SRAM_ECC_SRAMB))
 /**
  * @}
  */
@@ -135,128 +171,62 @@ void SRAM_Init(void)
 void SRAM_DeInit(void)
 {
     /* Call SRAM_REG_Unlock to unlock register WTCR and CKCR. */
-    DDL_ASSERT(IS_SRAM_WTPR_UNLOCK());
     DDL_ASSERT(IS_SRAM_CKPR_UNLOCK());
-
-    WRITE_REG32(CM_SRAMC->WTCR, 0U);
-    WRITE_REG32(CM_SRAMC->CKCR, 0U);
+    WRITE_REG32(CM_SRAMC->CKCR, 0UL);
     SET_REG32_BIT(CM_SRAMC->CKSR, SRAM_FLAG_ALL);
 }
 
 /**
- * @brief  Specifies access wait cycle for SRAM.
- * @param  [in]  u32SramSel             The SRAM selection.
- *                                      This parameter can be values of @ref SRAM_Sel
- * @param  [in]  u32WriteCycle          The write access wait cycle for the specified SRAM
- *                                      This parameter can be a value of @ref SRAM_Access_Wait_Cycle
- * @param  [in]  u32ReadCycle           The read access wait cycle for the specified SRAM.
- *                                      This parameter can be a value of @ref SRAM_Access_Wait_Cycle
- *   @arg  SRAM_WAIT_CYCLE0:            Wait 0 CPU cycle.
- *   @arg  SRAM_WAIT_CYCLE1:            Wait 1 CPU cycle.
- *   @arg  SRAM_WAIT_CYCLE2:            Wait 2 CPU cycles.
- *   @arg  SRAM_WAIT_CYCLE3:            Wait 3 CPU cycles.
- *   @arg  SRAM_WAIT_CYCLE4:            Wait 4 CPU cycles.
- *   @arg  SRAM_WAIT_CYCLE5:            Wait 5 CPU cycles.
- *   @arg  SRAM_WAIT_CYCLE6:            Wait 6 CPU cycles.
- *   @arg  SRAM_WAIT_CYCLE7:            Wait 7 CPU cycles.
- * @retval None
- * @note   Call SRAM_REG_Unlock to unlock register WTCR first.
- */
-void SRAM_SetWaitCycle(uint32_t u32SramSel, uint32_t u32WriteCycle, uint32_t u32ReadCycle)
-{
-
-    DDL_ASSERT(IS_SRAM_SEL(u32SramSel));
-    DDL_ASSERT(IS_SRAM_WAIT_CYCLE(u32WriteCycle));
-    DDL_ASSERT(IS_SRAM_WAIT_CYCLE(u32ReadCycle));
-    DDL_ASSERT(IS_SRAM_WTPR_UNLOCK());
-
-    if ((u32SramSel & SRAM_SRAM0) != 0U) {
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAM0RWT, u32ReadCycle << SRAMC_WTCR_SRAM0RWT_POS);
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAM0WWT, u32WriteCycle << SRAMC_WTCR_SRAM0WWT_POS);
-    }
-    if ((u32SramSel & SRAM_SRAMH) != 0U) {
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAMHRWT, u32ReadCycle << SRAMC_WTCR_SRAMHRWT_POS);
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAMHWWT, u32WriteCycle << SRAMC_WTCR_SRAMHWWT_POS);
-    }
-    if ((u32SramSel & SRAM_SRAMB) != 0U) {
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAMBRWT, u32ReadCycle << SRAMC_WTCR_SRAMBRWT_POS);
-        MODIFY_REG32(CM_SRAMC->WTCR, SRAMC_WTCR_SRAMBWWT, u32WriteCycle << SRAMC_WTCR_SRAMBWWT_POS);
-    }
-}
-
-/**
  * @brief  Specifies ECC mode.
- * @param  [in]  u32SramSel             The SRAM selection. This function is used to specify the
- *                                      ECC mode for members SRAM_ECC_XXXX of @ref SRAM_Sel
+ * @param  [in]  u32EccSram             The ECC SRAM.
+ *                                      This parameter can be any combination of @ref SRAM_ECC_SRAM
  * @param  [in]  u32EccMode             The ECC mode.
- *                                      This parameter can be a value of @ref SRAM_ECC_Mode
- *   @arg  SRAM_ECC_MD_INVD:            The ECC mode is invalid.
- *   @arg  SRAM_ECC_MD1:                When 1-bit error occurred:
- *                                      ECC error corrects.
- *                                      No 1-bit-error status flag setting, no interrupt or reset.
- *                                      When 2-bit error occurred:
- *                                      ECC error detects.
- *                                      2-bit-error status flag sets and interrupt or reset occurred.
- *   @arg  SRAM_ECC_MD2:                When 1-bit error occurred:
- *                                      ECC error corrects.
- *                                      1-bit-error status flag sets, no interrupt or reset.
- *                                      When 2-bit error occurred:
- *                                      ECC error detects.
- *                                      2-bit-error status flag sets and interrupt or reset occurred.
- *   @arg  SRAM_ECC_MD3:                When 1-bit error occurred:
- *                                      ECC error corrects.
- *                                      1-bit-error status flag sets and interrupt or reset occurred.
- *                                      When 2-bit error occurred:
- *                                      ECC error detects.
- *                                      2-bit-error status flag sets and interrupt or reset occurred.
+ *                                      This parameter can be any combination of @ref SRAM_ECC_Mode, but only choose
+ *                                      one value of SRAM_SRAM0_ECC_xx and SRAM_SRAMB_ECC_xx
  * @retval None
  * @note   Call SRAM_REG_Unlock to unlock register CKCR first.
+ *         The sram of u32EccMode should be the same with the sram of u32EccSram.
  */
-void SRAM_SetEccMode(uint32_t u32SramSel, uint32_t u32EccMode)
+void SRAM_SetEccMode(uint32_t u32EccSram, uint32_t u32EccMode)
 {
-    DDL_ASSERT(IS_SRAM_ECC_SRAM(u32SramSel));
+    uint32_t u32Mask = 0UL;
+    uint32_t u32Pos = 0UL;
+
+    DDL_ASSERT(IS_SRAM_ECC_SRAM(u32EccSram));
     DDL_ASSERT(IS_SRAM_ECC_MD(u32EccMode));
     DDL_ASSERT(IS_SRAM_CKPR_UNLOCK());
 
-    if ((u32SramSel & SRAM_SRAM0) != 0U) {
-        MODIFY_REG32(CM_SRAMC->CKCR, SRAM_ECC_MD_MASK, u32EccMode);
+    while (0UL != u32EccSram) {
+        if (1UL == (u32EccSram & 0x01UL)) {
+            u32Mask |= (SRAMC_CKCR_ECCMOD << u32Pos);
+        }
+        u32EccSram >>= 1UL;
+        u32Pos += 2UL;
     }
 
-    if ((u32SramSel & SRAM_SRAMB) != 0U) {
-        MODIFY_REG32(CM_SRAMC->CKCR, SRAM_ECC_MD_MASK << 2U, u32EccMode << 2U);
-    }
-
+    MODIFY_REG32(CM_SRAMC->CKCR, u32Mask, u32EccMode);
 }
 
 /**
- * @brief  Specifies the operation which is operated after check error occurred.
- * @param  [in]  u32SramSel             The SRAM selection.
- *                                      This parameter can be values of @ref SRAM_Sel
- * @param  [out] u32ErrMode             The operation after check error occurred.
- *                                      This parameter can be a value of @ref SRAM_Err_Mode
- *   @arg  SRAM_ERR_MD_NMI:             Check error generates NMI(non-maskable interrupt).
- *   @arg  SRAM_ERR_MD_RST:             Check error generates system reset.
+ * @brief  Specifies the exception type while the choosen sram check error occurred.
+ * @param  [in] u32CheckSram            The check SRAM.
+ *                                      This parameter can be any combination of @ref SRAM_Check_SRAM
+ * @param  [in] u32ExceptionType        The operation after check error occurred.
+ *                                      This parameter can be a value of @ref SRAM_Exception_Type
  * @retval None
  * @note   Call SRAM_REG_Unlock to unlock register CKCR first.
  */
-void SRAM_SetErrorMode(uint32_t u32SramSel, uint32_t u32ErrMode)
+void SRAM_SetExceptionType(uint32_t u32CheckSram, uint32_t u32ExceptionType)
 {
-    DDL_ASSERT(IS_SRAM_SEL(u32SramSel));
-    DDL_ASSERT(IS_SRAM_ERR_MD(u32ErrMode));
+    DDL_ASSERT(IS_SRAM_CHECK_SRAM(u32CheckSram));
+    DDL_ASSERT(IS_SRAM_EXP_TYPE(u32ExceptionType));
     DDL_ASSERT(IS_SRAM_CKPR_UNLOCK());
 
-    if ((u32SramSel & SRAM_SRAMH) != 0U) {
-        WRITE_REG32(bCM_SRAMC->CKCR_b.PYOAD, u32ErrMode);
+    if (SRAM_EXP_TYPE_RST == u32ExceptionType) {
+        SET_REG32_BIT(CM_SRAMC->CKCR, u32CheckSram);
+    } else {
+        CLR_REG32_BIT(CM_SRAMC->CKCR, u32CheckSram);
     }
-
-    if ((u32SramSel & SRAM_SRAM0) != 0U) {
-        WRITE_REG32(bCM_SRAMC->CKCR_b.ECCOAD, u32ErrMode);
-    }
-
-    if ((u32SramSel & SRAM_SRAMB) != 0U) {
-        WRITE_REG32(bCM_SRAMC->CKCR_b.BECCOAD, u32ErrMode);
-    }
-
 }
 
 /**
@@ -290,102 +260,81 @@ void SRAM_ClearStatus(uint32_t u32Flag)
 }
 
 /**
- * @brief  Enable or disable error injection of SRAM0/SRAMB.
- * @param  [in]  u32SramSel             The SRAM selection.
- *                                      This parameter can be SRAM_SRAM0 or SRAM_SRAMB or both.
+ * @brief  Enable or disable error injection.
+ * @param  [in]  u32EccSram             The SRAM selection.
+ *                                      This parameter can be any combination of @ref SRAM_ECC_SRAM
  * @param  [in]  enNewState             An @ref en_functional_state_t enumeration value.
  * @retval None
  */
-void SRAM_ErrorInjectCmd(uint32_t u32SramSel, en_functional_state_t enNewState)
+void SRAM_ErrorInjectCmd(uint32_t u32EccSram, en_functional_state_t enNewState)
 {
-    DDL_ASSERT(IS_SRAM_EI_SRAM(u32SramSel));
+    DDL_ASSERT(IS_SRAM_ECC_SRAM(u32EccSram));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    if ((u32SramSel & SRAM_SRAM0) != 0U) {
+    if ((u32EccSram & SRAM_ECC_SRAM0) != 0U) {
         WRITE_REG32(CM_SRAMC->SRAM0_EIEN, enNewState);
     }
-
-    if ((u32SramSel & SRAM_SRAMB) != 0U) {
+    if ((u32EccSram & SRAM_ECC_SRAMB) != 0U) {
         WRITE_REG32(CM_SRAMC->SRAMB_EIEN, enNewState);
     }
 }
 
 /**
- * @brief  Enable or disable error injection bit of SRAM0/SRAMB.
- * @param  [in]  u32SramSel             The SRAM selection.
- *                                      This parameter can be SRAM_SRAM0 or SRAM_SRAMB or both.
- * @param  [in]  u32BitRange            Error injection bit range.
- *                                      This parameter can be a value of @ref SRAM_Err_Inject_Bit_Range
- *   @arg  SRAM_ERR_INJECT_BIT0_TO_BIT31: Bit0 ~ Bit31.
- *   @arg  SRAM_ERR_INJECT_BIT32_TO_BIT38: Bit32 ~ Bit38.
- * @param  [in]  u32BitSel              Bit selection.
- *                                      u32BitRange == SRAM_ERR_INJECT_BIT0_TO_BIT31: all bits of u32BitSel are available.
- *                                      u32BitRange == SRAM_ERR_INJECT_BIT32_TO_BIT38: bit0~bit6 of u32BitSel are available.
+ * @brief  Enable or disable error injection bit of SRAM_ECC_SRAM.
+ * @param  [in]  u32EccSram             The SRAM selection.
+ *                                      This parameter can be any combination of @ref SRAM_ECC_SRAM
+ * @param  [in]  u64BitSel              Bit selection.  Only bit0~bit38 valid.
  * @param  [in]  enNewState             An @ref en_functional_state_t enumeration value.
  * @retval None
  */
-void SRAM_ErrorInjectBitCmd(uint32_t u32SramSel, uint32_t u32BitRange, uint32_t u32BitSel, en_functional_state_t enNewState)
+void SRAM_ErrorInjectBitCmd(uint32_t u32EccSram, uint64_t u64BitSel, en_functional_state_t enNewState)
 {
-    __IO uint32_t *reg0EI = NULL;
-    __IO uint32_t *regBEI = NULL;
+    uint32_t u32Eibit0 = (uint32_t)(u64BitSel & SRAMC_SRAM0_EIBIT0);
+    uint32_t u32Eibit1 = (uint32_t)((u64BitSel >> 32U) & SRAMC_SRAM0_EIBIT1_EIBIT);
 
-    DDL_ASSERT(IS_SRAM_EI_SRAM(u32SramSel));
-    DDL_ASSERT(IS_SRAM_EI_BIT_RANGE(u32BitRange));
+    DDL_ASSERT(IS_SRAM_ECC_SRAM(u32EccSram));
+    DDL_ASSERT(IS_SRAM_EI_BIT(u64BitSel));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    if (u32BitRange == SRAM_ERR_INJECT_BIT32_TO_BIT38) {
-        DDL_ASSERT(u32BitSel < (1UL << 7U));
-
-        if ((u32SramSel & SRAM_SRAM0) != 0U) {
-            reg0EI = (__IO uint32_t *)((uint32_t)&CM_SRAMC->SRAM0_EIBIT1);
+    if (ENABLE == enNewState) {
+        if ((u32EccSram & SRAM_ECC_SRAM0) != 0U) {
+            SET_REG32_BIT(CM_SRAMC->SRAM0_EIBIT0, u32Eibit0);
+            SET_REG32_BIT(CM_SRAMC->SRAM0_EIBIT1, u32Eibit1);
         }
-        if ((u32SramSel & SRAM_SRAMB) != 0U) {
-            regBEI = (__IO uint32_t *)((uint32_t)&CM_SRAMC->SRAMB_EIBIT1);
+        if ((u32EccSram & SRAM_ECC_SRAMB) != 0U) {
+            SET_REG32_BIT(CM_SRAMC->SRAMB_EIBIT0, u32Eibit0);
+            SET_REG32_BIT(CM_SRAMC->SRAMB_EIBIT1, u32Eibit1);
         }
     } else {
-        if ((u32SramSel & SRAM_SRAM0) != 0U) {
-            reg0EI = (__IO uint32_t *)((uint32_t)&CM_SRAMC->SRAM0_EIBIT0);
+        if ((u32EccSram & SRAM_ECC_SRAM0) != 0U) {
+            CLR_REG32_BIT(CM_SRAMC->SRAM0_EIBIT0, u32Eibit0);
+            CLR_REG32_BIT(CM_SRAMC->SRAM0_EIBIT1, u32Eibit1);
         }
-        if ((u32SramSel & SRAM_SRAMB) != 0U) {
-            regBEI = (__IO uint32_t *)((uint32_t)&CM_SRAMC->SRAMB_EIBIT0);
+        if ((u32EccSram & SRAM_ECC_SRAMB) != 0U) {
+            CLR_REG32_BIT(CM_SRAMC->SRAMB_EIBIT0, u32Eibit0);
+            CLR_REG32_BIT(CM_SRAMC->SRAMB_EIBIT1, u32Eibit1);
         }
     }
 
-    if (enNewState == ENABLE) {
-        if (reg0EI != NULL) {
-            SET_REG32_BIT(*reg0EI, u32BitSel);
-        }
-        if (regBEI != NULL) {
-            SET_REG32_BIT(*regBEI, u32BitSel);
-        }
-    } else {
-        if (reg0EI != NULL) {
-            CLR_REG32_BIT(*reg0EI, u32BitSel);
-        }
-        if (regBEI != NULL) {
-            CLR_REG32_BIT(*regBEI, u32BitSel);
-        }
-    }
 }
 
 /**
  * @brief  Get access address when 1bit or 2bit ECC error occurs in SRAM0/SRAMB.
- * @param  [in]  u32SramSel             The SRAM selection.
- *                                      This parameter can be SRAM_SRAM0 or SRAM_SRAMB.
- * @retval An uint32_t type value of access address. If 'u32SramSel' is not equal to 'SRAM_SRAM0' or 'SRAM_SRAMB',
+ * @param  [in]  u32EccSram             The SRAM selection.
+ *                                      This parameter can be any combination of @ref SRAM_ECC_SRAM
+ * @retval An uint32_t type value of access address. If 'u32EccSram' is not equal to the value upon,
  *         it will return 0xFFFFFFFFUL.
  */
-uint32_t SRAM_GetEccErrorAddr(uint32_t u32SramSel)
+uint32_t SRAM_GetEccErrorAddr(uint32_t u32EccSram)
 {
-    uint32_t u32RetAddr = 0xFFFFFFFFUL;
+    uint32_t u32RetAddr;
 
-    DDL_ASSERT((u32SramSel == SRAM_SRAM0) || (u32SramSel == SRAM_SRAMB));
-    if (u32SramSel == SRAM_SRAM0) {
+    DDL_ASSERT(IS_SRAM_ECC_SRAM_ONLY(u32EccSram));
+
+    if (u32EccSram == SRAM_ECC_SRAM0) {
         u32RetAddr = READ_REG32(CM_SRAMC->SRAM0_ECCERRADDR);
-    } else if (u32SramSel == SRAM_SRAMB) {
-        u32RetAddr = READ_REG32(CM_SRAMC->SRAMB_ECCERRADDR);
     } else {
-        /* rsvd */
+        u32RetAddr = READ_REG32(CM_SRAMC->SRAMB_ECCERRADDR);
     }
 
     return u32RetAddr;

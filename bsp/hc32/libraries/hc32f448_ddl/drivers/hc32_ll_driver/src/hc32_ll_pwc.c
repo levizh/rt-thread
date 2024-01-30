@@ -6,6 +6,11 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Remove redundant assert
+                                    Modify API PWC_PD_Enter() #use assert to replace the unlock, and add return value
+                                    Modify API PWC_WKT_SetCompareValue()
+                                    Refine PWC_SLEEP_Enter()
+                                    Add API PWC_PD_SetIoState() & PWC_PD_SetMode()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -70,7 +75,7 @@
 
 #define PWC_RAM_MASK                    (PWC_RAMPC0_RAMPDC0 | PWC_RAMPC0_RAMPDC10)
 
-#define PWC_PRAM_MASK                   (PWC_RAM_PD_CAN1 | PWC_RAM_PD_CACHE )
+#define PWC_PRAM_MASK                   (PWC_RAM_PD_MCAN | PWC_RAM_PD_CACHE )
 
 #define PWC_LVD_FLAG_MASK               (PWC_LVD1_FLAG_MON | PWC_LVD1_FLAG_DETECT | \
                                          PWC_LVD2_FLAG_MON | PWC_LVD2_FLAG_DETECT)
@@ -94,6 +99,12 @@
 (   ((x) == PWC_STOP_WFI)                           ||                          \
     ((x) == PWC_STOP_WFE_INT)                       ||                          \
     ((x) == PWC_STOP_WFE_EVT))
+
+/* Parameter validity check for sleep type */
+#define IS_PWC_SLEEP_TYPE(x)                                                    \
+(   ((x) == PWC_SLEEP_WFI)                          ||                          \
+    ((x) == PWC_SLEEP_WFE_INT)                      ||                          \
+    ((x) == PWC_SLEEP_WFE_EVT))
 
 /* Parameter validity check for internal RAM setting of power mode control */
 #define IS_PWC_RAM_CONTROL(x)                                                   \
@@ -154,11 +165,6 @@
     ((x) == PWC_LVD_THRESHOLD_LVL6)                 ||                          \
     ((x) == PWC_LVD_THRESHOLD_LVL7))
 
-/* Parameter validity check for LVD NMI function setting. */
-#define IS_PWC_LVD_NMI(x)                                                       \
-(   ((x) == PWC_LVD_INT_MASK)                       ||                          \
-    ((x) == PWC_LVD_INT_NONMASK))
-
 /* Parameter validity check for LVD trigger setting. */
 #define IS_PWC_LVD_TRIG_EDGE(x)                                                 \
 (   ((x) == PWC_LVD_TRIG_FALLING)                   ||                          \
@@ -174,6 +180,19 @@
 #define IS_PWC_LVD_GET_FLAG(x)                                                  \
 (   ((x) != 0x00U)                                  &&                          \
     (((x) | PWC_LVD_FLAG_MASK) == PWC_LVD_FLAG_MASK))
+
+/* Parameter validity check for power down mode. */
+#define IS_PWC_PD_MD(x)                                                         \
+(   ((x) == PWC_PD_MD1)                             ||                          \
+    ((x) == PWC_PD_MD2)                             ||                          \
+    ((x) == PWC_PD_MD3)                             ||                          \
+    ((x) == PWC_PD_MD4))
+
+/* Parameter validity check for IO state while power down mode. */
+#define IS_PWC_PD_IO_STATE(x)                                                   \
+(   ((x) == PWC_PD_IO_KEEP1)                        ||                          \
+    ((x) == PWC_PD_IO_KEEP2)                        ||                          \
+    ((x) == PWC_PD_IO_HIZ))
 
 /* Parameter validity check for power down mode wake up event with trigger. */
 #define IS_PWC_WAKEUP_TRIG_EVT(x)                                               \
@@ -194,6 +213,11 @@
 #define IS_PWC_STOP_DRV(drv)                                                    \
 (   ((drv) == PWC_STOP_DRV_HIGH)                    ||                          \
     ((drv) == PWC_STOP_DRV_LOW))
+
+/* Parameter validity check for vcap selection while power down mode. */
+#define IS_PWC_PD_VCAP_SEL(x)                                                   \
+(   ((x) == PWC_PD_VCAP_0P1UF)                      ||                          \
+    ((x) == PWC_PD_VCAP_0P047UF))
 
 /* Parameter validity check for clock setting after wake-up from stop mode. */
 #define IS_PWC_STOP_CLK(x)                                                      \
@@ -256,26 +280,41 @@
  * @defgroup PWC_Global_Functions PWC Global Functions
  * @{
  */
+
 /**
  * @brief  Enter power down mode.
  * @param  None
- * @retval None
+ * @retval int32_t:
+ *          - LL_ERR_TIMEOUT:   Enter PD mode timeout
+ * @note   Not return LL_OK because if enter PD mode ok, the MCU will shut down, and reset after woken-up.
  */
-void PWC_PD_Enter(void)
+int32_t PWC_PD_Enter(void)
 {
-    WRITE_REG16(CM_PWC->FPRC, PWC_UNLOCK_CODE1);
+    int32_t i32Ret;
+    uint32_t u32Timeout = 0UL;
 
+    DDL_ASSERT(IS_PWC_UNLOCKED());
+    DDL_ASSERT(IS_PWC_LVD_UNLOCKED());
+
+    /* Ensure pvd not reset exception */
     CLR_REG8_BIT(CM_PWC->PVDCR1, PWC_PVDCR1_PVD1IRS | PWC_PVDCR1_PVD2IRS);
-    SET_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
+    for (; ;) {
+        SET_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
+        SET_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
+        __WFI();
+        u32Timeout++;
+        if (u32Timeout > 1000UL) {
+            i32Ret = LL_ERR_TIMEOUT;
+            break;
+        }
+    }
 
-    SET_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
-
-    __WFI();
+    return i32Ret;
 }
 
 /**
  * @brief  Enter stop mode.
- * @param  [in] u8StopType specifies the XTAL initial config.
+ * @param  [in] u8StopType specifies the type of enter stop's command.
  *   @arg  PWC_STOP_WFI             Enter stop mode by WFI, and wake-up by interrupt handle.
  *   @arg  PWC_STOP_WFE_INT         Enter stop mode by WFE, and wake-up by interrupt request.
  *   @arg  PWC_STOP_WFE_EVT         Enter stop mode by WFE, and wake-up by event.
@@ -286,7 +325,7 @@ void PWC_STOP_Enter(uint8_t u8StopType)
 
     DDL_ASSERT(IS_PWC_UNLOCKED());
     DDL_ASSERT(IS_PWC_STOP_TYPE(u8StopType));
-    DDL_ASSERT(0UL == (CM_PWC->PWRC0 & PWC_PWRC0_PDMDS));
+    DDL_ASSERT(0U == (CM_PWC->PWRC0 & PWC_PWRC0_PDMDS));
 
     SET_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
     CLR_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
@@ -295,28 +334,41 @@ void PWC_STOP_Enter(uint8_t u8StopType)
     } else {
         if (PWC_STOP_WFE_INT == u8StopType) {
             SET_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
-        } else {
-            CLR_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
         }
         __SEV();
         __WFE();
         __WFE();
     }
+
 }
 
 /**
  * @brief  Enter sleep mode.
- * @param  None
+ * @param  [in] u8SleepType specifies the type of enter sleep's command.
+ *   @arg  PWC_SLEEP_WFI            Enter sleep mode by WFI, and wake-up by interrupt handle.
+ *   @arg  PWC_SLEEP_WFE_INT        Enter sleep mode by WFE, and wake-up by interrupt request.
+ *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event.
+
  * @retval None
  */
-void PWC_SLEEP_Enter(void)
+void PWC_SLEEP_Enter(uint8_t u8SleepType)
 {
     DDL_ASSERT(IS_PWC_UNLOCKED());
+    DDL_ASSERT(IS_PWC_SLEEP_TYPE(u8SleepType));
 
     CLR_REG16_BIT(CM_PWC->STPMCR, PWC_STPMCR_STOP);
     CLR_REG8_BIT(CM_PWC->PWRC0, PWC_PWRC0_PWDN);
 
-    __WFI();
+    if (PWC_SLEEP_WFI == u8SleepType) {
+        __WFI();
+    } else {
+        if (PWC_SLEEP_WFE_INT == u8SleepType) {
+            SET_REG32_BIT(SCB->SCR, SCB_SCR_SEVONPEND_Msk);
+        }
+        __SEV();
+        __WFE();
+        __WFE();
+    }
 }
 
 /**
@@ -697,9 +749,9 @@ void PWC_PD_RamCmd(uint32_t u32Ram, en_functional_state_t enNewState)
     DDL_ASSERT(IS_PWC_UNLOCKED());
 
     if (ENABLE == enNewState) {
-        CM_PWC->RAMPC0 |= u32Ram;
+        SET_REG8_BIT(CM_PWC->RAMPC0, u32Ram);
     } else {
-        CM_PWC->RAMPC0 &= ~u32Ram;
+        CLR_REG8_BIT(CM_PWC->RAMPC0, u32Ram);
     }
 }
 
@@ -737,9 +789,9 @@ void PWC_PD_PeriphRamCmd(uint32_t u32PeriphRam, en_functional_state_t enNewState
     DDL_ASSERT(IS_PWC_UNLOCKED());
 
     if (ENABLE == enNewState) {
-        CM_PWC->PRAMLPC |= u32PeriphRam;
+        SET_REG8_BIT(CM_PWC->PRAMLPC, u32PeriphRam);
     } else {
-        CM_PWC->PRAMLPC &= ~u32PeriphRam;
+        CLR_REG8_BIT(CM_PWC->PRAMLPC, u32PeriphRam);
     }
 }
 
@@ -783,12 +835,48 @@ int32_t PWC_PD_Config(const stc_pwc_pd_mode_config_t *pstcPDModeConfig)
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         DDL_ASSERT(IS_PWC_UNLOCKED());
+        DDL_ASSERT(IS_PWC_PD_IO_STATE(pstcPDModeConfig->u8IOState));
+        DDL_ASSERT(IS_PWC_PD_MD(pstcPDModeConfig->u8Mode));
+        DDL_ASSERT(IS_PWC_PD_VCAP_SEL(pstcPDModeConfig->u8VcapCtrl));
 
         MODIFY_REG8(CM_PWC->PWRC0, (PWC_PWRC0_IORTN | PWC_PWRC0_PDMDS),         \
                     (pstcPDModeConfig->u8IOState | pstcPDModeConfig->u8Mode));
         MODIFY_REG8(CM_PWC->PWRC1, PWC_PWRC1_PDTS, pstcPDModeConfig->u8VcapCtrl << PWC_PWRC1_PDTS_POS);
     }
     return i32Ret;
+}
+
+/**
+ * @brief  Set IO state while PD mode.
+ * @param  [in] u8IoState IO state while power down mode
+ *   @arg  PWC_PD_IO_KEEP1
+ *   @arg  PWC_PD_IO_KEEP2
+ *   @arg  PWC_PD_IO_HIZ
+ * @retval None
+ */
+void PWC_PD_SetIoState(uint8_t u8IoState)
+{
+    DDL_ASSERT(IS_PWC_UNLOCKED());
+    DDL_ASSERT(IS_PWC_PD_IO_STATE(u8IoState));
+
+    MODIFY_REG8(CM_PWC->PWRC0, PWC_PWRC0_IORTN, u8IoState);
+}
+
+/**
+ * @brief  Set power down mode.
+ * @param  [in] u8PdMode Power down mode
+ *   @arg  PWC_PD_MD1       Power down mode 1
+ *   @arg  PWC_PD_MD2       Power down mode 2
+ *   @arg  PWC_PD_MD3       Power down mode 3
+ *   @arg  PWC_PD_MD4       Power down mode 4
+ * @retval None
+ */
+void PWC_PD_SetMode(uint8_t u8PdMode)
+{
+    DDL_ASSERT(IS_PWC_UNLOCKED());
+    DDL_ASSERT(IS_PWC_PD_MD(u8PdMode));
+
+    MODIFY_REG8(CM_PWC->PWRC0, PWC_PWRC0_PDMDS, u8PdMode);
 }
 
 /**
@@ -1037,6 +1125,7 @@ void PWC_WKT_SetCompareValue(uint16_t u16CmpVal)
     /* Check parameters */
     DDL_ASSERT(IS_PWC_WKT_COMPARISION_VALUE(u16CmpVal));
     DDL_ASSERT(IS_PWC_UNLOCKED());
+    MODIFY_REG16(CM_PWC->WKTCR, PWC_WKTCR_WKTMCMP, u16CmpVal);
 }
 
 /**

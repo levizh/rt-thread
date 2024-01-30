@@ -99,6 +99,7 @@ extern "C"
 #define AOS_ADC3_1              (uint32_t)(&CM_AOS->ADC3_TRGSEL1)
 #define AOS_COMM_1              (uint32_t)(&CM_AOS->COMTRGSEL1)
 #define AOS_COMM_2              (uint32_t)(&CM_AOS->COMTRGSEL2)
+
 /**
  * @}
  */

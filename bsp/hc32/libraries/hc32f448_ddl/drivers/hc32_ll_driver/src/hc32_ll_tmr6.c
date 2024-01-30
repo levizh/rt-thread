@@ -1,11 +1,13 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_tmr6.c
- * @brief This file provides firmware functions to manage the TMR6 (TMR6).
+ * @brief This file provides firmware functions to manage the TMR6(TMR6).
  @verbatim
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
+   2023-12-15       CDT             Modify for headfile update: CM_TMR6CR -> CM_TMR6_COMMON
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -384,7 +386,7 @@ int32_t TMR6_Init(CM_TMR6_TypeDef *TMR6x, const stc_tmr6_init_t *pstcTmr6Init)
             DDL_ASSERT(IS_VALID_CNT_CLK_DIV(pstcTmr6Init->sw_count.u32ClockDiv));
 
             MODIFY_REG32(TMR6x->GCONR, TMR6_INIT_MASK, (pstcTmr6Init->sw_count.u32CountMode | pstcTmr6Init->sw_count.u32CountDir | \
-                         pstcTmr6Init->sw_count.u32ClockDiv));
+                                                        pstcTmr6Init->sw_count.u32ClockDiv));
         } else {
             /* Hardware count */
             DDL_ASSERT(IS_VALID_CNT_UP_COND(pstcTmr6Init->hw_count.u32CountUpCond) ||
@@ -717,10 +719,10 @@ void TMR6_SetFilterClockDiv(CM_TMR6_TypeDef *TMR6x, uint32_t u32Pin, uint32_t u3
             MODIFY_REG32(TMR6x->FCNGR, TMR6_FCNGR_NOFICKGB, u32Div << TMR6_FCNGR_NOFICKGB_POS);
             break;
         case TMR6_INPUT_TRIGA:
-            MODIFY_REG32(CM_TMR6CR->FCNTR, TMR6CR_FCNTR_NOFICKTA, u32Div << TMR6CR_FCNTR_NOFICKTA_POS);
+            MODIFY_REG32(CM_TMR6_COMMON->FCNTR, TMR6_COMMON_FCNTR_NOFICKTA, u32Div << TMR6_COMMON_FCNTR_NOFICKTA_POS);
             break;
         case TMR6_INPUT_TRIGB:
-            MODIFY_REG32(CM_TMR6CR->FCNTR, TMR6CR_FCNTR_NOFICKTB, u32Div << TMR6CR_FCNTR_NOFICKTB_POS);
+            MODIFY_REG32(CM_TMR6_COMMON->FCNTR, TMR6_COMMON_FCNTR_NOFICKTB, u32Div << TMR6_COMMON_FCNTR_NOFICKTB_POS);
             break;
         default:
             break;
@@ -749,10 +751,10 @@ void TMR6_FilterCmd(CM_TMR6_TypeDef *TMR6x, uint32_t u32Pin, en_functional_state
             MODIFY_REG32(TMR6x->FCNGR, TMR6_FCNGR_NOFIENGB, ((uint32_t)enNewState) << TMR6_FCNGR_NOFIENGB_POS);
             break;
         case TMR6_INPUT_TRIGA:
-            MODIFY_REG32(CM_TMR6CR->FCNTR, TMR6CR_FCNTR_NOFIENTA, ((uint32_t)enNewState) << TMR6CR_FCNTR_NOFIENTA_POS);
+            MODIFY_REG32(CM_TMR6_COMMON->FCNTR, TMR6_COMMON_FCNTR_NOFIENTA, ((uint32_t)enNewState) << TMR6_COMMON_FCNTR_NOFIENTA_POS);
             break;
         case TMR6_INPUT_TRIGB:
-            MODIFY_REG32(CM_TMR6CR->FCNTR, TMR6CR_FCNTR_NOFIENTB, ((uint32_t)enNewState) << TMR6CR_FCNTR_NOFIENTB_POS);
+            MODIFY_REG32(CM_TMR6_COMMON->FCNTR, TMR6_COMMON_FCNTR_NOFIENTB, ((uint32_t)enNewState) << TMR6_COMMON_FCNTR_NOFIENTB_POS);
             break;
         default:
             break;
@@ -900,7 +902,7 @@ void TMR6_DeInit(CM_TMR6_TypeDef *TMR6x)
     WRITE_REG32(TMR6x->PCNAR, 0UL);
     WRITE_REG32(TMR6x->PCNBR, 0UL);
     WRITE_REG32(TMR6x->FCNGR, 0UL);
-    WRITE_REG32(CM_TMR6CR->FCNTR, 0UL);
+    WRITE_REG32(CM_TMR6_COMMON->FCNTR, 0UL);
     WRITE_REG32(TMR6x->VPERR, 0UL);
     WRITE_REG32(TMR6x->STFLR, 0UL);
     WRITE_REG32(TMR6x->HSTAR, 0UL);
@@ -912,10 +914,10 @@ void TMR6_DeInit(CM_TMR6_TypeDef *TMR6x)
     WRITE_REG32(TMR6x->HCUPR, 0UL);
     WRITE_REG32(TMR6x->HCDOR, 0UL);
 
-    WRITE_REG32(CM_TMR6CR->SSTAR, 0UL);
-    WRITE_REG32(CM_TMR6CR->SSTPR, 0UL);
-    WRITE_REG32(CM_TMR6CR->SCLRR, 0UL);
-    WRITE_REG32(CM_TMR6CR->SUPDR, 0UL);
+    WRITE_REG32(CM_TMR6_COMMON->SSTAR, 0UL);
+    WRITE_REG32(CM_TMR6_COMMON->SSTPR, 0UL);
+    WRITE_REG32(CM_TMR6_COMMON->SCLRR, 0UL);
+    WRITE_REG32(CM_TMR6_COMMON->SUPDR, 0UL);
 }
 
 /**
@@ -1476,7 +1478,7 @@ int32_t TMR6_EMBConfig(CM_TMR6_TypeDef *TMR6x, uint32_t u32Ch, const stc_tmr6_em
 void TMR6_SWSyncStart(uint32_t u32Unit)
 {
     DDL_ASSERT(IS_VALID_SW_UNIT(u32Unit));
-    WRITE_REG32(CM_TMR6CR->SSTAR, u32Unit);
+    WRITE_REG32(CM_TMR6_COMMON->SSTAR, u32Unit);
 }
 
 /**
@@ -1488,7 +1490,7 @@ void TMR6_SWSyncStart(uint32_t u32Unit)
 void TMR6_SWSyncStop(uint32_t u32Unit)
 {
     DDL_ASSERT(IS_VALID_SW_UNIT(u32Unit));
-    WRITE_REG32(CM_TMR6CR->SSTPR, u32Unit);
+    WRITE_REG32(CM_TMR6_COMMON->SSTPR, u32Unit);
 }
 
 /**
@@ -1500,7 +1502,7 @@ void TMR6_SWSyncStop(uint32_t u32Unit)
 void TMR6_SWSyncClear(uint32_t u32Unit)
 {
     DDL_ASSERT(IS_VALID_SW_UNIT(u32Unit));
-    WRITE_REG32(CM_TMR6CR->SCLRR, u32Unit);
+    WRITE_REG32(CM_TMR6_COMMON->SCLRR, u32Unit);
 }
 
 /**
@@ -1512,7 +1514,7 @@ void TMR6_SWSyncClear(uint32_t u32Unit)
 void TMR6_SWSyncUpdate(uint32_t u32Unit)
 {
     DDL_ASSERT(IS_VALID_SW_UNIT(u32Unit));
-    WRITE_REG32(CM_TMR6CR->SUPDR, u32Unit);
+    WRITE_REG32(CM_TMR6_COMMON->SUPDR, u32Unit);
 }
 
 /**

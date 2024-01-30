@@ -7,6 +7,11 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify group PWC_Stop_Type
+   2023-09-30       CDT             Add function PWC_LVD_DeInit
+                                    Modify the PWC_LVD_Detection_Voltage_Sel comment
+   2023-12-15       CDT             Modify PWC_RAM_PD_CAN1 as PWC_RAM_PD_MCAN
+                                    Refine API PWC_SLEEP_Enter()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -187,6 +192,17 @@ typedef struct {
  */
 
 /**
+ * @defgroup PWC_Stop_Type PWC stop mode type.
+ * @{
+ */
+#define PWC_SLEEP_WFI                   (0x00U)                 /*!< Enter sleep mode by WFI, and wake-up by interrupt handle. */
+#define PWC_SLEEP_WFE_INT               (0x01U)                 /*!< Enter sleep mode by WFE, and wake-up by interrupt request. */
+#define PWC_SLEEP_WFE_EVT               (0x02U)                 /*!< Enter sleep mode by WFE, and wake-up by event. */
+/**
+ * @}
+ */
+
+/**
  * @defgroup PWC_RAM_Config Operating mode for RAM Config
  * @{
  */
@@ -200,7 +216,7 @@ typedef struct {
  * @defgroup PWC_PD_Periph_Ram  Peripheral ram to power down
  * @{
  */
-#define PWC_RAM_PD_CAN1                 (PWC_PRAMLPC_PRAMPDC0)
+#define PWC_RAM_PD_MCAN                 (PWC_PRAMLPC_PRAMPDC0)
 #define PWC_RAM_PD_CACHE                (PWC_PRAMLPC_PRAMPDC2)
 #define PWC_RAM_PD_ALL                  (PWC_PRAMLPC_PRAMPDC0 | PWC_PRAMLPC_PRAMPDC2)
 /**
@@ -289,9 +305,9 @@ typedef struct {
  * @{
  * @note
  * @verbatim
- *       |  LVL0  |  LVL1  |  LVL2  |  LVL3  |  LVL4  |  LVL5  |  LVL6  |  LVL7  |  EXVCC |
- * LVD1  |  2.0V  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |
- * LVD2  |  2.1V  |  2.3V  |  2.5V  |  2.6V  |  2.7V  |  2.8V  |  2.9V  |   --   |  EXVCC |
+ *       |  LVL0   |  LVL1   |  LVL2   |  LVL3   |  LVL4   |  LVL5   |  LVL6   |  LVL7   |  EXVCC |
+ * LVD1  |  2.00V  |  2.10V  |  2.30V  |  2.55V  |  2.65V  |  2.75V  |  2.85V  |  2.95V  |   --   |
+ * LVD2  |  2.10V  |  2.30V  |  2.55V  |  2.65V  |  2.75V  |  2.85V  |  2.95V  |  1.10V  |  EXVCC |
  * @endverbatim
  */
 #define PWC_LVD_THRESHOLD_LVL0          (0x00U)
@@ -411,15 +427,6 @@ typedef struct {
 #define PWC_PD_WKUP_FLAG_ALL            (PWC_PD_WKUP_FLAG_WKUP0  | PWC_PD_WKUP_FLAG_WKUP1  | PWC_PD_WKUP_FLAG_WKUP2 | \
                                          PWC_PD_WKUP_FLAG_WKUP3  | PWC_PD_WKUP_FLAG_LVD1   | PWC_PD_WKUP_FLAG_LVD2  | \
                                          PWC_PD_WKUP_FLAG_RTCPRD | PWC_PD_WKUP_FLAG_RTCALM | PWC_PD_WKUP_FLAG_WKTM)
-/**
- * @}
- */
-
-/**
- * @defgroup PWC_Monitor_Power PWC Power Monitor voltage definition
- * @{
- */
-#define PWC_PWR_MON_IREF                (0x00U)                 /*!< Internal reference voltage */
 /**
  * @}
  */
@@ -567,9 +574,11 @@ __STATIC_INLINE void PWC_FCG0_REG_Unlock(void)
 }
 
 /* PWC PD Function */
-void PWC_PD_Enter(void);
+int32_t PWC_PD_Enter(void);
 int32_t PWC_PD_StructInit(stc_pwc_pd_mode_config_t *pstcPDModeConfig);
 int32_t PWC_PD_Config(const stc_pwc_pd_mode_config_t *pstcPDModeConfig);
+void PWC_PD_SetIoState(uint8_t u8IoState);
+void PWC_PD_SetMode(uint8_t u8PdMode);
 void PWC_PD_WakeupCmd(uint32_t u32Event, en_functional_state_t enNewState);
 void PWC_PD_SetWakeupTriggerEdge(uint8_t u8Event, uint8_t u8TrigEdge);
 en_flag_status_t PWC_PD_GetWakeupStatus(uint16_t u16Flag);
@@ -589,7 +598,7 @@ void PWC_WKT_ClearStatus(void);
 void PWC_RamModeConfig(uint16_t u16Mode);
 
 /* PWC Sleep Function */
-void PWC_SLEEP_Enter(void);
+void PWC_SLEEP_Enter(uint8_t u8SleepType);
 
 /* PWC Stop Function */
 void PWC_STOP_Enter(uint8_t u8StopType);

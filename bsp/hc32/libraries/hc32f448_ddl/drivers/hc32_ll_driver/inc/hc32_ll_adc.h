@@ -7,6 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
+                                    API fixed: ADC_DeInit()
+   2023-12-15       CDT             Add declaration of API ADC_MxChCmd(), ADC_ConvDataAverageMxChCmd(), and add defgroup ADC_Mx_Channel
+                                    Add declaration of API ADC_GetResolution()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -127,6 +131,34 @@ typedef struct {
  */
 
 /**
+ * @defgroup ADC_Mx_Channel ADC Channel
+ * @{
+ */
+#define ADC_MX_CH0                      (1U << 0U)          /*!< ADC channel 0 position  */
+#define ADC_MX_CH1                      (1U << 1U)          /*!< ADC channel 1 position  */
+#define ADC_MX_CH2                      (1U << 2U)          /*!< ADC channel 2 position  */
+#define ADC_MX_CH3                      (1U << 3U)          /*!< ADC channel 3 position  */
+#define ADC_MX_CH4                      (1U << 4U)          /*!< ADC channel 4 position  */
+#define ADC_MX_CH5                      (1U << 5U)          /*!< ADC channel 5 position  */
+#define ADC_MX_CH6                      (1U << 6U)          /*!< ADC channel 6 position  */
+#define ADC_MX_CH7                      (1U << 7U)          /*!< ADC channel 7 position  */
+#define ADC_MX_CH8                      (1U << 8U)          /*!< ADC channel 8 position  */
+#define ADC_MX_CH9                      (1U << 9U)          /*!< ADC channel 9 position  */
+#define ADC_MX_CH10                     (1U << 10U)         /*!< ADC channel 10 position */
+#define ADC_MX_CH11                     (1U << 11U)         /*!< ADC channel 11 position */
+#define ADC_MX_CH12                     (1U << 12U)         /*!< ADC channel 12 position */
+#define ADC_MX_CH13                     (1U << 13U)         /*!< ADC channel 13 position */
+#define ADC_MX_CH14                     (1U << 14U)         /*!< ADC channel 14 position */
+#define ADC_MX_CH15                     (1U << 15U)         /*!< ADC channel 15 position */
+
+#define ADC1_MX_CH_ALL                  (0xFFFFUL)          /*!< ADC1 Channel mask position */
+#define ADC2_MX_CH_ALL                  (0xFFUL)            /*!< ADC2 Channel mask position */
+#define ADC3_MX_CH_ALL                  (0xFFFUL)           /*!< ADC3 Channel mask position */
+/**
+ * @}
+ */
+
+/**
  * @defgroup ADC_Scan_Mode ADC Scan Convert Mode
  * @{
  */
@@ -192,8 +224,8 @@ typedef struct {
  * @defgroup ADC_Sample_Mode ADC Sample Mode
  * @{
  */
-#define ADC_SPL_MD_NORMAL               (0U)                /*!< ADC normal sampling mode. */
-#define ADC_SPL_MD_OVER                 (ADC_CR2_OVSMOD)    /*!< ADC over sampling mode. */
+#define ADC_SAMPLE_MD_NORMAL            (0U)                /*!< ADC normal sampling mode. */
+#define ADC_SAMPLE_MD_OVER              (ADC_CR2_OVSMOD)    /*!< ADC over sampling mode. */
 /**
  * @}
  */
@@ -202,15 +234,15 @@ typedef struct {
  * @defgroup ADC_Over_Sample_Shift ADC Over Sample Shift
  * @{
  */
-#define ADC_OVER_SPL_SHIFT_0BIT         (0U)                        /*!< Right shift 0 bit when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_1BIT         (1U << ADC_CR2_OVSS_POS)    /*!< Right shift 1 bit when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_2BIT         (2U << ADC_CR2_OVSS_POS)    /*!< Right shift 2 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_3BIT         (3U << ADC_CR2_OVSS_POS)    /*!< Right shift 3 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_4BIT         (4U << ADC_CR2_OVSS_POS)    /*!< Right shift 4 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_5BIT         (5U << ADC_CR2_OVSS_POS)    /*!< Right shift 5 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_6BIT         (6U << ADC_CR2_OVSS_POS)    /*!< Right shift 6 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_7BIT         (7U << ADC_CR2_OVSS_POS)    /*!< Right shift 7 bits when use over sampling mode. */
-#define ADC_OVER_SPL_SHIFT_8BIT         (8U << ADC_CR2_OVSS_POS)    /*!< Right shift 8 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_0BIT      (0U)                        /*!< Right shift 0 bit when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_1BIT      (1U << ADC_CR2_OVSS_POS)    /*!< Right shift 1 bit when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_2BIT      (2U << ADC_CR2_OVSS_POS)    /*!< Right shift 2 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_3BIT      (3U << ADC_CR2_OVSS_POS)    /*!< Right shift 3 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_4BIT      (4U << ADC_CR2_OVSS_POS)    /*!< Right shift 4 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_5BIT      (5U << ADC_CR2_OVSS_POS)    /*!< Right shift 5 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_6BIT      (6U << ADC_CR2_OVSS_POS)    /*!< Right shift 6 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_7BIT      (7U << ADC_CR2_OVSS_POS)    /*!< Right shift 7 bits when use over sampling mode. */
+#define ADC_OVER_SAMPLE_SHIFT_8BIT      (8U << ADC_CR2_OVSS_POS)    /*!< Right shift 8 bits when use over sampling mode. */
 /**
  * @}
  */
@@ -267,8 +299,8 @@ typedef struct {
  * @defgroup ADC_Sync_Unit ADC Synchronous Unit
  * @{
  */
-#define ADC_SYNC_ADC1_ADC2              (0U)                        /*!< ADC1 and ADC2 work synchronously. */
-#define ADC_SYNC_ADC1_ADC2_ADC3         (0x1U << ADC_SYNCCR_SYNCMD_POS)       /*!< ADC1, ADC2 and ADC3 work synchronously. */
+#define ADC_SYNC_ADC1_ADC2              (0U)                                /*!< ADC1 and ADC2 work synchronously. */
+#define ADC_SYNC_ADC1_ADC2_ADC3         (0x1U << ADC_SYNCCR_SYNCMD_POS)     /*!< ADC1, ADC2 and ADC3 work synchronously. */
 /**
  * @}
  */
@@ -419,11 +451,13 @@ int32_t ADC_Init(CM_ADC_TypeDef *ADCx, const stc_adc_init_t *pstcAdcInit);
 int32_t ADC_DeInit(CM_ADC_TypeDef *ADCx);
 int32_t ADC_StructInit(stc_adc_init_t *pstcAdcInit);
 void ADC_ChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint8_t u8Ch, en_functional_state_t enNewState);
+void ADC_MxChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint32_t u32MxCh, en_functional_state_t enNewState);
 void ADC_SetSampleTime(CM_ADC_TypeDef *ADCx, uint8_t u8Ch, uint8_t u8SampleTime);
 
 /* Conversion data average calculation function. */
 void ADC_ConvDataAverageConfig(CM_ADC_TypeDef *ADCx, uint16_t u16AverageCount);
 void ADC_ConvDataAverageChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Ch, en_functional_state_t enNewState);
+void ADC_ConvDataAverageMxChCmd(CM_ADC_TypeDef *ADCx, uint32_t u32MxCh, en_functional_state_t enNewState);
 /* Extended channel. */
 void ADC_SetExtChSrc(CM_ADC_TypeDef *ADCx, uint8_t u8ExtChSrc);
 void ADC_SetSampleMode(CM_ADC_TypeDef *ADCx, uint16_t u16Mode);
@@ -432,7 +466,7 @@ void ADC_SetOverSampleShift(CM_ADC_TypeDef *ADCx, uint16_t u16ShiftValue);
 void ADC_TriggerConfig(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint16_t u16TriggerSel);
 void ADC_TriggerCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, en_functional_state_t enNewState);
 void ADC_IntCmd(CM_ADC_TypeDef *ADCx, uint8_t u8IntType, en_functional_state_t enNewState);
-void ADC_Start(CM_ADC_TypeDef *ADCx);
+int32_t ADC_Start(CM_ADC_TypeDef *ADCx);
 void ADC_Stop(CM_ADC_TypeDef *ADCx);
 uint16_t ADC_GetValue(const CM_ADC_TypeDef *ADCx, uint8_t u8Ch);
 uint16_t ADC_GetResolution(const CM_ADC_TypeDef *ADCx);

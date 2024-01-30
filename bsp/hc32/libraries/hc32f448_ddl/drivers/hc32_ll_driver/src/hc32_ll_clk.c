@@ -6,6 +6,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Modify API CLK_Xtal32Cmd(), CLK_MrcCmd() and CLK_LrcCmd(), use DDL_DelayUS() to replace CLK_Delay()
+   2023-12-15       CDT             Refine API CLK_XtalStdInit. and add API CLK_XtalStdCmd, CLK_SetXtalStdExceptionType
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -60,9 +62,14 @@
  * @brief Be able to modify TIMEOUT according to board condition.
  */
 #define CLK_TIMEOUT                     ((uint32_t)0x1000UL)
-#define CLK_LRC_TIMEOUT                 ((uint32_t)0x200U)
-#define CLK_MRC_TIMEOUT                 ((uint32_t)0x200U)
-#define CLK_XTAL32_TIMEOUT              ((uint32_t)0x200U)
+#define CLK_LRC_TIMEOUT                 (160U)
+#define CLK_MRC_TIMEOUT                 (1U)
+#define CLK_XTAL32_TIMEOUT              (160U)
+
+/**
+ * @brief XTALSTD exception type mask
+ */
+#define CLK_XTALSTD_EXP_TYPE_MASK       (CMU_XTALSTDCR_XTALSTDIE | CMU_XTALSTDCR_XTALSTDRE | CMU_XTALSTDCR_XTALSTDRIS)
 
 /**
  * @brief LRC State ON or OFF
@@ -116,7 +123,7 @@
  * @brief Switch clock stable time
  * @note Approx. 30us
  */
-#define CLK_SYSCLK_SW_STB               (HCLK_VALUE / 50000UL)
+#define CLK_SYSCLK_SW_STB               (30U)
 
 /**
  * @brief Clk FCG Default Value
@@ -173,20 +180,11 @@
 (   ((x) == CLK_XTALSTD_OFF)                      ||                           \
     ((x) == CLK_XTALSTD_ON))
 
-/* Parameter valid check for XTALSTD mode */
-#define IS_CLK_XTALSTD_MD(x)                                                   \
-(   ((x) == CLK_XTALSTD_MD_RST)                   ||                           \
-    ((x) == CLK_XTALSTD_MD_INT))
-
-/* Parameter valid check for XTALSTD interrupt state */
-#define IS_CLK_XTALSTD_INT_STATE(x)                                            \
-(   ((x) == CLK_XTALSTD_INT_OFF)                  ||                           \
-    ((x) == CLK_XTALSTD_INT_ON))
-
-/* Parameter valid check for XTALSTD reset state */
-#define IS_CLK_XTALSTD_RST_STATE(x)                                            \
-(   ((x) == CLK_XTALSTD_RST_OFF)                  ||                           \
-    ((x) == CLK_XTALSTD_RST_ON))
+/* Parameter valid check for XTALSTD exception type */
+#define IS_CLK_XTALSTD_EXP_TYPE(x)                                             \
+(   ((x) == CLK_XTALSTD_EXP_TYPE_NONE)            ||                           \
+    ((x) == CLK_XTALSTD_EXP_TYPE_RST)             ||                           \
+    ((x) == CLK_XTALSTD_EXP_TYPE_INT))
 
 /* Parameter valid check for PLL state */
 #define IS_CLK_PLL_STATE(x)                                                    \
@@ -435,20 +433,6 @@
  * @{
  */
 /**
- * @brief Clk delay function
- * @param [in] u32Delay         count
- * @retval when switch clock source, should be delay some time to wait stable.
- */
-static void CLK_Delay(uint32_t u32Delay)
-{
-    __IO uint32_t u32Timeout = 0UL;
-
-    while (u32Timeout < u32Delay) {
-        u32Timeout++;
-    }
-}
-
-/**
  * @brief  Wait clock stable flag.
  * @param  [in] u8Flag      Specifies the stable flag to be wait. @ref CLK_STB_Flag
  * @param  [in] u32Time     Specifies the time to wait while the flag not be set.
@@ -494,19 +478,19 @@ static void SetSysClockSrc(uint8_t u8Src)
         WRITE_REG32(CM_PWC->FCG2, CLK_FCG2_DEFAULT);
         WRITE_REG32(CM_PWC->FCG3, CLK_FCG3_DEFAULT);
         /* Wait stable after close FCGx. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
     /* Set system clock source */
     WRITE_REG8(CM_CMU->CKSWR, u8Src);
     /* Wait stable after setting system clock source */
-    CLK_Delay(CLK_SYSCLK_SW_STB);
+    DDL_DelayUS(CLK_SYSCLK_SW_STB);
     if (1U == u8TmpFlag) {
         WRITE_REG32(CM_PWC->FCG0, fcg0);
         WRITE_REG32(CM_PWC->FCG1, fcg1);
         WRITE_REG32(CM_PWC->FCG2, fcg2);
         WRITE_REG32(CM_PWC->FCG3, fcg3);
         /* Wait stable after open fcg. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
 }
 
@@ -514,9 +498,9 @@ static void GetClockFreq(stc_clock_freq_t *pstcClockFreq)
 {
     stc_clock_scale_t *pstcClockScale;
     uint32_t u32HrcValue;
-    uint32_t plln;
-    uint32_t pllp;
-    uint32_t pllm;
+    uint8_t plln;
+    uint8_t pllp;
+    uint8_t pllm;
 
     switch (READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW)) {
         case CLK_SYSCLK_SRC_HRC:
@@ -541,9 +525,9 @@ static void GetClockFreq(stc_clock_freq_t *pstcClockFreq)
             break;
         case CLK_SYSCLK_SRC_PLL:
             /* PLLHP is used as system clock. */
-            pllp = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHP) >> CMU_PLLHCFGR_PLLHP_POS);
-            plln = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHN) >> CMU_PLLHCFGR_PLLHN_POS);
-            pllm = (uint32_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHM) >> CMU_PLLHCFGR_PLLHM_POS);
+            pllp = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHP) >> CMU_PLLHCFGR_PLLHP_POS);
+            plln = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHN) >> CMU_PLLHCFGR_PLLHN_POS);
+            pllm = (uint8_t)((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLHM) >> CMU_PLLHCFGR_PLLHM_POS);
             /* pll = ((pllin / pllm) * plln) / pllp */
             if (CLK_PLL_SRC_XTAL == PLL_SRC) {
                 pstcClockFreq->u32SysclkFreq = ((XTAL_VALUE / (pllm + 1UL)) * (plln + 1UL)) / (pllp + 1UL);
@@ -606,17 +590,17 @@ static void SetSysClockDiv(uint32_t u32Clock, uint32_t u32Div)
         WRITE_REG32(CM_PWC->FCG2, CLK_FCG2_DEFAULT);
         WRITE_REG32(CM_PWC->FCG3, CLK_FCG3_DEFAULT);
         /* Wait stable after close FCGx. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
     MODIFY_REG32(CM_CMU->SCFGR, u32Clock, u32Div);
-    CLK_Delay(CLK_SYSCLK_SW_STB);
+    DDL_DelayUS(CLK_SYSCLK_SW_STB);
     if (1U == u8TmpFlag) {
         WRITE_REG32(CM_PWC->FCG0, fcg0);
         WRITE_REG32(CM_PWC->FCG1, fcg1);
         WRITE_REG32(CM_PWC->FCG2, fcg2);
         WRITE_REG32(CM_PWC->FCG3, fcg3);
         /* Wait stable after open fcg. */
-        CLK_Delay(CLK_SYSCLK_SW_STB);
+        DDL_DelayUS(CLK_SYSCLK_SW_STB);
     }
 }
 
@@ -651,9 +635,9 @@ int32_t CLK_LrcCmd(en_functional_state_t enNewState)
         }
     } else {
         WRITE_REG8(CM_CMU->LRCCR, CLK_LRC_ON);
-
-        CLK_Delay(CLK_LRC_TIMEOUT);
     }
+    /* wait approx, 5 * LRC cycle */
+    DDL_DelayUS(CLK_LRC_TIMEOUT);
 
     return i32Ret;
 }
@@ -681,9 +665,9 @@ int32_t CLK_MrcCmd(en_functional_state_t enNewState)
         }
     } else {
         WRITE_REG8(CM_CMU->MRCCR, CLK_MRC_ON);
-
-        CLK_Delay(CLK_MRC_TIMEOUT);
     }
+    /* Wait approx. 5 * MRC cycle */
+    DDL_DelayUS(CLK_MRC_TIMEOUT);
 
     return i32Ret;
 }
@@ -839,9 +823,8 @@ int32_t CLK_XtalCmd(en_functional_state_t enNewState)
     if (DISABLE == enNewState) {
         if (CLK_SYSCLK_SRC_XTAL == READ_REG8_BIT(CM_CMU->CKSWR, CMU_CKSWR_CKSW)) {
             i32Ret = LL_ERR_BUSY;
-        }
-        /* XTAL as PLL clock source and PLL is working */
-        else if (CLK_PLL_SRC_XTAL == PLL_SRC) {
+        } else if (CLK_PLL_SRC_XTAL == PLL_SRC) {
+            /* XTAL as PLL clock source and PLL is working */
             if (0UL == PLL_EN_REG) {
                 i32Ret = LL_ERR_BUSY;
             } else {
@@ -924,62 +907,77 @@ int32_t CLK_XtalDivInit(const stc_clock_xtaldiv_init_t *pstcXtalDivInit)
 }
 
 /**
- * @brief  Init XtalStd initial structure with default value.
- * @param  [in] pstcXtalStdInit specifies the Parameter of XTALSTD.
+ * @brief  XTAL status detection function enable/disable.
+ * @param  [in] enNewState An @ref en_functional_state_t enumeration value.
+ * @retval None
+ */
+void CLK_XtalStdCmd(en_functional_state_t enNewState)
+{
+    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
+    DDL_ASSERT(IS_CLK_UNLOCKED());
+
+    if (DISABLE == enNewState) {
+        CLR_REG8_BIT(CM_CMU->XTALSTDCR, CMU_XTALSTDCR_XTALSTDE);
+    } else {
+        SET_REG8_BIT(CM_CMU->XTALSTDCR, CMU_XTALSTDCR_XTALSTDE);
+    }
+}
+
+/**
+ * @brief  Initialise the XTAL status detection.
+ * @param  [in] u8State specifies the Parameter of XTALSTD.
+ * @param  [in] u8ExceptionType specifies the Parameter of XTALSTD.
  * @retval int32_t:
  *         - LL_OK: Initialize success
  *         - LL_ERR_INVD_PARAM: Invalid parameter
  */
-int32_t CLK_XtalStdStructInit(stc_clock_xtalstd_init_t *pstcXtalStdInit)
+int32_t CLK_XtalStdInit(uint8_t u8State, uint8_t u8ExceptionType)
 {
     int32_t i32Ret = LL_OK;
 
-    /* Check if pointer is NULL */
-    if (NULL == pstcXtalStdInit) {
-        i32Ret = LL_ERR_INVD_PARAM;
-    } else {
-        /* Configure to default value */
-        pstcXtalStdInit->u8State = CLK_XTALSTD_OFF;
-        pstcXtalStdInit->u8Mode  = CLK_XTALSTD_MD_INT;
-        pstcXtalStdInit->u8Int   = CLK_XTALSTD_INT_OFF;
-        pstcXtalStdInit->u8Reset = CLK_XTALSTD_RST_OFF;
+    /* Parameter valid check */
+    DDL_ASSERT(IS_CLK_XTALSTD_STATE(u8State));
+    DDL_ASSERT(IS_CLK_XTALSTD_EXP_TYPE(u8ExceptionType));
+    DDL_ASSERT(IS_CLK_UNLOCKED());
+
+    if ((CLK_PLL_SRC_XTAL == PLL_SRC) && (u8ExceptionType == CLK_XTALSTD_EXP_TYPE_INT)) {
+        if (0UL == PLL_EN_REG) {
+            /* while xtal used as PLL clock source, XTALSTD only choose reset exception */
+            i32Ret = LL_ERR_INVD_PARAM;
+        }
+    }
+    if (LL_OK == i32Ret) {
+        /* Initialize XTALSTD */
+        WRITE_REG8(CM_CMU->XTALSTDCR, u8State | u8ExceptionType);
     }
 
     return i32Ret;
 }
 
 /**
- * @brief  Initialise the XTAL status detection.
- * @param  [in] pstcXtalStdInit specifies the Parameter of XTALSTD.
- *   @arg  u8State: The new state of the XTALSTD.
- *   @arg  u8Mode:  The XTAL status detection occur interrupt or reset.
- *   @arg  u8Int:   The XTAL status detection interrupt on or off.
- *   @arg  u8Reset:   The XTAL status detection reset on or off.
+ * @brief  Set XTALSTD exception type.
+ * @param  [in] u8ExceptionType specifies the XTALSTD exception type.
  * @retval int32_t:
  *         - LL_OK: Initialize success
  *         - LL_ERR_INVD_PARAM: Invalid parameter
  */
-int32_t CLK_XtalStdInit(const stc_clock_xtalstd_init_t *pstcXtalStdInit)
+int32_t CLK_SetXtalStdExceptionType(uint8_t u8ExceptionType)
 {
     int32_t i32Ret = LL_OK;
 
-    /* Check if pointer is NULL */
-    if (NULL == pstcXtalStdInit) {
-        i32Ret = LL_ERR_INVD_PARAM;
-    } else {
-        /* Parameter valid check */
-        DDL_ASSERT(IS_CLK_XTALSTD_STATE(pstcXtalStdInit->u8State));
-        DDL_ASSERT(IS_CLK_UNLOCKED());
-        /* Parameter valid check */
-        DDL_ASSERT(IS_CLK_XTALSTD_MD(pstcXtalStdInit->u8Mode));
-        DDL_ASSERT(IS_CLK_XTALSTD_INT_STATE(pstcXtalStdInit->u8Int));
-        DDL_ASSERT(IS_CLK_XTALSTD_RST_STATE(pstcXtalStdInit->u8Reset));
+    /* Parameter valid check */
+    DDL_ASSERT(IS_CLK_XTALSTD_EXP_TYPE(u8ExceptionType));
+    DDL_ASSERT(IS_CLK_UNLOCKED());
 
-        /* Configure and enable XTALSTD */
-        WRITE_REG8(CM_CMU->XTALSTDCR, (pstcXtalStdInit->u8State |   \
-                                       pstcXtalStdInit->u8Mode  |   \
-                                       pstcXtalStdInit->u8Int   |   \
-                                       pstcXtalStdInit->u8Reset));
+    if ((CLK_PLL_SRC_XTAL == PLL_SRC) && (u8ExceptionType == CLK_XTALSTD_EXP_TYPE_INT)) {
+        if (0UL == PLL_EN_REG) {
+            /* while xtal used as PLL clock source, XTALSTD only choose reset exception */
+            i32Ret = LL_ERR_INVD_PARAM;
+        }
+    }
+    if (LL_OK == i32Ret) {
+        /* Set exception type */
+        MODIFY_REG8(CM_CMU->XTALSTDCR, CLK_XTALSTD_EXP_TYPE_MASK, u8ExceptionType);
     }
 
     return i32Ret;
@@ -1008,7 +1006,7 @@ void CLK_ClearXtalStdStatus(void)
  */
 en_flag_status_t CLK_GetXtalStdStatus(void)
 {
-    return ((0x00U != READ_REG32(CM_CMU->XTALSTDSR)) ? SET : RESET);
+    return ((0x00U != READ_REG8(CM_CMU->XTALSTDSR)) ? SET : RESET);
 }
 
 /**
@@ -1096,8 +1094,9 @@ int32_t CLK_Xtal32Cmd(en_functional_state_t enNewState)
     } else {
         WRITE_REG8(CM_CMU->XTAL32CR, CLK_XTAL32_ON);
         /* wait stable*/
-        CLK_Delay(CLK_XTAL32_TIMEOUT);
     }
+    /* wait approx. 5 * xtal32 cycle */
+    DDL_DelayUS(CLK_XTAL32_TIMEOUT);
 
     return i32Ret;
 }
