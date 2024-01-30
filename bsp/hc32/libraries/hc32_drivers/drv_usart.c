@@ -815,18 +815,18 @@ void USART1_Handler(void)
     rt_interrupt_enter();
 
     if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, USART_FLAG_RX_FULL)) && \
-            (SET == USART_GetFunc(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
+            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
     {
         hc32_uart_rx_irq_handler(&uart_obj[UART1_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, USART_FLAG_TX_EMPTY)) && \
-            (SET == USART_GetFunc(uart_obj[UART1_INDEX].config->Instance, USART_INT_TX_EMPTY)))
+            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_TX_EMPTY)))
     {
         hc32_uart_tx_irq_handler(&uart_obj[UART1_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance,             \
                                 (USART_FLAG_OVERRUN | USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR))) &&    \
-            (SET == USART_GetFunc(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
+            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
     {
         hc32_uart_rxerr_irq_handler(&uart_obj[UART1_INDEX]);
     }
@@ -923,28 +923,28 @@ void USART2_Handler(void)
 
 #if defined (RT_SERIAL_USING_DMA) && defined (BSP_UART2_RX_USING_DMA)
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_RX_TIMEOUT)) && \
-            (SET == USART_GetFunc(uart_obj[UART2_INDEX].config->Instance, USART_RX_TIMEOUT)) && \
-            (ENABLE == INTC_GetIntSrcStatus(uart_obj[UART2_INDEX].config->rxto_int_src)))
+            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_RX_TIMEOUT)) && \
+            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxto_int_src)))
     {
         hc32_uart_rxto_irq_handler(&uart_obj[UART2_INDEX]);
     }
 #endif
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_RX_FULL)) && \
-            (SET == USART_GetFunc(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))         && \
-            (ENABLE == INTC_GetIntSrcStatus(uart_obj[UART2_INDEX].config->rx_int_src)))
+            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))         && \
+            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rx_int_src)))
     {
         hc32_uart_rx_irq_handler(&uart_obj[UART2_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_TX_EMPTY)) && \
-            (SET == USART_GetFunc(uart_obj[UART2_INDEX].config->Instance, USART_INT_TX_EMPTY))    && \
-            (ENABLE == INTC_GetIntSrcStatus(uart_obj[UART2_INDEX].config->tx_int_src)))
+            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_TX_EMPTY))    && \
+            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->tx_int_src)))
     {
         hc32_uart_tx_irq_handler(&uart_obj[UART2_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, (USART_FLAG_OVERRUN |    \
                                 USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR)))               && \
-            (SET == USART_GetFunc(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))          && \
-            (ENABLE == INTC_GetIntSrcStatus(uart_obj[UART2_INDEX].config->rxerr_int_src)))
+            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))          && \
+            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxerr_int_src)))
     {
         hc32_uart_rxerr_irq_handler(&uart_obj[UART2_INDEX]);
     }
