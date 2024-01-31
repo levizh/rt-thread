@@ -63,6 +63,13 @@ rt_err_t rt_hw_board_i2c_init(CM_I2C_TypeDef *I2Cx)
         GPIO_SetFunc(I2C1_SCL_PORT, I2C1_SCL_PIN, I2C1_SCL_FUNC);
         break;
 #endif
+#if defined(BSP_USING_I2C2) // TODO, ch2 for test only
+    case (rt_uint32_t)CM_I2C2:
+        /* Configure I2C2 SDA/SCL pin. */
+        GPIO_SetFunc(I2C2_SDA_PORT, I2C2_SDA_PIN, I2C2_SDA_FUNC);
+        GPIO_SetFunc(I2C2_SCL_PORT, I2C2_SCL_PIN, I2C2_SCL_FUNC);
+        break;
+#endif
     default:
         result = -RT_ERROR;
         break;

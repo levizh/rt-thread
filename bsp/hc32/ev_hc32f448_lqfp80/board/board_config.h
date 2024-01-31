@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -54,6 +53,17 @@
     #define I2C1_SCL_PIN                    (GPIO_PIN_01)
     #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
 #endif
+
+#if defined(BSP_USING_I2C2) // TODO, ch2 for test only
+    #define I2C2_SDA_PORT                   (GPIO_PORT_A)
+    #define I2C2_SDA_PIN                    (GPIO_PIN_09)
+    #define I2C2_SDA_FUNC                   (GPIO_FUNC_50)
+
+    #define I2C2_SCL_PORT                   (GPIO_PORT_A)
+    #define I2C2_SCL_PIN                    (GPIO_PIN_10)
+    #define I2C2_SCL_FUNC                   (GPIO_FUNC_51)
+#endif
+
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
