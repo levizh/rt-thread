@@ -27,24 +27,10 @@ extern "C" {
         .name     = "uart1",                                    \
         .Instance = CM_USART1,                                  \
         .clock    = FCG3_PERIPH_USART1,                         \
-        .rxerr_irq.irq_config =                                 \
-        {                                                       \
-            .irq_num    = BSP_UART1_RXERR_IRQ_NUM,              \
-            .irq_prio   = BSP_UART1_RXERR_IRQ_PRIO,             \
-            .int_src    = INT_SRC_USART1_EI,                    \
-        },                                                      \
-        .rx_irq.irq_config =                                    \
-        {                                                       \
-            .irq_num    = BSP_UART1_RX_IRQ_NUM,                 \
-            .irq_prio   = BSP_UART1_RX_IRQ_PRIO,                \
-            .int_src    = INT_SRC_USART1_RI,                    \
-        },                                                      \
-        .tx_irq.irq_config =                                    \
-        {                                                       \
-            .irq_num    = BSP_UART1_TX_IRQ_NUM,                 \
-            .irq_prio   = BSP_UART1_TX_IRQ_PRIO,                \
-            .int_src    = INT_SRC_USART1_TI,                    \
-        },                                                      \
+        .irq_num  = BSP_UART1_IRQ_NUM,                          \
+        .rxerr_int_src = INT_SRC_USART1_EI,                     \
+        .rx_int_src    = INT_SRC_USART1_RI,                     \
+        .tx_int_src    = INT_SRC_USART1_TI,                     \
     }
 #endif /* UART1_CONFIG */
 
@@ -62,6 +48,7 @@ extern "C" {
             .irq_num    = UART1_RX_DMA_IRQn,                    \
             .irq_prio   = UART1_RX_DMA_INT_PRIO,                \
             .int_src    = UART1_RX_DMA_INT_SRC,                 \
+            .int_src_msk= UART1_RX_DMA_INT_SRC_MSK,             \
         },                                                      \
     }
 #endif /* UART1_DMA_RX_CONFIG */
@@ -73,12 +60,6 @@ extern "C" {
         .channel       = TMR0_CH_A,                             \
         .clock         = FCG2_PERIPH_TMR0_1,                    \
         .timeout_bits  = 20UL,                                  \
-        .irq_config    =                                        \
-        {                                                       \
-            .irq_num   = BSP_UART1_RXTO_IRQ_NUM,                \
-            .irq_prio  = BSP_UART1_RXTO_IRQ_PRIO,               \
-            .int_src   = INT_SRC_USART1_RTO,                    \
-        },                                                      \
     }
 #endif /* UART1_RXTO_CONFIG */
 #endif /* BSP_UART1_RX_USING_DMA */

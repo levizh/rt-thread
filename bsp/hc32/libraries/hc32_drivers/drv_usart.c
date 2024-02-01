@@ -736,6 +736,7 @@ static void hc32_uart_tc_irq_handler(struct hc32_uart *uart)
 #endif
 
 #if defined(BSP_USING_UART1)
+#if defined (HC32F460) || defined (HC32F4A0)
 static void hc32_uart1_rx_irq_handler(void)
 {
     /* enter interrupt */
@@ -768,10 +769,25 @@ static void hc32_uart1_rxerr_irq_handler(void)
     /* leave interrupt */
     rt_interrupt_leave();
 }
+#endif /* HC32F460, HC32F4A0 */
 
 #if defined(RT_SERIAL_USING_DMA)
+#if defined(BSP_UART1_TX_USING_DMA)
+static void hc32_uart1_tc_irq_handler(void)
+{
+    /* enter interrupt */
+    rt_interrupt_enter();
+
+    hc32_uart_tc_irq_handler(&uart_obj[UART1_INDEX]);
+
+    /* leave interrupt */
+    rt_interrupt_leave();
+}
+#endif /* BSP_UART1_TX_USING_DMA */
+
 #if defined(BSP_UART1_RX_USING_DMA)
-static void hc32_uart1_rxto_irq_handler(void)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+static void hc32_uart2_rxto_irq_handler(void)
 {
     /* enter interrupt */
     rt_interrupt_enter();
@@ -781,6 +797,7 @@ static void hc32_uart1_rxto_irq_handler(void)
     /* leave interrupt */
     rt_interrupt_leave();
 }
+#endif /* HC32F460, HC32F4A0, HC32F4A2 */
 
 static void hc32_uart1_dma_rx_irq_handler(void)
 {
@@ -788,19 +805,6 @@ static void hc32_uart1_dma_rx_irq_handler(void)
     rt_interrupt_enter();
 
     hc32_uart_dma_rx_irq_handler(&uart_obj[UART1_INDEX]);
-
-    /* leave interrupt */
-    rt_interrupt_leave();
-}
-#endif /* BSP_UART1_RX_USING_DMA */
-
-#if defined(BSP_UART1_TX_USING_DMA)
-static void hc32_uart1_tc_irq_handler(void)
-{
-    /* enter interrupt */
-    rt_interrupt_enter();
-
-    hc32_uart_tc_irq_handler(&uart_obj[UART1_INDEX]);
 
     /* leave interrupt */
     rt_interrupt_leave();
@@ -814,22 +818,34 @@ void USART1_Handler(void)
     /* enter interrupt */
     rt_interrupt_enter();
 
+#if defined (RT_SERIAL_USING_DMA) && defined (BSP_UART1_RX_USING_DMA)
+    if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, USART_FLAG_RX_TIMEOUT)) && \
+        (ENABLE == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_RX_TIMEOUT)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART1_INDEX].config->rxto_int_src)))
+    {
+        hc32_uart_rxto_irq_handler(&uart_obj[UART1_INDEX]);
+    }
+#endif
     if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, USART_FLAG_RX_FULL)) && \
-            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART1_INDEX].config->rx_int_src)))
     {
         hc32_uart_rx_irq_handler(&uart_obj[UART1_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, USART_FLAG_TX_EMPTY)) && \
-            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_TX_EMPTY)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_TX_EMPTY)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART1_INDEX].config->tx_int_src)))
     {
         hc32_uart_tx_irq_handler(&uart_obj[UART1_INDEX]);
     }
-    if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance,             \
-                                (USART_FLAG_OVERRUN | USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR))) &&    \
-            (SET == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX)))
+    if ((SET == USART_GetStatus(uart_obj[UART1_INDEX].config->Instance, (USART_FLAG_OVERRUN | \
+                                USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR)))               && \
+        (ENABLE == USART_GetFuncState(uart_obj[UART1_INDEX].config->Instance, USART_INT_RX))  && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART1_INDEX].config->rxerr_int_src)))
     {
         hc32_uart_rxerr_irq_handler(&uart_obj[UART1_INDEX]);
     }
+
     /* leave interrupt */
     rt_interrupt_leave();
 }
@@ -923,28 +939,28 @@ void USART2_Handler(void)
 
 #if defined (RT_SERIAL_USING_DMA) && defined (BSP_UART2_RX_USING_DMA)
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_RX_TIMEOUT)) && \
-            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_RX_TIMEOUT)) && \
-            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxto_int_src)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_RX_TIMEOUT)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxto_int_src)))
     {
         hc32_uart_rxto_irq_handler(&uart_obj[UART2_INDEX]);
     }
 #endif
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_RX_FULL)) && \
-            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))         && \
-            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rx_int_src)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rx_int_src)))
     {
         hc32_uart_rx_irq_handler(&uart_obj[UART2_INDEX]);
     }
     if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, USART_FLAG_TX_EMPTY)) && \
-            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_TX_EMPTY))    && \
-            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->tx_int_src)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_TX_EMPTY)) && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->tx_int_src)))
     {
         hc32_uart_tx_irq_handler(&uart_obj[UART2_INDEX]);
     }
-    if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, (USART_FLAG_OVERRUN |    \
+    if ((SET == USART_GetStatus(uart_obj[UART2_INDEX].config->Instance, (USART_FLAG_OVERRUN | \
                                 USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR)))               && \
-            (SET == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))          && \
-            (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxerr_int_src)))
+        (ENABLE == USART_GetFuncState(uart_obj[UART2_INDEX].config->Instance, USART_INT_RX))  && \
+        (ENABLE == INTC_GetIntSrcState(uart_obj[UART2_INDEX].config->rxerr_int_src)))
     {
         hc32_uart_rxerr_irq_handler(&uart_obj[UART2_INDEX]);
     }
@@ -1408,7 +1424,9 @@ static void hc32_uart_get_dma_info(void)
     static struct dma_config uart1_dma_rx = UART1_DMA_RX_CONFIG;
     static struct hc32_uart_rxto uart1_rx_timeout = UART1_RXTO_CONFIG;
     uart1_dma_rx.irq_callback = hc32_uart1_dma_rx_irq_handler;
-    uart1_rx_timeout.irq_callback = hc32_uart1_rxto_irq_handler;
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+    uart2_rx_timeout.irq_callback = hc32_uart1_rxto_irq_handler;
+#endif
     uart_config[UART1_INDEX].rx_timeout = &uart1_rx_timeout;
     uart_config[UART1_INDEX].dma_rx = &uart1_dma_rx;
 #endif
@@ -1621,9 +1639,11 @@ int hc32_hw_uart_init(void)
         hc32_install_irq_handler(&uart_config[i].rxerr_irq.irq_config, uart_config[i].rxerr_irq.irq_callback, RT_FALSE);
 #elif defined (HC32F448)
         INTC_IntSrcCmd(uart_config[i].rxerr_int_src, DISABLE);
-        INTC_IntSrcCmd(uart_config[i].rxto_int_src, DISABLE);
         INTC_IntSrcCmd(uart_config[i].rx_int_src, DISABLE);
         INTC_IntSrcCmd(uart_config[i].tx_int_src, DISABLE);
+#ifdef RT_SERIAL_USING_DMA
+        INTC_IntSrcCmd(uart_config[i].rxto_int_src, DISABLE);
+#endif
         NVIC_ClearPendingIRQ(uart_config[i].irq_num);
         NVIC_EnableIRQ(uart_config[i].irq_num);
 #endif

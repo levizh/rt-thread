@@ -93,10 +93,6 @@ extern "C" {
 #define BSP_UART1_IRQ_NUM               USART1_IRQn
 #define BSP_UART1_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART1_RX_USING_DMA)
-#define BSP_UART1_RXTO_IRQ_NUM          USART1_IRQn
-#define BSP_UART1_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
-#endif
 #if defined(BSP_UART1_TX_USING_DMA)
 #define BSP_UART1_TX_CPLT_IRQ_NUM       USART1_IRQn
 #define BSP_UART1_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
@@ -107,10 +103,6 @@ extern "C" {
 #define BSP_UART2_IRQ_NUM               USART2_IRQn
 #define BSP_UART2_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART2_RX_USING_DMA)
-#define BSP_UART2_RXTO_IRQ_NUM          USART2_IRQn
-#define BSP_UART2_RXTO_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
-#endif
 #if defined(BSP_UART2_TX_USING_DMA)
 #define BSP_UART2_TX_CPLT_IRQ_NUM       USART2_TCI_IRQn
 #define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
