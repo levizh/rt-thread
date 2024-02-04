@@ -1624,7 +1624,7 @@ static void hc32_uart_get_dma_info(void)
     static struct dma_config uart5_dma_rx = UART5_DMA_RX_CONFIG;
     static struct hc32_uart_rxto uart5_rx_timeout = UART5_RXTO_CONFIG;
     uart5_dma_rx.irq_callback = hc32_uart5_dma_rx_irq_handler;
-    uart_config[UART4_INDEX].rx_timeout = &uart5_rx_timeout;
+    uart_config[UART5_INDEX].rx_timeout = &uart5_rx_timeout;
     uart_config[UART5_INDEX].dma_rx = &uart5_dma_rx;
 #endif
 #ifdef BSP_UART5_TX_USING_DMA

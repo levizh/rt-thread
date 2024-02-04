@@ -128,6 +128,28 @@ extern "C" {
 #define I2C2_RX_DMA_INT_SRC             INT_SRC_DMA1_TC3
 #endif
 
+/* DMA1 ch4 */
+#if defined(BSP_UART5_RX_USING_DMA) && !defined(UART5_RX_DMA_INSTANCE)
+#define UART5_RX_DMA_INSTANCE           CM_DMA1
+#define UART5_RX_DMA_CHANNEL            DMA_CH4
+#define UART5_RX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define UART5_RX_DMA_TRIG_SELECT        AOS_DMA1_4
+#define UART5_RX_DMA_IRQn               BSP_DMA1_CH4_IRQ_NUM
+#define UART5_RX_DMA_INT_PRIO           BSP_DMA1_CH4_IRQ_PRIO
+#define UART5_RX_DMA_INT_SRC            INT_SRC_DMA1_TC4
+#endif
+
+/* DMA1 ch5 */
+#if defined(BSP_UART5_TX_USING_DMA) && !defined(UART5_TX_DMA_INSTANCE)
+#define UART5_TX_DMA_INSTANCE           CM_DMA1
+#define UART5_TX_DMA_CHANNEL            DMA_CH5
+#define UART5_TX_DMA_CLOCK              (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define UART5_TX_DMA_TRIG_SELECT        AOS_DMA1_5
+#define UART5_TX_DMA_IRQn               BSP_DMA1_CH5_IRQ_NUM
+#define UART5_TX_DMA_INT_PRIO           BSP_DMA1_CH5_IRQ_PRIO
+#define UART5_TX_DMA_INT_SRC            INT_SRC_DMA1_TC5
+#endif
+
 /* DMA2 ch0 */
 #if defined(BSP_UART1_RX_USING_DMA) && !defined(UART1_RX_DMA_INSTANCE)
 #define UART1_RX_DMA_INSTANCE           CM_DMA2
@@ -137,16 +159,6 @@ extern "C" {
 #define UART1_RX_DMA_IRQn               BSP_DMA2_CH0_IRQ_NUM
 #define UART1_RX_DMA_INT_PRIO           BSP_DMA2_CH0_IRQ_PRIO
 #define UART1_RX_DMA_INT_SRC            INT_SRC_DMA2_TC0
-#endif
-
-#if defined(BSP_UART5_RX_USING_DMA) && !defined(UART5_RX_DMA_INSTANCE)
-#define UART5_RX_DMA_INSTANCE           CM_DMA2
-#define UART5_RX_DMA_CHANNEL            DMA_CH0
-#define UART5_RX_DMA_CLOCK              (PWC_FCG0_DMA2 | PWC_FCG0_AOS)
-#define UART5_RX_DMA_TRIG_SELECT        AOS_DMA2_0
-#define UART5_RX_DMA_IRQn               BSP_DMA2_CH0_IRQ_NUM
-#define UART5_RX_DMA_INT_PRIO           BSP_DMA2_CH0_IRQ_PRIO
-#define UART5_RX_DMA_INT_SRC            INT_SRC_DMA2_TC0
 #endif
 
 /* DMA2 ch1 */
@@ -160,16 +172,6 @@ extern "C" {
 #define UART1_TX_DMA_INT_SRC            INT_SRC_DMA2_TC1
 #endif
 
-#if defined(BSP_UART5_TX_USING_DMA) && !defined(UART5_TX_DMA_INSTANCE)
-#define UART5_TX_DMA_INSTANCE           CM_DMA2
-#define UART5_TX_DMA_CHANNEL            DMA_CH1
-#define UART5_TX_DMA_CLOCK              (PWC_FCG0_DMA2 | PWC_FCG0_AOS)
-#define UART5_TX_DMA_TRIG_SELECT        AOS_DMA2_1
-#define UART5_TX_DMA_IRQn               BSP_DMA2_CH1_IRQ_NUM
-#define UART5_TX_DMA_INT_PRIO           BSP_DMA2_CH1_IRQ_PRIO
-#define UART5_TX_DMA_INT_SRC            INT_SRC_DMA2_TC1
-#endif
-
 /* DMA2 ch2 */
 #if defined(BSP_UART2_RX_USING_DMA) && !defined(UART2_RX_DMA_INSTANCE)
 #define UART2_RX_DMA_INSTANCE           CM_DMA2
@@ -179,16 +181,6 @@ extern "C" {
 #define UART2_RX_DMA_IRQn               BSP_DMA2_CH2_IRQ_NUM
 #define UART2_RX_DMA_INT_PRIO           BSP_DMA2_CH2_IRQ_PRIO
 #define UART2_RX_DMA_INT_SRC            INT_SRC_DMA2_TC2
-#endif
-
-#if defined(BSP_UART4_RX_USING_DMA) && !defined(UART4_RX_DMA_INSTANCE)
-#define UART4_RX_DMA_INSTANCE           CM_DMA2
-#define UART4_RX_DMA_CHANNEL            DMA_CH2
-#define UART4_RX_DMA_CLOCK              (PWC_FCG0_DMA2 | PWC_FCG0_AOS)
-#define UART4_RX_DMA_TRIG_SELECT        AOS_DMA2_2
-#define UART4_RX_DMA_IRQn               BSP_DMA2_CH2_IRQ_NUM
-#define UART4_RX_DMA_INT_PRIO           BSP_DMA2_CH2_IRQ_PRIO
-#define UART4_RX_DMA_INT_SRC            INT_SRC_DMA2_TC2
 #endif
 
 /* DMA2 ch3 */
@@ -202,14 +194,26 @@ extern "C" {
 #define UART2_TX_DMA_INT_SRC            INT_SRC_DMA2_TC3
 #endif
 
+/* DMA2 ch4 */
+#if defined(BSP_UART4_RX_USING_DMA) && !defined(UART4_RX_DMA_INSTANCE)
+#define UART4_RX_DMA_INSTANCE           CM_DMA2
+#define UART4_RX_DMA_CHANNEL            DMA_CH4
+#define UART4_RX_DMA_CLOCK              (PWC_FCG0_DMA2 | PWC_FCG0_AOS)
+#define UART4_RX_DMA_TRIG_SELECT        AOS_DMA2_4
+#define UART4_RX_DMA_IRQn               BSP_DMA2_CH4_IRQ_NUM
+#define UART4_RX_DMA_INT_PRIO           BSP_DMA2_CH4_IRQ_PRIO
+#define UART4_RX_DMA_INT_SRC            INT_SRC_DMA2_TC4
+#endif
+
+/* DMA2 ch5 */
 #if defined(BSP_UART4_TX_USING_DMA) && !defined(UART4_TX_DMA_INSTANCE)
 #define UART4_TX_DMA_INSTANCE           CM_DMA2
-#define UART4_TX_DMA_CHANNEL            DMA_CH3
+#define UART4_TX_DMA_CHANNEL            DMA_CH5
 #define UART4_TX_DMA_CLOCK              (PWC_FCG0_DMA2 | PWC_FCG0_AOS)
-#define UART4_TX_DMA_TRIG_SELECT        AOS_DMA2_3
-#define UART4_TX_DMA_IRQn               BSP_DMA2_CH3_IRQ_NUM
-#define UART4_TX_DMA_INT_PRIO           BSP_DMA2_CH3_IRQ_PRIO
-#define UART4_TX_DMA_INT_SRC            INT_SRC_DMA2_TC3
+#define UART4_TX_DMA_TRIG_SELECT        AOS_DMA2_5
+#define UART4_TX_DMA_IRQn               BSP_DMA2_CH5_IRQ_NUM
+#define UART4_TX_DMA_INT_PRIO           BSP_DMA2_CH5_IRQ_PRIO
+#define UART4_TX_DMA_INT_SRC            INT_SRC_DMA2_TC5
 #endif
 
 #ifdef __cplusplus
