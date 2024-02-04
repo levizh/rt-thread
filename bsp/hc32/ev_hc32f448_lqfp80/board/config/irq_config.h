@@ -154,6 +154,31 @@ extern "C" {
 #define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
+#if defined(BSP_USING_TMRA_1)
+#define BSP_USING_TMRA_1_IRQ_NUM        TMRA_1_OVF_UDF_IRQn
+#define BSP_USING_TMRA_1_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_1 */
+
+#if defined(BSP_USING_TMRA_2)
+#define BSP_USING_TMRA_2_IRQ_NUM        TMRA_2_OVF_UDF_IRQn
+#define BSP_USING_TMRA_2_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_2 */
+
+#if defined(BSP_USING_TMRA_3)
+#define BSP_USING_TMRA_3_IRQ_NUM        TMRA_3_OVF_UDF_IRQn
+#define BSP_USING_TMRA_3_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_3 */
+
+#if defined(BSP_USING_TMRA_4)
+#define BSP_USING_TMRA_4_IRQ_NUM        TMRA_4_OVF_UDF_IRQn
+#define BSP_USING_TMRA_4_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_4 */
+
+#if defined(BSP_USING_TMRA_5)
+#define BSP_USING_TMRA_5_IRQ_NUM        TMRA_5_OVF_UDF_IRQn
+#define BSP_USING_TMRA_5_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_5 */
+
 #if defined(BSP_USING_CAN1)
 #define BSP_CAN1_IRQ_NUM                MCAN1_INT0_IRQn
 #define BSP_CAN1_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT

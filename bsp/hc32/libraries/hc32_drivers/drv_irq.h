@@ -47,6 +47,8 @@ struct hc32_irq_config
 rt_err_t hc32_install_irq_handler(struct hc32_irq_config *irq_config,
                                   void (*irq_hdr)(void),
                                   rt_bool_t irq_enable);
+rt_err_t hc32_install_independ_irq_handler(struct hc32_irq_config *irq_config,
+                                  rt_bool_t irq_enable);
 
 #ifdef __cplusplus
 }
