@@ -25,7 +25,7 @@ extern "C" {
 #define SPI1_RX_DMA_CHANNEL             DMA_CH0
 #define SPI1_RX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI1_RX_DMA_TRIG_SELECT         AOS_DMA1_0
-//#define SPI1_RX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH0 //TODO, FLAG to query, 2024-01-31
+#define SPI1_RX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH0
 #define SPI1_RX_DMA_IRQn                BSP_DMA1_CH0_IRQ_NUM
 #define SPI1_RX_DMA_INT_PRIO            BSP_DMA1_CH0_IRQ_PRIO
 #define SPI1_RX_DMA_INT_SRC             INT_SRC_DMA1_TC0
@@ -35,7 +35,7 @@ extern "C" {
 #define SPI3_RX_DMA_CHANNEL             DMA_CH0
 #define SPI3_RX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI3_RX_DMA_TRIG_SELECT         AOS_DMA1_0
-// #define SPI3_RX_DMA_TRANS_FLAG        DMA_FLAG_TC_CH0 //TODO, FLAG to query, 2024-01-31
+#define SPI3_RX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH0
 #define SPI3_RX_DMA_IRQn                BSP_DMA1_CH0_IRQ_NUM
 #define SPI3_RX_DMA_INT_PRIO            BSP_DMA1_CH0_IRQ_PRIO
 #define SPI3_RX_DMA_INT_SRC             INT_SRC_DMA1_TC0
@@ -57,7 +57,7 @@ extern "C" {
 #define SPI1_TX_DMA_CHANNEL             DMA_CH1
 #define SPI1_TX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI1_TX_DMA_TRIG_SELECT         AOS_DMA1_1
-//#define SPI1_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH1 //TODO, FLAG to query, 2024-01-31
+#define SPI1_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH1
 #define SPI1_TX_DMA_IRQn                BSP_DMA1_CH1_IRQ_NUM
 #define SPI1_TX_DMA_INT_PRIO            BSP_DMA1_CH1_IRQ_PRIO
 #define SPI1_TX_DMA_INT_SRC             INT_SRC_DMA1_TC1
@@ -67,7 +67,7 @@ extern "C" {
 #define SPI3_TX_DMA_CHANNEL             DMA_CH1
 #define SPI3_TX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI3_TX_DMA_TRIG_SELECT         AOS_DMA1_1
-//#define SPI3_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH1 //TODO, FLAG to query, 2024-01-31
+#define SPI3_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH1
 #define SPI3_TX_DMA_IRQn                BSP_DMA1_CH1_IRQ_NUM
 #define SPI3_TX_DMA_INT_PRIO            BSP_DMA1_CH1_IRQ_PRIO
 #define SPI3_TX_DMA_INT_SRC             INT_SRC_DMA1_TC1
@@ -89,7 +89,7 @@ extern "C" {
 #define SPI2_RX_DMA_CHANNEL             DMA_CH2
 #define SPI2_RX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI2_RX_DMA_TRIG_SELECT         AOS_DMA1_2
-//#define SPI2_RX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH2 //TODO, FLAG to query, 2024-01-31
+#define SPI2_RX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH2
 #define SPI2_RX_DMA_IRQn                BSP_DMA1_CH2_IRQ_NUM
 #define SPI2_RX_DMA_INT_PRIO            BSP_DMA1_CH2_IRQ_PRIO
 #define SPI2_RX_DMA_INT_SRC             INT_SRC_DMA1_TC2
@@ -111,7 +111,7 @@ extern "C" {
 #define SPI2_TX_DMA_CHANNEL             DMA_CH3
 #define SPI2_TX_DMA_CLOCK               (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
 #define SPI2_TX_DMA_TRIG_SELECT         AOS_DMA1_3
-//#define SPI2_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH3 //TODO, FLAG to query, 2024-01-31
+#define SPI2_TX_DMA_TRANS_FLAG          DMA_FLAG_TC_CH3
 #define SPI2_TX_DMA_IRQn                BSP_DMA1_CH3_IRQ_NUM
 #define SPI2_TX_DMA_INT_PRIO            BSP_DMA1_CH3_IRQ_PRIO
 #define SPI2_TX_DMA_INT_SRC             INT_SRC_DMA1_TC3

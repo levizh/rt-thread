@@ -139,6 +139,21 @@ extern "C" {
 #define BSP_UART6_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 #endif /* BSP_USING_UART6 */
 
+#if defined(BSP_USING_SPI1)
+#define BSP_SPI1_ERR_IRQ_NUM            SPI1_IRQn
+#define BSP_SPI1_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
+
+#if defined(BSP_USING_SPI2)
+#define BSP_SPI2_ERR_IRQ_NUM            INT009_IRQn
+#define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
+
+#if defined(BSP_USING_SPI3)
+#define BSP_SPI3_ERR_IRQ_NUM            INT010_IRQn
+#define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
+
 #if defined(BSP_USING_CAN1)
 #define BSP_CAN1_IRQ_NUM                MCAN1_INT0_IRQn
 #define BSP_CAN1_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
