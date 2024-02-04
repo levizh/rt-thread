@@ -40,7 +40,7 @@ static int hwtimer_sample(int argc, char *argv[])
     rt_err_t ret = RT_EOK;
     rt_hwtimerval_t timeout_s;                              /* 定时器超时值 */
     rt_device_t hw_dev = RT_NULL;                           /* 定时器设备句柄 */
-    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;          /* 定时器模式 */                             /* 计数频率 */
+    rt_hwtimer_mode_t mode = HWTIMER_MODE_ONESHOT;          /* 定时器模式 */
 
     /* 查找定时器设备 */
     hw_dev = rt_device_find(HWTIMER_DEV_NAME);
