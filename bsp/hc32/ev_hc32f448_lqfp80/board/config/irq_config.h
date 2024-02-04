@@ -145,12 +145,12 @@ extern "C" {
 #endif
 
 #if defined(BSP_USING_SPI2)
-#define BSP_SPI2_ERR_IRQ_NUM            INT009_IRQn
+#define BSP_SPI2_ERR_IRQ_NUM            SPI2_IRQn
 #define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
 #if defined(BSP_USING_SPI3)
-#define BSP_SPI3_ERR_IRQ_NUM            INT010_IRQn
+#define BSP_SPI3_ERR_IRQ_NUM            SPI3_IRQn
 #define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
