@@ -31,9 +31,6 @@ struct hc32_irq_config
     IRQn_Type       irq_num;
     uint32_t        irq_prio;
     en_int_src_t    int_src;
-#if defined (HC32F448)
-    en_int_src_t    int_src_msk;
-#endif
 };
 
 /*******************************************************************************
