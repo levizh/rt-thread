@@ -165,6 +165,9 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
 #elif defined (HC32F460)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
         (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
+#elif defined (HC32F448)
+    if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
+        (CM_USART4 == uart->config->Instance) || (CM_USART5 == uart->config->Instance))
 #endif
     {
         uart_init.u32CKOutput = USART_CK_OUTPUT_ENABLE;
