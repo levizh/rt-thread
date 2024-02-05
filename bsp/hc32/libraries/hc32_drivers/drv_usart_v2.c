@@ -810,12 +810,14 @@ static void hc32_usart_handler(struct hc32_uart *uart)
 {
     RT_ASSERT(RT_NULL != uart);
 
+#if defined (RT_SERIAL_USING_DMA)
     if ((SET == USART_GetStatus(uart->config->Instance, USART_FLAG_RX_TIMEOUT)) && \
         (ENABLE == USART_GetFuncState(uart->config->Instance, USART_RX_TIMEOUT)) && \
         (ENABLE == INTC_GetIntSrcState(uart->config->rxto_int_src)))
     {
         hc32_uart_rxto_irq_handler(uart);
     }
+#endif
 
     if ((SET == USART_GetStatus(uart->config->Instance, USART_FLAG_RX_FULL)) && \
         (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_RX)) && \
