@@ -207,7 +207,7 @@ uint32_t STL_PrintfInit(void)
     for (u32Div = 0UL; u32Div <= USART_CLK_DIV64; u32Div++) {
         USART_SetClockDiv(STL_PRINTF_DEVICE, u32Div);
         if ((LL_OK == USART_SetBaudrate(STL_PRINTF_DEVICE, STL_PRINTF_BAUDRATE, &f32Error)) && \
-                ((-STL_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= STL_PRINTF_BAUDRATE_ERR_MAX))) {
+            ((-STL_PRINTF_BAUDRATE_ERR_MAX <= f32Error) && (f32Error <= STL_PRINTF_BAUDRATE_ERR_MAX))) {
             USART_FuncCmd(STL_PRINTF_DEVICE, USART_TX, ENABLE);
             u32Ret = STL_OK;
             break;

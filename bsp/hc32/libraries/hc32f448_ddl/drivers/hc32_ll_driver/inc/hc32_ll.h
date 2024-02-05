@@ -119,7 +119,7 @@ extern "C"
 * @{
 */
 #define HC32_DDL_REV_MAIN               0x01U  /*!< [31:24] main version  */
-#define HC32_DDL_REV_SUB1               0x00U  /*!< [23:16] sub1 version  */
+#define HC32_DDL_REV_SUB1               0x01U  /*!< [23:16] sub1 version  */
 #define HC32_DDL_REV_SUB2               0x00U  /*!< [15:8]  sub2 version  */
 #define HC32_DDL_REV_PATCH              0x00U  /*!< [7:0]   patch version */
 #define HC32_DDL_REV                    ((HC32_DDL_REV_MAIN << 24) | (HC32_DDL_REV_SUB1 << 16) | \

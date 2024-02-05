@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -50,8 +50,6 @@ struct hc32_i2c
  ******************************************************************************/
 #define I2C_USING_TX_DMA_FLAG       (1U)
 #define I2C_USING_RX_DMA_FLAG       (1U << 1)
-
-// int hc32_hw_i2c_init(void);
 
 #ifdef __cplusplus
 }

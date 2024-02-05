@@ -6,6 +6,9 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Add API BSP_XTAL32_Init()
+                                    Optimize function BSP_I2C_Init()
+                                    Update EXCLK clock frequency: 100MHz -> 50MHZ in function BSP_CLK_Init()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -127,19 +130,30 @@ int32_t BSP_I2C_Init(CM_I2C_TypeDef *I2Cx)
     int32_t i32Ret;
     float32_t fErr;
     stc_i2c_init_t stcI2cInit;
+    uint32_t I2cSrcClk;
+    uint32_t I2cClkDiv;
+    uint32_t I2cClkDivReg;
 
-    I2C_DeInit(I2Cx);
+    I2cSrcClk = I2C_SRC_CLK;
+    I2cClkDiv = I2cSrcClk / BSP_I2C_BAUDRATE / I2C_WIDTH_MAX_IMME;
+    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++) {
+        if (I2cClkDiv < (1UL << I2cClkDivReg)) {
+            break;
+        }
+    }
+
+    (void)I2C_DeInit(I2Cx);
     (void)I2C_StructInit(&stcI2cInit);
     stcI2cInit.u32Baudrate = BSP_I2C_BAUDRATE;
-    stcI2cInit.u32SclTime  = 33U;
-    stcI2cInit.u32ClockDiv = I2C_CLK_DIV1;
+    stcI2cInit.u32SclTime  = (uint32_t)((uint64_t)180UL * ((uint64_t)I2cSrcClk / ((uint64_t)1UL << I2cClkDivReg)) / (uint64_t)1000000000UL);  /* SCL time is about 180nS in EVB board */
+    stcI2cInit.u32ClockDiv = I2cClkDivReg;
     i32Ret = I2C_Init(I2Cx, &stcI2cInit, &fErr);
 
     if (LL_OK == i32Ret) {
         I2C_BusWaitCmd(I2Cx, ENABLE);
+        I2C_Cmd(I2Cx, ENABLE);
     }
 
-    I2C_Cmd(I2Cx, ENABLE);
     return i32Ret;
 }
 
@@ -152,7 +166,7 @@ int32_t BSP_I2C_Init(CM_I2C_TypeDef *I2Cx)
  */
 void BSP_I2C_DeInit(CM_I2C_TypeDef *I2Cx)
 {
-    I2C_DeInit(I2Cx);
+    (void)I2C_DeInit(I2Cx);
 }
 
 /**
@@ -278,14 +292,14 @@ int32_t BSP_I2C_GetDevStatus(CM_I2C_TypeDef *I2Cx, uint16_t u16DevAddr)
  * @brief  BSP clock initialize.
  *         SET board system clock to PLLH@200MHz
  *         Flash: 3 wait
- *         SRAM_H_0: 0 wait
+ *         SRAM_H: 0 wait
  *         SRAM_B: 1 wait
  *         PCLK0: 200MHz
  *         PCLK1: 100MHz
  *         PCLK2: 50MHz
  *         PCLK3: 50MHz
  *         PCLK4: 100MHz
- *         EXCLK: 100MHz
+ *         EXCLK: 50MHz
  *         HCLK:  200MHz
  * @param  None
  * @retval None
@@ -296,12 +310,12 @@ __WEAKDEF void BSP_CLK_Init(void)
     stc_clock_pll_init_t stcPLLHInit;
 
     /* PCLK0, HCLK Max 200MHz */
-    /* PCLK1, PCLK4, EX BUS Max 100MHz */
-    /* PCLK2 Max 60MHz */
+    /* PCLK1, PCLK4 Max 100MHz */
+    /* PCLK2, EXCLK Max 60MHz */
     /* PCLK3 Max 50MHz */
     CLK_SetClockDiv(CLK_BUS_CLK_ALL,
                     (CLK_PCLK0_DIV1 | CLK_PCLK1_DIV2 | CLK_PCLK2_DIV4 |
-                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 |
+                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV4 |
                      CLK_HCLK_DIV1));
 
     GPIO_AnalogCmd(BSP_XTAL_PORT, BSP_XTAL_IN_PIN | BSP_XTAL_OUT_PIN, ENABLE);
@@ -325,15 +339,73 @@ __WEAKDEF void BSP_CLK_Init(void)
     stcPLLHInit.PLLCFGR_f.PLLSRC = CLK_PLL_SRC_XTAL;
     (void)CLK_PLLInit(&stcPLLHInit);
 
-    /* Highspeed SRAM, SRAM0 set to 0 Read/Write wait cycle */
-    SRAM_SetWaitCycle((SRAM_SRAMH | SRAM_SRAM0), SRAM_WAIT_CYCLE0, SRAM_WAIT_CYCLE0);
-    /* SRAMB set to 1 Read/Write wait cycle */
-    SRAM_SetWaitCycle(SRAM_SRAMB, SRAM_WAIT_CYCLE1, SRAM_WAIT_CYCLE1);
     /* 3 cycles for 150 ~ 200MHz */
     (void)EFM_SetWaitCycle(EFM_WAIT_CYCLE3);
     /* 3 cycles for 150 ~ 200MHz */
     GPIO_SetReadWaitCycle(GPIO_RD_WAIT3);
     CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
+}
+
+/**
+ * @brief  BSP Xtal32 initialize.
+ * @param  None
+ * @retval int32_t:
+ *         - LL_OK: XTAL32 enable successfully
+ *         - LL_ERR_TIMEOUT: XTAL32 enable timeout.
+ */
+__WEAKDEF int32_t BSP_XTAL32_Init(void)
+{
+    stc_clock_xtal32_init_t stcXtal32Init;
+    stc_fcm_init_t stcFcmInit;
+    uint32_t u32TimeOut = 0UL;
+    uint32_t u32Time = HCLK_VALUE / 5UL;
+
+    if (CLK_XTAL32_ON == READ_REG8(CM_CMU->XTAL32CR)) {
+        /* Disable xtal32 */
+        (void)CLK_Xtal32Cmd(DISABLE);
+        /* Wait 5 * xtal32 cycle */
+        DDL_DelayUS(160U);
+    }
+
+    /* Xtal32 config */
+    (void)CLK_Xtal32StructInit(&stcXtal32Init);
+    stcXtal32Init.u8State  = CLK_XTAL32_ON;
+    stcXtal32Init.u8Drv    = CLK_XTAL32_DRV_MID;
+    stcXtal32Init.u8Filter = CLK_XTAL32_FILTER_ALL_MD;
+    GPIO_AnalogCmd(BSP_XTAL32_PORT, BSP_XTAL32_IN_PIN | BSP_XTAL32_OUT_PIN, ENABLE);
+    (void)CLK_Xtal32Init(&stcXtal32Init);
+
+    /* FCM config */
+    FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, ENABLE);
+    (void)FCM_StructInit(&stcFcmInit);
+    stcFcmInit.u32RefClock       = FCM_REF_CLK_MRC;
+    stcFcmInit.u32RefClockDiv    = FCM_REF_CLK_DIV8192;
+    stcFcmInit.u32RefClockEdge   = FCM_REF_CLK_RISING;
+    stcFcmInit.u32TargetClock    = FCM_TARGET_CLK_XTAL32;
+    stcFcmInit.u32TargetClockDiv = FCM_TARGET_CLK_DIV1;
+    stcFcmInit.u16LowerLimit     = (uint16_t)((XTAL32_VALUE / (MRC_VALUE / 8192U)) * 96UL / 100UL);
+    stcFcmInit.u16UpperLimit     = (uint16_t)((XTAL32_VALUE / (MRC_VALUE / 8192U)) * 104UL / 100UL);
+    (void)FCM_Init(&stcFcmInit);
+    /* Enable FCM, to ensure xtal32 stable */
+    FCM_Cmd(ENABLE);
+    for (;;) {
+        if (SET == FCM_GetStatus(FCM_FLAG_END)) {
+            FCM_ClearStatus(FCM_FLAG_END);
+            if ((SET == FCM_GetStatus(FCM_FLAG_ERR)) || (SET == FCM_GetStatus(FCM_FLAG_OVF))) {
+                FCM_ClearStatus(FCM_FLAG_ERR | FCM_FLAG_OVF);
+            } else {
+                (void)FCM_DeInit();
+                FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, DISABLE);
+                return LL_OK;
+            }
+        }
+        u32TimeOut++;
+        if (u32TimeOut > u32Time) {
+            (void)FCM_DeInit();
+            FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_FCM, DISABLE);
+            return LL_ERR_TIMEOUT;
+        }
+    }
 }
 
 #if (LL_PRINT_ENABLE == DDL_ON)

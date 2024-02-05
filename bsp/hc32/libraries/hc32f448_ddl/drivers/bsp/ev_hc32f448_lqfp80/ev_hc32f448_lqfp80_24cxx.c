@@ -129,7 +129,7 @@ static void BSP_24CXX_I2C_DeInit(void)
     /* Initialize I2C port*/
     GPIO_SetFunc(BSP_24CXX_I2C_SCL_PORT, BSP_24CXX_I2C_SCL_PIN, GPIO_FUNC_0);
     GPIO_SetFunc(BSP_24CXX_I2C_SDA_PORT, BSP_24CXX_I2C_SDA_PIN, GPIO_FUNC_0);
-    I2C_DeInit(BSP_24CXX_I2C_UNIT);
+    (void)I2C_DeInit(BSP_24CXX_I2C_UNIT);
 }
 
 /**

@@ -7,6 +7,12 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
+   2023-09-30       CDT             Remove address assert from EFM_ReadByte()
+                                    Refine EFM_SequenceProgram() & EFM_ChipErase(), and put them in RAM
+   2023-12-15       CDT             Rename EFM_DataCacheResetCmd() as EFM_CacheRamReset() and modify comment
+                                    Add API EFM_GetWaferID(), EFM_GetLocation(), EFM_GetLotID()
+                                    Modify flash sector number defined and API EFM_SequenceSectorOperateCmd()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -49,17 +55,25 @@
  * @defgroup EFM_Local_Macros EFM Local Macros
  * @{
  */
-#define REG_LEN                         (32U)
-#define EFM_TIMEOUT                     (HCLK_VALUE / 20000UL)   /* EFM wait read timeout */
-#define EFM_PGM_TIMEOUT                 (HCLK_VALUE / 20000UL)   /* EFM Program timeout max 53us */
-#define EFM_ERASE_TIMEOUT               (HCLK_VALUE / 50UL)      /* EFM Erase timeout max 20ms */
-#define EFM_SEQ_PGM_TIMEOUT             (HCLK_VALUE / 62500UL)   /* EFM Sequence Program timeout max 16us */
+#ifndef __EFM_FUNC
+#define __EFM_FUNC                      __RAM_FUNC
+#endif
+
+/**
+ * @defgroup EFM_Timeout_Definition EFM timeout definition
+ * @{
+ */
+#define EFM_TIMEOUT                     (HCLK_VALUE / 20000UL)  /* EFM wait read timeout */
+#define EFM_PGM_TIMEOUT                 (HCLK_VALUE / 20000UL)  /* EFM Program timeout max 53us */
+#define EFM_ERASE_TIMEOUT               (HCLK_VALUE / 50UL)     /* EFM Erase timeout max 20ms */
+#define EFM_SEQ_PGM_TIMEOUT             (HCLK_VALUE / 62500UL)  /* EFM Sequence Program timeout max 16us */
+/**
+ * @}
+ */
 
 #define REMCR_REG(x)                    (*(__IO uint32_t *)((uint32_t)(&CM_EFM->MMF_REMCR0) + (4UL * (x))))
 
-#define EFM_FLAG0_POS                   (0U)
-#define EFM_FLAG1_POS                   (16U)
-#define EFM_OTP_END_SECTOR_NUM          (15U)
+#define REG_LEN                         (32U)
 #define EFM_SWAP_FLASH1_END_SECTOR_NUM  (EFM_FLASH1_START_SECTOR_NUM + EFM_OTP_END_SECTOR_NUM)
 #define EFM_SWAP_FLASH1_END_ADDR        (EFM_FLASH_1_START_ADDR + EFM_OTP_END_ADDR1)
 #define EFM_OTP_UNLOCK_KEY1             (0x10325476UL)
@@ -91,7 +105,6 @@
 #define EFM_PROTECT3_ADDR3              (0x00000428UL)
 #define EFM_SECURITY_ADDR               (0x03002040UL)
 
-#define EFM_SWAP_OFF_PROTECT_SECTOR_NUM (0U)
 #define EFM_SWAP_ON_PROTECT_SECTOR_NUM  (1U)
 /**
  * @}
@@ -156,13 +169,13 @@
 #define IS_EFM_OTP_UNLOCK()             (bCM_EFM->FWMC_b.KEY2LOCK == 0U)
 
 /* Parameter validity check for sector protected register locking. */
-#define IS_EFM_SECTOR_PROTECT_REG_LOCK(x)       \
-(   (x) == EFM_WLOCK_WLOCK0)
+#define IS_EFM_SECTOR_PROTECT_REG_LOCK(x)       ((x) == EFM_WLOCK_WLOCK0)
 
 /* Parameter validity check for EFM sector number */
 #define IS_EFM_SECTOR_NUM(x)            ((x) <= 32U)
 #define IS_EFM_SECTOR_IDX(x)            ((x) < 32U)
 
+/* Parameter validity check for EFM OTP lock address */
 #define IS_EFM_OTP_LOCK_ADDR(x)                                                \
 (   ((x) == EFM_OTP_LOCK_ADDR_START)   ||                                      \
     (((x) >= EFM_OTP_LOCK_ADDR_START1) && ((x) <= EFM_OTP_LOCK_ADDR_END)))
@@ -178,7 +191,7 @@
 /* Parameter validity check for EFM remap size */
 #define IS_EFM_REMAP_SIZE(x)                                                    \
 (   ((x) >= EFM_REMAP_4K)               &&                                      \
-    ((x) <= EFM_REMAP_512K))
+    ((x) <= EFM_REMAP_SIZE_MAX))
 
 /* Parameter validity check for EFM remap address */
 #define IS_EFM_REMAP_ADDR(x)                                                    \
@@ -246,31 +259,6 @@ static int32_t EFM_WaitFlag(uint32_t u32Flag, uint32_t u32Time)
 }
 
 /**
- * @brief  Clear EFM flag.
- * @param  [in] u32Flag     Specifies the flag to be wait. @ref EFM_Flag_Sel
- * @retval int32_t:
- *         - LL_OK: Flag was set.
- *         - LL_ERR_TIMEOUT: Flag was not set.
- */
-static int32_t EFM_ClearFlag(uint32_t u32Flag)
-{
-    uint32_t u32Time = EFM_TIMEOUT;
-    __IO uint32_t u32Timeout = 0UL;
-    int32_t i32Ret = LL_OK;
-
-    while (RESET != EFM_GetStatus(u32Flag)) {
-        EFM_ClearStatus(u32Flag);
-        u32Timeout++;
-        if (u32Timeout > u32Time) {
-            i32Ret = LL_ERR_TIMEOUT;
-            break;
-        }
-    }
-
-    return i32Ret;
-}
-
-/**
  * @}
  */
 
@@ -326,11 +314,11 @@ int32_t EFM_SetWaitCycle(uint32_t u32WaitCycle)
 }
 
 /**
- * @brief  Enable or disable the flash data cache reset.
+ * @brief  Reset cache RAM or cache ram release reset.
  * @param  [in] enNewState           An @ref en_functional_state_t enumeration value.
  * @retval None
  */
-void EFM_DataCacheResetCmd(en_functional_state_t enNewState)
+void EFM_CacheRamReset(en_functional_state_t enNewState)
 {
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
     DDL_ASSERT(IS_EFM_REG_UNLOCK());
@@ -584,7 +572,6 @@ int32_t EFM_ReadByte(uint32_t u32Addr, uint8_t *pu8ReadBuf, uint32_t u32ByteLen)
 
     DDL_ASSERT(IS_EFM_ADDR(u32Addr));
     DDL_ASSERT(IS_EFM_ADDR(u32Addr + u32ByteLen - 1UL));
-    DDL_ASSERT(IS_ADDR_ALIGN_WORD(u32Addr));
 
     if (NULL != pu8ReadBuf) {
 
@@ -666,7 +653,6 @@ int32_t EFM_Program(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
     }
     /* Set read only mode. */
     MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
-    /* Reset cache data */
     /* Recover CACHE function */
     MODIFY_REG32(CM_EFM->FRMC, EFM_CACHE_ALL, u32Tmp);
     return i32Ret;
@@ -784,8 +770,9 @@ int32_t EFM_ProgramWordReadBack(uint32_t u32Addr, uint32_t u32Data)
  *         - LL_OK: Program successfully
  *         - LL_ERR_TIMEOUT: program error timeout
  * @note  Call EFM_REG_Unlock() unlock EFM register first.
+ *        __EFM_FUNC default value is __RAM_FUNC.
  */
-int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
+__EFM_FUNC int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
 {
     int32_t i32Ret = LL_OK;
     uint32_t u32Tmp;
@@ -793,22 +780,26 @@ int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
     uint32_t u32RemainBytes = u32Len % 4UL;
     uint32_t *u32pSource = (uint32_t *)(uint32_t)pu8Buf;
     uint32_t *u32pDest = (uint32_t *)u32Addr;
-    uint8_t u8Shift = 0U;
+    uint32_t u32Timeout;
     uint32_t u32LastWord;
 
-    DDL_ASSERT(IS_EFM_REG_UNLOCK());
-    DDL_ASSERT(IS_EFM_FWMC_UNLOCK());
-    DDL_ASSERT(IS_EFM_ADDR(u32Addr));
-    DDL_ASSERT(IS_EFM_ADDR(u32Addr + u32Len - 1UL));
-    DDL_ASSERT(IS_ADDR_ALIGN_WORD(u32Addr));
+    /* Assert */
+    if (!IS_EFM_REG_UNLOCK()) {
+        return LL_ERR_NOT_RDY;
+    }
+    if ((!IS_EFM_FWMC_UNLOCK()) || (!IS_EFM_ADDR(u32Addr)) || (!IS_EFM_ADDR(u32Addr + u32Len - 1UL))) {
+        return LL_ERR_INVD_PARAM;
+    }
+    if (!IS_ADDR_ALIGN_WORD(u32Addr)) {
+        return LL_ERR_INVD_PARAM;
+    }
 
     /* CLear the error flag. */
-    EFM_ClearStatus(EFM_FLAG_ALL);
+    SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_ALL);
     /* Get CACHE status */
     u32Tmp = READ_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
     /* Disable CACHE */
     CLR_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
-
     /* Set sequence program mode. */
     MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_PGM_SEQ);
 
@@ -816,12 +807,21 @@ int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
         /* program data. */
         *u32pDest++ = *u32pSource++;
         /* wait for operation end flag. */
-        if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_OPTEND << u8Shift, EFM_PGM_TIMEOUT)) {
-            i32Ret = LL_ERR_TIMEOUT;
+        u32Timeout = 0UL;
+        while (EFM_FLAG_OPTEND != READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_OPTEND)) {
+            if (u32Timeout++ >= EFM_PGM_TIMEOUT) {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
         }
         /* Clear operation end flag */
-        if (LL_ERR_TIMEOUT == EFM_ClearFlag(EFM_FLAG_OPTEND << u8Shift)) {
-            i32Ret = LL_ERR_TIMEOUT;
+        u32Timeout = 0UL;
+        while (EFM_FLAG_OPTEND == READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_OPTEND)) {
+            SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_OPTEND);
+            if (u32Timeout++ >= EFM_TIMEOUT) {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
         }
     }
 
@@ -831,12 +831,21 @@ int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
         *u32pDest++ = u32LastWord;
 
         /* wait for operation end flag. */
-        if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_OPTEND << u8Shift, EFM_PGM_TIMEOUT)) {
-            i32Ret = LL_ERR_TIMEOUT;
+        u32Timeout = 0UL;
+        while (EFM_FLAG_OPTEND != READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_OPTEND)) {
+            if (u32Timeout++ >= EFM_PGM_TIMEOUT) {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
         }
         /* Clear operation end flag */
-        if (LL_ERR_TIMEOUT == EFM_ClearFlag(EFM_FLAG_OPTEND << u8Shift)) {
-            i32Ret = LL_ERR_TIMEOUT;
+        u32Timeout = 0UL;
+        while (EFM_FLAG_OPTEND == READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_OPTEND)) {
+            SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_OPTEND);
+            if (u32Timeout++ >= EFM_TIMEOUT) {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
         }
 
     }
@@ -844,8 +853,12 @@ int32_t EFM_SequenceProgram(uint32_t u32Addr, uint8_t *pu8Buf, uint32_t u32Len)
     /* Set read only mode. */
     MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
     /* Wait for ready flag. */
-    if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_RDY << u8Shift, EFM_PGM_TIMEOUT)) {
-        i32Ret = LL_ERR_NOT_RDY;
+    u32Timeout = 0UL;
+    while (EFM_FLAG_RDY != READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_RDY)) {
+        if (u32Timeout++ >= EFM_PGM_TIMEOUT) {
+            i32Ret = LL_ERR_TIMEOUT;
+            break;
+        }
     }
 
     /* Recover CACHE */
@@ -891,10 +904,8 @@ int32_t EFM_SectorErase(uint32_t u32Addr)
     }
     /* Clear the operation end flag */
     EFM_ClearStatus(EFM_FLAG_OPTEND << u8Shift);
-
     /* Set read only mode. */
     MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
-
     /* Recover CACHE */
     MODIFY_REG32(CM_EFM->FRMC, EFM_CACHE_ALL, u32Tmp);
 
@@ -908,38 +919,48 @@ int32_t EFM_SectorErase(uint32_t u32Addr)
  *         - LL_OK: Erase successfully
  *         - LL_ERR_NOT_RDY: EFM is not ready.
  * @note   Call EFM_REG_Unlock() unlock EFM register first.
+ *         __EFM_FUNC default value is __RAM_FUNC.
  */
-int32_t EFM_ChipErase(uint8_t u8Chip)
+__EFM_FUNC int32_t EFM_ChipErase(uint8_t u8Chip)
 {
     int32_t i32Ret = LL_OK;
     uint32_t u32Tmp;
     uint32_t u32Addr = 0UL;
     uint8_t u8Shift;
+    uint32_t u32Timeout;
 
-    DDL_ASSERT(IS_EFM_FWMC_UNLOCK());
-    DDL_ASSERT(IS_EFM_REG_UNLOCK());
-    DDL_ASSERT(IS_EFM_CHIP(u8Chip));
+    /* Assert */
+    if (!IS_EFM_REG_UNLOCK()) {
+        return LL_ERR_NOT_RDY;
+    }
+    if ((!IS_EFM_FWMC_UNLOCK()) || !IS_EFM_CHIP(u8Chip)) {
+        return LL_ERR_INVD_PARAM;
+    }
 
     u8Shift = 0U;
 
     /* CLear the error flag. */
-    EFM_ClearStatus(EFM_FLAG_ALL);
+    SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_ALL);
     /* Get CACHE status */
     u32Tmp = READ_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
     /* Disable CACHE */
     CLR_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
 
-    if ((EFM_CHIP_ALL == u8Chip) && (SET == EFM_GetSwapStatus())) {
+    if (1UL == (READ_REG32(bCM_EFM->FSWP_b.FSWP))) {
         /* Set Sector erase mode. */
         MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_ERASE_SECTOR);
         /* Disable flash switch function */
         RW_MEM32(EFM_SWAP_ADDR) = 0x0UL;
         /* wait for operation end flag. */
-        if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_OPTEND, EFM_ERASE_TIMEOUT)) {
-            i32Ret = LL_ERR_TIMEOUT;
+        u32Timeout = 0UL;
+        while (EFM_FLAG_OPTEND != READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_OPTEND)) {
+            if (u32Timeout++ >= EFM_PGM_TIMEOUT) {
+                i32Ret = LL_ERR_TIMEOUT;
+                break;
+            }
         }
         /* CLear the operation end flag */
-        EFM_ClearStatus(EFM_FLAG_OPTEND);
+        SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_OPTEND);
     }
 
     /* Set chip erase mode. */
@@ -947,11 +968,15 @@ int32_t EFM_ChipErase(uint8_t u8Chip)
     /* Erase */
     RW_MEM32(u32Addr) = 0UL;
     /* Wait for ready flag. */
-    if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_RDY << u8Shift, EFM_ERASE_TIMEOUT)) {
-        i32Ret = LL_ERR_NOT_RDY;
+    u32Timeout = 0UL;
+    while ((EFM_FLAG_RDY << u8Shift) != READ_REG32_BIT(CM_EFM->FSR, EFM_FLAG_RDY << u8Shift)) {
+        if (u32Timeout++ >= EFM_ERASE_TIMEOUT) {
+            i32Ret = LL_ERR_TIMEOUT;
+            break;
+        }
     }
     /* CLear the operation end flag. */
-    EFM_ClearStatus(EFM_FLAG_OPTEND << u8Shift);
+    SET_REG32_BIT(CM_EFM->FSCLR, EFM_FLAG_OPTEND << u8Shift);
     /* Set read only mode. */
     MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
 
@@ -975,6 +1000,53 @@ void EFM_FWMC_Cmd(en_functional_state_t enNewState)
     } else {
         SET_REG32_BIT(CM_EFM->FWMC, EFM_FWMC_KEY1LOCK);
     }
+}
+
+/**
+ * @brief  EFM OTP lock.
+ * @param  [in]  u32Addr           Specifies the OTP block
+ * @retval int32_t:
+ *         - LL_OK: Lock successfully
+ *         - LL_ERR_NOT_RDY: EFM is not ready.
+ * @note   The address should be word align.
+ *         Call EFM_REG_Unlock() and EFM_OTP_WP_Unlock() unlock EFM_FWMC register first.
+ */
+int32_t EFM_OTP_Lock(uint32_t u32Addr)
+{
+    int32_t i32Ret = LL_OK;
+    uint32_t u32Tmp;
+
+    if ((u32Addr >= EFM_OTP_LOCK_ADDR_START) && (u32Addr < EFM_OTP_LOCK_ADDR_END)) {
+        DDL_ASSERT(IS_ADDR_ALIGN_WORD(u32Addr));
+        DDL_ASSERT(IS_EFM_FWMC_UNLOCK());
+        DDL_ASSERT(IS_EFM_REG_UNLOCK());
+        DDL_ASSERT(IS_EFM_OTP_UNLOCK());
+        DDL_ASSERT(IS_EFM_OTP_LOCK_ADDR(u32Addr));
+        /* Get CACHE status */
+        u32Tmp = READ_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
+        /* Disable CACHE */
+        CLR_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
+
+        /* Set single program mode. */
+        MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_PGM_SINGLE);
+
+        /* OTP latch */
+        RW_MEM32(u32Addr) = (uint32_t)0UL;
+        /* Wait for ready flag. */
+        if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_RDY, EFM_ERASE_TIMEOUT)) {
+            i32Ret = LL_ERR_NOT_RDY;
+        }
+        /* CLear the operation end flag. */
+        EFM_ClearStatus(EFM_FLAG_OPTEND);
+
+        /* Set read only mode. */
+        MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
+
+        /* Recover CACHE */
+        MODIFY_REG32(CM_EFM->FRMC, EFM_CACHE_ALL, u32Tmp);
+    }
+
+    return i32Ret;
 }
 
 /**
@@ -1054,53 +1126,6 @@ int32_t EFM_OTP_Enable(void)
 }
 
 /**
- * @brief  EFM OTP lock.
- * @param  [in]  u32Addr           Specifies the OTP block
- * @retval int32_t:
- *         - LL_OK: Lock successfully
- *         - LL_ERR_NOT_RDY: EFM is not ready.
- * @note   The address should be word align.
- *         Call EFM_REG_Unlock() and EFM_OTP_WP_Unlock() unlock EFM_FWMC register first.
- */
-int32_t EFM_OTP_Lock(uint32_t u32Addr)
-{
-    int32_t i32Ret = LL_OK;
-    uint32_t u32Tmp;
-
-    if ((u32Addr >= EFM_OTP_LOCK_ADDR_START) && (u32Addr < EFM_OTP_LOCK_ADDR_END)) {
-        DDL_ASSERT(IS_ADDR_ALIGN_WORD(u32Addr));
-        DDL_ASSERT(IS_EFM_FWMC_UNLOCK());
-        DDL_ASSERT(IS_EFM_REG_UNLOCK());
-        DDL_ASSERT(IS_EFM_OTP_UNLOCK());
-        DDL_ASSERT(IS_EFM_OTP_LOCK_ADDR(u32Addr));
-        /* Get CACHE status */
-        u32Tmp = READ_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
-        /* Disable CACHE */
-        CLR_REG32_BIT(CM_EFM->FRMC, EFM_CACHE_ALL);
-
-        /* Set single program mode. */
-        MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_PGM_SINGLE);
-
-        /* OTP latch */
-        RW_MEM32(u32Addr) = (uint32_t)0UL;
-        /* Wait for ready flag. */
-        if (LL_ERR_TIMEOUT == EFM_WaitFlag(EFM_FLAG_RDY, EFM_ERASE_TIMEOUT)) {
-            i32Ret = LL_ERR_NOT_RDY;
-        }
-        /* CLear the operation end flag. */
-        EFM_ClearStatus(EFM_FLAG_OPTEND);
-
-        /* Set read only mode. */
-        MODIFY_REG32(CM_EFM->FWMC, EFM_FWMC_PEMOD, EFM_MD_READONLY);
-
-        /* Recover CACHE */
-        MODIFY_REG32(CM_EFM->FRMC, EFM_CACHE_ALL, u32Tmp);
-    }
-
-    return i32Ret;
-}
-
-/**
  * @brief  Sector protected register lock.
  * @param  [in] u32RegLock                      Specifies sector protected register locking.
  *  @arg   EFM_WRLOCK0
@@ -1139,7 +1164,7 @@ void EFM_SingleSectorOperateCmd(uint8_t u8SectorNum, en_functional_state_t enNew
  * @param  [in] u32StartSectorNum   Specifies start sector to unlock.
  *                                  This parameter can be set 0~31.
  * @param  [in] u16Count            Specifies count of sectors to unlock.
- *                                  This parameter can be set 0~256.
+ *                                  This parameter can be set 1~32.
  * @param  [in] enNewState          An @ref en_functional_state_t enumeration value.
  * @retval None
  * @note   Call EFM_REG_Unlock() unlock EFM register first.
@@ -1148,10 +1173,26 @@ void EFM_SingleSectorOperateCmd(uint8_t u8SectorNum, en_functional_state_t enNew
 void EFM_SequenceSectorOperateCmd(uint32_t u32StartSectorNum, uint16_t u16Count, en_functional_state_t enNewState)
 {
     uint32_t u32RegValue;
+    DDL_ASSERT(IS_EFM_REG_UNLOCK());
     DDL_ASSERT(IS_EFM_SECTOR_IDX(u32StartSectorNum));
     DDL_ASSERT(IS_EFM_SECTOR_NUM(u32StartSectorNum + u16Count));
+    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    u32RegValue = (uint32_t)(((uint64_t)1 << (u32StartSectorNum + u16Count)) - ((uint64_t)1 << u32StartSectorNum));
+    if (SET == EFM_GetSwapStatus()) {
+        if (1UL == u32StartSectorNum) {
+            u32RegValue = 1UL | (uint32_t)(((uint64_t)1UL << (u32StartSectorNum + u16Count)) - \
+                                           ((uint64_t)1UL << (u32StartSectorNum + 1UL)));
+        } else if ((0UL == u32StartSectorNum) && (1U == u16Count)) {
+            u32RegValue = 1UL << 1U;
+        } else {
+            u32RegValue = (uint32_t)(((uint64_t)1UL << (u32StartSectorNum + u16Count)) - \
+                                     ((uint64_t)1UL << u32StartSectorNum));
+        }
+    } else {
+        u32RegValue = (uint32_t)(((uint64_t)1UL << (u32StartSectorNum + u16Count)) - \
+                                 ((uint64_t)1UL << u32StartSectorNum));
+    }
+
     if (enNewState == ENABLE) {
         SET_REG32_BIT(CM_EFM->F0NWPRT, u32RegValue);
     } else {
@@ -1171,6 +1212,46 @@ void EFM_GetUID(stc_efm_unique_id_t *pstcUID)
         pstcUID->u32UniqueID1 = READ_REG32(CM_EFM->UQID1);
         pstcUID->u32UniqueID2 = READ_REG32(CM_EFM->UQID2);
     }
+}
+
+/**
+ * @brief  Get wafer ID.
+ * @param  None
+ * @retval uint8_t     Returns the value of the wafer ID
+ */
+uint8_t EFM_GetWaferID(void)
+{
+    return (uint8_t)(READ_REG32_BIT(CM_EFM->UQID0, EFM_UQID0_WAFER_ID) >> EFM_UQID0_WAFER_ID_POS);
+}
+
+/**
+ * @brief  Get wafer location (x.y).
+ * @param  [out] pstcLocation     Wafer coordinate.
+ * @retval Returns the wafer coordinate
+ */
+void EFM_GetLocation(stc_efm_location_t *pstcLocation)
+{
+    if (NULL != pstcLocation) {
+        pstcLocation->u8X_Location = (uint8_t)(READ_REG32_BIT(CM_EFM->UQID0, EFM_UQID0_X_LOCATION) \
+                                               >> EFM_UQID0_X_LOCATION_POS);
+        pstcLocation->u8Y_Location = (uint8_t)(READ_REG32_BIT(CM_EFM->UQID0, EFM_UQID0_Y_LOCATION));
+    }
+}
+
+/**
+ * @brief  Get LOT ID.
+ * @param  None
+ * @retval uint64_t     Returns the value of the LOT ID
+ */
+uint64_t EFM_GetLotID(void)
+{
+    uint64_t u64LotID;
+    uint32_t u32LotID0;
+    u32LotID0 = READ_REG32_BIT(CM_EFM->UQID0, EFM_UQID0_LOT_ID) >> EFM_UQID0_LOT_ID_POS;
+    u64LotID = ((uint64_t)READ_REG32(CM_EFM->UQID1) << 8U) | u32LotID0;
+    u64LotID = u64LotID | ((uint64_t)((uint8_t)READ_REG32_BIT(CM_EFM->UQID2, EFM_UQID2_LOT_ID)) << 40U);
+
+    return u64LotID;
 }
 
 /**
@@ -1307,7 +1388,7 @@ void EFM_Protect_Enable(uint8_t u8Level)
     if (SET == EFM_GetSwapStatus()) {
         (void)EFM_SingleSectorOperateCmd(EFM_SWAP_ON_PROTECT_SECTOR_NUM, ENABLE);
     } else {
-        (void)EFM_SingleSectorOperateCmd(EFM_SWAP_OFF_PROTECT_SECTOR_NUM, ENABLE);
+        (void)EFM_SingleSectorOperateCmd(0U, ENABLE);
     }
     if (EFM_PROTECT_LEVEL1 == u8Level) {
         (void)EFM_ProgramWord(EFM_PROTECT1_ADDR, EFM_PROTECT1_KEY);

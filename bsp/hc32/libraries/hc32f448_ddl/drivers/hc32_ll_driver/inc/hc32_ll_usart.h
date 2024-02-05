@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Remove u32StopBit param from stc_usart_smartcard_init_t structure
+   2023-12-15       CDT             Add the declaration of API USART_GetFuncState()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -164,8 +166,6 @@ typedef struct {
                                              @note This parameter is valid when clock source is the internal clock. */
     uint32_t u32Baudrate;               /*!< USART baudrate.
                                              This parameter is calculated according with smartcard default ETU and clock. */
-    uint32_t u32StopBit;                /*!< Stop Bits.
-                                             This parameter can be a value of @ref USART_Stop_Bit */
     uint32_t u32FirstBit;               /*!< Significant bit.
                                              This parameter can be a value of @ref USART_First_Bit */
 } stc_usart_smartcard_init_t;
@@ -472,7 +472,7 @@ int32_t USART_SmartCard_Init(CM_USART_TypeDef *USARTx,
 
 int32_t USART_DeInit(CM_USART_TypeDef *USARTx);
 void USART_FuncCmd(CM_USART_TypeDef *USARTx, uint32_t u32Func, en_functional_state_t enNewState);
-en_flag_status_t USART_GetFunc(CM_USART_TypeDef *USARTx, uint32_t u32Func);
+en_functional_state_t USART_GetFuncState(CM_USART_TypeDef *USARTx, uint32_t u32Func);
 en_flag_status_t USART_GetStatus(const CM_USART_TypeDef *USARTx, uint32_t u32Flag);
 void USART_ClearStatus(CM_USART_TypeDef *USARTx, uint32_t u32Flag);
 void USART_SetParity(CM_USART_TypeDef *USARTx, uint32_t u32Parity);

@@ -101,9 +101,9 @@ uint32_t STL_StackRuntimeInit(void)
 uint32_t STL_StackRuntimeTest(void)
 {
     if ((m_au32StackBoundary[0] != 0x5A5A5A5AUL) || \
-            (m_au32StackBoundary[1] != 0xA5A5A5A5UL) || \
-            (m_au32StackBoundary[2] != 0xAAAAAAAAUL) || \
-            (m_au32StackBoundary[3] != 0x55555555UL)) {
+        (m_au32StackBoundary[1] != 0xA5A5A5A5UL) || \
+        (m_au32StackBoundary[2] != 0xAAAAAAAAUL) || \
+        (m_au32StackBoundary[3] != 0x55555555UL)) {
         return STL_ERR;
     }
 

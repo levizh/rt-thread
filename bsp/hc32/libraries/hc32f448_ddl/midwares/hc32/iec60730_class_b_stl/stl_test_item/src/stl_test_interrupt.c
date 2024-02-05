@@ -122,7 +122,7 @@ uint32_t STL_IntRuntimeTest(void)
             pstcTestParam = &m_pstcTestParamTable[i];
 
             if ((pstcTestParam->u32PrivateParam < pstcTestParam->u32FreqLowerVal) || \
-                    (pstcTestParam->u32PrivateParam > pstcTestParam->u32FreqUpperVal)) {
+                (pstcTestParam->u32PrivateParam > pstcTestParam->u32FreqUpperVal)) {
                 u32Ret = STL_ERR;
             }
             pstcTestParam->u32PrivateParam = 0UL;

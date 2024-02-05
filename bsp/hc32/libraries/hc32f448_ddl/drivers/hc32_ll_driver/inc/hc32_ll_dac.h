@@ -121,10 +121,10 @@ typedef struct {
  * @defgroup DAC_ADP_SELECT DAC ADCx priority select
  * @{
  */
-#define DAC_ADP_SEL_ADC1                   (DAC_DAADPCR_ADCSL1)
-#define DAC_ADP_SEL_ADC2                   (DAC_DAADPCR_ADCSL2)
-#define DAC_ADP_SEL_ADC3                   (DAC_DAADPCR_ADCSL3)
-#define DAC_ADP_SEL_ALL   (DAC_DAADPCR_ADCSL1 | DAC_DAADPCR_ADCSL2 | DAC_DAADPCR_ADCSL3)
+#define DAC_ADP_SEL_ADC1                    (DAC_DAADPCR_ADCSL1)
+#define DAC_ADP_SEL_ADC2                    (DAC_DAADPCR_ADCSL2)
+#define DAC_ADP_SEL_ADC3                    (DAC_DAADPCR_ADCSL3)
+#define DAC_ADP_SEL_ALL                     (DAC_DAADPCR_ADCSL1 | DAC_DAADPCR_ADCSL2 | DAC_DAADPCR_ADCSL3)
 /**
  * @}
  */

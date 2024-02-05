@@ -7,6 +7,18 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Removed definitions related to BEC and BEU.
+                                    Optimized driver:
+                                    1. Integrated stc_mcan_classic_config_t and stc_mcan_fd_config_t into stc_mcan_bit_time_config_t
+                                    2. Integrated u32FdIso into u32FrameFormat.
+                                    3. Removed API MCAN_SetFdIsoOperation(), added API MCAN_SetFrameFormat().
+                                    4. Optimized the handling of the parameter stc_mcan_filter_t.u32FilterIndex
+                                    5. Add 5 APIs for better get protocol status(register PSR):
+                                       MCAN_GetTdcValue(), MCAN_GetDataLastErrorCode(), MCAN_GetLastErrorCode(),
+                                       MCAN_GetComState(), MCAN_GetProtocolFlagStatus()
+                                    6. Changed u8Activity of stc_mcan_protocol_status_t to u8ComState.
+                                    7. Changed MCAN_Comm_State to MCAN_Com_State and optimized the macros definitions.
+                                    8. Changed u8MsgStorageIndex of stc_mcan_hpm_status_t to u8MsgIndex. Optimized MCAN_HPM_Storage macros definitions.
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -53,37 +65,33 @@ extern "C"
  * @{
  */
 /**
- * @brief MCAN classic CAN configuration structure definition
+ * @brief MCAN bit time configuration structure definition
  */
 typedef struct {
-    uint32_t u32Prescaler;                  /*!< Specifies the nominal bit rate prescaler.
+    /* Nominal bit time configuration, used for classic CAN frame or arbitration phase of CAN FD frame */
+    uint32_t u32NominalPrescaler;           /*!< Specifies the nominal bit rate prescaler.
                                                  This parameter must be a number between 1 and 512 */
-    uint32_t u32TimeSeg1;                   /*!< Specifies the nominal time segment before sample point(the sum of Sync_Seg,
+    uint32_t u32NominalTimeSeg1;            /*!< Specifies the nominal time segment before sample point(the sum of Sync_Seg,
                                                  Prop_Seg and Phase_Seg1).
                                                  This parameter must be a number between 3 and 257 */
-    uint32_t u32TimeSeg2;                   /*!< Specifies the nominal time segment after sample point(Phase_Seg2).
+    uint32_t u32NominalTimeSeg2;            /*!< Specifies the nominal time segment after sample point(Phase_Seg2).
                                                  This parameter must be a number between 2 and 128 */
-    uint32_t u32SyncJumpWidth;              /*!< Specifies the nominal (re)synchronization jump width(SJW).
+    uint32_t u32NominalSyncJumpWidth;       /*!< Specifies the nominal (re)synchronization jump width(SJW).
                                                  This parameter must be a number between 1 and 128 */
-} stc_mcan_classic_config_t;
 
-/**
- * @brief MCAN FD CAN configuration structure definition
- */
-typedef struct {
-    uint32_t u32FdIso;                      /*!< Specifies the CAN FD frame format, according to ISO 11898-1:2015
-                                                 or Bosch CAN FD Specification V1.0.
-                                                 This parameter can be a value of @ref MCAN_FD_ISO_Operation */
-    uint32_t u32Prescaler;                  /*!< Specifies the data bit rate prescaler.
+    /* FD bit time configuration, used for data phase of CAN FD frame */
+    uint32_t u32DataPrescaler;              /*!< Specifies the data bit rate prescaler.
                                                  This parameter must be a number between 1 and 32
                                                  NOTE: when u32TDC is MCAN_FD_TDC_ENABLE, the range is limited to 1, 2 */
-    uint32_t u32TimeSeg1;                   /*!< Specifies the data time segment before sample point(the sum of Sync_Seg,
+    uint32_t u32DataTimeSeg1;               /*!< Specifies the data time segment before sample point(the sum of Sync_Seg,
                                                  Prop_Seg and Phase_Seg1).
                                                  This parameter must be a number between 2 and 33 */
-    uint32_t u32TimeSeg2;                   /*!< Specifies the data time segment after sample point(Phase_Seg2).
+    uint32_t u32DataTimeSeg2;               /*!< Specifies the data time segment after sample point(Phase_Seg2).
                                                  This parameter must be a number between 1 and 16 */
-    uint32_t u32SyncJumpWidth;              /*!< Specifies the data (re)synchronization jump width(SJW).
+    uint32_t u32DataSyncJumpWidth;          /*!< Specifies the data (re)synchronization jump width(SJW).
                                                  This parameter must be a number between 1 and 16 */
+
+    /* FD TDC(Transmitter Delay Compensation) configuration */
     uint32_t u32TDC;                        /*!< Enable or disable TDC(Transmitter Delay Compensation).
                                                  This parameter can be a value of @ref MCAN_TDC_Enable */
     uint32_t u32SspOffset;                  /*!< Specifies the transmitter delay compensation SSP offset.
@@ -93,7 +101,7 @@ typedef struct {
                                                  The feature is enabled when this parameter is configured to a value
                                                  greater than u32SspOffset.
                                                  This parameter must be a number between 0 and 127(MCAN clock) */
-} stc_mcan_fd_config_t;
+} stc_mcan_bit_time_config_t;
 
 /**
  * @brief MCAN message RAM address blocks
@@ -177,8 +185,12 @@ typedef struct {
                                                  This parameter can be a value of @ref MCAN_ID_Type */
     uint32_t u32FilterIndex;                /*!< Specifies the filter which will be initialized.
                                                  This parameter must be a number between:
-                                                 - 0 and 127, if u32IdType is MCAN_STD_ID
-                                                 - 0 and 63, if u32IdType is MCAN_EXT_ID */
+                                                 - 0 and stc_mcan_msg_ram_config_t.u32StdFilterNum-1(@ref stc_mcan_msg_ram_config_t), if u32IdType is MCAN_STD_ID.
+                                                 - 0 and stc_mcan_msg_ram_config_t.u32ExtFilterNum-1(@ref stc_mcan_msg_ram_config_t), if u32IdType is MCAN_EXT_ID.
+                                                 NOTE: When configuring filter elements sequence by calling API MCAN_Init(), this parameter can be ignored. The local function
+                                                       will handle this parameter.
+                                                       When configuring filter element one by one by calling API MCAN_FilterConfig(), it is required to specify
+                                                       the index of the target filter through this parameter. */
     uint32_t u32FilterType;                 /*!< Specifies the filter type.
                                                  This parameter can be a value of @ref MCAN_Filter_Type
                                                  The value MCAN_FILTER_RANGE_NO_EIDM is permitted only when u32IdType is MCAN_EXT_ID.
@@ -240,8 +252,7 @@ typedef struct {
                                                      When this function is disabled, MCAN will transmit an error frame
                                                      when it detects a protocol exception condition.
                                                      This parameter can be a value of @ref MCAN_Protocol_Exception_Enable */
-    stc_mcan_classic_config_t stcCanClassic;    /*!< Classic CAN configuration structure. */
-    stc_mcan_fd_config_t stcCanFd;              /*!< FD CAN configuration structure. */
+    stc_mcan_bit_time_config_t stcBitTime;      /*!< MCAN bit time configuration structure */
     stc_mcan_msg_ram_config_t stcMsgRam;        /*!< Message RAM configuration structure. */
     stc_mcan_filter_config_t stcFilter;         /*!< Acceptance filter configuration structure. */
 } stc_mcan_init_t;
@@ -393,7 +404,7 @@ typedef struct {
                                              - 0 and 63, if u8FilterListType is 1 (Extended) */
     uint8_t u8MsgStorage;               /*!< Specifies the high priority message storage.
                                              This parameter can be a value of @ref MCAN_HPM_Storage */
-    uint8_t u8MsgStorageIndex;          /*!< Specifies the index of Rx FIFO element to which the message was stored.
+    uint8_t u8MsgIndex;                 /*!< Specifies the index of Rx FIFO element to which the message was stored.
                                              This parameter is valid only when u8MsgStorage is:
                                              MCAN_HPM_STORED_IN_RX_FIFO0 or MCAN_HPM_STORED_IN_RX_FIFO1 */
 } stc_mcan_hpm_status_t;
@@ -407,8 +418,8 @@ typedef struct {
     uint8_t u8DataLastErrorCode;        /*!< Specifies the type of the last error that occurred in the data phase of a CAN FD format
                                              frame with its BRS flag set.
                                              This parameter can be a value of @ref MCAN_Protocol_Error_Code */
-    uint8_t u8Activity;                 /*!< Specifies the CAN module communication state.
-                                             This parameter can be a value of @ref MCAN_Comm_State */
+    uint8_t u8ComState;                 /*!< Specifies the CAN module communication state.
+                                             This parameter can be a value of @ref MCAN_Com_State */
     uint8_t u8ErrorPassiveFlag;         /*!< Specifies the CAN module error status.
                                              This parameter can be:
                                              - 0: The CAN is in the Error_Active state
@@ -477,10 +488,10 @@ typedef struct {
  * @{
  */
 #define MCAN_MD_NORMAL                  (0U)                /*!< Normal mode */
-#define MCAN_MD_RESTRICTED_OPERATION    (1U)                /*!< Restricted operation mode */
-#define MCAN_MD_BUS_MONITORING          (2U)                /*!< Bus monitoring mode */
-#define MCAN_MD_INTERNAL_LOOPBACK       (3U)                /*!< Internal loopBack mode */
-#define MCAN_MD_EXTERNAL_LOOPBACK       (4U)                /*!< External loopBack mode */
+#define MCAN_MD_RESTRICTED_OP           (1U)                /*!< Restricted operation mode */
+#define MCAN_MD_BUS_MON                 (2U)                /*!< Bus monitoring mode */
+#define MCAN_MD_INTERN_LOOPBACK         (3U)                /*!< Internal loopBack mode */
+#define MCAN_MD_EXTERN_LOOPBACK         (4U)                /*!< External loopBack mode */
 /**
  * @}
  */
@@ -521,20 +532,15 @@ typedef struct {
  * @defgroup MCAN_Frame_Format MCAN Frame Format
  * @{
  */
-#define MCAN_FRAME_CLASSIC              (0x0U)              /*!< Classic mode */
-#define MCAN_FRAME_FD_NO_BRS            (MCAN_CCCR_FDOE)    /*!< FD mode without bit rate switching */
-#define MCAN_FRAME_FD_BRS               (MCAN_CCCR_FDOE | \
-                                         MCAN_CCCR_BRSE)    /*!< FD mode with bit rate switching */
-/**
- * @}
- */
-
-/**
- * @defgroup MCAN_FD_ISO_Operation MCAN FD ISO Operation
- * @{
- */
-#define MCAN_FD_ISO                     (0x0U)              /*!< CAN FD frame format according to ISO 11898-1:2015 */
-#define MCAN_FD_NON_ISO                 (MCAN_CCCR_NISO)    /*!< CAN FD frame format according to Bosch CAN FD Specification V1.0 */
+#define MCAN_FRAME_CLASSIC              (0x0U)              /*!< Classic CAN mode */
+#define MCAN_FRAME_ISO_FD_NO_BRS        (MCAN_CCCR_FDOE)    /*!< ISO CAN FD mode without bit rate switching */
+#define MCAN_FRAME_ISO_FD_BRS           (MCAN_CCCR_FDOE | \
+                                         MCAN_CCCR_BRSE)    /*!< ISO CAN FD mode with bit rate switching */
+#define MCAN_FRAME_NON_ISO_FD_NO_BRS    (MCAN_CCCR_NISO | \
+                                         MCAN_CCCR_FDOE)    /*!< Non-ISO CAN FD mode without bit rate switching */
+#define MCAN_FRAME_NON_ISO_FD_BRS       (MCAN_CCCR_NISO | \
+                                         MCAN_CCCR_FDOE | \
+                                         MCAN_CCCR_BRSE)    /*!< Non-ISO CAN FD mode with bit rate switching */
 /**
  * @}
  */
@@ -573,8 +579,8 @@ typedef struct {
  * @defgroup MCAN_Protocol_Exception_Enable MCAN Protocol Exception Enable
  * @{
  */
-#define MCAN_PROTOCOL_EXCEPTION_DISABLE (MCAN_CCCR_PXHD)    /*!< Disable protocol exception handling */
-#define MCAN_PROTOCOL_EXCEPTION_ENABLE  (0x0U)              /*!< Enable protocol exception handling */
+#define MCAN_PROTOCOL_EXP_DISABLE       (MCAN_CCCR_PXHD)    /*!< Disable protocol exception handling */
+#define MCAN_PROTOCOL_EXP_ENABLE        (0x0U)              /*!< Enable protocol exception handling */
 /**
  * @}
  */
@@ -799,10 +805,10 @@ typedef struct {
  * @defgroup MCAN_HPM_Storage MCAN High Priority Message Storage
  * @{
  */
-#define MCAN_HPM_NO_STORAGE             (0x00U)             /*!< No FIFO selected */
-#define MCAN_HPM_LOST                   (0x40U)             /*!< FIFO message lost */
-#define MCAN_HPM_STORED_IN_RX_FIFO0     (0x80U)             /*!< Message stored in FIFO 0 */
-#define MCAN_HPM_STORED_IN_RX_FIFO1     (0xC0U)             /*!< Message stored in FIFO 1 */
+#define MCAN_HPM_NO_STORAGE             (0x0U)              /*!< No FIFO selected */
+#define MCAN_HPM_LOST                   (0x1U)              /*!< FIFO message lost */
+#define MCAN_HPM_STORED_IN_RX_FIFO0     (0x2U)              /*!< Message stored in FIFO 0 */
+#define MCAN_HPM_STORED_IN_RX_FIFO1     (0x3U)              /*!< Message stored in FIFO 1 */
 /**
  * @}
  */
@@ -824,13 +830,32 @@ typedef struct {
  */
 
 /**
- * @defgroup MCAN_Comm_State MCAN Communication State
+ * @defgroup MCAN_Com_State MCAN Communication State
  * @{
  */
-#define MCAN_COMM_STATE_SYNC            (0x00U)             /*!< Node is synchronizing on CAN communication */
-#define MCAN_COMM_STATE_IDLE            (0x08U)             /*!< Node is neither receiver nor transmitter */
-#define MCAN_COMM_STATE_RX              (0x10U)             /*!< Node is operating as receiver */
-#define MCAN_COMM_STATE_TX              (0x18U)             /*!< Node is operating as transmitter */
+#define MCAN_COM_STATE_SYNC             (0x0U)              /*!< Node is synchronizing on CAN communication */
+#define MCAN_COM_STATE_IDLE             (0x1U)              /*!< Node is neither receiver nor transmitter */
+#define MCAN_COM_STATE_RX               (0x2U)              /*!< Node is operating as receiver */
+#define MCAN_COM_STATE_TX               (0x3U)              /*!< Node is operating as transmitter */
+/**
+ * @}
+ */
+
+/**
+ * @defgroup MCAN_Protocol_Flag MCAN Protocol Status Flag
+ * @{
+ */
+#define MCAN_PROTOCOL_FLAG_PROTOCOL_EXCEPTION   (MCAN_PSR_PXE)      /*!< Protocol exception event occurred */
+#define MCAN_PROTOCOL_FLAG_RX_FDF               (MCAN_PSR_RFDF)     /*!< Message in CAN FD format with FDF flag set has been received */
+#define MCAN_PROTOCOL_FLAG_RX_BRS               (MCAN_PSR_RBRS)     /*!< Last received CAN FD message had its BRS flag set */
+#define MCAN_PROTOCOL_FLAG_RX_ESI               (MCAN_PSR_RESI)     /*!< Last received CAN FD message had its ESI flag set */
+#define MCAN_PROTOCOL_FLAG_BUS_OFF              (MCAN_PSR_BO)       /*!< The MCAN is in Bus_Off state */
+#define MCAN_PROTOCOL_FLAG_ERR_WARNING          (MCAN_PSR_EW)       /*!< At least one of error counter has reached the Error_Warning limit of 96 */
+#define MCAN_PROTOCOL_FLAG_ERR_PASSIVE          (MCAN_PSR_EP)       /*!< The MCAN is in the Error_Passive state */
+#define MCAN_PROTOCOL_FLAG_ALL                  (MCAN_PROTOCOL_FLAG_PROTOCOL_EXCEPTION | MCAN_PROTOCOL_FLAG_RX_FDF | \
+                                                 MCAN_PROTOCOL_FLAG_RX_BRS | MCAN_PROTOCOL_FLAG_RX_ESI | \
+                                                 MCAN_PROTOCOL_FLAG_BUS_OFF | MCAN_PROTOCOL_FLAG_ERR_WARNING | \
+                                                 MCAN_PROTOCOL_FLAG_ERR_PASSIVE)
 /**
  * @}
  */
@@ -893,7 +918,7 @@ typedef struct {
  * @defgroup MCAN_Timeout_Select MCAN Timeout Select
  * @{
  */
-#define MCAN_TIMEOUT_CONTINUOUS         (0x0U)              /*!< Timeout continuous operation */
+#define MCAN_TIMEOUT_CONT               (0x0U)              /*!< Timeout continuous operation */
 #define MCAN_TIMEOUT_TX_EVT_FIFO        (MCAN_TOCC_TOS_0)   /*!< Timeout controlled by Tx event FIFO */
 #define MCAN_TIMEOUT_RX_FIFO0           (MCAN_TOCC_TOS_1)   /*!< Timeout controlled by Rx FIFO0 */
 #define MCAN_TIMEOUT_RX_FIFO1           (MCAN_TOCC_TOS)     /*!< Timeout controlled by Rx FIFO1 */
@@ -925,17 +950,15 @@ typedef struct {
 #define MCAN_INT_RAM_ACCESS_FAILURE     (MCAN_IE_MRAFE)     /*!< Message RAM access failure occurred */
 #define MCAN_INT_TIMEOUT                (MCAN_IE_TOOE)      /*!< Timeout reached */
 #define MCAN_INT_RX_BUF_NEW_MSG         (MCAN_IE_DRXE)      /*!< At least one received message stored into a Rx buffer */
-#define MCAN_INT_BEC                    (MCAN_IE_BECE)      /*!< Bit error detected and corrected (e.g. ECC) */
-#define MCAN_INT_BEU                    (MCAN_IE_BEUE)      /*!< Bit error detected, uncorrected (e.g. parity logic) */
 #define MCAN_INT_ERR_LOG_OVF            (MCAN_IE_ELOE)      /*!< Overflow of CAN error logging counter occurred */
 #define MCAN_INT_ERR_PASSIVE            (MCAN_IE_EPE)       /*!< Error_Passive status changed */
 #define MCAN_INT_ERR_WARNING            (MCAN_IE_EWE)       /*!< Error_Warning status changed */
 #define MCAN_INT_BUS_OFF                (MCAN_IE_BOE)       /*!< Bus_Off status changed */
-#define MCAN_INT_RAM_WATCHDOG           (MCAN_IE_WDIE)      /*!< Message RAM Watchdog event due to missing READY */
+#define MCAN_INT_RAM_WDT                (MCAN_IE_WDIE)      /*!< Message RAM Watchdog event due to missing READY */
 #define MCAN_INT_ARB_PHASE_ERROR        (MCAN_IE_PEAE)      /*!< Protocol error in arbitration phase detected */
 #define MCAN_INT_DATA_PHASE_ERROR       (MCAN_IE_PEDE)      /*!< Protocol error in data phase detected */
 #define MCAN_INT_RSVD_ADDR_ACCESS       (MCAN_IE_ARAE)      /*!< Access to reserved address occurred */
-#define MCAN_INT_ALL                    (0x3FFFFFFFUL)
+#define MCAN_INT_ALL                    (0x3FCFFFFFUL)
 /**
  * @}
  */
@@ -964,17 +987,15 @@ typedef struct {
 #define MCAN_FLAG_RAM_ACCESS_FAILURE    (MCAN_IR_MRAF)      /*!< Message RAM access failure occurred */
 #define MCAN_FLAG_TIMEOUT               (MCAN_IR_TOO)       /*!< Timeout reached */
 #define MCAN_FLAG_RX_BUF_NEW_MSG        (MCAN_IR_DRX)       /*!< At least one received message stored into a Rx buffer */
-#define MCAN_FLAG_BEC                   (MCAN_IR_BEC)       /*!< Bit error detected and corrected (e.g. ECC) */
-#define MCAN_FLAG_BEU                   (MCAN_IR_BEU)       /*!< Bit error detected, uncorrected (e.g. parity logic) */
 #define MCAN_FLAG_ERR_LOG_OVF           (MCAN_IR_ELO)       /*!< Overflow of CAN error logging counter occurred */
 #define MCAN_FLAG_ERR_PASSIVE           (MCAN_IR_EP)        /*!< Error_Passive status changed */
 #define MCAN_FLAG_ERR_WARNING           (MCAN_IR_EW)        /*!< Error_Warning status changed */
 #define MCAN_FLAG_BUS_OFF               (MCAN_IR_BO)        /*!< Bus_Off status changed */
-#define MCAN_FLAG_RAM_WATCHDOG          (MCAN_IR_WDI)       /*!< Message RAM Watchdog event due to missing READY */
+#define MCAN_FLAG_RAM_WDT               (MCAN_IR_WDI)       /*!< Message RAM Watchdog event due to missing READY */
 #define MCAN_FLAG_ARB_PHASE_ERROR       (MCAN_IR_PEA)       /*!< Protocol error in arbitration phase detected */
 #define MCAN_FLAG_DATA_PHASE_ERROR      (MCAN_IR_PED)       /*!< Protocol error in data phase detected */
 #define MCAN_FLAG_RSVD_ADDR_ACCESS      (MCAN_IR_ARA)       /*!< Access to reserved address occurred */
-#define MCAN_FLAG_ALL                   (0x3FFFFFFFUL)
+#define MCAN_FLAG_ALL                   (0x3FCFFFFFUL)
 /**
  * @}
  */
@@ -1015,7 +1036,7 @@ int32_t MCAN_ExitSleepMode(CM_MCAN_TypeDef *MCANx);
 int32_t MCAN_GetMsgRamAddr(const CM_MCAN_TypeDef *MCANx, stc_mcan_msg_ram_addr_t *pstcAddr);
 
 /* Configuration functions ****************************************************/
-int32_t MCAN_FilterConfig(CM_MCAN_TypeDef *MCANx, stc_mcan_filter_t *pstcFilter);
+int32_t MCAN_FilterConfig(const CM_MCAN_TypeDef *MCANx, const stc_mcan_filter_t *pstcFilter);
 void MCAN_GlobalFilterConfig(CM_MCAN_TypeDef *MCANx, \
                              uint32_t u32StdNmfOperation, uint32_t u32ExtNmfOperation, \
                              uint32_t u32StdRemoteOperation, uint32_t u32ExtRemoteOperation);
@@ -1034,7 +1055,7 @@ uint16_t MCAN_GetTimeoutCounter(const CM_MCAN_TypeDef *MCANx);
 void MCAN_ResetTimeoutCounter(CM_MCAN_TypeDef *MCANx);
 void MCAN_TxDelayCompensationConfig(CM_MCAN_TypeDef *MCANx, uint32_t u32SspOffset, uint32_t u32TdcFilter);
 void MCAN_TxDelayCompensationCmd(CM_MCAN_TypeDef *MCANx, en_functional_state_t enNewState);
-void MCAN_SetFdIsoOperation(CM_MCAN_TypeDef *MCANx, uint32_t u32FdIsoOperation);
+void MCAN_SetFrameFormat(CM_MCAN_TypeDef *MCANx, uint32_t u32FrameFormat);
 void MCAN_EdgeFilteringCmd(CM_MCAN_TypeDef *MCANx, en_functional_state_t enNewState);
 void MCAN_TxEventMsgMarkerConfig(CM_MCAN_TypeDef *MCANx, uint32_t u32MsgMarker);
 
@@ -1046,7 +1067,13 @@ void MCAN_AbortTxRequest(CM_MCAN_TypeDef *MCANx, uint32_t u32TxBuffer);
 int32_t MCAN_GetRxMsg(CM_MCAN_TypeDef *MCANx, uint32_t u32RxLocation, stc_mcan_rx_msg_t *pRxMsg);
 int32_t MCAN_GetTxEvent(CM_MCAN_TypeDef *MCANx, stc_mcan_tx_event_t *pTxEvent);
 int32_t MCAN_GetHighPriorityMsgStatus(const CM_MCAN_TypeDef *MCANx, stc_mcan_hpm_status_t *pHpmStatus);
+
 int32_t MCAN_GetProtocolStatus(const CM_MCAN_TypeDef *MCANx, stc_mcan_protocol_status_t *pProtocolStatus);
+uint8_t MCAN_GetTdcValue(const CM_MCAN_TypeDef *MCANx);
+uint8_t MCAN_GetDataLastErrorCode(const CM_MCAN_TypeDef *MCANx);
+uint8_t MCAN_GetLastErrorCode(const CM_MCAN_TypeDef *MCANx);
+uint8_t MCAN_GetComState(const CM_MCAN_TypeDef *MCANx);
+en_flag_status_t MCAN_GetProtocolFlagStatus(const CM_MCAN_TypeDef *MCANx, uint32_t u32PsFlag);
 int32_t MCAN_GetErrorCounter(const CM_MCAN_TypeDef *MCANx, stc_mcan_error_counter_t *pErrorCounter);
 
 en_flag_status_t MCAN_GetStatus(const CM_MCAN_TypeDef *MCANx, uint32_t u32Flag);

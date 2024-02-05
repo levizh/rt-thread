@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -44,12 +44,14 @@ void usb_mdelay(const uint32_t msec)
 
 void usb_bsp_cfgvbus(usb_core_instance *pdev)
 {
+    /* reserved */
 }
 void usb_bsp_drivevbus(usb_core_instance *pdev, uint8_t state)
 {
+    /* reserved */
 }
 
-void usb_device_connect_callback(usb_core_instance *pdev)
+static void usb_device_connect_callback(usb_core_instance *pdev)
 {
     uhcd_t hcd = (uhcd_t)pdev->pData;
     if (!connect_status)
@@ -60,7 +62,7 @@ void usb_device_connect_callback(usb_core_instance *pdev)
     }
 }
 
-void usb_device_disconnect_callback(usb_core_instance *pdev)
+static void usb_device_disconnect_callback(usb_core_instance *pdev)
 {
     uhcd_t hcd = (uhcd_t)pdev->pData;
     if (connect_status)
@@ -71,7 +73,7 @@ void usb_device_disconnect_callback(usb_core_instance *pdev)
     }
 }
 
-void usb_host_notify_urbchange_Callback(usb_core_instance *pdev, uint8_t chnum, HOST_CH_XFER_STATE urb_state)
+static void usb_host_notify_urbchange_Callback(usb_core_instance *pdev, uint8_t chnum, HOST_CH_XFER_STATE urb_state)
 {
     rt_completion_done(&urb_completion);
 }
@@ -364,7 +366,7 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
     }
 }
 
-void usb_host_hc_isr(usb_core_instance *pdev)
+static void usb_host_hc_isr(usb_core_instance *pdev)
 {
     uint32_t u32hcchar;
     uint8_t u8Cnt;
@@ -484,7 +486,6 @@ static void usb_host_port_isr(usb_core_instance *pdev)
     u32hprt = READ_REG32(*pdev->regs.HPRT);
     u32hprt_bk = u32hprt;
     /* Clear the interrupt bits in GINTSTS */
-    //tmp_hprt_bk.b.prtovrcurrchng = 0U;
     u32hprt_bk &= ~(USBFS_HPRT_PENA | USBFS_HPRT_PCDET | USBFS_HPRT_PENCHNG);
 
     /* check if a port connect have been detected */
@@ -610,7 +611,7 @@ static void usb_host_wkupint_isr(usb_core_instance *pdev)
  * @param  [in] pdev        device instance
  * @retval None
  */
-void usb_host_isr(usb_core_instance *pdev)
+static void usb_host_isr(usb_core_instance *pdev)
 {
     uint32_t gintstsval;
     if (0U != usb_getcurmod(&pdev->regs))
@@ -655,7 +656,7 @@ void usb_host_isr(usb_core_instance *pdev)
     }
 }
 
-void usbh_irq_handler(void)
+static void usbh_irq_handler(void)
 {
     rt_interrupt_enter();
     usb_host_isr(&_hc32_usbh);
@@ -812,7 +813,6 @@ static uint32_t usb_host_submitrequest(usb_core_instance *pdev,
     pdev->host.hc[ch_num].xfer_buff = pbuff;
     pdev->host.hc[ch_num].xfer_len  = length;
     pdev->host.hc[ch_num].xfer_count = 0U;
-    //pdev->host.hc[ch_num].ch_num = ch_num;
     pdev->host.HC_Status[ch_num] = HOST_CH_IDLE; /* state */
     pdev->host.URB_State[ch_num] = HOST_CH_XFER_IDLE; /* urb state */
 
@@ -834,14 +834,14 @@ static uint32_t usb_hsot_get_ch_xfercount(usb_core_instance *pdev, uint8_t chnum
     return pdev->host.hc[chnum].xfer_count;
 }
 
-static rt_err_t drv_reset_port(rt_uint8_t port)
+static rt_err_t _usbh_reset_port(rt_uint8_t port)
 {
     LOG_D("reset port");
     usb_hprtrst(&_hc32_usbh.regs);
     return RT_EOK;
 }
 
-static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbytes, int timeouts)
+static int _usbh_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbytes, int timeouts)
 {
     int timeout = timeouts;
     uint8_t  devspeed;
@@ -953,7 +953,7 @@ static int drv_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nbyte
 
 
 static rt_uint16_t pipe_index = 0;
-static rt_uint8_t  drv_get_free_pipe_index(void)
+static rt_uint8_t  _usbh_get_free_pipe_index(void)
 {
     rt_uint8_t idx;
     for (idx = 0; idx < USB_MAX_CH_NUM; idx++)
@@ -968,15 +968,15 @@ static rt_uint8_t  drv_get_free_pipe_index(void)
     return USB_MAX_CH_NUM;
 }
 
-static void drv_free_pipe_index(rt_uint8_t index)
+static void _usbh_free_pipe_index(rt_uint8_t index)
 {
     pipe_index &= ~(0x01 << index);
 }
 
-static rt_err_t drv_open_pipe(upipe_t pipe)
+static rt_err_t _usbh_open_pipe(upipe_t pipe)
 {
     uint8_t  devspeed;
-    pipe->pipe_index = drv_get_free_pipe_index();
+    pipe->pipe_index = _usbh_get_free_pipe_index();
 
     if (pipe->pipe_index >= USB_MAX_CH_NUM)
     {
@@ -1006,7 +1006,7 @@ static rt_err_t drv_open_pipe(upipe_t pipe)
     return RT_EOK;
 }
 
-static rt_err_t drv_close_pipe(upipe_t pipe)
+static rt_err_t _usbh_close_pipe(upipe_t pipe)
 {
     if (pipe->pipe_index >= USB_MAX_CH_NUM)
     {
@@ -1014,20 +1014,20 @@ static rt_err_t drv_close_pipe(upipe_t pipe)
         return -RT_ERROR;
     }
     usb_hchstop(&_hc32_usbh.regs, pipe->pipe_index);
-    drv_free_pipe_index(pipe->pipe_index);
+    _usbh_free_pipe_index(pipe->pipe_index);
     return RT_EOK;
 }
 
 
 static struct uhcd_ops _uhcd_ops =
 {
-    drv_reset_port,
-    drv_pipe_xfer,
-    drv_open_pipe,
-    drv_close_pipe,
+    _usbh_reset_port,
+    _usbh_pipe_xfer,
+    _usbh_open_pipe,
+    _usbh_close_pipe,
 };
 
-static void _host_driver_init(usb_core_instance *pdev, stc_usb_port_identify *pstcPortIdentify)
+static void _usbh_driver_init(usb_core_instance *pdev, stc_usb_port_identify *pstcPortIdentify)
 {
     uint8_t i;
 
@@ -1058,7 +1058,7 @@ static void _host_driver_init(usb_core_instance *pdev, stc_usb_port_identify *ps
     usb_ginten(&pdev->regs);
 }
 
-static rt_err_t hc32_hcd_init(rt_device_t device)
+static rt_err_t _usbh_init(rt_device_t device)
 {
     stc_usb_port_identify stcPortIdentify;
     struct hc32_irq_config irq_config;
@@ -1086,7 +1086,7 @@ static rt_err_t hc32_hcd_init(rt_device_t device)
     /* BSP Config */
     rt_hw_usb_board_init();
     /* Host driver init */
-    _host_driver_init(hhcd, &stcPortIdentify);
+    _usbh_driver_init(hhcd, &stcPortIdentify);
     /* NVIC config */
     irq_config.irq_num = BSP_USB_GLB_IRQ_NUM;
 #if !defined(BSP_USING_USBHS)
@@ -1103,7 +1103,7 @@ static rt_err_t hc32_hcd_init(rt_device_t device)
     return RT_EOK;
 }
 
-int hc32_usbh_register(void)
+int rt_hw_usbh_init(void)
 {
     rt_err_t res = -RT_ERROR;
 
@@ -1117,7 +1117,7 @@ int hc32_usbh_register(void)
     rt_memset((void *)uhcd, 0, sizeof(struct uhcd));
 
     uhcd->parent.type = RT_Device_Class_USBHost;
-    uhcd->parent.init = hc32_hcd_init;
+    uhcd->parent.init = _usbh_init;
     uhcd->parent.user_data = &_hc32_usbh;
 
     uhcd->ops = &_uhcd_ops;
@@ -1135,7 +1135,7 @@ int hc32_usbh_register(void)
 
     return RT_EOK;
 }
-INIT_DEVICE_EXPORT(hc32_usbh_register);
+INIT_DEVICE_EXPORT(rt_hw_usbh_init);
 
 
 

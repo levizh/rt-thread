@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Modify the timing: EXCLK 100MHz -> 40MHz
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -208,10 +209,12 @@ static int32_t LCD_SMC_Init(void)
         stcSmcInit.stcChipConfig.u32BLS  = EXMC_SMC_BLS_SYNC_CS;
         stcSmcInit.stcChipConfig.u32ReadMode  = EXMC_SMC_READ_ASYNC;
         stcSmcInit.stcChipConfig.u32WriteMode  = EXMC_SMC_WRITE_ASYNC;
-        stcSmcInit.stcTimingConfig.u8RC = 8U;
-        stcSmcInit.stcTimingConfig.u8WC = 4U;
+
+        /* EXCLK bus frequency@40MHz: 3.3V */
+        stcSmcInit.stcTimingConfig.u8RC = 4U;
+        stcSmcInit.stcTimingConfig.u8WC = 2U;
         stcSmcInit.stcTimingConfig.u8CEOE = 1U;
-        stcSmcInit.stcTimingConfig.u8WP = 2U;
+        stcSmcInit.stcTimingConfig.u8WP = 1U;
         stcSmcInit.stcTimingConfig.u8TR = 1U;
         (void)EXMC_SMC_Init(BSP_NT35510_CHIP, &stcSmcInit);
 

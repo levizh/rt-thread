@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author               Notes
- * 2023-xx-xx     CDT                  first version
+ * 2023-05-12     CDT                  first version
  */
 #include <board.h>
 
@@ -32,7 +32,7 @@ typedef struct
     struct dac_dev_init_params init;
 } dac_device;
 
-static dac_device g_dac_dev_array[] =
+static dac_device _g_dac_dev_array[] =
 {
 #ifdef BSP_USING_DAC1
     {
@@ -80,7 +80,7 @@ static rt_err_t _dac_enabled(struct rt_dac_device *device, rt_uint32_t channel)
 
     int32_t result = DAC_Start(p_ll_instance, ll_channel);
 
-    return (result == LL_OK) ? RT_EOK : RT_ERROR;
+    return (result == LL_OK) ? RT_EOK : -RT_ERROR;
 }
 
 static rt_err_t _dac_disabled(struct rt_dac_device *device, rt_uint32_t channel)
@@ -93,7 +93,7 @@ static rt_err_t _dac_disabled(struct rt_dac_device *device, rt_uint32_t channel)
 
     int32_t result = DAC_Stop(p_ll_instance, ll_channel);
 
-    return (result == LL_OK) ? RT_EOK : RT_ERROR;
+    return (result == LL_OK) ? RT_EOK : -RT_ERROR;
 }
 
 static rt_uint8_t _dac_get_resolution(struct rt_dac_device *device)
@@ -147,23 +147,23 @@ int rt_hw_dac_init(void)
     int i = 0;
 
     _dac_clock_enable();
-    uint32_t dev_cnt = sizeof(g_dac_dev_array) / sizeof(g_dac_dev_array[0]);
+    uint32_t dev_cnt = sizeof(_g_dac_dev_array) / sizeof(_g_dac_dev_array[0]);
     for (; i < dev_cnt; i++)
     {
 
-        DAC_DeInit(g_dac_dev_array[i].instance);
-        rt_hw_board_dac_init(g_dac_dev_array[i].instance);
+        DAC_DeInit(_g_dac_dev_array[i].instance);
+        rt_hw_board_dac_init(_g_dac_dev_array[i].instance);
 
-        ret = rt_hw_dac_register(&g_dac_dev_array[i].rt_dac, \
-                                 (const char *)g_dac_dev_array[i].init.name, \
-                                 &g_dac_ops, (void *)g_dac_dev_array[i].instance);
+        ret = rt_hw_dac_register(&_g_dac_dev_array[i].rt_dac, \
+                                 (const char *)_g_dac_dev_array[i].init.name, \
+                                 &g_dac_ops, (void *)_g_dac_dev_array[i].instance);
         if (ret == RT_EOK)
         {
-            LOG_D("%s init success", (const char *)g_dac_dev_array[i].init.name);
+            LOG_D("%s init success", (const char *)_g_dac_dev_array[i].init.name);
         }
         else
         {
-            LOG_E("%s register failed", (const char *)g_dac_dev_array[i].init.name);
+            LOG_E("%s register failed", (const char *)_g_dac_dev_array[i].init.name);
             result = -RT_ERROR;
         }
     }

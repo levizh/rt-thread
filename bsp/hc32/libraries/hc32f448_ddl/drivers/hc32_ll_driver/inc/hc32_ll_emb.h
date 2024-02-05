@@ -7,6 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Update EMB_CTL1_CMPEN0~3 to EMB_CTL1_CMPEN1~4
+   2023-12-15       CDT             Add stc_emb_monitor_sys_t to combine osc, sram, lockup, lvd
+                                    Replace macro: EMB_CTL1_SRAMERREN -> EMB_CTL1_SRAMECCERREN
+                                    Add marco EMB_FLAG_CLR_ALL
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -56,12 +60,20 @@ extern "C"
  */
 
 /**
- * @brief EMB monitor OSC failure configuration
+ * @brief EMB monitor system exception configuration
  */
 typedef struct {
-    uint32_t u32OscState;           /*!< Enable or disable EMB detect OSC failure function
+    uint32_t u32Osc;                /*!< Enable or disable EMB detect OSC failure function
                                          This parameter can be a value of @ref EMB_OSC_Selection */
-} stc_emb_monitor_osc_t;
+    uint32_t u32SramEccError;       /*!< EMB detect SRAM ECC error function
+                                         This parameter can be a value of @ref EMB_SRAM_ECC_Error_Selection */
+    uint32_t u32SramParityError;    /*!< EMB detect SRAM parity error function
+                                         This parameter can be a value of @ref EMB_SRAM_Parity_Error_Selection */
+    uint32_t u32Lockup;             /*!< EMB detect lockup function
+                                         This parameter can be a value of @ref EMB_Lockup_Selection */
+    uint32_t u32Lvd;                /*!< EMB detect LVD function
+                                         This parameter can be a value of @ref EMB_LVD_Selection */
+} stc_emb_monitor_sys_t;
 
 /**
  * @brief EMB monitor EMB port configuration
@@ -73,7 +85,7 @@ typedef struct {
                                          This parameter can be a value of @ref EMB_Detect_Port_Level */
     uint32_t u32PortFilterDiv;      /*!< EMB port filter division
                                          This parameter can be a value of @ref EMB_Port_Filter_Clock_Division */
-    uint32_t u32PortFilterState;    /*!< EMB port filter division
+    uint32_t u32PortFilterState;    /*!< Enable or disable EMB detect port filter in control function
                                          This parameter can be a value of @ref EMB_Port_Filter_Selection */
 } stc_emb_monitor_port_config_t;
 
@@ -130,6 +142,20 @@ typedef struct {
 } stc_emb_monitor_tmr4_t;
 
 /**
+ * @brief EMB control TMR4 initialization configuration
+ */
+typedef struct {
+    stc_emb_monitor_cmp_t   stcCmp;     /*!< EMB detect CMP function
+                                             This parameter details refer @ref stc_emb_monitor_cmp_t structure */
+    stc_emb_monitor_port_t  stcPort;    /*!< EMB detect EMB port function
+                                             This parameter details refer @ref stc_emb_monitor_port_t structure */
+    stc_emb_monitor_tmr4_t  stcTmr4;    /*!< EMB detect TMR4 function
+                                             This parameter details refer @ref stc_emb_monitor_tmr4_t structure */
+    stc_emb_monitor_sys_t   stcSys;     /*!< EMB detect System function
+                                             This parameter details refer @ref stc_emb_monitor_sys_t structure */
+} stc_emb_tmr4_init_t;
+
+/**
  * @brief EMB monitor TMR6 configuration
  */
 typedef struct {
@@ -140,47 +166,17 @@ typedef struct {
 } stc_emb_monitor_tmr6_t;
 
 /**
- * @brief EMB control TMR4 initialization configuration
- */
-typedef struct {
-    stc_emb_monitor_cmp_t   stcCmp;     /*!< EMB detect CMP function
-                                             This parameter details refer @ref stc_emb_monitor_cmp_t structure */
-    stc_emb_monitor_osc_t   stcOsc;     /*!< EMB detect OSC function
-                                             This parameter details refer @ref stc_emb_monitor_osc_t structure */
-    stc_emb_monitor_port_t  stcPort;    /*!< EMB detect EMB port function
-                                             This parameter details refer @ref stc_emb_monitor_port_t structure */
-    stc_emb_monitor_tmr4_t  stcTmr4;    /*!< EMB detect TMR4 function
-                                             This parameter details refer @ref stc_emb_monitor_tmr4_t structure */
-    uint32_t u32SramEccError;           /*!< EMB detect SRAM ECC error function
-                                             This parameter can be a value of @ref EMB_SRAM_ECC_Error_Selection */
-    uint32_t u32SramParityError;        /*!< EMB detect SRAM parity error function
-                                             This parameter can be a value of @ref EMB_SRAM_Parity_Error_Selection */
-    uint32_t u32Lockup;                 /*!< EMB detect lockup function
-                                             This parameter can be a value of @ref EMB_Lockup_Selection */
-    uint32_t u32Lvd;                    /*!< EMB detect LVD function
-                                             This parameter can be a value of @ref EMB_LVD_Selection */
-} stc_emb_tmr4_init_t;
-
-/**
  * @brief EMB control TMR6 initialization configuration
  */
 typedef struct {
     stc_emb_monitor_cmp_t   stcCmp;     /*!< EMB detect CMP function
                                              This parameter details refer @ref stc_emb_monitor_cmp_t structure */
-    stc_emb_monitor_osc_t   stcOsc;     /*!< EMB detect OSC function
-                                             This parameter details refer @ref stc_emb_monitor_osc_t structure */
     stc_emb_monitor_port_t  stcPort;    /*!< EMB detect EMB port function
                                              This parameter details refer @ref stc_emb_monitor_port_t structure */
     stc_emb_monitor_tmr6_t  stcTmr6;    /*!< EMB detect TMR6 function
                                              This parameter details refer @ref stc_emb_monitor_tmr6_t structure */
-    uint32_t u32SramEccError;           /*!< EMB detect SRAM ECC error function
-                                             This parameter can be a value of @ref EMB_SRAM_ECC_Error_Selection */
-    uint32_t u32SramParityError;        /*!< EMB detect SRAM parity error function
-                                             This parameter can be a value of @ref EMB_SRAM_Parity_Error_Selection */
-    uint32_t u32Lockup;                 /*!< EMB detect lockup function
-                                             This parameter can be a value of @ref EMB_Lockup_Selection */
-    uint32_t u32Lvd;                    /*!< EMB detect LVD function
-                                             This parameter can be a value of @ref EMB_LVD_Selection */
+    stc_emb_monitor_sys_t   stcSys;     /*!< EMB detect System function
+                                             This parameter details refer @ref stc_emb_monitor_sys_t structure */
 } stc_emb_tmr6_init_t;
 
 /**
@@ -204,10 +200,10 @@ typedef struct {
 #define EMB_CMP3_DISABLE                    (0UL)
 #define EMB_CMP4_DISABLE                    (0UL)
 
-#define EMB_CMP1_ENABLE                     (EMB_CTL1_CMPEN0)
-#define EMB_CMP2_ENABLE                     (EMB_CTL1_CMPEN1)
-#define EMB_CMP3_ENABLE                     (EMB_CTL1_CMPEN2)
-#define EMB_CMP4_ENABLE                     (EMB_CTL1_CMPEN3)
+#define EMB_CMP1_ENABLE                     (EMB_CTL1_CMPEN1)
+#define EMB_CMP2_ENABLE                     (EMB_CTL1_CMPEN2)
+#define EMB_CMP3_ENABLE                     (EMB_CTL1_CMPEN3)
+#define EMB_CMP4_ENABLE                     (EMB_CTL1_CMPEN4)
 /**
  * @}
  */
@@ -227,7 +223,7 @@ typedef struct {
  * @{
  */
 #define EMB_SRAM_ECC_ERR_DISABLE            (0UL)
-#define EMB_SRAM_ECC_ERR_ENABLE             (EMB_CTL1_SRAMERREN)
+#define EMB_SRAM_ECC_ERR_ENABLE             (EMB_CTL1_SRAMECCERREN)
 /**
  * @}
  */
@@ -430,6 +426,8 @@ typedef struct {
                                              EMB_FLAG_PORT2 | EMB_FLAG_PORT3 | EMB_FLAG_PORT4 | EMB_STAT_PWMS  | \
                                              EMB_STAT_CMP   | EMB_STAT_SYS   | EMB_STAT_PORT1 | EMB_STAT_PORT2 | \
                                              EMB_STAT_PORT3 | EMB_STAT_PORT4)
+#define EMB_FLAG_CLR_ALL                    (EMB_FLAG_PWMS  | EMB_FLAG_CMP   | EMB_FLAG_SYS   | EMB_FLAG_PORT1 | \
+                                             EMB_FLAG_PORT2 | EMB_FLAG_PORT3 | EMB_FLAG_PORT4)
 /**
  * @}
  */

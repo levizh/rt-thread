@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -53,7 +53,7 @@ struct hc32_uart_config
     const char                  *name;
     CM_USART_TypeDef            *Instance;
     rt_uint32_t                 clock;
-#if defined (HC32F460) || defined (HC32F4A0)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     struct hc32_uart_irq_config rxerr_irq;
     struct hc32_uart_irq_config rx_irq;
     struct hc32_uart_irq_config tx_irq;
@@ -81,7 +81,7 @@ struct hc32_uart
 {
     struct hc32_uart_config *config;
 #ifdef RT_SERIAL_USING_DMA
-    rt_size_t               dma_rx_remain_index;
+    rt_size_t               dma_rx_remaining_cnt;
 #endif
     rt_uint16_t             uart_dma_flag;
     struct rt_serial_device serial;

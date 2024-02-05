@@ -50,6 +50,11 @@ extern "C"
  * Global type definitions ('typedef')
  ******************************************************************************/
 /**
+ * @defgroup W25QXX_Global_Types W25QXX Global Types
+ * @{
+ */
+
+/**
  * @brief W25QXX low layer structure definition
  */
 typedef struct {
@@ -61,6 +66,10 @@ typedef struct {
     int32_t (*Trans)(const uint8_t *, uint32_t);
     int32_t (*Receive)(uint8_t *, uint32_t);
 } stc_w25qxx_ll_t;
+
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')

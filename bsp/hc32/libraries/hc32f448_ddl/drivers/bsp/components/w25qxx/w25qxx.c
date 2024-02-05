@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-12-15       CDT             Add null pointer check
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -93,18 +94,25 @@
  * @retval int32_t:
  *           - LL_OK:                   No error occurred.
  *           - LL_ERR_TIMEOUT:          SPI timeout.
+ *           - LL_ERR_INVD_PARAM:       Invalid parameter.
  */
 static int32_t W25QXX_WriteCmd(const stc_w25qxx_ll_t *pstcW25qxxLL, \
                                uint8_t u8Cmd, const uint8_t *pu8CmdData, uint32_t u32CmdDataLen)
 {
-    int32_t i32Ret;
+    int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    pstcW25qxxLL->Active();
-    i32Ret = pstcW25qxxLL->Trans(&u8Cmd, 1U);
-    if ((i32Ret == LL_OK) && (pu8CmdData != NULL) && (u32CmdDataLen > 0UL)) {
-        i32Ret = pstcW25qxxLL->Trans(pu8CmdData, u32CmdDataLen);
+    if (pstcW25qxxLL == NULL) {
+        return i32Ret;
     }
-    pstcW25qxxLL->Inactive();
+
+    if ((pstcW25qxxLL->Active != NULL) && (pstcW25qxxLL->Trans != NULL) && (pstcW25qxxLL->Inactive != NULL)) {
+        pstcW25qxxLL->Active();
+        i32Ret = pstcW25qxxLL->Trans(&u8Cmd, 1U);
+        if ((i32Ret == LL_OK) && (pu8CmdData != NULL) && (u32CmdDataLen > 0UL)) {
+            i32Ret = pstcW25qxxLL->Trans(pu8CmdData, u32CmdDataLen);
+        }
+        pstcW25qxxLL->Inactive();
+    }
 
     return i32Ret;
 }
@@ -120,22 +128,30 @@ static int32_t W25QXX_WriteCmd(const stc_w25qxx_ll_t *pstcW25qxxLL, \
  * @retval int32_t:
  *           - LL_OK:                   No error occurred.
  *           - LL_ERR_TIMEOUT:          SPI timeout.
+ *           - LL_ERR_INVD_PARAM:       Invalid parameter.
  */
 static int32_t W25QXX_ReadCmd(const stc_w25qxx_ll_t *pstcW25qxxLL, \
                               uint8_t u8Cmd, uint8_t *pu8CmdData, uint32_t u32CmdDataLen,
                               uint8_t *pu8Info, uint8_t u8InfoLen)
 {
-    int32_t i32Ret;
+    int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    pstcW25qxxLL->Active();
-    i32Ret = pstcW25qxxLL->Trans(&u8Cmd, 1U);
-    if ((i32Ret == LL_OK) && (pu8CmdData != NULL) && (u32CmdDataLen > 0UL)) {
-        i32Ret = pstcW25qxxLL->Trans(pu8CmdData, u32CmdDataLen);
+    if (pstcW25qxxLL == NULL) {
+        return i32Ret;
     }
-    if ((i32Ret == LL_OK) && (pu8Info != NULL) && (u8InfoLen > 0UL)) {
-        i32Ret = pstcW25qxxLL->Receive(pu8Info, (uint32_t)u8InfoLen);
+
+    if ((pstcW25qxxLL->Active != NULL) && (pstcW25qxxLL->Trans != NULL) && (pstcW25qxxLL->Receive != NULL) &&
+        (pstcW25qxxLL->Inactive != NULL)) {
+        pstcW25qxxLL->Active();
+        i32Ret = pstcW25qxxLL->Trans(&u8Cmd, 1U);
+        if ((i32Ret == LL_OK) && (pu8CmdData != NULL) && (u32CmdDataLen > 0UL)) {
+            i32Ret = pstcW25qxxLL->Trans(pu8CmdData, u32CmdDataLen);
+        }
+        if ((i32Ret == LL_OK) && (pu8Info != NULL) && (u8InfoLen > 0UL)) {
+            i32Ret = pstcW25qxxLL->Receive(pu8Info, (uint32_t)u8InfoLen);
+        }
+        pstcW25qxxLL->Inactive();
     }
-    pstcW25qxxLL->Inactive();
 
     return i32Ret;
 }
@@ -150,22 +166,28 @@ static int32_t W25QXX_ReadCmd(const stc_w25qxx_ll_t *pstcW25qxxLL, \
  * @retval int32_t:
  *           - LL_OK:                   No error occurred.
  *           - LL_ERR_TIMEOUT:          SPI timeout.
+ *           - LL_ERR_INVD_PARAM:       Invalid parameter.
  */
 static int32_t W25QXX_Wt(const stc_w25qxx_ll_t *pstcW25qxxLL, \
                          uint8_t u8Cmd, uint32_t u32Addr, \
                          const uint8_t *pu8Data, uint32_t u32DataLen)
 {
     uint8_t au8Cmd[4U];
-    int32_t i32Ret;
+    int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    LOAD_CMD(au8Cmd, u8Cmd, u32Addr);
-
-    pstcW25qxxLL->Active();
-    i32Ret = pstcW25qxxLL->Trans(au8Cmd, 4U);
-    if ((i32Ret == LL_OK) && (pu8Data != NULL) && (u32DataLen > 0UL)) {
-        i32Ret = pstcW25qxxLL->Trans(pu8Data, u32DataLen);
+    if (pstcW25qxxLL == NULL) {
+        return i32Ret;
     }
-    pstcW25qxxLL->Inactive();
+
+    if ((pstcW25qxxLL->Active != NULL) && (pstcW25qxxLL->Trans != NULL) && (pstcW25qxxLL->Inactive != NULL)) {
+        LOAD_CMD(au8Cmd, u8Cmd, u32Addr);
+        pstcW25qxxLL->Active();
+        i32Ret = pstcW25qxxLL->Trans(au8Cmd, 4U);
+        if ((i32Ret == LL_OK) && (pu8Data != NULL) && (u32DataLen > 0UL)) {
+            i32Ret = pstcW25qxxLL->Trans(pu8Data, u32DataLen);
+        }
+        pstcW25qxxLL->Inactive();
+    }
 
     return i32Ret;
 }
@@ -180,22 +202,29 @@ static int32_t W25QXX_Wt(const stc_w25qxx_ll_t *pstcW25qxxLL, \
  * @retval int32_t:
  *           - LL_OK:                   No error occurred.
  *           - LL_ERR_TIMEOUT:          SPI timeout.
+ *           - LL_ERR_INVD_PARAM:       Invalid parameter.
  */
 static int32_t W25QXX_Rd(const stc_w25qxx_ll_t *pstcW25qxxLL, \
                          uint8_t u8Cmd, uint32_t u32Addr, \
                          uint8_t *pu8Data, uint32_t u32DataLen)
 {
     uint8_t au8Cmd[4U];
-    int32_t i32Ret;
+    int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    LOAD_CMD(au8Cmd, u8Cmd, u32Addr);
-
-    pstcW25qxxLL->Active();
-    i32Ret = pstcW25qxxLL->Trans(au8Cmd, 4U);
-    if (i32Ret == LL_OK) {
-        i32Ret = pstcW25qxxLL->Receive(pu8Data, u32DataLen);
+    if (pstcW25qxxLL == NULL) {
+        return i32Ret;
     }
-    pstcW25qxxLL->Inactive();
+
+    if ((pstcW25qxxLL->Active != NULL) && (pstcW25qxxLL->Trans != NULL) && (pstcW25qxxLL->Receive != NULL) &&
+        (pstcW25qxxLL->Inactive != NULL)) {
+        LOAD_CMD(au8Cmd, u8Cmd, u32Addr);
+        pstcW25qxxLL->Active();
+        i32Ret = pstcW25qxxLL->Trans(au8Cmd, 4U);
+        if (i32Ret == LL_OK) {
+            i32Ret = pstcW25qxxLL->Receive(pu8Data, u32DataLen);
+        }
+        pstcW25qxxLL->Inactive();
+    }
 
     return i32Ret;
 }
@@ -266,7 +295,7 @@ int32_t W25QXX_Init(const stc_w25qxx_ll_t *pstcW25qxxLL)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    if (pstcW25qxxLL != NULL) {
+    if ((pstcW25qxxLL != NULL) && (pstcW25qxxLL->Init != NULL)) {
         pstcW25qxxLL->Init();
         i32Ret = LL_OK;
     }
@@ -285,7 +314,7 @@ int32_t W25QXX_DeInit(const stc_w25qxx_ll_t *pstcW25qxxLL)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    if (pstcW25qxxLL != NULL) {
+    if ((pstcW25qxxLL != NULL) && (pstcW25qxxLL->DeInit != NULL)) {
         pstcW25qxxLL->DeInit();
         i32Ret = LL_OK;
     }
@@ -402,7 +431,7 @@ int32_t W25QXX_PowerDown(const stc_w25qxx_ll_t *pstcW25qxxLL)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    if (pstcW25qxxLL != NULL) {
+    if ((pstcW25qxxLL != NULL) && (pstcW25qxxLL->Delay != NULL)) {
         i32Ret = W25QXX_WriteCmd(pstcW25qxxLL, W25QXX_POWER_DOWN, NULL, 0U);
         if (i32Ret == LL_OK) {
             pstcW25qxxLL->Delay(1U);
@@ -424,7 +453,7 @@ int32_t W25QXX_ReleasePowerDown(const stc_w25qxx_ll_t *pstcW25qxxLL)
 {
     int32_t i32Ret = LL_ERR_INVD_PARAM;
 
-    if (pstcW25qxxLL != NULL) {
+    if ((pstcW25qxxLL != NULL) && (pstcW25qxxLL->Delay != NULL)) {
         i32Ret = W25QXX_WriteCmd(pstcW25qxxLL, W25QXX_RELEASE_POWER_DOWN_ID, NULL, 0U);
         if (i32Ret == LL_OK) {
             pstcW25qxxLL->Delay(1U);

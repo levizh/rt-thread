@@ -263,14 +263,14 @@ typedef struct {
 #define TMR4_FLAG_OC_CMP_WL             (1UL << 21U)                    /*!< TMR4 output-compare compare flag - channel WL */
 #define TMR4_FLAG_OC_CMP_XH             (1UL << 22U)                    /*!< TMR4 output-compare compare flag - channel XH */
 #define TMR4_FLAG_OC_CMP_XL             (1UL << 23U)                    /*!< TMR4 output-compare compare flag - channel XL */
-#define TMR4_FLAG_SCMP_EVT0             (1UL << 24U)                    /*!< TMR4 event-compare compare interrupt - event 0 */
-#define TMR4_FLAG_SCMP_EVT1             (1UL << 25U)                    /*!< TMR4 event-compare compare interrupt - event 1 */
-#define TMR4_FLAG_SCMP_EVT2             (1UL << 26U)                    /*!< TMR4 event-compare compare interrupt - event 2 */
-#define TMR4_FLAG_SCMP_EVT3             (1UL << 27U)                    /*!< TMR4 event-compare compare interrupt - event 3 */
-#define TMR4_FLAG_SCMP_EVT4             (1UL << 28U)                    /*!< TMR4 event-compare compare interrupt - event 4 */
-#define TMR4_FLAG_SCMP_EVT5             (1UL << 29U)                    /*!< TMR4 event-compare compare interrupt - event 5 */
-#define TMR4_FLAG_SCMP_EVT6             (1UL << 30U)                    /*!< TMR4 event-compare compare interrupt - event 6 */
-#define TMR4_FLAG_SCMP_EVT7             (1UL << 31U)                    /*!< TMR4 event-compare compare interrupt - event 7 */
+#define TMR4_FLAG_SCMP_EVT0             (1UL << 24U)                    /*!< TMR4 event-compare compare flag - event 0 */
+#define TMR4_FLAG_SCMP_EVT1             (1UL << 25U)                    /*!< TMR4 event-compare compare flag - event 1 */
+#define TMR4_FLAG_SCMP_EVT2             (1UL << 26U)                    /*!< TMR4 event-compare compare flag - event 2 */
+#define TMR4_FLAG_SCMP_EVT3             (1UL << 27U)                    /*!< TMR4 event-compare compare flag - event 3 */
+#define TMR4_FLAG_SCMP_EVT4             (1UL << 28U)                    /*!< TMR4 event-compare compare flag - event 4 */
+#define TMR4_FLAG_SCMP_EVT5             (1UL << 29U)                    /*!< TMR4 event-compare compare flag - event 5 */
+#define TMR4_FLAG_SCMP_EVT6             (1UL << 30U)                    /*!< TMR4 event-compare compare flag - event 6 */
+#define TMR4_FLAG_SCMP_EVT7             (1UL << 31U)                    /*!< TMR4 event-compare compare flag - event 7 */
 #define TMR4_FLAG_ALL                   (TMR4_FLAG_CNT_PEAK     | TMR4_FLAG_CNT_VALLEY   | TMR4_FLAG_RELOAD_TMR_U | \
                                          TMR4_FLAG_RELOAD_TMR_V | TMR4_FLAG_RELOAD_TMR_W | TMR4_FLAG_RELOAD_TMR_X | \
                                          TMR4_FLAG_OC_CMP_UH    | TMR4_FLAG_OC_CMP_UL    | TMR4_FLAG_OC_CMP_VH    | \

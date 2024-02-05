@@ -6,6 +6,20 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Optimized driver:
+                                    1. Integrated stc_mcan_classic_config_t and stc_mcan_fd_config_t into stc_mcan_bit_time_config_t
+                                    2. Integrated u32FdIso into u32FrameFormat.
+                                    3. Removed API MCAN_SetFdIsoOperation(), added API MCAN_SetFrameFormat().
+                                    4. Optimized the handling of the parameter stc_mcan_filter_t.u32FilterIndex
+                                    5. Add 5 APIs for better get protocol status(register PSR):
+                                       MCAN_GetTdcValue(), MCAN_GetDataLastErrorCode(), MCAN_GetLastErrorCode(),
+                                       MCAN_GetComState(), MCAN_GetProtocolFlagStatus()
+                                    6. Changed u8Activity of stc_mcan_protocol_status_t to u8ComState.
+                                    7. Changed u8MsgStorageIndex of stc_mcan_hpm_status_t to u8MsgIndex.
+                                    8. Optimized local function MCAN_FilterInitConfig()
+                                    9. When the frame to be transmitted is a remote frame, do not write the data field to the message RAM.
+                                       When the received frame is a remote frame, do not read the data field from the message RAM.
+                                    Optimized comments.
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -172,14 +186,19 @@
 
 /* MCAN operating mode */
 #define IS_MCAN_MD(x)                                                           \
-(   ((x) == MCAN_MD_NORMAL) || ((x) == MCAN_MD_RESTRICTED_OPERATION)        ||  \
-    ((x) == MCAN_MD_BUS_MONITORING) || ((x) == MCAN_MD_INTERNAL_LOOPBACK)   ||  \
-    ((x) == MCAN_MD_EXTERNAL_LOOPBACK))
+(   ((x) == MCAN_MD_NORMAL)             ||                                      \
+    ((x) == MCAN_MD_RESTRICTED_OP)      ||                                      \
+    ((x) == MCAN_MD_BUS_MON)            ||                                      \
+    ((x) == MCAN_MD_INTERN_LOOPBACK)    ||                                      \
+    ((x) == MCAN_MD_EXTERN_LOOPBACK))
 
 /* MCAN frame format */
 #define IS_MCAN_FRAME_FORMAT(x)                                                 \
-(   ((x) == MCAN_FRAME_CLASSIC) || ((x) == MCAN_FRAME_FD_NO_BRS)            ||  \
-    ((x) == MCAN_FRAME_FD_BRS))
+(   ((x) == MCAN_FRAME_CLASSIC)             ||                                  \
+    ((x) == MCAN_FRAME_ISO_FD_NO_BRS)       ||                                  \
+    ((x) == MCAN_FRAME_ISO_FD_BRS)          ||                                  \
+    ((x) == MCAN_FRAME_NON_ISO_FD_NO_BRS)   ||                                  \
+    ((x) == MCAN_FRAME_NON_ISO_FD_BRS))
 
 /* Nominal bit time */
 #define IS_MCAN_NBRP(x)                 IS_MCAN_RANGE(x, 1U, 512U)
@@ -187,41 +206,44 @@
 #define IS_MCAN_NSEG2(x)                IS_MCAN_RANGE(x, 2U, 128U)
 #define IS_MCAN_NSJW(x)                 IS_MCAN_RANGE(x, 1U, 128U)
 
-/* FD ISO spec. */
-#define IS_MCAN_FD_ISO(x)               (((x) == MCAN_FD_ISO) || ((x) == MCAN_FD_NON_ISO))
-
 /* FD data bit time */
 #define IS_MCAN_DBRP(tdc, x)                                                    \
 (   (((tdc) == MCAN_FD_TDC_DISABLE) && IS_MCAN_RANGE(x, 1U, 32U))           ||  \
     (((tdc) == MCAN_FD_TDC_ENABLE) && IS_MCAN_RANGE(x, 1U, 2U)))
-#define IS_MCAN_DSEG1(x)             IS_MCAN_RANGE(x, 2U, 33U)
-#define IS_MCAN_DSEG2(x)             IS_MCAN_RANGE(x, 1U, 16U)
-#define IS_MCAN_DSJW(x)              IS_MCAN_RANGE(x, 1U, 16U)
+#define IS_MCAN_DSEG1(x)                IS_MCAN_RANGE(x, 2U, 33U)
+#define IS_MCAN_DSEG2(x)                IS_MCAN_RANGE(x, 1U, 16U)
+#define IS_MCAN_DSJW(x)                 IS_MCAN_RANGE(x, 1U, 16U)
 
 /* FD data SSP offset */
-#define IS_MCAN_SSP(x)               ((x) <= 127U)
-#define IS_MCAN_TDC_FILTER(x)        ((x) <= 127U)
+#define IS_MCAN_SSP(x)                  ((x) <= 127U)
+#define IS_MCAN_TDC_FILTER(x)           ((x) <= 127U)
 
 /* MCAN Automatic Retransmission */
 #define IS_MCAN_AUTO_RETX_EN(x)                                                 \
-(   ((x) == MCAN_AUTO_RETX_DISABLE) || ((x) == MCAN_AUTO_RETX_ENABLE))
+(   ((x) == MCAN_AUTO_RETX_DISABLE)     ||                                      \
+    ((x) == MCAN_AUTO_RETX_ENABLE))
 
 /* MCAN transmit pause */
 #define IS_MCAN_TX_PAUSE_EN(x)                                                  \
-(   ((x) == MCAN_TX_PAUSE_DISABLE)  || ((x) == MCAN_TX_PAUSE_ENABLE))
+(   ((x) == MCAN_TX_PAUSE_DISABLE)      ||                                      \
+    ((x) == MCAN_TX_PAUSE_ENABLE))
 
 /* MCAN Tx event message marker */
 #define IS_MCAN_MSG_MARKER_CFG(x)                                               \
-(   ((x) == MCAN_MSG_MARKER_8BIT)   || ((x) == MCAN_MSG_MARKER_16BIT))
+(   ((x) == MCAN_MSG_MARKER_8BIT)       ||                                      \
+    ((x) == MCAN_MSG_MARKER_16BIT))
 
 /* MCAN protocol exception handling */
 #define IS_MCAN_PXH_EN(x)                                                       \
-(   ((x) == MCAN_PROTOCOL_EXCEPTION_DISABLE) || ((x) == MCAN_PROTOCOL_EXCEPTION_ENABLE))
+(   ((x) == MCAN_PROTOCOL_EXP_DISABLE)  ||                                      \
+    ((x) == MCAN_PROTOCOL_EXP_ENABLE))
 
 /* MCAN Tx pin control */
 #define IS_MCAN_PIN_CTRL(x)                                                     \
-(   ((x) == MCAN_TX_PIN_NORMAL) || ((x) == MCAN_TX_PIN_MONITOR)     ||          \
-    ((x) == MCAN_TX_PIN_DOMINANT) || ((x) == MCAN_TX_PIN_RECESSIVE))
+(   ((x) == MCAN_TX_PIN_NORMAL)         ||                                      \
+    ((x) == MCAN_TX_PIN_MONITOR)        ||                                      \
+    ((x) == MCAN_TX_PIN_DOMINANT)       ||                                      \
+    ((x) == MCAN_TX_PIN_RECESSIVE))
 
 /* MCAN message RAM */
 #define IS_MCAN_MSG_RAM_OFFSET_ADDR(x)  ((((x) & 0x3UL) == 0U) && ((x) < MCAN_MSG_RAM_SIZE))
@@ -240,61 +262,71 @@
 /* Tx FIFO/Queue operation mode */
 #define IS_MCAN_TX_FIFO_QUEUE_MD(x)     (((x) == MCAN_TX_FIFO_MD) || ((x) == MCAN_TX_QUEUE_MD))
 
-/* Extended ID AND mask */
-#define IS_MCAN_XIDAM(x)                ((x) <= MCAN_EXT_ID_MASK)
-
 /* MCAN filter */
 #define IS_MCAN_ID_TYPE(x)              (((x) == MCAN_STD_ID) || ((x) == MCAN_EXT_ID))
 #define IS_MCAN_STD_ID_VAL(x)           ((x) <= MCAN_STD_ID_MASK)
 #define IS_MCAN_EXT_ID_VAL(x)           ((x) <= MCAN_EXT_ID_MASK)
 
 #define IS_MCAN_STD_FILTER_TYPE(x)                                              \
-(   ((x) == MCAN_FILTER_RANGE) || ((x) == MCAN_FILTER_DUAL )    ||              \
+(   ((x) == MCAN_FILTER_RANGE)          ||                                      \
+    ((x) == MCAN_FILTER_DUAL )          ||                                      \
     ((x) == MCAN_FILTER_MASK))
 
 #define IS_MCAN_EXT_FILTER_TYPE(x)                                              \
-(   ((x) == MCAN_FILTER_RANGE) || ((x) == MCAN_FILTER_DUAL)     ||              \
-    ((x) == MCAN_FILTER_MASK) || ((x) == MCAN_FILTER_RANGE_NO_EIDM))
+(   ((x) == MCAN_FILTER_RANGE)          ||                                      \
+    ((x) == MCAN_FILTER_DUAL)           ||                                      \
+    ((x) == MCAN_FILTER_MASK)           ||                                      \
+    ((x) == MCAN_FILTER_RANGE_NO_EIDM))
 
 #define IS_MCAN_FILTER_CFG(x)                                                   \
-(   ((x) == MCAN_FILTER_DISABLE) || ((x) == MCAN_FILTER_TO_RX_FIFO0)        ||  \
-    ((x) == MCAN_FILTER_TO_RX_FIFO1) || ((x) == MCAN_FILTER_REJECT)         ||  \
-    ((x) == MCAN_FILTER_HP_NO_STORAGE) || ((x) == MCAN_FILTER_HP_TO_RX_FIFO0) ||\
-    ((x) == MCAN_FILTER_HP_TO_RX_FIFO1) || ((x) == MCAN_FILTER_TO_RX_BUF))
+(   ((x) == MCAN_FILTER_DISABLE)        ||                                      \
+    ((x) == MCAN_FILTER_TO_RX_FIFO0)    ||                                      \
+    ((x) == MCAN_FILTER_TO_RX_FIFO1)    ||                                      \
+    ((x) == MCAN_FILTER_REJECT)         ||                                      \
+    ((x) == MCAN_FILTER_HP_NO_STORAGE)  ||                                      \
+    ((x) == MCAN_FILTER_HP_TO_RX_FIFO0) ||                                      \
+    ((x) == MCAN_FILTER_HP_TO_RX_FIFO1) ||                                      \
+    ((x) == MCAN_FILTER_TO_RX_BUF))
 
 /* Non-matching frame operation */
 #define IS_MCAN_NMF_OP(x)                                                       \
-(   ((x) == MCAN_NMF_ACCEPT_IN_RX_FIFO0)        ||                              \
-    ((x) == MCAN_NMF_ACCEPT_IN_RX_FIFO1)        ||                              \
+(   ((x) == MCAN_NMF_ACCEPT_IN_RX_FIFO0)    ||                                  \
+    ((x) == MCAN_NMF_ACCEPT_IN_RX_FIFO1)    ||                                  \
     ((x) == MCAN_NMF_REJECT))
 
 /* Remote frame operation */
 #define IS_MCAN_REMOTE_FRAME_OP(x)                                              \
-(   ((x) == MCAN_REMOTE_FRAME_FILTER)           ||                              \
+(   ((x) == MCAN_REMOTE_FRAME_FILTER)   ||                                      \
     ((x) == MCAN_REMOTE_FRAME_REJECT ))
 
 /* Rx FIFO */
-#define IS_MCAN_RX_FIFO(x)       (((x) == MCAN_RX_FIFO0) || ((x) == MCAN_RX_FIFO1))
+#define IS_MCAN_RX_FIFO(x)                                                      \
+(   ((x) == MCAN_RX_FIFO0)              ||                                      \
+    ((x) == MCAN_RX_FIFO1))
 
 /* Rx FIFO operation mode */
-#define IS_MCAN_RX_FIFO_MD(x)    (((x) == MCAN_RX_FIFO_BLOCKING) || ((x) == MCAN_RX_FIFO_OVERWRITE))
+#define IS_MCAN_RX_FIFO_MD(x)                                                   \
+(   ((x) == MCAN_RX_FIFO_BLOCKING)      ||                                      \
+    ((x) == MCAN_RX_FIFO_OVERWRITE))
 
 /* Watermark FIFO */
 #define IS_MCAN_WATERMARK_FIFO(x)                                               \
-(   ((x) == MCAN_WATERMARK_TX_EVT_FIFO)         ||                              \
-    ((x) == MCAN_WATERMARK_RX_FIFO0)            ||                              \
+(   ((x) == MCAN_WATERMARK_TX_EVT_FIFO) ||                                      \
+    ((x) == MCAN_WATERMARK_RX_FIFO0)    ||                                      \
     ((x) == MCAN_WATERMARK_RX_FIFO1))
 
 /* RAM watchdog counter start value */
-#define IS_MCAN_RAM_WATCHDOG_START_VAL(x)    ((x) <= 255U)
+#define IS_MCAN_RAM_WDT_START_VAL(x)    ((x) <= 255U)
 
 /* MCAN timestamp counter */
-#define IS_MCAN_TS_PRESC(x)                  (((x) >= 1U) && ((x) <= 16U ))
+#define IS_MCAN_TS_PRESC(x)             (((x) >= 1U) && ((x) <= 16U ))
 
 /* MCAN timeout counter */
 #define IS_MCAN_TO_SEL(x)                                                       \
-(   ((x) == MCAN_TIMEOUT_CONTINUOUS) || ((x) == MCAN_TIMEOUT_TX_EVT_FIFO)   ||  \
-    ((x) == MCAN_TIMEOUT_RX_FIFO0) || ((x) == MCAN_TIMEOUT_RX_FIFO1))
+(   ((x) == MCAN_TIMEOUT_CONT)          ||                                      \
+    ((x) == MCAN_TIMEOUT_TX_EVT_FIFO)   ||                                      \
+    ((x) == MCAN_TIMEOUT_RX_FIFO0)      ||                                      \
+    ((x) == MCAN_TIMEOUT_RX_FIFO1))
 
 #define IS_MCAN_TO_PERIOD(x)            ((x) <= 65535U)
 
@@ -307,19 +339,25 @@
 #define IS_MCAN_FRAME_EFC(x)            (((x) == 0U) || ((x) == 1U))
 
 #define IS_MCAN_FRAME_MSG_MARKER(wmm, x)                                        \
-(   (((wmm) == 0U) && ((x) <= 255UL)) || (((wmm) != 0U) && ((x) <= 65535UL)))
+(   (((wmm) == 0U) && ((x) <= 255UL))   ||                                      \
+    (((wmm) != 0U) && ((x) <= 65535UL)))
 
 /* One Tx buffer check */
 #define IS_MCAN_1TXBUF(x)               IS_ADC_1BIT_MASK(x)
 #define IS_MCAN_TX_BUF(x)               IS_MCAN_BIT_MASK(x, MCAN_TX_BUF_ALL)
 
 /* Interrupt */
-#define IS_MCAN_INT_LINE(x)             (((x) == MCAN_INT_LINE0) || ((x) == MCAN_INT_LINE1))
+#define IS_MCAN_INT_LINE(x)                                                     \
+(   ((x) == MCAN_INT_LINE0)             ||                                      \
+    ((x) == MCAN_INT_LINE1))
 #define IS_MCAN_INT_TYPE(x)             IS_MCAN_BIT_MASK(x, MCAN_INT_ALL)
 #define IS_MCAN_TX_BUF_NOTICE(x)        IS_MCAN_BIT_MASK(x, MCAN_INT_TX_CPLT | MCAN_INT_TX_ABORT_CPLT)
 
 /* Interrupt flag */
 #define IS_MCAN_FLAG(x)                 IS_MCAN_BIT_MASK(x, MCAN_FLAG_ALL)
+
+/* Protocol status flag */
+#define IS_MCAN_PS_FLAG(x)              IS_MCAN_BIT_MASK(x, MCAN_PROTOCOL_FLAG_ALL)
 
 /**
  * @}
@@ -371,38 +409,45 @@ static const uint8_t m_au8ElmtSize[8U] = {16U, 20U, 24U, 28U, 32U, 40U, 56U, 72U
  * @param  [in]  u32Mode                MCAN operating mode.
  *                                      This parameter can be a value of @ref MCAN_Operating_Mode
  *   @arg  MCAN_MD_NORMAL:              Normal mode.
- *   @arg  MCAN_MD_RESTRICTED_OPERATION: Restricted operation mode.
- *   @arg  MCAN_MD_BUS_MONITORING:      Bus monitoring mode.
- *   @arg  MCAN_MD_INTERNAL_LOOPBACK:   Internal loopBack mode.
- *   @arg  MCAN_MD_EXTERNAL_LOOPBACK:   External loopBack mode.
+ *   @arg  MCAN_MD_RESTRICTED_OP:       Restricted operation mode.
+ *   @arg  MCAN_MD_BUS_MON:             Bus monitoring mode.
+ *   @arg  MCAN_MD_INTERN_LOOPBACK:     Internal loopBack mode.
+ *   @arg  MCAN_MD_EXTERN_LOOPBACK:     External loopBack mode.
  * @retval None
  */
 static void MCAN_SetMode(CM_MCAN_TypeDef *MCANx, uint32_t u32Mode)
 {
     /* Set MCAN operating mode:
-              | Normal | Restricted |    Bus     | Internal | External
-              |        | Operation  | Monitoring | LoopBack | LoopBack
-    CCCR.TEST |   0    |     0      |     0      |    1     |    1
-    CCCR.MON  |   0    |     0      |     1      |    1     |    0
-    TEST.LBCK |   0    |     0      |     0      |    1     |    1
-    CCCR.ASM  |   0    |     1      |     0      |    0     |    0
+       |----------------------|-----------|----------|-----------|----------|
+       |                      | CCCR.TEST | CCCR.MON | TEST.LBCK | CCCR.ASM |
+       |----------------------|-----------|----------|-----------|----------|
+       | Normal               |     0     |     0    |     0     |    0     |
+       |----------------------|-----------|----------|-----------|----------|
+       | Restricted Operation |     0     |     0    |     0     |    1     |
+       |----------------------|-----------|----------|-----------|----------|
+       | Bus Monitoring       |     0     |     1    |     0     |    0     |
+       |----------------------|-----------|----------|-----------|----------|
+       | Internal LoopBack    |     1     |     1    |     1     |    0     |
+       |----------------------|-----------|----------|-----------|----------|
+       | External LoopBack    |     1     |     0    |     1     |    0     |
+       |----------------------|-----------|----------|-----------|----------|
     */
     /* Default mode: normal mode */
     CLR_REG32_BIT(MCANx->CCCR, MCAN_CCCR_TEST | MCAN_CCCR_MON | MCAN_CCCR_ASM);
     CLR_REG32_BIT(MCANx->TEST, MCAN_TEST_LBCK);
     /* Switch mode according to the parameter u32Mode */
     switch (u32Mode) {
-        case MCAN_MD_RESTRICTED_OPERATION:
+        case MCAN_MD_RESTRICTED_OP:
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_ASM);
             break;
-        case MCAN_MD_BUS_MONITORING:
+        case MCAN_MD_BUS_MON:
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_MON);
             break;
-        case MCAN_MD_INTERNAL_LOOPBACK:
+        case MCAN_MD_INTERN_LOOPBACK:
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_TEST | MCAN_CCCR_MON);
             SET_REG32_BIT(MCANx->TEST, MCAN_TEST_LBCK);
             break;
-        case MCAN_MD_EXTERNAL_LOOPBACK:
+        case MCAN_MD_EXTERN_LOOPBACK:
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_TEST);
             SET_REG32_BIT(MCANx->TEST, MCAN_TEST_LBCK);
             break;
@@ -519,18 +564,20 @@ static void MCAN_MsgRamInitConfig(CM_MCAN_TypeDef *MCANx, stc_mcan_msg_ram_confi
  *                                      contains the acceptance filters configuration information.
  * @retval None
  */
-static void MCAN_FilterInitConfig(CM_MCAN_TypeDef *MCANx, const stc_mcan_filter_config_t *pstcFilter)
+static void MCAN_FilterInitConfig(CM_MCAN_TypeDef *MCANx, stc_mcan_filter_config_t *pstcFilter)
 {
     uint32_t i;
 
     if (pstcFilter->pstcStdFilterList != NULL) {
         for (i = 0U; i < pstcFilter->u32StdFilterConfigNum; i++) {
+            pstcFilter->pstcStdFilterList[i].u32FilterIndex = i;
             (void)MCAN_FilterConfig(MCANx, &pstcFilter->pstcStdFilterList[i]);
         }
     }
 
     if (pstcFilter->pstcExtFilterList != NULL) {
         for (i = 0U; i < pstcFilter->u32ExtFilterConfigNum; i++) {
+            pstcFilter->pstcExtFilterList[i].u32FilterIndex = i;
             (void)MCAN_FilterConfig(MCANx, &pstcFilter->pstcExtFilterList[i]);
         }
     }
@@ -599,14 +646,15 @@ static void MCAN_CopyTxMsgToRam(CM_MCAN_TypeDef *MCANx, stc_mcan_tx_msg_t *pTxMs
     } else {
         DDL_ASSERT(u32DataSize <= MCAN_TX_REAL_DS(MCANx));
     }
-
-    /* Write Tx payload to the message RAM */
-    for (i = 0U; i < u32DataSize; i += 4U) {
-        u32TxAddr += 4U;
-        RW_MEM32(u32TxAddr) = (((uint32_t)pTxMsg->au8Data[i + 3U] << 24U) | \
-                               ((uint32_t)pTxMsg->au8Data[i + 2U] << 16U) | \
-                               ((uint32_t)pTxMsg->au8Data[i + 1U] << 8U)  | \
-                               (uint32_t)pTxMsg->au8Data[i]);
+    if (pTxMsg->RTR == 0U) {
+        /* Write Tx payload to the message RAM */
+        for (i = 0U; i < u32DataSize; i += 4U) {
+            u32TxAddr += 4U;
+            RW_MEM32(u32TxAddr) = (((uint32_t)pTxMsg->au8Data[i + 3U] << 24U) | \
+                                   ((uint32_t)pTxMsg->au8Data[i + 2U] << 16U) | \
+                                   ((uint32_t)pTxMsg->au8Data[i + 1U] << 8U)  | \
+                                   (uint32_t)pTxMsg->au8Data[i]);
+        }
     }
 }
 
@@ -663,21 +711,20 @@ int32_t MCAN_Init(CM_MCAN_TypeDef *MCANx, stc_mcan_init_t *pstcMcanInit)
     if (pstcMcanInit != NULL) {
         DDL_ASSERT(IS_MCAN_MD(pstcMcanInit->u32Mode));
         DDL_ASSERT(IS_MCAN_FRAME_FORMAT(pstcMcanInit->u32FrameFormat));
-        DDL_ASSERT(IS_MCAN_NBRP(pstcMcanInit->stcCanClassic.u32Prescaler));
-        DDL_ASSERT(IS_MCAN_NSEG1(pstcMcanInit->stcCanClassic.u32TimeSeg1));
-        DDL_ASSERT(IS_MCAN_NSEG2(pstcMcanInit->stcCanClassic.u32TimeSeg2));
-        DDL_ASSERT(IS_MCAN_NSJW(pstcMcanInit->stcCanClassic.u32SyncJumpWidth));
+        DDL_ASSERT(IS_MCAN_NBRP(pstcMcanInit->stcBitTime.u32NominalPrescaler));
+        DDL_ASSERT(IS_MCAN_NSEG1(pstcMcanInit->stcBitTime.u32NominalTimeSeg1));
+        DDL_ASSERT(IS_MCAN_NSEG2(pstcMcanInit->stcBitTime.u32NominalTimeSeg2));
+        DDL_ASSERT(IS_MCAN_NSJW(pstcMcanInit->stcBitTime.u32NominalSyncJumpWidth));
         /* If FD enabled */
         if ((pstcMcanInit->u32FrameFormat & MCAN_CCCR_FDOE) == MCAN_CCCR_FDOE) {
-            DDL_ASSERT(IS_MCAN_FD_ISO(pstcMcanInit->stcCanFd.u32FdIso));
-            DDL_ASSERT(IS_MCAN_DBRP(pstcMcanInit->stcCanFd.u32TDC, \
-                                    pstcMcanInit->stcCanFd.u32Prescaler));
-            DDL_ASSERT(IS_MCAN_DSEG1(pstcMcanInit->stcCanFd.u32TimeSeg1));
-            DDL_ASSERT(IS_MCAN_DSEG2(pstcMcanInit->stcCanFd.u32TimeSeg2));
-            DDL_ASSERT(IS_MCAN_DSJW(pstcMcanInit->stcCanFd.u32SyncJumpWidth));
-            if (pstcMcanInit->stcCanFd.u32TDC == MCAN_FD_TDC_ENABLE) {
-                DDL_ASSERT(IS_MCAN_SSP(pstcMcanInit->stcCanFd.u32SspOffset));
-                DDL_ASSERT(IS_MCAN_TDC_FILTER(pstcMcanInit->stcCanFd.u32TdcFilter));
+            DDL_ASSERT(IS_MCAN_DBRP(pstcMcanInit->stcBitTime.u32TDC, \
+                                    pstcMcanInit->stcBitTime.u32DataPrescaler));
+            DDL_ASSERT(IS_MCAN_DSEG1(pstcMcanInit->stcBitTime.u32DataTimeSeg1));
+            DDL_ASSERT(IS_MCAN_DSEG2(pstcMcanInit->stcBitTime.u32DataTimeSeg2));
+            DDL_ASSERT(IS_MCAN_DSJW(pstcMcanInit->stcBitTime.u32DataSyncJumpWidth));
+            if (pstcMcanInit->stcBitTime.u32TDC == MCAN_FD_TDC_ENABLE) {
+                DDL_ASSERT(IS_MCAN_SSP(pstcMcanInit->stcBitTime.u32SspOffset));
+                DDL_ASSERT(IS_MCAN_TDC_FILTER(pstcMcanInit->stcBitTime.u32TdcFilter));
             }
         }
         DDL_ASSERT(IS_MCAN_AUTO_RETX_EN(pstcMcanInit->u32AutoRetx));
@@ -705,7 +752,7 @@ int32_t MCAN_Init(CM_MCAN_TypeDef *MCANx, stc_mcan_init_t *pstcMcanInit)
         }
 
         if (i32Ret == LL_OK) {
-            /* Request initialisation */
+            /* Request initialization */
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_INIT);
             /* Wait until the CCCR.INIT is set */
             u32TimeoutValue = MCAN_TIMEOUT_VALUE;
@@ -722,30 +769,29 @@ int32_t MCAN_Init(CM_MCAN_TypeDef *MCANx, stc_mcan_init_t *pstcMcanInit)
             SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_CCE);
 
             /* Frame format, automatic retransmission, transmit pause, protocol exception handling */
-            u32Mask   = MCAN_FRAME_FD_BRS | MCAN_CCCR_DAR | MCAN_CCCR_TXP | MCAN_CCCR_PXHD;
+            u32Mask   = MCAN_FRAME_NON_ISO_FD_BRS | MCAN_CCCR_DAR | MCAN_CCCR_TXP | MCAN_CCCR_PXHD;
             u32Config = pstcMcanInit->u32FrameFormat | pstcMcanInit->u32AutoRetx | \
                         pstcMcanInit->u32TxPause | pstcMcanInit->u32ProtocolException;
             MODIFY_REG32(MCANx->CCCR, u32Mask, u32Config);
 
-            /* CAN classic */
-            u32Config = ((pstcMcanInit->stcCanClassic.u32Prescaler - 1U) << MCAN_NBTP_NBRP_POS)     | \
-                        ((pstcMcanInit->stcCanClassic.u32TimeSeg1 - 2U) << MCAN_NBTP_NTSEG1_POS)    | \
-                        ((pstcMcanInit->stcCanClassic.u32SyncJumpWidth - 1U) << MCAN_NBTP_NSJW_POS) | \
-                        (pstcMcanInit->stcCanClassic.u32TimeSeg2 - 1U);
+            /* Nominal bit time */
+            u32Config = ((pstcMcanInit->stcBitTime.u32NominalPrescaler - 1U) << MCAN_NBTP_NBRP_POS)     | \
+                        ((pstcMcanInit->stcBitTime.u32NominalTimeSeg1 - 2U) << MCAN_NBTP_NTSEG1_POS)    | \
+                        ((pstcMcanInit->stcBitTime.u32NominalSyncJumpWidth - 1U) << MCAN_NBTP_NSJW_POS) | \
+                        (pstcMcanInit->stcBitTime.u32NominalTimeSeg2 - 1U);
             WRITE_REG32(MCANx->NBTP, u32Config);
 
-            /* CAN FD */
+            /* Data bit time */
             if ((pstcMcanInit->u32FrameFormat & MCAN_CCCR_FDOE) == MCAN_CCCR_FDOE) {
-                MODIFY_REG32(MCANx->CCCR, MCAN_CCCR_NISO, pstcMcanInit->stcCanFd.u32FdIso);
-                u32Config = ((pstcMcanInit->stcCanFd.u32Prescaler - 1U) << MCAN_DBTP_DBRP_POS)  | \
-                            ((pstcMcanInit->stcCanFd.u32TimeSeg1 - 2U) << MCAN_DBTP_DTSEG1_POS) | \
-                            (pstcMcanInit->stcCanFd.u32SyncJumpWidth - 1U)                      | \
-                            ((pstcMcanInit->stcCanFd.u32TimeSeg2 - 1U) << MCAN_DBTP_DTSEG2_POS);
+                u32Config = ((pstcMcanInit->stcBitTime.u32DataPrescaler - 1U) << MCAN_DBTP_DBRP_POS)  | \
+                            ((pstcMcanInit->stcBitTime.u32DataTimeSeg1 - 2U) << MCAN_DBTP_DTSEG1_POS) | \
+                            (pstcMcanInit->stcBitTime.u32DataSyncJumpWidth - 1U)                      | \
+                            ((pstcMcanInit->stcBitTime.u32DataTimeSeg2 - 1U) << MCAN_DBTP_DTSEG2_POS);
                 WRITE_REG32(MCANx->DBTP, u32Config);
-                if (pstcMcanInit->stcCanFd.u32TDC == MCAN_FD_TDC_ENABLE) {
-                    SET_REG32_BIT(MCANx->DBTP, pstcMcanInit->stcCanFd.u32TDC);
-                    u32Config = (pstcMcanInit->stcCanFd.u32SspOffset << MCAN_TDCR_TDCO_POS) | \
-                                pstcMcanInit->stcCanFd.u32TdcFilter;
+                if (pstcMcanInit->stcBitTime.u32TDC == MCAN_FD_TDC_ENABLE) {
+                    SET_REG32_BIT(MCANx->DBTP, pstcMcanInit->stcBitTime.u32TDC);
+                    u32Config = (pstcMcanInit->stcBitTime.u32SspOffset << MCAN_TDCR_TDCO_POS) | \
+                                pstcMcanInit->stcBitTime.u32TdcFilter;
                     WRITE_REG32(MCANx->TDCR, u32Config);
                 }
             }
@@ -794,24 +840,23 @@ int32_t MCAN_StructInit(stc_mcan_init_t *pstcMcanInit)
 
     if (pstcMcanInit != NULL) {
         pstcMcanInit->u32Mode              = MCAN_MD_NORMAL;
-        pstcMcanInit->u32FrameFormat       = MCAN_FRAME_FD_BRS;
+        pstcMcanInit->u32FrameFormat       = MCAN_FRAME_ISO_FD_BRS;
         pstcMcanInit->u32AutoRetx          = MCAN_AUTO_RETX_ENABLE;
         pstcMcanInit->u32TxPause           = MCAN_TX_PAUSE_DISABLE;
-        pstcMcanInit->u32ProtocolException = MCAN_PROTOCOL_EXCEPTION_ENABLE;
-        /* Classic CAN */
-        pstcMcanInit->stcCanClassic.u32Prescaler     = 1U;
-        pstcMcanInit->stcCanClassic.u32TimeSeg1      = 64U;
-        pstcMcanInit->stcCanClassic.u32TimeSeg2      = 16U;
-        pstcMcanInit->stcCanClassic.u32SyncJumpWidth = 16U;
-        /* FD CAN */
-        pstcMcanInit->stcCanFd.u32FdIso              = MCAN_FD_ISO;
-        pstcMcanInit->stcCanFd.u32Prescaler          = 1U;
-        pstcMcanInit->stcCanFd.u32TimeSeg1           = 8U;
-        pstcMcanInit->stcCanFd.u32TimeSeg2           = 2U;
-        pstcMcanInit->stcCanFd.u32SyncJumpWidth      = 2U;
-        pstcMcanInit->stcCanFd.u32TDC                = MCAN_FD_TDC_DISABLE;
-        pstcMcanInit->stcCanFd.u32SspOffset          = 0U;
-        pstcMcanInit->stcCanFd.u32TdcFilter          = 0U;
+        pstcMcanInit->u32ProtocolException = MCAN_PROTOCOL_EXP_ENABLE;
+        /* Nominal bit time, for classical CAN and CAN FD arbitration phase */
+        pstcMcanInit->stcBitTime.u32NominalPrescaler     = 1U;
+        pstcMcanInit->stcBitTime.u32NominalTimeSeg1      = 64U;
+        pstcMcanInit->stcBitTime.u32NominalTimeSeg2      = 16U;
+        pstcMcanInit->stcBitTime.u32NominalSyncJumpWidth = 16U;
+        /* Data bit time, for CAN FD data phase */
+        pstcMcanInit->stcBitTime.u32DataPrescaler        = 1U;
+        pstcMcanInit->stcBitTime.u32DataTimeSeg1         = 8U;
+        pstcMcanInit->stcBitTime.u32DataTimeSeg2         = 2U;
+        pstcMcanInit->stcBitTime.u32DataSyncJumpWidth    = 2U;
+        pstcMcanInit->stcBitTime.u32TDC                  = MCAN_FD_TDC_ENABLE;
+        pstcMcanInit->stcBitTime.u32SspOffset            = 8U;
+        pstcMcanInit->stcBitTime.u32TdcFilter            = 0U;
         /* Message RAM */
         pstcMcanInit->stcMsgRam.u32AddrOffset        = 0U;
         pstcMcanInit->stcMsgRam.u32StdFilterNum      = 0U;
@@ -917,7 +962,7 @@ int32_t MCAN_Stop(CM_MCAN_TypeDef *MCANx)
 
     DDL_ASSERT(IS_MCAN_UNIT(MCANx));
 
-    /* Request initialisation */
+    /* Request initialization */
     SET_REG32_BIT(MCANx->CCCR, MCAN_CCCR_INIT);
     /* Wait until the CCCR.INIT bit is set */
     while (READ_REG32_BIT(MCANx->CCCR, MCAN_CCCR_INIT) == 0U) {
@@ -1122,7 +1167,7 @@ int32_t MCAN_GetMsgRamAddr(const CM_MCAN_TypeDef *MCANx, stc_mcan_msg_ram_addr_t
 }
 
 /**
- * @brief Configure the MCAN reception filter according to the specified parameters
+ * @brief Configure a reception filter element in the message RAM according to the specified parameters
  *        in the stc_mcan_filter_t structure.
  * @param  [in]  MCANx                  Pointer to MCAN instance register base.
  *                                      This parameter can be a value of the following:
@@ -1135,7 +1180,7 @@ int32_t MCAN_GetMsgRamAddr(const CM_MCAN_TypeDef *MCANx, stc_mcan_msg_ram_addr_t
  *           - LL_ERR_INVD_PARAM:       pstcFilter == NULL.
  * @note Call this API after message RAM configured.
  */
-int32_t MCAN_FilterConfig(CM_MCAN_TypeDef *MCANx, stc_mcan_filter_t *pstcFilter)
+int32_t MCAN_FilterConfig(const CM_MCAN_TypeDef *MCANx, const stc_mcan_filter_t *pstcFilter)
 {
     uint32_t u32F0;
     uint32_t u32F1;
@@ -1312,9 +1357,9 @@ void MCAN_RxFifoOperationModeConfig(CM_MCAN_TypeDef *MCANx, uint32_t u32RxFifo, 
  *   @arg  CM_MCAN2:                    MCAN2 instance register base.
  * @param  [in] u32Fifo                 FIFO that supports watermark interrupt.
  *                                      This parameter can be one of the following values:
- *   @arg  MCAN_WATERMARK_TX_EVT_FIFO:  Tx event FIFO.
  *   @arg  MCAN_WATERMARK_RX_FIFO0:     Rx FIFO0.
  *   @arg  MCAN_WATERMARK_RX_FIFO1:     Rx FIFO1.
+ *   @arg  MCAN_WATERMARK_TX_EVT_FIFO:  Tx event FIFO.
  * @param  [in] u32Watermark            Level for FIFO watermark interrupt.
  *                                      This parameter must be a number between:
  *                                      - 0 and u32RxFifo0Num of @ref stc_mcan_msg_ram_config_t, if u32Fifo is MCAN_WATERMARK_RX_FIFO0
@@ -1368,7 +1413,7 @@ void MCAN_RamWatchdogConfig(CM_MCAN_TypeDef *MCANx, uint32_t u32StartValue)
 {
     /* Check function parameters */
     DDL_ASSERT(IS_MCAN_UNIT(MCANx));
-    DDL_ASSERT(IS_MCAN_RAM_WATCHDOG_START_VAL(u32StartValue));
+    DDL_ASSERT(IS_MCAN_RAM_WDT_START_VAL(u32StartValue));
 
     /* Set the message RAM watchdog counter start value */
     MODIFY_REG32(MCANx->RWD, MCAN_RWD_WDC, u32StartValue);
@@ -1473,7 +1518,7 @@ void MCAN_ResetTimestampCounter(CM_MCAN_TypeDef *MCANx)
  *   @arg  CM_MCAN2:                    MCAN2 instance register base.
  * @param  [in] u32ToSelect             Timeout select.
  *                                      This parameter can be one of @ref MCAN_Timeout_Select
- *   @arg  MCAN_TIMEOUT_CONTINUOUS:     Timeout continuous operation.
+ *   @arg  MCAN_TIMEOUT_CONT:           Timeout continuous operation.
  *   @arg  MCAN_TIMEOUT_TX_EVT_FIFO:    Timeout controlled by Tx event FIFO.
  *   @arg  MCAN_TIMEOUT_RX_FIFO0:       Timeout controlled by Rx FIFO0.
  *   @arg  MCAN_TIMEOUT_RX_FIFO1:       Timeout controlled by Rx FIFO1.
@@ -1545,7 +1590,7 @@ void MCAN_ResetTimeoutCounter(CM_MCAN_TypeDef *MCANx)
 {
     DDL_ASSERT(IS_MCAN_UNIT(MCANx));
 
-    if (READ_REG32_BIT(MCANx->TOCC, MCAN_TOCC_TOS) == MCAN_TIMEOUT_CONTINUOUS) {
+    if (READ_REG32_BIT(MCANx->TOCC, MCAN_TOCC_TOS) == MCAN_TIMEOUT_CONT) {
         /* Reset timeout counter to start value */
         CLR_REG32(MCANx->TOCV);
     }
@@ -1600,25 +1645,27 @@ void MCAN_TxDelayCompensationCmd(CM_MCAN_TypeDef *MCANx, en_functional_state_t e
 }
 
 /**
- * @brief Specifies the CAN FD frame format, according to ISO 11898-1:2015
- *        or Bosch CAN FD Specification V1.0
+ * @brief Specifies the CAN frame format.
  * @param  [in]  MCANx                  Pointer to MCAN instance register base.
  *                                      This parameter can be a value of the following:
  *   @arg  CM_MCAN1:                    MCAN1 instance register base.
  *   @arg  CM_MCAN2:                    MCAN2 instance register base.
- * @param  [in]  u32FdIsoOperation      CAN FD frame format specification.
- *                                      This parameter can be a value of @ref MCAN_FD_ISO_Operation
- *   @arg  MCAN_FD_ISO:                 CAN FD frame format according to ISO 11898-1:2015.
- *   @arg  MCAN_FD_NON_ISO:             CAN FD frame format according to Bosch CAN FD Specification V1.0.
+ * @param  [in]  u32FrameFormat         CAN frame format.
+ *                                      This parameter can be a value of @ref MCAN_Frame_Format
+ *   @arg  MCAN_FRAME_CLASSIC:          Classic CAN mode.
+ *   @arg  MCAN_FRAME_ISO_FD_NO_BRS:    ISO CAN FD mode without bit rate switching.
+ *   @arg  MCAN_FRAME_ISO_FD_BRS:       ISO CAN FD mode with bit rate switching.
+ *   @arg  MCAN_FRAME_NON_ISO_FD_NO_BRS: Non-ISO CAN FD mode without bit rate switching.
+ *   @arg  MCAN_FRAME_NON_ISO_FD_BRS:   Non-ISO CAN FD mode with bit rate switching.
  * @retval None
  */
-void MCAN_SetFdIsoOperation(CM_MCAN_TypeDef *MCANx, uint32_t u32FdIsoOperation)
+void MCAN_SetFrameFormat(CM_MCAN_TypeDef *MCANx, uint32_t u32FrameFormat)
 {
     /* Check function parameters */
     DDL_ASSERT(IS_MCAN_UNIT(MCANx));
-    DDL_ASSERT(IS_MCAN_FD_ISO(u32FdIsoOperation));
+    DDL_ASSERT(IS_MCAN_FRAME_FORMAT(u32FrameFormat));
 
-    MODIFY_REG32(MCANx->CCCR, MCAN_CCCR_NISO, u32FdIsoOperation);
+    MODIFY_REG32(MCANx->CCCR, MCAN_FRAME_NON_ISO_FD_BRS, u32FrameFormat);
 }
 
 /**
@@ -1997,13 +2044,16 @@ int32_t MCAN_GetRxMsg(CM_MCAN_TypeDef *MCANx, uint32_t u32RxLocation, stc_mcan_r
 
             /* Increment Rx memory pointer to payload of Rx FIFO element */
             /* Retrieve Rx payload */
-            for (i = 0U; i < pRxMsg->u32DataSize; i += 4U) {
-                u32RxRamAddr += 4U;
-                u32Tmp = RW_MEM32(u32RxRamAddr);
-                pRxMsg->au8Data[i]      = (uint8_t)(u32Tmp);
-                pRxMsg->au8Data[i + 1U] = (uint8_t)(u32Tmp >> 8U);
-                pRxMsg->au8Data[i + 2U] = (uint8_t)(u32Tmp >> 16U);
-                pRxMsg->au8Data[i + 3U] = (uint8_t)(u32Tmp >> 24U);
+            if (pRxMsg->RTR == 0U) {
+                /* Read the Rx payload from the message RAM. */
+                for (i = 0U; i < pRxMsg->u32DataSize; i += 4U) {
+                    u32RxRamAddr += 4U;
+                    u32Tmp = RW_MEM32(u32RxRamAddr);
+                    pRxMsg->au8Data[i]      = (uint8_t)(u32Tmp);
+                    pRxMsg->au8Data[i + 1U] = (uint8_t)(u32Tmp >> 8U);
+                    pRxMsg->au8Data[i + 2U] = (uint8_t)(u32Tmp >> 16U);
+                    pRxMsg->au8Data[i + 3U] = (uint8_t)(u32Tmp >> 24U);
+                }
             }
 
             if (u32RxLocation == MCAN_RX_FIFO0) {
@@ -2147,10 +2197,10 @@ int32_t MCAN_GetHighPriorityMsgStatus(const CM_MCAN_TypeDef *MCANx, stc_mcan_hpm
     DDL_ASSERT(IS_MCAN_UNIT(MCANx));
 
     if (pHpmStatus != NULL) {
-        pHpmStatus->u8FilterListType  = (uint8_t)(READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_FLST) >> MCAN_HPMS_FLST_POS);
-        pHpmStatus->u8FilterIndex     = (uint8_t)(READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_FIDX) >> MCAN_HPMS_FIDX_POS);
-        pHpmStatus->u8MsgStorage      = (uint8_t)READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_MSI);
-        pHpmStatus->u8MsgStorageIndex = (uint8_t)READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_BIDX);
+        pHpmStatus->u8FilterListType = (uint8_t)(READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_FLST) >> MCAN_HPMS_FLST_POS);
+        pHpmStatus->u8FilterIndex    = (uint8_t)(READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_FIDX) >> MCAN_HPMS_FIDX_POS);
+        pHpmStatus->u8MsgStorage     = (uint8_t)(READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_MSI) >> MCAN_HPMS_MSI_POS);
+        pHpmStatus->u8MsgIndex       = (uint8_t)READ_REG32_BIT(MCANx->HPMS, MCAN_HPMS_BIDX);
         i32Ret = LL_OK;
     }
 
@@ -2184,7 +2234,7 @@ int32_t MCAN_GetProtocolStatus(const CM_MCAN_TypeDef *MCANx, stc_mcan_protocol_s
         /* Fill the protocol status structure */
         pProtocolStatus->u8LastErrorCode         = (uint8_t)(u32Status & MCAN_PSR_LEC);
         pProtocolStatus->u8DataLastErrorCode     = (uint8_t)((u32Status & MCAN_PSR_DLEC) >> MCAN_PSR_DLEC_POS);
-        pProtocolStatus->u8Activity              = (uint8_t)((u32Status & MCAN_PSR_ACT) >> MCAN_PSR_ACT_POS);
+        pProtocolStatus->u8ComState              = (uint8_t)((u32Status & MCAN_PSR_ACT) >> MCAN_PSR_ACT_POS);
         pProtocolStatus->u8ErrorPassiveFlag      = (uint8_t)((u32Status & MCAN_PSR_EP) >> MCAN_PSR_EP_POS);
         pProtocolStatus->u8WarningFlag           = (uint8_t)((u32Status & MCAN_PSR_EW) >> MCAN_PSR_EW_POS);
         pProtocolStatus->u8BusOffFlag            = (uint8_t)((u32Status & MCAN_PSR_BO) >> MCAN_PSR_BO_POS);
@@ -2198,6 +2248,88 @@ int32_t MCAN_GetProtocolStatus(const CM_MCAN_TypeDef *MCANx, stc_mcan_protocol_s
     }
 
     return i32Ret;
+}
+
+/**
+ * @brief Get the TDC value that used by CAN FD frame transmission.
+ * @param  [in]  MCANx                  Pointer to MCAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_MCAN1:                    MCAN1 instance register base.
+ *   @arg  CM_MCAN2:                    MCAN2 instance register base.
+ * @retval An uint8_t value between 0~127.
+ */
+uint8_t MCAN_GetTdcValue(const CM_MCAN_TypeDef *MCANx)
+{
+    DDL_ASSERT(IS_MCAN_UNIT(MCANx));
+    return (uint8_t)(READ_REG32_BIT(MCANx->PSR, MCAN_PSR_TDCV) >> MCAN_PSR_TDCV_POS);
+}
+
+/**
+ * @brief Get the last error code of data phase(data bit time used).
+ * @param  [in]  MCANx                  Pointer to MCAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_MCAN1:                    MCAN1 instance register base.
+ *   @arg  CM_MCAN2:                    MCAN2 instance register base.
+ * @retval An uint8_t value of @ref MCAN_Protocol_Error_Code
+ */
+uint8_t MCAN_GetDataLastErrorCode(const CM_MCAN_TypeDef *MCANx)
+{
+    DDL_ASSERT(IS_MCAN_UNIT(MCANx));
+    return (uint8_t)(READ_REG32_BIT(MCANx->PSR, MCAN_PSR_DLEC) >> MCAN_PSR_DLEC_POS);
+}
+
+/**
+ * @brief Get the last error code of classical CAN frame or CAN FD frame arbitraion phase(nominal bit time used).
+ * @param  [in]  MCANx                  Pointer to MCAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_MCAN1:                    MCAN1 instance register base.
+ *   @arg  CM_MCAN2:                    MCAN2 instance register base.
+ * @retval An uint8_t value of @ref MCAN_Protocol_Error_Code
+ */
+uint8_t MCAN_GetLastErrorCode(const CM_MCAN_TypeDef *MCANx)
+{
+    DDL_ASSERT(IS_MCAN_UNIT(MCANx));
+    return (uint8_t)READ_REG32_BIT(MCANx->PSR, MCAN_PSR_LEC);
+}
+
+/**
+ * @brief Get the communication state.
+ * @param  [in]  MCANx                  Pointer to MCAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_MCAN1:                    MCAN1 instance register base.
+ *   @arg  CM_MCAN2:                    MCAN2 instance register base.
+ * @retval An uint8_t value of @ref MCAN_Com_State
+ */
+uint8_t MCAN_GetComState(const CM_MCAN_TypeDef *MCANx)
+{
+    DDL_ASSERT(IS_MCAN_UNIT(MCANx));
+    return (uint8_t)(READ_REG32_BIT(MCANx->PSR, MCAN_PSR_ACT) >> MCAN_PSR_ACT_POS);
+}
+
+/**
+ * @brief Get the status of the specified protocol flag.
+ * @param  [in]  MCANx                  Pointer to MCAN instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_MCAN1:                    MCAN1 instance register base.
+ *   @arg  CM_MCAN2:                    MCAN2 instance register base.
+ * @param  [in]  u32PsFlag              Protocol flag.
+ *                                      This parameter can be any combination of @ref MCAN_Protocol_Flag
+ * @retval An @ref en_flag_status_t enumeration type value.
+ */
+en_flag_status_t MCAN_GetProtocolFlagStatus(const CM_MCAN_TypeDef *MCANx, uint32_t u32PsFlag)
+{
+    en_flag_status_t enStatus = RESET;
+
+    /* Check function parameters */
+    DDL_ASSERT(IS_MCAN_UNIT(MCANx));
+    DDL_ASSERT(IS_MCAN_PS_FLAG(u32PsFlag));
+
+    if (READ_REG32_BIT(MCANx->PSR, u32PsFlag) != 0U) {
+        /* Return SET if one the specified flags is SET. */
+        enStatus = SET;
+    }
+
+    return enStatus;
 }
 
 /**
@@ -2242,7 +2374,7 @@ int32_t MCAN_GetErrorCounter(const CM_MCAN_TypeDef *MCANx, stc_mcan_error_counte
  *                                      This parameter can be a value of the following:
  *   @arg  CM_MCAN1:                    MCAN1 instance register base.
  *   @arg  CM_MCAN2:                    MCAN2 instance register base.
- * @param  [in]  u32Flag                CAN interrupt flag.
+ * @param  [in]  u32Flag                MCAN interrupt flag.
  *                                      This parameter can be any combination of @ref MCAN_Interrupt_Flag
  * @retval An @ref en_flag_status_t enumeration type value.
  */
@@ -2268,7 +2400,7 @@ en_flag_status_t MCAN_GetStatus(const CM_MCAN_TypeDef *MCANx, uint32_t u32Flag)
  *                                      This parameter can be a value of the following:
  *   @arg  CM_MCAN1:                    MCAN1 instance register base.
  *   @arg  CM_MCAN2:                    MCAN2 instance register base.
- * @param  [in]  u32Flag                CAN interrupt flag.
+ * @param  [in]  u32Flag                MCAN interrupt flag.
  *                                      This parameter can be any combination of @ref MCAN_Interrupt_Flag
  * @retval None
  */

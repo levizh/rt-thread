@@ -111,13 +111,13 @@ __vector_table
                 DCD     SWDT_Handler
                 DCD     TMR6_1_GCmp_Handler
                 DCD     TMR6_1_Ovf_Udf_Handler
-                DCD     TMR6_1_GDet_Handler
+                DCD     TMR6_1_Dte_Handler
                 DCD     TMR6_1_SCmp_Handler
                 DCD     TMRA_1_Ovf_Udf_Handler
                 DCD     TMRA_1_Cmp_Handler
                 DCD     TMR6_2_GCmp_Handler
                 DCD     TMR6_2_Ovf_Udf_Handler
-                DCD     TMR6_2_GDet_Handler
+                DCD     TMR6_2_Dte_Handler
                 DCD     TMR6_2_SCmp_Handler
                 DCD     TMRA_2_Ovf_Udf_Handler
                 DCD     TMRA_2_Cmp_Handler
@@ -544,10 +544,10 @@ TMR6_1_GCmp_Handler
 TMR6_1_Ovf_Udf_Handler
                 B       TMR6_1_Ovf_Udf_Handler
 
-                PUBWEAK TMR6_1_GDet_Handler
+                PUBWEAK TMR6_1_Dte_Handler
                 SECTION .text:CODE:NOROOT:REORDER(1)
-TMR6_1_GDet_Handler
-                B       TMR6_1_GDet_Handler
+TMR6_1_Dte_Handler
+                B       TMR6_1_Dte_Handler
 
                 PUBWEAK TMR6_1_SCmp_Handler
                 SECTION .text:CODE:NOROOT:REORDER(1)
@@ -574,10 +574,10 @@ TMR6_2_GCmp_Handler
 TMR6_2_Ovf_Udf_Handler
                 B       TMR6_2_Ovf_Udf_Handler
 
-                PUBWEAK TMR6_2_GDet_Handler
+                PUBWEAK TMR6_2_Dte_Handler
                 SECTION .text:CODE:NOROOT:REORDER(1)
-TMR6_2_GDet_Handler
-                B       TMR6_2_GDet_Handler
+TMR6_2_Dte_Handler
+                B       TMR6_2_Dte_Handler
 
                 PUBWEAK TMR6_2_SCmp_Handler
                 SECTION .text:CODE:NOROOT:REORDER(1)

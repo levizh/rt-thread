@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Remove space line
+   2023-12-15       CDT             Add API INTC_GetIntSrcState()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -535,6 +537,23 @@ void INTC_IntSrcCmd(en_int_src_t enIntSrc, en_functional_state_t enNewState)
 }
 
 /**
+ * @brief  Get interrupt source interrupt status
+ * @param  [in] enIntSrc: Interrupt source, can be any value @ref en_int_src_t
+ * @retval An @ref en_functional_state_t enumeration type value.
+ */
+en_functional_state_t INTC_GetIntSrcState(en_int_src_t enIntSrc)
+{
+    __IO uint32_t *INTENx;
+
+    /* Parameter validity checking */
+    DDL_ASSERT(enIntSrc <= INT_SRC_MAX);
+
+    INTENx = (__IO uint32_t *)((uint32_t)&CM_INTC->INTEN0 + 4UL * ((uint32_t)enIntSrc / INTEN_REG_MOD));
+
+    return ((*INTENx & (1UL << ((uint32_t)enIntSrc & 0x1FU))) != 0UL) ? ENABLE : DISABLE;
+}
+
+/**
  * @brief  Interrupt No.000 IRQ handler
  * @param  None
  * @retval None
@@ -542,7 +561,6 @@ void INTC_IntSrcCmd(en_int_src_t enIntSrc, en_functional_state_t enNewState)
 void IRQ000_Handler(void)
 {
     m_apfnIrqHandler[INT000_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -555,7 +573,6 @@ void IRQ000_Handler(void)
 void IRQ001_Handler(void)
 {
     m_apfnIrqHandler[INT001_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -568,7 +585,6 @@ void IRQ001_Handler(void)
 void IRQ002_Handler(void)
 {
     m_apfnIrqHandler[INT002_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -581,7 +597,6 @@ void IRQ002_Handler(void)
 void IRQ003_Handler(void)
 {
     m_apfnIrqHandler[INT003_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -594,7 +609,6 @@ void IRQ003_Handler(void)
 void IRQ004_Handler(void)
 {
     m_apfnIrqHandler[INT004_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -607,7 +621,6 @@ void IRQ004_Handler(void)
 void IRQ005_Handler(void)
 {
     m_apfnIrqHandler[INT005_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -620,7 +633,6 @@ void IRQ005_Handler(void)
 void IRQ006_Handler(void)
 {
     m_apfnIrqHandler[INT006_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -633,7 +645,6 @@ void IRQ006_Handler(void)
 void IRQ007_Handler(void)
 {
     m_apfnIrqHandler[INT007_IRQn]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -646,7 +657,6 @@ void IRQ007_Handler(void)
 void IRQ008_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT008_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -659,7 +669,6 @@ void IRQ008_Handler(void)
 void IRQ009_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT009_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -672,7 +681,6 @@ void IRQ009_Handler(void)
 void IRQ010_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT010_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -685,7 +693,6 @@ void IRQ010_Handler(void)
 void IRQ011_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT011_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -698,7 +705,6 @@ void IRQ011_Handler(void)
 void IRQ012_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT012_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -711,7 +717,6 @@ void IRQ012_Handler(void)
 void IRQ013_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT013_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -724,7 +729,6 @@ void IRQ013_Handler(void)
 void IRQ014_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT014_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }
@@ -737,7 +741,6 @@ void IRQ014_Handler(void)
 void IRQ015_Handler(void)
 {
     m_apfnIrqHandler[(uint32_t)INT015_IRQn - IRQn_OFFSET]();
-
     /* Arm Errata 838869: Cortex-M4, Cortex-M4F */
     __DSB();
 }

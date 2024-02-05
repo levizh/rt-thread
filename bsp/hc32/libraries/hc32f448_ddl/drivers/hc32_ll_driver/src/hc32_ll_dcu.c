@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
+                                    Modify function DCU_IntCmd() for misra
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -56,7 +58,6 @@
  * @defgroup DCU_Check_Parameters_Validity DCU Check Parameters Validity
  * @{
  */
-
 #define IS_DCU_WAVE_FUNC_UNIT(x)                                               \
 (   ((x) == CM_DCU1)                    ||                                     \
     ((x) == CM_DCU2)                    ||                                     \
@@ -439,13 +440,13 @@ void DCU_IntCmd(CM_DCU_TypeDef *DCUx, uint32_t u32IntCategory, uint32_t u32IntTy
     } else if (DCU_CATEGORY_CMP_WIN == u32IntCategory) {
         DDL_ASSERT(IS_DCU_INT_CMP_WIN(u32IntType));
         u32Type = (u32IntType & DCU_INT_CMP_WIN_ALL);
-    } else if (DCU_CATEGORY_CMP_NON_WIN == u32IntCategory) {
-        DDL_ASSERT(IS_DCU_INT_CMP_NON_WIN(u32IntType));
-        u32Type = (u32IntType & DCU_INT_CMP_NON_WIN_ALL);
-    } else {
+    } else if (DCU_CATEGORY_WAVE == u32IntCategory) {
         DDL_ASSERT(IS_DCU_WAVE_FUNC_UNIT(DCUx));
         DDL_ASSERT(IS_DCU_INT_WAVE_MD(u32IntType));
         u32Type = (u32IntType & DCU_INT_WAVE_MD_ALL);
+    } else {
+        DDL_ASSERT(IS_DCU_INT_CMP_NON_WIN(u32IntType));
+        u32Type = (u32IntType & DCU_INT_CMP_NON_WIN_ALL);
     }
 
     if (ENABLE == enNewState) {

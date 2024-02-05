@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,9 +31,6 @@ struct hc32_irq_config
     IRQn_Type       irq_num;
     uint32_t        irq_prio;
     en_int_src_t    int_src;
-#if defined (HC32F448)
-    en_int_src_t    int_src_msk;
-#endif
 };
 
 /*******************************************************************************
@@ -49,6 +46,8 @@ struct hc32_irq_config
  ******************************************************************************/
 rt_err_t hc32_install_irq_handler(struct hc32_irq_config *irq_config,
                                   void (*irq_hdr)(void),
+                                  rt_bool_t irq_enable);
+rt_err_t hc32_install_independ_irq_handler(struct hc32_irq_config *irq_config,
                                   rt_bool_t irq_enable);
 
 #ifdef __cplusplus

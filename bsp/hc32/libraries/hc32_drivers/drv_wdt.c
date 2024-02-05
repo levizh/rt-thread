@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,7 +11,7 @@
 
 #include "board.h"
 
-#ifdef BSP_USING_WDT_TIM
+#ifdef BSP_USING_WDT_TMR
 #include <math.h>
 #include <string.h>
 
@@ -19,12 +19,13 @@
 #define LOG_TAG             "drv_wdt"
 #include <drv_log.h>
 
-enum {
+enum
+{
     WDT_INIT_ING,
     WDT_INIT_OVER,
     WDT_IS_ENABLE
 };
-static struct rt_watchdog_ops ops;
+static struct rt_watchdog_ops _ops;
 
 #ifdef BSP_USING_WDT
 struct hc32_wdt_obj
@@ -44,37 +45,37 @@ struct time_match
     float timeout_s;
 };
 
-static uint32_t const Div[] = {4U,64U,128U,256U,512U,1024U,2048U,8192U};
-static uint32_t const Peri[] = {256U,4096U,16384U,65536U};
-static struct time_match wdt_match[(sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))];
+static uint32_t const Div[] = {4U, 64U, 128U, 256U, 512U, 1024U, 2048U, 8192U};
+static uint32_t const Peri[] = {256U, 4096U, 16384U, 65536U};
+static struct time_match wdt_match[(sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))];
 
 static void wdt_match_init(uint32_t clock)
 {
-    int i,j;
-    for (i=0; i<(sizeof(Div)/sizeof(Div[0])); i++)
+    int i, j;
+    for (i = 0; i < (sizeof(Div) / sizeof(Div[0])); i++)
     {
-        for (j=0; j<(sizeof(Peri)/sizeof(Peri[0])); j++)
+        for (j = 0; j < (sizeof(Peri) / sizeof(Peri[0])); j++)
         {
-            wdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].u32ClockDiv = Div[i];
-            wdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].u32CountPeriod = Peri[j];
-            wdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].timeout_s = (Div[i]*Peri[j])/(float)clock;
+            wdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].u32ClockDiv = Div[i];
+            wdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].u32CountPeriod = Peri[j];
+            wdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].timeout_s = (Div[i] * Peri[j]) / (float)clock;
         }
     }
 }
 static void wdt_match_sort(void)
 {
-    int i,j;
+    int i, j;
     struct time_match Temp;
     /* bubble sort */
-    for (i=0; i<((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))-1); i++)
+    for (i = 0; i < ((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0])) - 1); i++)
     {
-        for (j=0; j<((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))-i-1); j++)
+        for (j = 0; j < ((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0])) - i - 1); j++)
         {
-            if (wdt_match[j].timeout_s > wdt_match[j+1].timeout_s)
+            if (wdt_match[j].timeout_s > wdt_match[j + 1].timeout_s)
             {
                 memcpy(&Temp, &wdt_match[j], sizeof(struct time_match));
-                memcpy(&wdt_match[j], &wdt_match[j+1], sizeof(struct time_match));
-                memcpy(&wdt_match[j+1], &Temp, sizeof(struct time_match));
+                memcpy(&wdt_match[j], &wdt_match[j + 1], sizeof(struct time_match));
+                memcpy(&wdt_match[j + 1], &Temp, sizeof(struct time_match));
             }
         }
     }
@@ -83,26 +84,32 @@ static int wdt_match_find_index(uint32_t time_out)
 {
     int i;
     /* Min and Max case */
-    if (time_out <= wdt_match[0].timeout_s) {
+    if (time_out <= wdt_match[0].timeout_s)
+    {
         return 0;
-    } else if (time_out >= wdt_match[((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1].timeout_s) {
-        return (((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1);
+    }
+    else if (time_out >= wdt_match[((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1].timeout_s)
+    {
+        return (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1);
     }
     /* Other case */
-    for (i=1; i<(((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1); i++)
+    for (i = 1; i < (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1); i++)
     {
-        if (time_out >= wdt_match[i].timeout_s && time_out < wdt_match[i+1].timeout_s)
+        if (time_out >= wdt_match[i].timeout_s && time_out < wdt_match[i + 1].timeout_s)
         {
             /* Min difference */
-            if (time_out-wdt_match[i].timeout_s < wdt_match[i+1].timeout_s-time_out) {
+            if (time_out - wdt_match[i].timeout_s < wdt_match[i + 1].timeout_s - time_out)
+            {
                 return i;
-            } else {
-                return (i+1);
+            }
+            else
+            {
+                return (i + 1);
             }
         }
     }
     /* Not match case */
-    return (((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1);
+    return (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1);
 }
 
 static rt_uint32_t wdt_match_find_period(rt_uint32_t Period)
@@ -140,10 +147,11 @@ static rt_uint32_t wdt_get_timeleft_s(void)
     return ((rt_uint32_t)(WDT_GetCountValue() * wdt_match[hc32_wdt.index].u32ClockDiv / (float)hc32_wdt.pclk3));
 }
 
-static rt_err_t wdt_init(rt_watchdog_t *wdt)
+static rt_err_t _wdt_init(rt_watchdog_t *wdt)
 {
     hc32_wdt.pclk3 = CLK_GetBusClockFreq(CLK_BUS_PCLK3);
-    if (!hc32_wdt.pclk3) {
+    if (!hc32_wdt.pclk3)
+    {
         LOG_E("pclk3 getbusclockfreq failed.");
         return -RT_ERROR;
     }
@@ -162,14 +170,15 @@ static rt_err_t wdt_init(rt_watchdog_t *wdt)
     return RT_EOK;
 }
 
-static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
+static rt_err_t _wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
 {
     switch (cmd)
     {
     /* feed the watchdog */
     case RT_DEVICE_CTRL_WDT_KEEPALIVE:
         /* Prevention of unexpected start-up when feed dog */
-        if (hc32_wdt.sta == WDT_IS_ENABLE) {
+        if (hc32_wdt.sta == WDT_IS_ENABLE)
+        {
             WDT_FeedDog();
         }
         break;
@@ -178,7 +187,8 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         hc32_wdt.index = wdt_match_find_index((*((rt_uint32_t *)arg)));
         hc32_wdt.stcwdg.u32CountPeriod   = wdt_match_find_period(wdt_match[hc32_wdt.index].u32CountPeriod);
         hc32_wdt.stcwdg.u32ClockDiv      = ((uint32_t)log2(wdt_match[hc32_wdt.index].u32ClockDiv) << WDT_CR_CKS_POS);
-        if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK) {
+        if (WDT_Init(&hc32_wdt.stcwdg) != LL_OK)
+        {
             LOG_E("wdg set timeout failed.");
             return -RT_ERROR;
         }
@@ -189,7 +199,8 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
         (*((rt_uint32_t *)arg)) = wdt_get_timeout_s();
         break;
     case RT_DEVICE_CTRL_WDT_START:
-        if (hc32_wdt.sta == WDT_INIT_ING) {
+        if (hc32_wdt.sta == WDT_INIT_ING)
+        {
             LOG_E("please set the timeout values.");
             return -RT_ERROR;
         }
@@ -209,12 +220,13 @@ static rt_err_t wdt_control(rt_watchdog_t *wdt, int cmd, void *arg)
 
 int rt_wdt_init(void)
 {
-    ops.init = &wdt_init;
-    ops.control = &wdt_control;
-    hc32_wdt.watchdog.ops = &ops;
+    _ops.init = &_wdt_init;
+    _ops.control = &_wdt_control;
+    hc32_wdt.watchdog.ops = &_ops;
 
     /* register watchdog device */
-    if (rt_hw_watchdog_register(&hc32_wdt.watchdog, "wdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK) {
+    if (rt_hw_watchdog_register(&hc32_wdt.watchdog, "wdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK)
+    {
         LOG_E("wdt device register failed.");
         return -RT_ERROR;
     }
@@ -242,37 +254,37 @@ struct time_match
     float timeout_s;
 };
 
-static uint32_t const Div[] = {1U,16U,32U,64U,128U,256U,2048U};
-static uint32_t const Peri[] = {256U,4096U,16384U,65536U};
-static struct time_match swdt_match[(sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))];
+static uint32_t const Div[] = {1U, 16U, 32U, 64U, 128U, 256U, 2048U};
+static uint32_t const Peri[] = {256U, 4096U, 16384U, 65536U};
+static struct time_match swdt_match[(sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))];
 
 static void swdt_match_init(uint32_t clock)
 {
-    int i,j;
-    for (i=0; i<(sizeof(Div)/sizeof(Div[0])); i++)
+    int i, j;
+    for (i = 0; i < (sizeof(Div) / sizeof(Div[0])); i++)
     {
-        for (j=0; j<(sizeof(Peri)/sizeof(Peri[0])); j++)
+        for (j = 0; j < (sizeof(Peri) / sizeof(Peri[0])); j++)
         {
-            swdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].u32ClockDiv = Div[i];
-            swdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].u32CountPeriod = Peri[j];
-            swdt_match[j+i*(sizeof(Peri)/sizeof(Peri[0]))].timeout_s = (Div[i]*Peri[j])/(float)clock;
+            swdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].u32ClockDiv = Div[i];
+            swdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].u32CountPeriod = Peri[j];
+            swdt_match[j + i * (sizeof(Peri) / sizeof(Peri[0]))].timeout_s = (Div[i] * Peri[j]) / (float)clock;
         }
     }
 }
 static void swdt_match_sort(void)
 {
-    int i,j;
+    int i, j;
     struct time_match Temp;
     /* bubble sort */
-    for (i=0; i<((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))-1); i++)
+    for (i = 0; i < ((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0])) - 1); i++)
     {
-        for (j=0; j<((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0]))-i-1); j++)
+        for (j = 0; j < ((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0])) - i - 1); j++)
         {
-            if (swdt_match[j].timeout_s > swdt_match[j+1].timeout_s)
+            if (swdt_match[j].timeout_s > swdt_match[j + 1].timeout_s)
             {
                 memcpy(&Temp, &swdt_match[j], sizeof(struct time_match));
-                memcpy(&swdt_match[j], &swdt_match[j+1], sizeof(struct time_match));
-                memcpy(&swdt_match[j+1], &Temp, sizeof(struct time_match));
+                memcpy(&swdt_match[j], &swdt_match[j + 1], sizeof(struct time_match));
+                memcpy(&swdt_match[j + 1], &Temp, sizeof(struct time_match));
             }
         }
     }
@@ -281,26 +293,32 @@ static int swdt_match_find_index(uint32_t time_out)
 {
     int i;
     /* Min and Max case */
-    if (time_out <= swdt_match[0].timeout_s) {
+    if (time_out <= swdt_match[0].timeout_s)
+    {
         return 0;
-    } else if (time_out >= swdt_match[((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1].timeout_s) {
-        return (((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1);
+    }
+    else if (time_out >= swdt_match[((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1].timeout_s)
+    {
+        return (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1);
     }
     /* Other case */
-    for (i=1; i<(((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1); i++)
+    for (i = 1; i < (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1); i++)
     {
-        if (time_out >= swdt_match[i].timeout_s && time_out < swdt_match[i+1].timeout_s)
+        if (time_out >= swdt_match[i].timeout_s && time_out < swdt_match[i + 1].timeout_s)
         {
             /* Min difference */
-            if (time_out-swdt_match[i].timeout_s < swdt_match[i+1].timeout_s-time_out) {
+            if (time_out - swdt_match[i].timeout_s < swdt_match[i + 1].timeout_s - time_out)
+            {
                 return i;
-            } else {
-                return (i+1);
+            }
+            else
+            {
+                return (i + 1);
             }
         }
     }
     /* Not match case */
-    return (((sizeof(Div)/sizeof(Div[0]))*(sizeof(Peri)/sizeof(Peri[0])))-1);
+    return (((sizeof(Div) / sizeof(Div[0])) * (sizeof(Peri) / sizeof(Peri[0]))) - 1);
 }
 
 static rt_uint32_t swdt_match_find_period(rt_uint32_t Period)
@@ -363,7 +381,8 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
     /* feed the watchdog */
     case RT_DEVICE_CTRL_WDT_KEEPALIVE:
         /* Prevention of unexpected start-up when feed dog */
-        if (hc32_swdt.sta == WDT_IS_ENABLE) {
+        if (hc32_swdt.sta == WDT_IS_ENABLE)
+        {
             SWDT_FeedDog();
         }
         break;
@@ -372,7 +391,8 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
         hc32_swdt.index = swdt_match_find_index((*((rt_uint32_t *)arg)));
         hc32_swdt.stcwdg.u32CountPeriod   = swdt_match_find_period(swdt_match[hc32_swdt.index].u32CountPeriod);
         hc32_swdt.stcwdg.u32ClockDiv      = ((uint32_t)log2(swdt_match[hc32_swdt.index].u32ClockDiv) << SWDT_CR_CKS_POS);
-        if (SWDT_Init(&hc32_swdt.stcwdg) != LL_OK) {
+        if (SWDT_Init(&hc32_swdt.stcwdg) != LL_OK)
+        {
             LOG_E("swdg set timeout failed.");
             return -RT_ERROR;
         }
@@ -383,7 +403,8 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
         (*((rt_uint32_t *)arg)) = swdt_get_timeout_s();
         break;
     case RT_DEVICE_CTRL_WDT_START:
-        if (hc32_swdt.sta == WDT_INIT_ING) {
+        if (hc32_swdt.sta == WDT_INIT_ING)
+        {
             LOG_E("please set the timeout values.");
             return -RT_ERROR;
         }
@@ -401,21 +422,22 @@ static rt_err_t swdt_control(rt_watchdog_t *swdt, int cmd, void *arg)
     return RT_EOK;
 }
 
-int rt_swdt_init(void)
+static int rt_hw_swdt_init(void)
 {
-    ops.init = &swdt_init;
-    ops.control = &swdt_control;
-    hc32_swdt.watchdog.ops = &ops;
+    _ops.init = &swdt_init;
+    _ops.control = &swdt_control;
+    hc32_swdt.watchdog.ops = &_ops;
 
     /* register watchdog device */
-    if (rt_hw_watchdog_register(&hc32_swdt.watchdog, "swdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK) {
+    if (rt_hw_watchdog_register(&hc32_swdt.watchdog, "swdt", RT_DEVICE_FLAG_DEACTIVATE, RT_NULL) != RT_EOK)
+    {
         LOG_E("swdt device register failed.");
         return -RT_ERROR;
     }
     LOG_D("swdt device register success.");
     return RT_EOK;
 }
-INIT_BOARD_EXPORT(rt_swdt_init);
+INIT_BOARD_EXPORT(rt_hw_swdt_init);
 
 #endif  /* BSP_USING_SWDT */
 

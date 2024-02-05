@@ -7,6 +7,12 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Add API DMA_SetDataWidth()
+                                    Delete group DMA_AHB_HPROT_Config
+                                    Delete API DMA_AHB_HProtPrivilegeCmd()
+   2023-12-15       CDT             Modify API input param type:u16->u32
+                                    Add structure stc_dma_rc_nonseq_init_t
+                                    Add API DMA_ReconfigNonSeqStructInit() & DMA_ReconfigNonSeqInit()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -116,6 +122,18 @@ typedef struct {
     uint32_t u32SrcAddrMode;        /*!< Specifies the DMA reconfig function source address mode.
                                         This parameter can be a value of @ref DMA_Reconfig_SrcAddr_Sel */
 } stc_dma_reconfig_init_t;
+
+/**
+ * @brief  DMA re-config non-sequence mode configuration
+ */
+typedef struct {
+    uint32_t u32Mode;           /*!< Specifies the DMA source non-sequence function.
+                                    This parameter can be a value of @ref DMA_NonSeq_Config         */
+    uint32_t u32SrcCount;       /*!< Specifies the DMA source non-sequence function count.          */
+    uint32_t u32SrcDist;        /*!< Specifies the DMA source non-sequence function distance.       */
+    uint32_t u32DestCount;      /*!< Specifies the DMA destination non-sequence function count.     */
+    uint32_t u32DestDist;       /*!< Specifies the DMA destination non-sequence function distance.  */
+} stc_dma_rc_nonseq_init_t;
 
 /**
  * @brief  Dma LLP(linked list pointer) descriptor structure definition
@@ -464,16 +482,6 @@ typedef struct {
  */
 
 /**
- * @defgroup DMA_AHB_HPROT_Config DMA AHB HPROT Config
- * @{
- */
-#define DMA_AHB_HPROT_BUFFERABLE_CACHEABLE                  (6U << DMA_CHCTL_PROT_POS)
-#define DMA_AHB_HPROT_PRIVILEGED                            (1U << DMA_CHCTL_PROT_POS)
-/**
- * @}
- */
-
-/**
  * @}
  */
 
@@ -508,9 +516,10 @@ int32_t DMA_SetSrcAddr(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Addr);
 int32_t DMA_SetDestAddr(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Addr);
 int32_t DMA_SetTransCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Count);
 int32_t DMA_SetBlockSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Size);
+int32_t DMA_SetDataWidth(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32DataWidth);
 
-int32_t DMA_SetSrcRepeatSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Size);
-int32_t DMA_SetDestRepeatSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint16_t u16Size);
+int32_t DMA_SetSrcRepeatSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Size);
+int32_t DMA_SetDestRepeatSize(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Size);
 int32_t DMA_SetNonSeqSrcCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Count);
 int32_t DMA_SetNonSeqDestCount(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Count);
 int32_t DMA_SetNonSeqSrcOffset(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, uint32_t u32Offset);
@@ -538,6 +547,8 @@ int32_t DMA_ReconfigStructInit(stc_dma_reconfig_init_t *pstcDmaRCInit);
 int32_t DMA_ReconfigInit(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_reconfig_init_t *pstcDmaRCInit);
 void DMA_ReconfigCmd(CM_DMA_TypeDef *DMAx, en_functional_state_t enNewState);
 void DMA_ReconfigLlpCmd(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, en_functional_state_t enNewState);
+int32_t DMA_ReconfigNonSeqStructInit(stc_dma_rc_nonseq_init_t *pstcDmaRcNonSeqInit);
+int32_t DMA_ReconfigNonSeqInit(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, const stc_dma_rc_nonseq_init_t *pstcDmaRcNonSeqInit);
 
 uint32_t DMA_GetSrcAddr(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
 uint32_t DMA_GetDestAddr(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
@@ -549,8 +560,7 @@ uint32_t DMA_GetNonSeqSrcCount(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
 uint32_t DMA_GetNonSeqDestCount(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
 uint32_t DMA_GetNonSeqSrcOffset(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
 uint32_t DMA_GetNonSeqDestOffset(const CM_DMA_TypeDef *DMAx, uint8_t u8Ch);
-void DMA_AHBHProtBufCacheCmd(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, en_functional_state_t enNewState);
-void DMA_AHBHProtPrivilegeCmd(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, en_functional_state_t enNewState);
+void DMA_AHB_HProtBufCacheCmd(CM_DMA_TypeDef *DMAx, uint8_t u8Ch, en_functional_state_t enNewState);
 
 /**
  * @}

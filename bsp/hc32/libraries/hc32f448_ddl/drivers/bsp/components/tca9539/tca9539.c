@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2022-03-31       CDT             First version
+   2023-12-15       CDT             Add null pointer check
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -78,7 +79,8 @@ int32_t TCA9539_Init(const stc_tca9539_ll_t *pstcTca9539LL)
     int32_t i32Ret = LL_OK;
     uint8_t u8TempData[2];
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Reset == NULL) || (pstcTca9539LL->Init == NULL) ||
+        (pstcTca9539LL->Write == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         pstcTca9539LL->Reset();
@@ -105,7 +107,7 @@ int32_t TCA9539_IntInit(const stc_tca9539_ll_t *pstcTca9539LL)
 {
     int32_t i32Ret = LL_OK;
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->IntInit == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         pstcTca9539LL->IntInit();
@@ -125,7 +127,7 @@ int32_t TCA9539_Reset(const stc_tca9539_ll_t *pstcTca9539LL)
 {
     int32_t i32Ret = LL_OK;
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Reset == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         pstcTca9539LL->Reset();
@@ -165,7 +167,7 @@ int32_t TCA9539_WritePin(const stc_tca9539_ll_t *pstcTca9539LL, uint8_t u8Port, 
     int32_t i32Ret = LL_OK;
     uint8_t u8TempData[2];
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Read == NULL) || (pstcTca9539LL->Write == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         u8TempData[0] = u8Port + TCA9539_REG_OUTPUT_PORT0;
@@ -212,7 +214,7 @@ int32_t TCA9539_ReadPin(const stc_tca9539_ll_t *pstcTca9539LL, uint8_t u8Port, u
     int32_t i32Ret = LL_OK;
     uint8_t u8TempData[2];
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Read == NULL) || (pu8PinState == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         u8TempData[0] = u8Port + TCA9539_REG_INPUT_PORT0;
@@ -254,7 +256,7 @@ int32_t TCA9539_TogglePin(const stc_tca9539_ll_t *pstcTca9539LL, uint8_t u8Port,
     int32_t i32Ret = LL_OK;
     uint8_t u8TempData[2];
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Read == NULL) || (pstcTca9539LL->Write == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         u8TempData[0] = u8Port + TCA9539_REG_OUTPUT_PORT0;
@@ -297,7 +299,7 @@ int32_t TCA9539_ConfigPin(const stc_tca9539_ll_t *pstcTca9539LL, uint8_t u8Port,
     int32_t i32Ret = LL_OK;
     uint8_t u8TempData[2];
 
-    if (pstcTca9539LL == NULL) {
+    if ((pstcTca9539LL == NULL) || (pstcTca9539LL->Read == NULL) || (pstcTca9539LL->Write == NULL)) {
         i32Ret = LL_ERR_INVD_PARAM;
     } else {
         u8TempData[0] = u8Port + TCA9539_REG_CONFIG_PORT0;

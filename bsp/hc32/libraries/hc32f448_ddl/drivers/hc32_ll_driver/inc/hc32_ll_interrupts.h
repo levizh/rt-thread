@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Add declaration of API INTC_GetIntSrcState()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -426,6 +427,7 @@ int32_t EXTINT_StructInit(stc_extint_init_t *pstcExtIntInit);
 en_flag_status_t EXTINT_GetExtIntStatus(uint32_t u32ExtIntCh);
 void EXTINT_ClearExtIntStatus(uint32_t u32ExtIntCh);
 void INTC_IntSrcCmd(en_int_src_t enIntSrc, en_functional_state_t enNewState);
+en_functional_state_t INTC_GetIntSrcState(en_int_src_t enIntSrc);
 
 void IRQ000_Handler(void);
 void IRQ001_Handler(void);

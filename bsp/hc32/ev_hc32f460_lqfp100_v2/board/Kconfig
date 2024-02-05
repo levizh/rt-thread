@@ -337,11 +337,11 @@ menu "On-chip Peripheral Drivers"
                 default n
         endif
 
-    menuconfig BSP_USING_WDT_TIM
+    menuconfig BSP_USING_WDT_TMR
         bool "Enable Watchdog Timer"
         default n
         select RT_USING_WDT
-        if BSP_USING_WDT_TIM
+        if BSP_USING_WDT_TMR
             config BSP_USING_WDT
                 bool "Using WDT"
                 default n
@@ -458,74 +458,74 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_PWM
         if BSP_USING_PWM
-            menuconfig BSP_USING_PWM_TIMA
+            menuconfig BSP_USING_PWM_TMRA
                 bool "Enable timerA output PWM"
                 default n
-                if BSP_USING_PWM_TIMA
-                    menuconfig BSP_USING_PWM_TIMA_4
+                if BSP_USING_PWM_TMRA
+                    menuconfig BSP_USING_PWM_TMRA_4
                         bool "Enable timerA-4 output PWM"
                         default n
-                        if BSP_USING_PWM_TIMA_4
-                            config BSP_USING_PWM_TIMA_4_CH1
+                        if BSP_USING_PWM_TMRA_4
+                            config BSP_USING_PWM_TMRA_4_CH1
                                 bool "Enable timerA-4 channel1"
                                 default n
-                            config BSP_USING_PWM_TIMA_4_CH2
+                            config BSP_USING_PWM_TMRA_4_CH2
                                 bool "Enable timerA-4 channel2"
                                 default n
                         endif
-                    menuconfig BSP_USING_PWM_TIMA_5
+                    menuconfig BSP_USING_PWM_TMRA_5
                         bool "Enable timerA-5 output PWM"
                         default n
-                        if BSP_USING_PWM_TIMA_5
-                            config BSP_USING_PWM_TIMA_5_CH1
+                        if BSP_USING_PWM_TMRA_5
+                            config BSP_USING_PWM_TMRA_5_CH1
                                 bool "Enable timerA-5 channel1"
                                 default n
-                            config BSP_USING_PWM_TIMA_5_CH2
+                            config BSP_USING_PWM_TMRA_5_CH2
                                 bool "Enable timerA-5 channel2"
                                 default n
                         endif
                 endif
-            menuconfig BSP_USING_PWM_TIM4
+            menuconfig BSP_USING_PWM_TMR4
                 bool "Enable timer4 output PWM"
                 default n
-                if BSP_USING_PWM_TIM4
-                    menuconfig BSP_USING_PWM_TIM4_1
+                if BSP_USING_PWM_TMR4
+                    menuconfig BSP_USING_PWM_TMR4_1
                         bool "Enable timer4-1 output PWM"
                         default n
-                        if BSP_USING_PWM_TIM4_1
-                            config BSP_USING_PWM_TIM4_1_OUH
-                                bool "Enable TIM4_1_OUH channel0"
+                        if BSP_USING_PWM_TMR4_1
+                            config BSP_USING_PWM_TMR4_1_OUH
+                                bool "Enable TMR4_1_OUH channel1"
                                 default n
-                            config BSP_USING_PWM_TIM4_1_OUL
-                                bool "Enable TIM4_1_OUL channel1"
+                            config BSP_USING_PWM_TMR4_1_OUL
+                                bool "Enable TMR4_1_OUL channel2"
                                 default n
-                            config BSP_USING_PWM_TIM4_1_OVH
-                                bool "Enable TIM4_1_OVH channel2"
+                            config BSP_USING_PWM_TMR4_1_OVH
+                                bool "Enable TMR4_1_OVH channel3"
                                 default n
-                            config BSP_USING_PWM_TIM4_1_OVL
-                                bool "Enable TIM4_1_OVL channel3"
+                            config BSP_USING_PWM_TMR4_1_OVL
+                                bool "Enable TMR4_1_OVL channel4"
                                 default n
-                            config BSP_USING_PWM_TIM4_1_OWH
-                                bool "Enable TIM4_1_OWH channel4"
+                            config BSP_USING_PWM_TMR4_1_OWH
+                                bool "Enable TMR4_1_OWH channel5"
                                 default n
-                            config BSP_USING_PWM_TIM4_1_OWL
-                                bool "Enable TIM4_1_OWL channel5"
+                            config BSP_USING_PWM_TMR4_1_OWL
+                                bool "Enable TMR4_1_OWL channel6"
                                 default n
                         endif
                 endif
-            menuconfig BSP_USING_PWM_TIM6
+            menuconfig BSP_USING_PWM_TMR6
                 bool "Enable timer6 output PWM"
                 default n
-                if BSP_USING_PWM_TIM6
-                    menuconfig BSP_USING_PWM_TIM6_1
+                if BSP_USING_PWM_TMR6
+                    menuconfig BSP_USING_PWM_TMR6_1
                         bool "Enable timer6-1 output PWM"
                         default n
-                        if BSP_USING_PWM_TIM6_1
-                            config BSP_USING_PWM_TIM6_1_A
-                                bool "Enable TIM6_1_A channel0"
+                        if BSP_USING_PWM_TMR6_1
+                            config BSP_USING_PWM_TMR6_1_A
+                                bool "Enable TMR6_1_A channel1"
                                 default n
-                            config BSP_USING_PWM_TIM6_1_B
-                                bool "Enable TIM6_1_B channel1"
+                            config BSP_USING_PWM_TMR6_1_B
+                                bool "Enable TMR6_1_B channel2"
                                 default n
                         endif
                 endif
@@ -589,19 +589,19 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_PULSE_ENCODER
         if BSP_USING_PULSE_ENCODER
-            menuconfig BSP_USING_TIMERA_PULSE_ENCODER
+            menuconfig BSP_USING_TMRA_PULSE_ENCODER
                 bool "Use TIMERA As The Pulse Encoder"
                 default n
-                if BSP_USING_TIMERA_PULSE_ENCODER
-                    config BSP_USING_PULSE_ENCODER_TIMA_1
+                if BSP_USING_TMRA_PULSE_ENCODER
+                    config BSP_USING_PULSE_ENCODER_TMRA_1
                         bool "Use TIMERA_1 As The Pulse Encoder"
                         default n
                 endif
-            menuconfig BSP_USING_TIMER6_PULSE_ENCODER
+            menuconfig BSP_USING_TMR6_PULSE_ENCODER
                 bool "Use TIMER6 As The Pulse Encoder"
                 default n
-                if BSP_USING_TIMER6_PULSE_ENCODER
-                    config BSP_USING_PULSE_ENCODER_TIM6_1
+                if BSP_USING_TMR6_PULSE_ENCODER
+                    config BSP_USING_PULSE_ENCODER_TMR6_1
                         bool "Use TIMER6_1 As The Pulse Encoder"
                         default n
                 endif
@@ -612,22 +612,22 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_HWTIMER
         if BSP_USING_HWTIMER
-            config BSP_USING_TIMA_1
+            config BSP_USING_TMRA_1
                 bool "Use Timer_a1 As The Hw Timer"
                 default n
-            config BSP_USING_TIMA_2
+            config BSP_USING_TMRA_2
                 bool "Use Timer_a2 As The Hw Timer"
                 default n
-            config BSP_USING_TIMA_3
+            config BSP_USING_TMRA_3
                 bool "Use Timer_a3 As The Hw Timer"
                 default n
-            config BSP_USING_TIMA_4
+            config BSP_USING_TMRA_4
                 bool "Use Timer_a4 As The Hw Timer"
                 default n
-            config BSP_USING_TIMA_5
+            config BSP_USING_TMRA_5
                 bool "Use Timer_a5 As The Hw Timer"
                 default n
-            config BSP_USING_TIMA_6
+            config BSP_USING_TMRA_6
                 bool "Use Timer_a6 As The Hw Timer"
                 default n
         endif

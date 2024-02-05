@@ -1,7 +1,7 @@
 /**
  *******************************************************************************
  * @file  hc32_ll_tmr4.c
- * @brief This file provides firmware functions to manage the TMR4(Timer4)
+ * @brief This file provides firmware functions to manage the TMR4(Timer4).
  @verbatim
    Change Logs:
    Date             Author          Notes
@@ -350,7 +350,7 @@
  * @{
  */
 #define _TMR4_OCCR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCCRUH) + ((CH) << 2U))
-#define _TMR4_OCMR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCMRHUH) + ((CH) << 2U))
+#define _TMR4_OCMR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCMRUH) + ((CH) << 2U))
 #define _TMR4_OCER(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCERU) + (((CH) & 0x06UL) << 1U))
 #define _TMR4_OCSR(UNIT, CH)        TMR4_REG16(TMR4_REG_ADDR((UNIT)->OCSRU) + (((CH) & 0x06UL) << 1U))
 /**

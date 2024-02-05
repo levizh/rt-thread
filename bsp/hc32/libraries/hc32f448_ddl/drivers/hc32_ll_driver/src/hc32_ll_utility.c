@@ -6,6 +6,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify register USART DR to USART TDR
+                                    Prohibit DDL_DelayMS and DDL_DelayUS functions from being optimized
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

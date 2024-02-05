@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -23,18 +22,18 @@
 #define CMPVAL_MAX                  (0xFFFUL)
 
 #if defined(BSP_USING_WKTM_XTAL32)
-#define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_XTAL32)
-#define PWC_WKT_COUNT_FRQ           (32768UL)
+    #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_XTAL32)
+    #define PWC_WKT_COUNT_FRQ           (32768UL)
 #elif defined(BSP_USING_WKTM_64HZ)
-#define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_64HZ)
-#define PWC_WKT_COUNT_FRQ           (64U)
+    #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_64HZ)
+    #define PWC_WKT_COUNT_FRQ           (64U)
 #else
-#if defined(HC32F4A0)
-#define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_RTCLRC)
-#elif defined(HC32F460) || defined(HC32F448)
-#define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_LRC)
-#endif
-#define PWC_WKT_COUNT_FRQ           (32768UL)
+    #if defined(HC32F4A0)
+        #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_RTCLRC)
+    #elif defined(HC32F460) || defined(HC32F448)
+        #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_LRC)
+    #endif
+    #define PWC_WKT_COUNT_FRQ           (32768UL)
 #endif
 
 static rt_uint32_t cmpval = CMPVAL_MAX;
@@ -46,7 +45,6 @@ static rt_uint32_t cmpval = CMPVAL_MAX;
  */
 rt_uint32_t hc32_wktm_get_current_tick(void)
 {
-    /* TODO */
     return (CMPVAL_MAX);
 }
 
@@ -70,16 +68,18 @@ rt_err_t hc32_wktm_start(rt_uint32_t reload)
     /* 64HZ must use XTAL32 and run RTC */
 #if defined(BSP_USING_WKTM_64HZ)
 #if defined(BSP_RTC_USING_XTAL32)
-    if (DISABLE == RTC_GetCounterState()) {
+    if (DISABLE == RTC_GetCounterState())
+    {
         /* #error "Please start the RTC!" */
         RT_ASSERT(0);
     }
 #else
-    #error "Please enable XTAL32 and start the RTC!"
+#error "Please enable XTAL32 and start the RTC!"
 #endif
 #endif
-    if (reload > CMPVAL_MAX || !reload) {
-        return RT_ERROR;
+    if (reload > CMPVAL_MAX || !reload)
+    {
+        return -RT_ERROR;
     }
     cmpval = reload;
     PWC_WKT_SetCompareValue(cmpval);
@@ -113,7 +113,7 @@ rt_uint32_t hc32_wktm_get_countfreq(void)
  * @param  None
  * @retval type code
  */
-int hc32_hw_wktm_init(void)
+int rt_hw_wktm_init(void)
 {
     rt_err_t ret = RT_EOK;
 
@@ -125,14 +125,14 @@ int hc32_hw_wktm_init(void)
 #if defined(HC32F4A0)
     /* F4A0 if select RTCLRC clock need open the LRCEN by RTC->CR3 register */
 #if (PWC_WKT_CLK_SRC == PWC_WKT_CLK_SRC_RTCLRC)
-    MODIFY_REG8(CM_RTC->CR3, RTC_CR3_LRCEN, 0x01U<<RTC_CR3_LRCEN_POS);
+    MODIFY_REG8(CM_RTC->CR3, RTC_CR3_LRCEN, 0x01U << RTC_CR3_LRCEN_POS);
 #endif
 #endif
 
     return ret;
 }
 
-INIT_DEVICE_EXPORT(hc32_hw_wktm_init);
+INIT_DEVICE_EXPORT(rt_hw_wktm_init);
 
 #endif
 

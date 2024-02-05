@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,13 +35,15 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
 
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
-    if (ctx->crc_cfg.poly != DEFAULT_CRC16_CCITT_POLY && ctx->crc_cfg.poly != DEFAULT_CRC32_POLY) {
+    if (ctx->crc_cfg.poly != DEFAULT_CRC16_CCITT_POLY && ctx->crc_cfg.poly != DEFAULT_CRC32_POLY)
+    {
         LOG_E("CRC polynomial only support 0x1021/0x04C11DB7U.");
         goto _exit;
     }
 
     /* if crc_cfg change we need init crc again */
-    if (rt_memcmp(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg))) {
+    if (rt_memcmp(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg)))
+    {
 #if defined(HC32F460)
         switch (ctx->crc_cfg.flags)
         {
@@ -67,9 +68,12 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
             goto _exit;
         }
 
-        if (ctx->crc_cfg.xorout) {
+        if (ctx->crc_cfg.xorout)
+        {
             stcCrcInit.u32XorOut = CRC_XOROUT_ENABLE;
-        } else {
+        }
+        else
+        {
             stcCrcInit.u32XorOut = CRC_XOROUT_DISABLE;
         }
 #endif
@@ -89,16 +93,20 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
 
         stcCrcInit.u32InitValue = ctx->crc_cfg.last_val;
 
-        if (CRC_Init(&stcCrcInit) != LL_OK) {
+        if (CRC_Init(&stcCrcInit) != LL_OK)
+        {
             LOG_E("crc init error.");
             goto _exit;
         }
         LOG_D("CRC_Init.");
         rt_memcpy(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg));
     }
-    if (16U  == ctx->crc_cfg.width) {
+    if (16U  == ctx->crc_cfg.width)
+    {
         result = CRC_CRC16_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
-    } else {    /* CRC32 */
+    }
+    else        /* CRC32 */
+    {
         result = CRC_CRC32_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
     }
 
@@ -119,7 +127,8 @@ static rt_uint32_t _rng_rand(struct hwcrypto_rng *ctx)
 {
     rt_uint32_t gen_random = 0;
 
-    if (TRNG_GenerateRandom(&gen_random, 1U) != LL_OK) {
+    if (TRNG_GenerateRandom(&gen_random, 1U) != LL_OK)
+    {
         return 0;
     }
 
@@ -155,7 +164,7 @@ static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt
         break;
     default :
         LOG_E("not support hash type: %x", ctx->parent.type);
-        result = RT_ERROR;
+        result = -RT_ERROR;
         break;
     }
 
@@ -171,9 +180,10 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
-    if (hash_in == RT_NULL || hash_length == 0) {
+    if (hash_in == RT_NULL || hash_length == 0)
+    {
         LOG_E("no data input.");
-        result = RT_ERROR;
+        result = -RT_ERROR;
         goto _exit;
     }
 
@@ -182,16 +192,19 @@ static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size
     {
     case HWCRYPTO_TYPE_SHA256:
         /* SHA256 = 32*8 Bits */
-        if (length == HASH_SHA256_MSG_DIGEST_SIZE) {
+        if (length == HASH_SHA256_MSG_DIGEST_SIZE)
+        {
             result = HASH_Calculate(hash_in, hash_length, out);
-        } else {
+        }
+        else
+        {
             LOG_E("The out size must be 32 bytes");
         }
         break;
 
     default :
         LOG_E("not support hash type: %x", ctx->parent.type);
-        result = RT_ERROR;
+        result = -RT_ERROR;
         break;
     }
 
@@ -231,35 +244,43 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symm
     }
 
 #if defined (HC32F460)
-    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U)) {
+    if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U))
+    {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
-        result = RT_ERROR;
+        result = -RT_ERROR;
         goto _exit;
     }
 #elif defined (HC32F4A0)
     if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8U) && \
-        ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8U)) {
+            ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8U))
+    {
         LOG_E("not support key bitlen: %d", ctx->key_bitlen);
-        result = RT_ERROR;
+        result = -RT_ERROR;
         goto _exit;
     }
 #endif
 
-    if ((info->length % 16U) != 0U) {
+    if ((info->length % 16U) != 0U)
+    {
         LOG_E("aes supports only an integer multiple of 16 in length");
-        result = RT_ERROR;
+        result = -RT_ERROR;
         goto _exit;
     }
 
-    if (info->mode == HWCRYPTO_MODE_ENCRYPT) {
+    if (info->mode == HWCRYPTO_MODE_ENCRYPT)
+    {
         /* AES encryption. */
         result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
-    } else if (info->mode == HWCRYPTO_MODE_DECRYPT) {
+    }
+    else if (info->mode == HWCRYPTO_MODE_DECRYPT)
+    {
         /* AES decryption */
         result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
-    } else {
+    }
+    else
+    {
         rt_kprintf("error cryp mode : %02x!\n", info->mode);
-        result = RT_ERROR;
+        result = -RT_ERROR;
         goto _exit;
     }
 
@@ -312,11 +333,14 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_SHA1:
     case HWCRYPTO_TYPE_SHA2:
     {
-        if (ctx->type == HWCRYPTO_TYPE_SHA256) {
+        if (ctx->type == HWCRYPTO_TYPE_SHA256)
+        {
             /* Enable HASH. */
             FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_HASH, ENABLE);
             ((struct hwcrypto_hash *)ctx)->ops = &hash_ops;
-        } else {
+        }
+        else
+        {
             LOG_E("not support hash type.");
             res = -RT_ERROR;
         }
@@ -472,7 +496,7 @@ static const struct rt_hwcrypto_ops _ops =
     .reset = _crypto_reset,
 };
 
-int hc32_hw_crypto_device_init(void)
+static int rt_hw_crypto_device_init(void)
 {
     static struct hc32_hwcrypto_device _crypto_dev;
 
@@ -492,13 +516,14 @@ int hc32_hw_crypto_device_init(void)
     _crypto_dev.dev.ops = &_ops;
     _crypto_dev.dev.user_data = &_crypto_dev;
 
-    if (rt_hwcrypto_register(&_crypto_dev.dev, RT_HWCRYPTO_DEFAULT_NAME) != RT_EOK) {
+    if (rt_hwcrypto_register(&_crypto_dev.dev, RT_HWCRYPTO_DEFAULT_NAME) != RT_EOK)
+    {
         return -RT_ERROR;
     }
 
     rt_mutex_init(&_crypto_dev.mutex, RT_HWCRYPTO_DEFAULT_NAME, RT_IPC_FLAG_PRIO);
     return RT_EOK;
 }
-INIT_DEVICE_EXPORT(hc32_hw_crypto_device_init);
+INIT_DEVICE_EXPORT(rt_hw_crypto_device_init);
 
 #endif

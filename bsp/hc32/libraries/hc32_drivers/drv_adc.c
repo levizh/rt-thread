@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -29,7 +29,7 @@ typedef struct
 
 #if defined(BSP_USING_ADC1) || defined(BSP_USING_ADC2) || defined(BSP_USING_ADC3)
 
-static adc_device g_adc_dev_array[] =
+static adc_device _g_adc_dev_array[] =
 {
 #ifdef BSP_USING_ADC1
     {
@@ -121,7 +121,7 @@ static rt_err_t _adc_enable(struct rt_adc_device *device, rt_int8_t channel, rt_
 
 static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt_uint32_t *value)
 {
-    rt_err_t rt_ret = RT_ERROR;
+    rt_err_t rt_ret = -RT_ERROR;
 
     if (!value)
     {
@@ -165,17 +165,17 @@ static rt_uint8_t _adc_get_resolution(struct rt_adc_device *device)
 
     switch (accsel)
     {
-        case ADC_RESOLUTION_12BIT:
-            resolution = 12;
-            break;
-        case ADC_RESOLUTION_10BIT:
-            resolution = 10;
-            break;
-        case ADC_RESOLUTION_8BIT:
-            resolution = 8;
-            break;
-        default:
-            break;
+    case ADC_RESOLUTION_12BIT:
+        resolution = 12;
+        break;
+    case ADC_RESOLUTION_10BIT:
+        resolution = 10;
+        break;
+    case ADC_RESOLUTION_8BIT:
+        resolution = 8;
+        break;
+    default:
+        break;
     }
 
     return resolution;
@@ -191,7 +191,7 @@ static rt_int16_t _adc_get_vref(struct rt_adc_device *device)
     return vref;
 }
 
-static struct rt_adc_ops g_adc_ops =
+static struct rt_adc_ops _g_adc_ops =
 {
     _adc_enable,
     _adc_convert,
@@ -215,41 +215,41 @@ static void _adc_clock_enable(void)
 extern rt_err_t rt_hw_board_adc_init(CM_ADC_TypeDef *ADCx);
 int rt_hw_adc_init(void)
 {
-    int ret, i = 0;
+    int ret = RT_EOK, i = 0;
     stc_adc_init_t stcAdcInit = {0};
     int32_t ll_ret = 0;
 
     _adc_clock_enable();
-    uint32_t dev_cnt = sizeof(g_adc_dev_array) / sizeof(g_adc_dev_array[0]);
+    uint32_t dev_cnt = sizeof(_g_adc_dev_array) / sizeof(_g_adc_dev_array[0]);
     for (; i < dev_cnt; i++)
     {
-        ADC_DeInit(g_adc_dev_array[i].instance);
+        ADC_DeInit(_g_adc_dev_array[i].instance);
         /* Initializes ADC. */
-        stcAdcInit.u16Resolution = g_adc_dev_array[i].init.resolution;
-        stcAdcInit.u16DataAlign = g_adc_dev_array[i].init.data_align;
-        stcAdcInit.u16ScanMode = (g_adc_dev_array[i].init.continue_conv_mode_enable) ? ADC_MD_SEQA_CONT : ADC_MD_SEQA_SINGLESHOT;
-        ll_ret = ADC_Init((void *)g_adc_dev_array[i].instance, &stcAdcInit);
+        stcAdcInit.u16Resolution = _g_adc_dev_array[i].init.resolution;
+        stcAdcInit.u16DataAlign = _g_adc_dev_array[i].init.data_align;
+        stcAdcInit.u16ScanMode = (_g_adc_dev_array[i].init.continue_conv_mode_enable) ? ADC_MD_SEQA_CONT : ADC_MD_SEQA_SINGLESHOT;
+        ll_ret = ADC_Init((void *)_g_adc_dev_array[i].instance, &stcAdcInit);
         if (ll_ret != LL_OK)
         {
             ret = -RT_ERROR;
             break;
         }
 
-        ADC_TriggerCmd(g_adc_dev_array[i].instance, ADC_SEQ_A, (en_functional_state_t)g_adc_dev_array[i].init.hard_trig_enable);
-        ADC_TriggerConfig(g_adc_dev_array[i].instance, ADC_SEQ_A, g_adc_dev_array[i].init.hard_trig_src);
-        if (g_adc_dev_array[i].init.hard_trig_enable && g_adc_dev_array[i].init.hard_trig_src != ADC_HARDTRIG_ADTRG_PIN)
+        ADC_TriggerCmd(_g_adc_dev_array[i].instance, ADC_SEQ_A, (en_functional_state_t)_g_adc_dev_array[i].init.hard_trig_enable);
+        ADC_TriggerConfig(_g_adc_dev_array[i].instance, ADC_SEQ_A, _g_adc_dev_array[i].init.hard_trig_src);
+        if (_g_adc_dev_array[i].init.hard_trig_enable && _g_adc_dev_array[i].init.hard_trig_src != ADC_HARDTRIG_ADTRG_PIN)
         {
-            _adc_internal_trigger0_set(&g_adc_dev_array[i]);
-            _adc_internal_trigger1_set(&g_adc_dev_array[i]);
+            _adc_internal_trigger0_set(&_g_adc_dev_array[i]);
+            _adc_internal_trigger1_set(&_g_adc_dev_array[i]);
         }
 
-        rt_hw_board_adc_init((void *)g_adc_dev_array[i].instance);
-        ret = rt_hw_adc_register(&g_adc_dev_array[i].rt_adc, \
-                                 (const char *)g_adc_dev_array[i].init.name, \
-                                 &g_adc_ops, (void *)g_adc_dev_array[i].instance);
+        rt_hw_board_adc_init((void *)_g_adc_dev_array[i].instance);
+        ret = rt_hw_adc_register(&_g_adc_dev_array[i].rt_adc, \
+                                 (const char *)_g_adc_dev_array[i].init.name, \
+                                 &_g_adc_ops, (void *)_g_adc_dev_array[i].instance);
         if (ret != RT_EOK)
         {
-            LOG_E("failed register %s, err=%d", g_adc_dev_array[i].init.name, ret);
+            LOG_E("failed register %s, err=%d", _g_adc_dev_array[i].init.name, ret);
         }
     }
     return ret;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -99,7 +99,7 @@ static struct hc32_i2c i2c_objs[sizeof(i2c_config) / sizeof(i2c_config[0])] = {0
  ******************************************************************************/
 static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
 {
-    int ret = RT_ERROR;
+    int ret = -RT_ERROR;
     stc_i2c_init_t i2c_init;
     float32_t f32Error = 0.0F;
     rt_uint32_t I2cSrcClk;
@@ -119,8 +119,10 @@ static rt_err_t hc32_i2c_configure(struct rt_i2c_bus_device *bus)
 
     I2cSrcClk = I2C_SRC_CLK;
     I2cClkDiv = I2cSrcClk / i2c_obj->config->baudrate / I2C_WIDTH_MAX_IMME;
-    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++) {
-        if (I2cClkDiv < (1UL << I2cClkDivReg)) {
+    for (I2cClkDivReg = I2C_CLK_DIV1; I2cClkDivReg <= I2C_CLK_DIV128; I2cClkDivReg++)
+    {
+        if (I2cClkDiv < (1UL << I2cClkDivReg))
+        {
             break;
         }
     }
@@ -150,7 +152,7 @@ static int hc32_hw_i2c_start(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Start(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
 
     return RT_EOK;
@@ -160,7 +162,7 @@ static int hc32_hw_i2c_restart(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Restart(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
 
     return RT_EOK;
@@ -172,7 +174,7 @@ static int hc32_hw_i2c_send_addr(struct hc32_i2c *i2c_obj,
     rt_uint8_t dir = ((msg->flags & RT_I2C_RD) == RT_I2C_RD) ? (I2C_DIR_RX) : (I2C_DIR_TX);
     if (LL_OK != I2C_TransAddr(i2c_obj->config->Instance, msg->addr, dir, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     return RT_EOK;
 }
@@ -181,7 +183,7 @@ static int hc32_hw_i2c_stop(struct hc32_i2c *i2c_obj)
 {
     if (LL_OK != I2C_Stop(i2c_obj->config->Instance, i2c_obj->config->timeout))
     {
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     return RT_EOK;
 }
@@ -315,6 +317,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
 
     if (msg->len > 1U)
     {
+        DMA_ClearTransCompleteStatus(i2c_tx_dma->Instance,i2c_tx_dma->flag);
         (void)DMA_SetTransCount(i2c_tx_dma->Instance, i2c_tx_dma->channel, msg->len - 1U);
         (void)DMA_SetSrcAddr(i2c_tx_dma->Instance, i2c_tx_dma->channel, (uint32_t)(&msg->buf[1]));
         (void)DMA_ChCmd(i2c_tx_dma->Instance, i2c_tx_dma->channel, ENABLE);
@@ -331,7 +334,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
     }
     /* wait last I2C data transfer completed */
@@ -343,7 +346,7 @@ static int I2C_Master_Transmit_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     return RT_EOK;
 }
@@ -360,6 +363,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     else if (msg->len > 2U)
     {
+        DMA_ClearTransCompleteStatus(i2c_rx_dma->Instance,i2c_rx_dma->flag);
         (void)DMA_SetTransCount(i2c_rx_dma->Instance, i2c_rx_dma->channel, msg->len - 2U);
         (void)DMA_SetDestAddr(i2c_rx_dma->Instance, i2c_rx_dma->channel, (uint32_t)(&msg->buf[0]));
         (void)DMA_ChCmd(i2c_rx_dma->Instance, i2c_rx_dma->channel, ENABLE);
@@ -376,7 +380,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
     }
     if (msg->len > 1U)
@@ -390,7 +394,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
         }
         if (timeCnt >= i2c_obj->config->timeout)
         {
-            return RT_ETIMEOUT;
+            return -RT_ETIMEOUT;
         }
         I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
         msg->buf[msg->len - 2U] = I2C_ReadData(i2c_obj->config->Instance);
@@ -404,7 +408,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     /* Stop before read last data */
     I2C_ClearStatus(i2c_obj->config->Instance, I2C_FLAG_STOP);
@@ -419,7 +423,7 @@ static int I2C_Master_Receive_DMA(struct hc32_i2c *i2c_obj, struct rt_i2c_msg *m
     }
     if (timeCnt >= i2c_obj->config->timeout)
     {
-        return RT_ETIMEOUT;
+        return -RT_ETIMEOUT;
     }
     I2C_AckConfig(i2c_obj->config->Instance, I2C_ACK);
     return RT_EOK;
@@ -438,7 +442,6 @@ static int I2C_Master_Receive(struct hc32_i2c *i2c_obj,
     {
         I2C_AckConfig(i2c_obj->config->Instance, I2C_NACK);
     }
-    // return I2C_ReceiveData(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
     return I2C_MasterReceiveDataAndStop(i2c_obj->config->Instance, msg->buf, msg->len, i2c_obj->config->timeout);
 }
 
@@ -496,7 +499,7 @@ static rt_ssize_t hc32_i2c_master_xfer(struct rt_i2c_bus_device *bus,
         ignore_nack = msg->flags & RT_I2C_IGNORE_NACK;
         if (!(msg->flags & RT_I2C_NO_START))
         {
-            if (SET == I2C_GetStatus(i2c_obj->config->Instance,I2C_FLAG_BUSY))
+            if (SET == I2C_GetStatus(i2c_obj->config->Instance, I2C_FLAG_BUSY))
             {
                 hc32_hw_i2c_restart(i2c_obj);
             }
@@ -552,7 +555,7 @@ static const struct rt_i2c_bus_device_ops hc32_i2c_ops =
 
 int hc32_hw_i2c_init(void)
 {
-    int ret = RT_ERROR;
+    int ret = -RT_ERROR;
     rt_size_t obj_num = sizeof(i2c_objs) / sizeof(struct hc32_i2c);
     I2C_PRINT_DBG("%s start\n", __func__);
 

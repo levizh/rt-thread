@@ -7,6 +7,8 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-12-15       CDT             Modify comment
+                                    Refine API CLK_XtalStdInit. and add API CLK_XtalStdCmd, CLK_SetXtalStdExceptionType
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -58,13 +60,13 @@ extern "C"
  */
 typedef struct {
     uint8_t u8State;            /*!< The new state of the XTAL.
-                                     This parameter can be a value of @ref CLK_XTAL_Config   */
+                                     This parameter can be a value of @ref CLK_XTAL_State                   */
     uint8_t u8Drv;              /*!< The XTAL drive ability.
-                                     This parameter can be a value of @ref CLK_XTAL_Config   */
+                                     This parameter can be a value of @ref CLK_XTAL_Driver                  */
     uint8_t u8Mode;             /*!< The XTAL mode selection osc or exclk.
-                                     This parameter can be a value of @ref CLK_XTAL_Config   */
+                                     This parameter can be a value of @ref CLK_XTAL_Mode_Selection          */
     uint8_t u8StableTime;       /*!< The XTAL stable time selection.
-                                     This parameter can be a value of @ref CLK_XTAL_Config   */
+                                     This parameter can be a value of @ref CLK_XTAL_Stable_Time_Selection   */
 } stc_clock_xtal_init_t;
 
 /**
@@ -72,13 +74,9 @@ typedef struct {
  */
 typedef struct {
     uint8_t u8State;            /*!< Specifies the new state of XTALSTD.
-                                     This parameter can be a value of @ref CLK_XTALSTD_Config    */
-    uint8_t u8Mode;             /*!< Specifies the XTALSTD mode.
-                                     This parameter can be a value of @ref CLK_XTALSTD_Config    */
-    uint8_t u8Int;              /*!< Specifies the XTALSTD interrupt on or off.
-                                     This parameter can be a value of @ref CLK_XTALSTD_Config    */
-    uint8_t u8Reset;            /*!< Specifies the XTALSTD reset on or off.
-                                     This parameter can be a value of @ref CLK_XTALSTD_Config    */
+                                     This parameter can be a value of @ref CLK_XTALSTD_State                */
+    uint8_t u8ExceptionType;    /*!< Specifies the XTALSTD exception type.
+                                     This parameter can be a value of @ref CLK_XTALSTD_Exception_type       */
 } stc_clock_xtalstd_init_t;
 
 /**
@@ -86,7 +84,7 @@ typedef struct {
  */
 typedef struct {
     uint32_t u32State;          /*!< The new state of the XTAL divide.
-                                     This parameter can be a value of @ref CLK_XTALDIV_State   */
+                                     This parameter can be a value of @ref CLK_XTALDIV_State                */
     uint32_t u32Num;            /*!< The numerator of XTAL divide. */
     uint32_t u32Den;            /*!< The denominator of XTAL divide. */
 } stc_clock_xtaldiv_init_t;
@@ -95,12 +93,12 @@ typedef struct {
  * @brief  CLK XTAL32 configuration structure definition
  */
 typedef struct {
-    uint8_t u8State;            /*!< Xtal32 new state,
-                                     @ref CLK_XTAL32_Config for details */
-    uint8_t u8Drv;              /*!< Xtal32 drive capacity setting,
-                                     @ref CLK_XTAL32_Config for details */
+    uint8_t u8State;            /*!< The new state of the XTAL32 divide.
+                                     This parameter can be a value of @ref CLK_XTAL32_State                 */
+    uint8_t u8Drv;              /*!< The Xtal32 drive ability setting,
+                                     This parameter can be a value of @ref CLK_XTAL32_Drive                 */
     uint8_t u8Filter;           /*!< Xtal32 noise filter setting,
-                                     @ref CLK_XTAL32_Config for details */
+                                     This parameter can be a value of@ref CLK_XTAL32_Filter_Selection       */
 } stc_clock_xtal32_init_t;
 
 /**
@@ -132,7 +130,7 @@ typedef struct {
  * @brief  CLK PLL configuration structure definition
  */
 typedef struct {
-    uint8_t u8PLLState;         /*!< PLL new state, @ref CLK_PLL_Config for details */
+    uint8_t u8PLLState;         /*!< PLL new state, @ref CLK_PLL_State for details */
     union {
         uint32_t PLLCFGR;       /*!< PLL config register */
         struct {
@@ -186,17 +184,18 @@ typedef struct {
  */
 
 /**
- * @defgroup CLK_PLL_Config PLL Config
+ * @defgroup CLK_PLL_State PLL state on or off
  * @{
- */
-/**
- * @brief PLL function config.
  */
 #define CLK_PLL_OFF                     (0x01U)
 #define CLK_PLL_ON                      (0x00U)
+/**
+ * @}
+ */
 
 /**
- * @brief PLL source clock selection.
+ * @defgroup CLK_PLL_Source_Clock PLL source clock selection
+ * @{
  */
 #define CLK_PLL_SRC_XTAL                (0x00UL)
 #define CLK_PLL_SRC_HRC                 (0x01UL)
@@ -205,37 +204,46 @@ typedef struct {
  */
 
 /**
- * @defgroup CLK_XTAL_Config XTAL Config
+ * @defgroup CLK_XTAL_State XTAL function config
  * @{
- */
-/**
- * @brief XTAL function config.
  */
 #define CLK_XTAL_OFF                    (CMU_XTALCR_XTALSTP)
 #define CLK_XTAL_ON                     (0x00U)
+/**
+ * @}
+ */
 
 /**
- * @brief XTAL driver ability
+ * @defgroup CLK_XTAL_Driver XTAL drive ability
  * @note
  * @verbatim
  *            High      |       Mid       |       Low       |      ULow     |
  *          [20~25]     |     [16~20)     |     (8~16)      |     [4~8]     |
  * @endverbatim
+ * @{
  */
 #define CLK_XTAL_DRV_HIGH               (0x00U << CMU_XTALCFGR_XTALDRV_POS)
 #define CLK_XTAL_DRV_MID                (0x01U << CMU_XTALCFGR_XTALDRV_POS)
 #define CLK_XTAL_DRV_LOW                (0x02U << CMU_XTALCFGR_XTALDRV_POS)
 #define CLK_XTAL_DRV_ULOW               (0x03U << CMU_XTALCFGR_XTALDRV_POS)
+/**
+ * @}
+ */
 
 /**
- * @brief XTAL mode selection osc or exclk
+ * @defgroup CLK_XTAL_Mode_Selection XTAL mode selection osc or exclk
+ * @{
  */
 #define CLK_XTAL_MD_OSC                 (0x00U)
 #define CLK_XTAL_MD_EXCLK               (CMU_XTALCFGR_XTALMS)
+/**
+ * @}
+ */
 
 /**
- * @brief XTAL stable time selection.
+ * @defgroup CLK_XTAL_Stable_Time_Selection XTAL stable time selection
  * @note  a cycle of stable counter = a cycle of LRC divide by 8
+ * @{
  */
 #define CLK_XTAL_STB_133US              (0x01U)       /*!< 35 stable count cycle, approx. 133us */
 #define CLK_XTAL_STB_255US              (0x02U)       /*!< 67 stable count cycle, approx. 255us */
@@ -261,55 +269,49 @@ typedef struct {
  */
 
 /**
- * @defgroup CLK_XTALSTD_Config XTALSTD Config
+ * @defgroup CLK_XTALSTD_State XTAL error detection on or off
  * @{
- */
-
-/**
- * @brief XTAL error detection on or off
  */
 #define CLK_XTALSTD_OFF                 (0x00U)
 #define CLK_XTALSTD_ON                  (CMU_XTALSTDCR_XTALSTDE)
-
-/**
- * @brief XTALSTD mode selection
- */
-#define CLK_XTALSTD_MD_RST              (CMU_XTALSTDCR_XTALSTDRIS)
-#define CLK_XTALSTD_MD_INT              (0x00U)
-
-/**
- * @brief XTALSTD reset on or off
- */
-#define CLK_XTALSTD_RST_OFF             (0x00U)
-#define CLK_XTALSTD_RST_ON              (CMU_XTALSTDCR_XTALSTDRE)
-
-/**
- * @brief XTALSTD interrupt on or off
- */
-#define CLK_XTALSTD_INT_OFF             (0x00U)
-#define CLK_XTALSTD_INT_ON              (CMU_XTALSTDCR_XTALSTDIE)
 /**
  * @}
  */
 
 /**
- * @defgroup CLK_XTAL32_Config XTAL32 Config
+ * @defgroup CLK_XTALSTD_Exception_type XTALSTD exception type
  * @{
  */
+#define CLK_XTALSTD_EXP_TYPE_NONE       (0x00U)
+#define CLK_XTALSTD_EXP_TYPE_RST        (CMU_XTALSTDCR_XTALSTDRIS | CMU_XTALSTDCR_XTALSTDRE)
+#define CLK_XTALSTD_EXP_TYPE_INT        (CMU_XTALSTDCR_XTALSTDIE)
 /**
- * @brief XTAL32 function config.
+ * @}
+ */
+
+/**
+ * @defgroup CLK_XTAL32_State XTAL32 state on or off
+ * @{
  */
 #define CLK_XTAL32_OFF                  (CMU_XTAL32CR_XTAL32STP)
 #define CLK_XTAL32_ON                   (0x00U)
+/**
+ * @}
+ */
 
 /**
- * @brief XTAL32 driver ability.
+ * @defgroup CLK_XTAL32_Drive XTAL32 drive ability
+ * @{
  */
 #define CLK_XTAL32_DRV_MID              (0x00U)
 #define CLK_XTAL32_DRV_HIGH             (0x01U)
+/**
+ * @}
+ */
 
 /**
- * @brief XTAL32 filtering selection.
+ * @defgroup CLK_XTAL32_Filter_Selection XTAL32 filtering selection.
+ * @{
  */
 #define CLK_XTAL32_FILTER_ALL_MD        (0x00U)   /*!< Valid in run,stop,power down mode.     */
 #define CLK_XTAL32_FILTER_RUN_MD        (0x01U)   /*!< Valid in run mode.                     */
@@ -624,8 +626,9 @@ void CLK_XtalDivCmd(en_functional_state_t enNewState);
 int32_t CLK_XtalDivStructInit(stc_clock_xtaldiv_init_t *pstcXtalDivInit);
 int32_t CLK_XtalDivInit(const stc_clock_xtaldiv_init_t *pstcXtalDivInit);
 
-int32_t CLK_XtalStdStructInit(stc_clock_xtalstd_init_t *pstcXtalStdInit);
-int32_t CLK_XtalStdInit(const stc_clock_xtalstd_init_t *pstcXtalStdInit);
+void CLK_XtalStdCmd(en_functional_state_t enNewState);
+int32_t CLK_XtalStdInit(uint8_t u8State, uint8_t u8ExceptionType);
+int32_t CLK_SetXtalStdExceptionType(uint8_t u8ExceptionType);
 void CLK_ClearXtalStdStatus(void);
 en_flag_status_t CLK_GetXtalStdStatus(void);
 

@@ -77,7 +77,7 @@ typedef struct {
     uint16_t u16InputMos;       /*!< Input MOS always on selection, @ref GPIO_PinInputMOS_Sel for details   */
     uint16_t u16Invert;         /*!< Pin input/output invert setting, @ref GPIO_PinInvert_Sel for details   */
     uint16_t u16ExtInt;         /*!< External interrupt pin setting, @ref GPIO_PinExtInt_Sel for details    */
-    uint16_t u16PinInputType;   /*!< Input type setting, @ref GPIO_PinInType_Sel for detials                */
+    uint16_t u16PinInputType;   /*!< Input type setting, @ref GPIO_PinInType_Sel for details                */
     uint16_t u16PinAttr;        /*!< Digital or analog attribute setting, @ref GPIO_PinMode_Sel for details */
 } stc_gpio_init_t;
 /**

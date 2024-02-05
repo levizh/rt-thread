@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -101,7 +101,7 @@ static rt_err_t _nand_init(struct rt_mtd_nand_device *device)
     stc_exmc_nfc_init_t nfc_init_params;
     struct rthw_nand *hw_nand = (struct rthw_nand *)device;
     rt_uint16_t oob_free = (rt_uint16_t)(NAND_SPARE_AREA_SIZE - \
-                           (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE);
+                                         (NAND_BYTES_PER_PAGE / NAND_ECC_SECTOR_SIZE) * NAND_ECC_CODE_SIZE);
 
     RT_ASSERT(device != RT_NULL);
 
@@ -401,7 +401,7 @@ rt_err_t _nand_move_page(struct rt_mtd_nand_device *device, rt_off_t src_page, r
     return (RT_MTD_EOK);
 }
 
-static const struct rt_mtd_nand_driver_ops ops =
+static const struct rt_mtd_nand_driver_ops _ops =
 {
     _nand_read_id,
     _nand_read_page,
@@ -433,7 +433,7 @@ int rt_hw_nand_init(void)
     nand_dev->block_total     = NAND_DEVICE_BLOCKS;
     nand_dev->block_start     = 0;
     nand_dev->block_end       = nand_dev->block_total - 1UL;
-    nand_dev->ops = &ops;
+    nand_dev->ops = &_ops;
 
     result = rt_mtd_nand_register_device("nand", nand_dev);
     if (result != RT_EOK)

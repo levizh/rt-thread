@@ -2,11 +2,17 @@
  *******************************************************************************
  * @file  hc32_ll_i2c.h
  * @brief This file contains all the functions prototypes of the Inter-Integrated
- *        Circuit(I2C).
+ *        Circuit(I2C) driver library.
  @verbatim
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Move macro define I2C_SRC_CLK to head file and add marco I2C_WIDTH_MAX_IMME
+   2023-12-15       CDT             Rename I2C_FIFO_FLAG_xx as I2C_FLAG_xx_FIFO_xx, I2C_INT_RFREQ as I2C_INT_RX_FIFO_REQ
+                                    Adjust I2C_FLAG_ALL & I2C_FLAG_CLR_ALL & I2C_INT_ALL
+                                    Add I2C_Flag_Clear def group
+                                    Remove API I2C_FIFO_ClearRequestStatus() & I2C_FIFO_GetStatus
+                                    Fix I2C_Deinit
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -76,6 +82,10 @@ typedef struct {
  * @defgroup I2C_Global_Macros I2C Global Macros
  * @{
  */
+
+#define I2C_SRC_CLK                   (SystemCoreClock >> ((CM_CMU->SCFGR & CMU_SCFGR_PCLK0S) >> CMU_SCFGR_PCLK0S_POS))
+
+#define I2C_WIDTH_MAX_IMME            (516UL)
 
 /**
  * @defgroup I2C_Trans_Dir I2C Transfer Direction
@@ -180,38 +190,56 @@ typedef struct {
 #define I2C_FLAG_SMBUS_DEFAULT_MATCH  (I2C_SR_SMBDEFAULTF) /*!< SMBUS default address detected */
 #define I2C_FLAG_SMBUS_HOST_MATCH     (I2C_SR_SMBHOSTF)    /*!< SMBUS host address detected */
 #define I2C_FLAG_SMBUS_ALARM_MATCH    (I2C_SR_SMBALRTF)    /*!< SMBUS alarm address detected */
+#define I2C_FLAG_RX_FIFO_REQ          (I2C_SR_RFREQ)       /*!< Receive FIFO request */
+#define I2C_FLAG_RX_FIFO_FULL         (I2C_SR_RFFULL)      /*!< Receive FIFO full */
+#define I2C_FLAG_RX_FIFO_EMPTY        (I2C_SR_RFEMPTY)     /*!< Receive FIFO empty */
+#define I2C_FLAG_TX_FIFO_FULL         (I2C_SR_TFFULL)      /*!< Transfer FIFO full */
+#define I2C_FLAG_TX_FIFO_EMPTY        (I2C_SR_TFEMPTY)     /*!< Transfer FIFO empty */
 
-#define I2C_FLAG_CLR_ALL              (I2C_FLAG_START | I2C_FLAG_MATCH_ADDR0 | I2C_FLAG_MATCH_ADDR1 \
-                                       | I2C_FLAG_TX_CPLT | I2C_FLAG_STOP | I2C_FLAG_RX_FULL | I2C_FLAG_TX_EMPTY \
-                                       | I2C_FLAG_ARBITRATE_FAIL | I2C_FLAG_NACKF | I2C_FLAG_TMOUTF \
-                                       | I2C_FLAG_GENERAL_CALL | I2C_FLAG_SMBUS_DEFAULT_MATCH \
-                                       | I2C_FLAG_SMBUS_HOST_MATCH | I2C_FLAG_SMBUS_ALARM_MATCH \
-                                       | I2C_FIFO_FLAG_RFREQ | I2C_FIFO_FLAG_RFFULL | I2C_FIFO_FLAG_RFEMPTY \
-                                       | I2C_FIFO_FLAG_TFFULL | I2C_FIFO_FLAG_TFEMPTY)
-#define I2C_FLAG_ALL                  (I2C_FLAG_START | I2C_FLAG_MATCH_ADDR0 | I2C_FLAG_MATCH_ADDR1 | I2C_FLAG_TX_CPLT \
-                                       | I2C_FLAG_STOP | I2C_FLAG_RX_FULL | I2C_FLAG_TX_EMPTY | I2C_FLAG_ARBITRATE_FAIL\
-                                       | I2C_FLAG_ACKR  | I2C_FLAG_NACKF  | I2C_FLAG_TMOUTF | I2C_FLAG_MASTER \
-                                       | I2C_FLAG_BUSY | I2C_FLAG_TRA | I2C_FLAG_GENERAL_CALL \
-                                       | I2C_FLAG_SMBUS_DEFAULT_MATCH | I2C_FLAG_SMBUS_HOST_MATCH \
-                                       | I2C_FLAG_SMBUS_ALARM_MATCH \
-                                       | I2C_FIFO_FLAG_RFREQ | I2C_FIFO_FLAG_RFFULL | I2C_FIFO_FLAG_RFEMPTY \
-                                       | I2C_FIFO_FLAG_TFFULL | I2C_FIFO_FLAG_TFEMPTY)
+#define I2C_FLAG_ALL                  (I2C_FLAG_START          | I2C_FLAG_NACKF               | \
+                                       I2C_FLAG_MATCH_ADDR0    | I2C_FLAG_TMOUTF              | \
+                                       I2C_FLAG_MATCH_ADDR1    | I2C_FLAG_MASTER              | \
+                                       I2C_FLAG_TX_CPLT        | I2C_FLAG_BUSY                | \
+                                       I2C_FLAG_STOP           | I2C_FLAG_TRA                 | \
+                                       I2C_FLAG_RX_FULL        | I2C_FLAG_GENERAL_CALL        | \
+                                       I2C_FLAG_TX_EMPTY       | I2C_FLAG_SMBUS_DEFAULT_MATCH | \
+                                       I2C_FLAG_ARBITRATE_FAIL | I2C_FLAG_SMBUS_HOST_MATCH    | \
+                                       I2C_FLAG_ACKR           | I2C_FLAG_SMBUS_ALARM_MATCH   | \
+                                       I2C_FLAG_RX_FIFO_REQ    | I2C_FLAG_RX_FIFO_FULL        | \
+                                       I2C_FLAG_RX_FIFO_EMPTY  | I2C_FLAG_TX_FIFO_FULL        | \
+                                       I2C_FLAG_TX_FIFO_EMPTY)
 /**
  * @}
  */
 
 /**
- * @defgroup I2C_FIFO_Flag I2C FIFO status Flag Bits
+ * @defgroup I2C_Flag_Clear I2C Flag to clear
  * @{
  */
-#define I2C_FIFO_FLAG_RFREQ           (I2C_SR_RFREQ)       /*!< Receive FIFO request */
-#define I2C_FIFO_FLAG_RFFULL          (I2C_SR_RFFULL)      /*!< Receive FIFO full */
-#define I2C_FIFO_FLAG_RFEMPTY         (I2C_SR_RFEMPTY)     /*!< Receive FIFO empty */
-#define I2C_FIFO_FLAG_TFFULL          (I2C_SR_TFFULL)      /*!< Transfer FIFO full */
-#define I2C_FIFO_FLAG_TFEMPTY         (I2C_SR_TFEMPTY)     /*!< Transfer FIFO empty */
+#define I2C_FLAG_CLR_START                  (I2C_CLR_STARTFCLR)      /*!< Start condition detected */
+#define I2C_FLAG_CLR_MATCH_ADDR0            (I2C_CLR_SLADDR0FCLR)    /*!< Address 0 detected */
+#define I2C_FLAG_CLR_MATCH_ADDR1            (I2C_CLR_SLADDR1FCLR)    /*!< Address 1 detected */
+#define I2C_FLAG_CLR_TX_CPLT                (I2C_CLR_TENDFCLR)       /*!< Transfer end */
+#define I2C_FLAG_CLR_STOP                   (I2C_CLR_STOPFCLR)       /*!< Stop condition detected */
+#define I2C_FLAG_CLR_RX_FULL                (I2C_CLR_RFULLFCLR)      /*!< Receive buffer full */
+#define I2C_FLAG_CLR_ARBITRATE_FAIL         (I2C_CLR_ARLOFCLR)       /*!< Arbitration fails */
+#define I2C_FLAG_CLR_NACK                   (I2C_CLR_NACKFCLR)       /*!< NACK detected */
+#define I2C_FLAG_CLR_TMOUTF                 (I2C_CLR_TMOUTFCLR)      /*!< Time out detected */
+#define I2C_FLAG_CLR_GENERAL_CALL           (I2C_CLR_GENCALLFCLR)    /*!< General call detected */
+#define I2C_FLAG_CLR_SMBUS_DEFAULT_MATCH    (I2C_CLR_SMBDEFAULTFCLR) /*!< SMBUS default address detected */
+#define I2C_FLAG_CLR_SMBUS_HOST_MATCH       (I2C_CLR_SMBHOSTFCLR)    /*!< SMBUS host address detected */
+#define I2C_FLAG_CLR_SMBUS_ALARM_MATCH      (I2C_CLR_SMBALRTFCLR)    /*!< SMBUS alarm address detected */
+#define I2C_FLAG_CLR_RX_FIFO_REQ            (I2C_CLR_RFREQCLR)       /*!< Receive FIFO request */
 
-#define I2C_FIFO_FLAG_ALL             (I2C_FIFO_FLAG_RFREQ | I2C_FIFO_FLAG_RFFULL | I2C_FIFO_FLAG_RFEMPTY \
-                                       | I2C_FIFO_FLAG_TFFULL | I2C_FIFO_FLAG_TFEMPTY)
+#define I2C_FLAG_CLR_ALL              (I2C_FLAG_CLR_START       | I2C_FLAG_CLR_ARBITRATE_FAIL      | \
+                                       I2C_FLAG_CLR_MATCH_ADDR0 | I2C_FLAG_CLR_NACK                | \
+                                       I2C_FLAG_CLR_MATCH_ADDR1 | I2C_FLAG_CLR_TMOUTF              | \
+                                       I2C_FLAG_CLR_TX_CPLT     | I2C_FLAG_CLR_GENERAL_CALL        | \
+                                       I2C_FLAG_CLR_STOP        | I2C_FLAG_CLR_SMBUS_DEFAULT_MATCH | \
+                                       I2C_FLAG_CLR_RX_FULL     | I2C_FLAG_CLR_SMBUS_HOST_MATCH    | \
+                                       I2C_FLAG_CLR_SMBUS_ALARM_MATCH   | \
+                                       I2C_FLAG_CLR_RX_FIFO_REQ)
+
 /**
  * @}
  */
@@ -245,13 +273,15 @@ typedef struct {
 #define I2C_INT_SMBUS_DEFAULT_MATCH   (I2C_CR2_SMBDEFAULTIE)
 #define I2C_INT_SMBUS_HOST_MATCH      (I2C_CR2_SMBHOSTIE)
 #define I2C_INT_SMBUS_ALARM_MATCH     (I2C_CR2_SMBALRTIE)
-#define I2C_INT_RFREQ                 (I2C_CR2_RFREQIE)
-
-#define I2C_INT_ALL                   (I2C_INT_START | I2C_INT_MATCH_ADDR0 | I2C_INT_MATCH_ADDR1 | I2C_INT_TX_CPLT \
-                                       | I2C_INT_STOP | I2C_INT_RX_FULL | I2C_INT_TX_EMPTY | I2C_INT_ARBITRATE_FAIL \
-                                       | I2C_INT_NACK | I2C_INT_TMOUTIE | I2C_INT_GENERAL_CALL \
-                                       | I2C_INT_SMBUS_DEFAULT_MATCH | I2C_INT_SMBUS_HOST_MATCH \
-                                       | I2C_INT_SMBUS_ALARM_MATCH | I2C_INT_RFREQ)
+#define I2C_INT_RX_FIFO_REQ           (I2C_CR2_RFREQIE)
+#define I2C_INT_ALL                   (I2C_INT_START       | I2C_INT_ARBITRATE_FAIL      | \
+                                       I2C_INT_MATCH_ADDR0 | I2C_INT_NACK                | \
+                                       I2C_INT_MATCH_ADDR1 | I2C_INT_TMOUTIE             | \
+                                       I2C_INT_TX_CPLT     | I2C_INT_GENERAL_CALL        | \
+                                       I2C_INT_STOP        | I2C_INT_SMBUS_DEFAULT_MATCH | \
+                                       I2C_INT_RX_FULL     | I2C_INT_SMBUS_HOST_MATCH    | \
+                                       I2C_INT_TX_EMPTY    | I2C_INT_SMBUS_ALARM_MATCH   | \
+                                       I2C_INT_RX_FIFO_REQ)
 /**
  * @}
  */
@@ -275,7 +305,7 @@ typedef struct {
 /* Initialization and Configuration **********************************/
 int32_t I2C_StructInit(stc_i2c_init_t *pstcI2cInit);
 int32_t I2C_BaudrateConfig(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cInit, float32_t *pf32Error);
-void I2C_DeInit(CM_I2C_TypeDef *I2Cx);
+int32_t I2C_DeInit(CM_I2C_TypeDef *I2Cx);
 int32_t I2C_Init(CM_I2C_TypeDef *I2Cx, const stc_i2c_init_t *pstcI2cInit, float32_t *pf32Error);
 void I2C_SlaveAddrConfig(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, uint32_t u32AddrMode, uint32_t u32Addr);
 void I2C_SlaveAddrCmd(CM_I2C_TypeDef *I2Cx, uint32_t u32AddrNum, en_functional_state_t enNewState);
@@ -311,8 +341,6 @@ void I2C_ClearStatus(CM_I2C_TypeDef *I2Cx, uint32_t u32Flag);
 
 /* FIFO *************************************************************/
 void I2C_FIFO_Cmd(CM_I2C_TypeDef *I2Cx, en_functional_state_t enNewState);
-void I2C_FIFO_ClearRequestStatus(CM_I2C_TypeDef *I2Cx);
-en_flag_status_t I2C_FIFO_GetStatus(const CM_I2C_TypeDef *I2Cx, uint32_t u32Flag);
 uint32_t I2C_FIFO_GetTxDataNum(const CM_I2C_TypeDef *I2Cx);
 uint32_t I2C_FIFO_GetRxDataStatus(const CM_I2C_TypeDef *I2Cx);
 uint32_t I2C_FIFO_GetTxDataStatus(const CM_I2C_TypeDef *I2Cx);

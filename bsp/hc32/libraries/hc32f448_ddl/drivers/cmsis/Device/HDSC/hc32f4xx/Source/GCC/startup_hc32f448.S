@@ -154,13 +154,13 @@ __Vectors:
                 .long       SWDT_Handler
                 .long       TMR6_1_GCmp_Handler
                 .long       TMR6_1_Ovf_Udf_Handler
-                .long       TMR6_1_GDet_Handler
+                .long       TMR6_1_Dte_Handler
                 .long       TMR6_1_SCmp_Handler
                 .long       TMRA_1_Ovf_Udf_Handler
                 .long       TMRA_1_Cmp_Handler
                 .long       TMR6_2_GCmp_Handler
                 .long       TMR6_2_Ovf_Udf_Handler
-                .long       TMR6_2_GDet_Handler
+                .long       TMR6_2_Dte_Handler
                 .long       TMR6_2_SCmp_Handler
                 .long       TMRA_2_Ovf_Udf_Handler
                 .long       TMRA_2_Cmp_Handler
@@ -334,7 +334,7 @@ ClearLoop1:
                 /* Call the clock system initialization function. */
                 bl          SystemInit
                 /* Call the application's entry point. */
-                bl          entry
+                bl          main
                 bx          lr
                 .size       Reset_Handler, . - Reset_Handler
 /*
@@ -435,13 +435,13 @@ Default_Handler:
                 Set_Default_Handler    SWDT_Handler
                 Set_Default_Handler    TMR6_1_GCmp_Handler
                 Set_Default_Handler    TMR6_1_Ovf_Udf_Handler
-                Set_Default_Handler    TMR6_1_GDet_Handler
+                Set_Default_Handler    TMR6_1_Dte_Handler
                 Set_Default_Handler    TMR6_1_SCmp_Handler
                 Set_Default_Handler    TMRA_1_Ovf_Udf_Handler
                 Set_Default_Handler    TMRA_1_Cmp_Handler
                 Set_Default_Handler    TMR6_2_GCmp_Handler
                 Set_Default_Handler    TMR6_2_Ovf_Udf_Handler
-                Set_Default_Handler    TMR6_2_GDet_Handler
+                Set_Default_Handler    TMR6_2_Dte_Handler
                 Set_Default_Handler    TMR6_2_SCmp_Handler
                 Set_Default_Handler    TMRA_2_Ovf_Udf_Handler
                 Set_Default_Handler    TMRA_2_Cmp_Handler

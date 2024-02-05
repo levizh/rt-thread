@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
- * 2023-XX-XX     CDT          first version
+ * 2023-06-12     CDT          first version
  */
 
 #include <board.h>
@@ -26,32 +25,32 @@
 
 typedef void (* run_switch_func_type)(void);
 typedef void (* sleep_enter_func_type)(void);
-static void __sleep_enter_idle(void);
-static void __sleep_enter_deep(void);
-static void __sleep_enter_standby(void);
-static void __sleep_enter_shutdown(void);
-static void __run_switch_high_to_low(void);
-static void __run_switch_low_to_high(void);
+static void _sleep_enter_idle(void);
+static void _sleep_enter_deep(void);
+static void _sleep_enter_standby(void);
+static void _sleep_enter_shutdown(void);
+static void _run_switch_high_to_low(void);
+static void _run_switch_low_to_high(void);
 
-static run_switch_func_type run_switch_func[PM_RUN_MODE_MAX][PM_RUN_MODE_MAX] =
+static run_switch_func_type _run_switch_func[PM_RUN_MODE_MAX][PM_RUN_MODE_MAX] =
 {
-    {RT_NULL, RT_NULL, RT_NULL, __run_switch_high_to_low},
-    {RT_NULL, RT_NULL, RT_NULL, __run_switch_high_to_low},
+    {RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low},
+    {RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low},
     {RT_NULL, RT_NULL, RT_NULL, RT_NULL},
-    {__run_switch_low_to_high, __run_switch_low_to_high, RT_NULL, RT_NULL},
+    {_run_switch_low_to_high, _run_switch_low_to_high, RT_NULL, RT_NULL},
 };
 
-static sleep_enter_func_type sleep_enter_func[PM_SLEEP_MODE_MAX] =
+static sleep_enter_func_type _sleep_enter_func[PM_SLEEP_MODE_MAX] =
 {
     RT_NULL,
-    __sleep_enter_idle,
+    _sleep_enter_idle,
     RT_NULL,
-    __sleep_enter_deep,
-    __sleep_enter_standby,
-    __sleep_enter_shutdown,
+    _sleep_enter_deep,
+    _sleep_enter_standby,
+    _sleep_enter_shutdown,
 };
 
-static void uart_console_reconfig(void)
+static void _uart_console_reconfig(void)
 {
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
 
@@ -63,7 +62,7 @@ static void uart_console_reconfig(void)
  * @param  [in] u8SleepType specifies the type of enter sleep's command.
  *   @arg  PWC_SLEEP_WFI            Enter sleep mode by WFI, and wake-up by interrupt handle.
  *   @arg  PWC_SLEEP_WFE_INT        Enter sleep mode by WFE, and wake-up by interrupt request(SEVONPEND=1)
- *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0). 
+ *   @arg  PWC_SLEEP_WFE_EVT        Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0).
 
  * @retval None
  */
@@ -94,13 +93,13 @@ __WEAKDEF void pwc_seep_enter(uint8_t u8SleepType)
     }
 }
 
-static void __sleep_enter_idle(void)
+static void _sleep_enter_idle(void)
 {
     struct pm_sleep_mode_idle_config sleep_idle_cfg = PM_SLEEP_IDLE_CFG;
     pwc_seep_enter(sleep_idle_cfg.pwc_sleep_type);
 }
 
-static void __sleep_enter_deep(void)
+static void _sleep_enter_deep(void)
 {
     struct pm_sleep_mode_deep_config sleep_deep_cfg = PM_SLEEP_DEEP_CFG;
 
@@ -110,15 +109,16 @@ static void __sleep_enter_deep(void)
 
     if (PWC_PWRC2_DVS == (READ_REG8(CM_PWC->PWRC2) & PWC_PWRC2_DVS))
     {
-        CLR_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
-    } else
+        CLR_REG8_BIT(CM_PWC->PWRC1, PWC_PWRC1_STPDAS);
+    }
+    else
     {
-        SET_REG8_BIT(CM_PWC->PWRC1,PWC_PWRC1_STPDAS);
+        SET_REG8_BIT(CM_PWC->PWRC1, PWC_PWRC1_STPDAS);
     }
     PWC_STOP_Enter(sleep_deep_cfg.pwc_stop_type);
 }
 
-static void __sleep_enter_standby(void)
+static void _sleep_enter_standby(void)
 {
     struct pm_sleep_mode_standby_config sleep_standby_cfg = PM_SLEEP_STANDBY_CFG;
     RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_SHUTDOWN));
@@ -130,7 +130,7 @@ static void __sleep_enter_standby(void)
     PWC_PD_Enter();
 }
 
-static void __sleep_enter_shutdown(void)
+static void _sleep_enter_shutdown(void)
 {
     struct pm_sleep_mode_shutdown_config sleep_shutdown_cfg = PM_SLEEP_SHUTDOWN_CFG;
     RT_ASSERT(PM_SLEEP_CHECK(PM_SLEEP_MODE_SHUTDOWN));
@@ -145,17 +145,17 @@ static void __sleep_enter_shutdown(void)
 /**
  * @param pm pointer to power manage structure
  */
-static void sleep(struct rt_pm *pm, uint8_t mode)
+static void _pm_sleep(struct rt_pm *pm, uint8_t mode)
 {
     RT_ASSERT(mode < PM_SLEEP_MODE_MAX);
 
-    if (sleep_enter_func[mode] != NULL)
+    if (_sleep_enter_func[mode] != NULL)
     {
-        sleep_enter_func[mode]();
+        _sleep_enter_func[mode]();
     }
 }
 
-static void __run_switch_high_to_low(void)
+static void _run_switch_high_to_low(void)
 {
     struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
     st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_LOW_SPEED);
@@ -164,7 +164,7 @@ static void __run_switch_high_to_low(void)
     PWC_HighSpeedToLowSpeed();
 }
 
-static void __run_switch_low_to_high(void)
+static void _run_switch_low_to_high(void)
 {
     PWC_LowSpeedToHighSpeed();
     struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
@@ -173,19 +173,19 @@ static void __run_switch_low_to_high(void)
     SysTick_Configuration();
 }
 
-static void run(struct rt_pm *pm, uint8_t mode)
+static void _pm_run(struct rt_pm *pm, uint8_t mode)
 {
     static uint8_t last_mode = PM_RUN_MODE_NORMAL_SPEED;
 
     if (mode == last_mode)
         return;
 
-    if (run_switch_func[last_mode][mode] != RT_NULL)
+    if (_run_switch_func[last_mode][mode] != RT_NULL)
     {
-        run_switch_func[last_mode][mode]();
+        _run_switch_func[last_mode][mode]();
     }
 
-    uart_console_reconfig();
+    _uart_console_reconfig();
 
     last_mode = mode;
 }
@@ -197,7 +197,7 @@ static void run(struct rt_pm *pm, uint8_t mode)
  *
  * @return the PM tick
  */
-static rt_tick_t __wakeup_timer_tick_from_os_tick(rt_tick_t tick)
+static rt_tick_t _pm_wakeup_timer_tick_from_os_tick(rt_tick_t tick)
 {
     rt_uint32_t freq = hc32_wktm_get_countfreq();
 
@@ -210,12 +210,12 @@ static rt_tick_t __wakeup_timer_tick_from_os_tick(rt_tick_t tick)
  * @param pm Pointer to power manage structure
  * @param timeout How many OS Ticks that MCU can sleep
  */
-static void __wakeup_timer_start(struct rt_pm *pm, rt_uint32_t timeout)
+static void _pm_wakeup_timer_start(struct rt_pm *pm, rt_uint32_t timeout)
 {
     RT_ASSERT(pm != RT_NULL);
 
     /* Convert OS Tick to pmtimer timeout value */
-    timeout = __wakeup_timer_tick_from_os_tick(timeout);
+    timeout = _pm_wakeup_timer_tick_from_os_tick(timeout);
 
     /* Enter __WAKEUP_TIMER_MODE */
     hc32_wktm_start(timeout);
@@ -226,7 +226,7 @@ static void __wakeup_timer_start(struct rt_pm *pm, rt_uint32_t timeout)
  *
  * @param pm Pointer to power manage structure
  */
-static void __wakeup_timer_stop(struct rt_pm *pm)
+static void _pm_wakeup_timer_stop(struct rt_pm *pm)
 {
     RT_ASSERT(pm != RT_NULL);
 
@@ -238,14 +238,14 @@ static void __wakeup_timer_stop(struct rt_pm *pm)
  * This function initialize the power manager
  * @note timer feature: only work as wake up timer
  */
-int drv_pm_hw_init(void)
+int rt_hw_pm_init(void)
 {
     static const struct rt_pm_ops _ops =
     {
-        sleep,
-        run,
-        __wakeup_timer_start,
-        __wakeup_timer_stop,
+        _pm_sleep,
+        _pm_run,
+        _pm_wakeup_timer_start,
+        _pm_wakeup_timer_stop,
         RT_NULL
     };
 
@@ -255,7 +255,7 @@ int drv_pm_hw_init(void)
     return 0;
 }
 
-INIT_DEVICE_EXPORT(drv_pm_hw_init);
+INIT_DEVICE_EXPORT(rt_hw_pm_init);
 
 #endif
 

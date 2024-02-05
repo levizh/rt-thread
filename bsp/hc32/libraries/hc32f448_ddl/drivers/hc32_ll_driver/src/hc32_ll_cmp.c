@@ -7,6 +7,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -222,10 +223,10 @@ static void CMP_DelayUS(uint32_t u32Count)
  */
 static uint16_t GetCmpFuncStatusAndDisFunc(CM_CMP_TypeDef *CMPx)
 {
+    uint16_t u16temp;
     /* It is possible that the interrupt may occurs after CMP status switch. */
     DDL_ASSERT(READ_REG8_BIT(CMPx->FIR, CMP_FIR_CIEN) == 0U);
 
-    uint16_t u16temp;
     /* Read CMP status */
     u16temp = (uint16_t)(uint8_t)READ_REG8_BIT(CMPx->MDR, CMP_MDR_CENB);
     /* Stop CMP function */
@@ -833,7 +834,7 @@ uint32_t CMP_GetScanInmSrc(CM_CMP_TypeDef *CMPx)
  * @brief  CMP set scan input source
  * @param  [in] CMPx                Pointer to CMP instance register base
  *   @arg  CM_CMPx
- * @param  [in] u16Src              INM or INP source select for scan mode, it can be any combination of menber of
+ * @param  [in] u16Src              INM or INP source select for scan mode, it can be any combination of member of
  *                                  @ref CMP_Scan_Inm_Inp_Src
  * @retval None
  */
@@ -841,6 +842,7 @@ void CMP_ScanSetSrc(CM_CMP_TypeDef *CMPx, uint16_t u16Src)
 {
     /* Check parameters */
     DDL_ASSERT(IS_CMP_UNIT(CMPx));
+    DDL_ASSERT(IS_CMP_SCAN_MD(CMPx->MDR));
     DDL_ASSERT(IS_CMP_SCAN_SRC(u16Src));
 
     MODIFY_REG32(CMPx->SCCR, CMP_SCCR_SISL, u16Src);

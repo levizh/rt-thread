@@ -7,6 +7,10 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-06-30       CDT             Modify typo
+                                    API fixed: ADC_DeInit()
+   2023-12-15       CDT             Add API ADC_MxChCmd(),ADC_ConvDataAverageMxChCmd
+                                    Add API ADC_GetResolution()
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -105,6 +109,12 @@
     (((adc) == CM_ADC2) && ((ch) <= ADC2_CH_MAX))   ||                         \
     (((adc) == CM_ADC3) && ((ch) <= ADC3_CH_MAX)))
 
+/* ADC MX channel check */
+#define IS_ADC_MX_CH(adc, ch)                                                  \
+(   (((adc) == CM_ADC1) && IS_ADC_BIT_MASK(ch, ADC1_MX_CH_ALL))   ||           \
+    (((adc) == CM_ADC2) && IS_ADC_BIT_MASK(ch, ADC2_MX_CH_ALL))   ||           \
+    (((adc) == CM_ADC3) && IS_ADC_BIT_MASK(ch, ADC3_MX_CH_ALL)))
+
 #define IS_ADC_SCAN_MD(x)                                                      \
 (   ((x) == ADC_MD_SEQA_SINGLESHOT)             ||                             \
     ((x) == ADC_MD_SEQA_CONT)                   ||                             \
@@ -134,20 +144,20 @@
 
 #define IS_ADC_SAMPLE_TIME(x)           ((x) >= 5U)
 
-#define IS_ADC_SPL_MD(x)                                                       \
-(   ((x) == ADC_SPL_MD_NORMAL)              ||                                 \
-    ((x) == ADC_SPL_MD_OVER))
+#define IS_ADC_SAMPLE_MD(x)                                                    \
+(   ((x) == ADC_SAMPLE_MD_NORMAL)           ||                                 \
+    ((x) == ADC_SAMPLE_MD_OVER))
 
-#define IS_ADC_OVER_SPL_SHIFT(x)                                               \
-(   ((x) == ADC_OVER_SPL_SHIFT_0BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_1BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_2BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_3BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_4BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_5BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_6BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_7BIT)        ||                                 \
-    ((x) == ADC_OVER_SPL_SHIFT_8BIT))
+#define IS_ADC_OVER_SAMPLE_SHIFT(x)                                            \
+(   ((x) == ADC_OVER_SAMPLE_SHIFT_0BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_1BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_2BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_3BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_4BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_5BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_6BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_7BIT)     ||                                 \
+    ((x) == ADC_OVER_SAMPLE_SHIFT_8BIT))
 
 #define IS_ADC_INT(x)                   IS_ADC_BIT_MASK(x, ADC_INT_ALL)
 #define IS_ADC_FLAG(x)                  IS_ADC_BIT_MASK(x, ADC_FLAG_ALL)
@@ -177,7 +187,9 @@
     ((x) == ADC_SYNC_CYCLIC_DELAY_TRIG)     ||                                 \
     ((x) == ADC_SYNC_CYCLIC_PARALLEL_TRIG))
 
-#define IS_ADC_SYNC(x)                  (((x) == ADC_SYNC_ADC1_ADC2) || ((x) == ADC_SYNC_ADC1_ADC2_ADC3))
+#define IS_ADC_SYNC(x)                                                         \
+(   ((x) == ADC_SYNC_ADC1_ADC2)             ||                                 \
+    ((x) == ADC_SYNC_ADC1_ADC2_ADC3))
 
 /* Analog watchdog. */
 #define IS_ADC_AWD_MD(x)                                                       \
@@ -350,6 +362,42 @@ void ADC_ChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint8_t u8Ch, en_functional_
 }
 
 /**
+ * @brief  Enable or disable the specified ADC channel.
+ * @param  [in]  ADCx                   Pointer to ADC instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_ADC or CM_ADCx:           ADC instance register base.
+ * @param  [in]  u8Seq                  The sequence whose channel specified by 'u32MxCh' will be enabled or disabled.
+ *                                      This parameter can be a value of @ref ADC_Sequence
+ *   @arg  ADC_SEQ_A:                   ADC sequence A.
+ *   @arg  ADC_SEQ_B:                   ADC sequence B.
+ * @param  [in]  u32MxCh                The ADC channel.
+ *                                      This parameter can be any component of @ref ADC_Mx_Channel
+ * @param  [in]  enNewState             An @ref en_functional_state_t enumeration value.
+ * @note   Sequence A and Sequence B CAN NOT include the same channel!
+ * @note   Sequence A can always started by software(by calling @ref ADC_Start()),
+ *         regardless of whether the hardware trigger source is valid or not.
+ * @note   Sequence B must be specified a valid hard trigger by calling functions @ref ADC_TriggerConfig()
+ *         and @ref ADC_TriggerCmd().
+ */
+void ADC_MxChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint32_t u32MxCh, en_functional_state_t enNewState)
+{
+    uint32_t u32CHSELAddr;
+
+    DDL_ASSERT(IS_ADC_MX_CH(ADCx, u32MxCh));
+    DDL_ASSERT(IS_ADC_SEQ(u8Seq));
+    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
+
+    u32CHSELAddr = (uint32_t)&ADCx->CHSELRA + (u8Seq * 4UL);
+    if (enNewState == ENABLE) {
+        /* Enable the specified channel. */
+        SET_REG32_BIT(RW_MEM32(u32CHSELAddr), u32MxCh);
+    } else {
+        /* Disable the specified channel. */
+        CLR_REG32_BIT(RW_MEM32(u32CHSELAddr), u32MxCh);
+    }
+}
+
+/**
  * @brief  Set sampling time for the specified channel.
  * @param  [in]  ADCx                   Pointer to ADC instance register base.
  *                                      This parameter can be a value of the following:
@@ -417,6 +465,28 @@ void ADC_ConvDataAverageChCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Ch, en_functional_
 }
 
 /**
+ * @brief  Enable or disable conversion data average calculation channel.
+ * @param  [in]  ADCx                   Pointer to ADC instance register base.
+ *                                      This parameter can be a value of the following:
+ *   @arg  CM_ADC or CM_ADCx:           ADC instance register base.
+ * @param  [in]  u32MxCh                The ADC channel.
+ *                                      This parameter can be any component of @ref ADC_Mx_Channel
+ * @param  [in]  enNewState             An @ref en_functional_state_t enumeration value.
+ * @retval None
+ */
+void ADC_ConvDataAverageMxChCmd(CM_ADC_TypeDef *ADCx, uint32_t u32MxCh, en_functional_state_t enNewState)
+{
+    DDL_ASSERT(IS_ADC_MX_CH(ADCx, u32MxCh));
+    DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
+
+    if (enNewState == ENABLE) {
+        SET_REG32_BIT(ADCx->AVCHSELR, u32MxCh);
+    } else {
+        CLR_REG32_BIT(ADCx->AVCHSELR, u32MxCh);
+    }
+}
+
+/**
  * @brief  Specifies the analog input source of extended channel.
  * @param  [in]  ADCx                   Pointer to ADC instance register base.
  *                                      This parameter can be a value of the following:
@@ -444,12 +514,12 @@ void ADC_SetExtChSrc(CM_ADC_TypeDef *ADCx, uint8_t u8ExtChSrc)
 void ADC_SetSampleMode(CM_ADC_TypeDef *ADCx, uint16_t u16Mode)
 {
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
-    DDL_ASSERT(IS_ADC_SPL_MD(u16Mode));
+    DDL_ASSERT(IS_ADC_SAMPLE_MD(u16Mode));
 
-    if (ADC_SPL_MD_NORMAL == u16Mode) {
-        CLR_REG16_BIT(ADCx->CR2, ADC_SPL_MD_OVER);
+    if (ADC_SAMPLE_MD_NORMAL == u16Mode) {
+        CLR_REG16_BIT(ADCx->CR2, ADC_SAMPLE_MD_OVER);
     } else {
-        SET_REG16_BIT(ADCx->CR2, ADC_SPL_MD_OVER);
+        SET_REG16_BIT(ADCx->CR2, ADC_SAMPLE_MD_OVER);
     }
 }
 
@@ -465,7 +535,7 @@ void ADC_SetSampleMode(CM_ADC_TypeDef *ADCx, uint16_t u16Mode)
 void ADC_SetOverSampleShift(CM_ADC_TypeDef *ADCx, uint16_t u16ShiftValue)
 {
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
-    DDL_ASSERT(IS_ADC_OVER_SPL_SHIFT(u16ShiftValue));
+    DDL_ASSERT(IS_ADC_OVER_SAMPLE_SHIFT(u16ShiftValue));
 
     MODIFY_REG16(ADCx->CR2, ADC_CR2_OVSS, u16ShiftValue);
 }
@@ -516,15 +586,15 @@ void ADC_TriggerConfig(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, uint16_t u16TriggerS
  */
 void ADC_TriggerCmd(CM_ADC_TypeDef *ADCx, uint8_t u8Seq, en_functional_state_t enNewState)
 {
-    uint32_t u32Addr;
-
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
     DDL_ASSERT(IS_ADC_SEQ(u8Seq));
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    u32Addr = (uint32_t)&ADCx->TRGSR;
-    /* Enable bit position: u8Seq * sequence_offset + enable_bit_base. */
-    WRITE_REG32(PERIPH_BIT_BAND(u32Addr, (uint32_t)u8Seq * ADC_TRGSR_TRGSELB_POS + ADC_TRGSR_TRGENA_POS), enNewState);
+    if (enNewState == ENABLE) {
+        SET_REG16_BIT(ADCx->TRGSR, (uint32_t)ADC_TRGSR_TRGENA << (u8Seq * ADC_TRGSR_TRGSELB_POS));
+    } else {
+        CLR_REG16_BIT(ADCx->TRGSR, (uint32_t)ADC_TRGSR_TRGENA << (u8Seq * ADC_TRGSR_TRGSELB_POS));
+    }
 }
 
 /**
@@ -557,12 +627,23 @@ void ADC_IntCmd(CM_ADC_TypeDef *ADCx, uint8_t u8IntType, en_functional_state_t e
  * @param  [in]  ADCx                   Pointer to ADC instance register base.
  *                                      This parameter can be a value of the following:
  *   @arg  CM_ADC or CM_ADCx:           ADC instance register base.
- * @retval None
+ * @retval int32_t
+ *           - LL_OK:                   Start success.
+ *           - LL_ERR_BUSY:             ADC is busy.
  */
-void ADC_Start(CM_ADC_TypeDef *ADCx)
+int32_t ADC_Start(CM_ADC_TypeDef *ADCx)
 {
+    int32_t i32Ret = LL_OK;
+
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
-    WRITE_REG8(ADCx->STR, ADC_STR_STRT);
+
+    if (1U == READ_REG8(ADCx->STR)) {
+        i32Ret = LL_ERR_BUSY;
+    } else {
+        WRITE_REG8(ADCx->STR, ADC_STR_STRT);
+    }
+
+    return i32Ret;
 }
 
 /**
@@ -599,13 +680,13 @@ uint16_t ADC_GetValue(const CM_ADC_TypeDef *ADCx, uint8_t u8Ch)
  * @param  [in]  ADCx                   Pointer to ADC instance register base.
  *                                      This parameter can be a value of the following:
  *   @arg  CM_ADC or CM_ADCx:           ADC instance register base.
- * @retval An uint16_t type value of ADC resolution.
+ * @retval An uint16_t type value of ADC resolution. @ref ADC_Resolution
  */
 uint16_t ADC_GetResolution(const CM_ADC_TypeDef *ADCx)
 {
     DDL_ASSERT(IS_ADC_UNIT(ADCx));
 
-    return (READ_REG16_BIT(ADCx->CR0, ADC_CR0_ACCSEL));
+    return READ_REG16_BIT(ADCx->CR0, ADC_CR0_ACCSEL);
 }
 
 /**

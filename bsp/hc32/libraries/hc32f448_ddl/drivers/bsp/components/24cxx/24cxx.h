@@ -50,6 +50,11 @@ extern "C"
  * Global type definitions ('typedef')
  ******************************************************************************/
 /**
+ * @defgroup 24CXX_Global_Types 24CXX Global Types
+ * @{
+ */
+
+/**
  * @brief 24CXX low layer structure definition
  */
 typedef struct {
@@ -64,6 +69,10 @@ typedef struct {
     int32_t (*Read)(uint16_t u16Addr, uint8_t *pu8Buf, uint32_t u32Len);
     int32_t (*GetStatus)(void);
 } stc_24cxx_ll_t;
+
+/**
+ * @}
+ */
 
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')

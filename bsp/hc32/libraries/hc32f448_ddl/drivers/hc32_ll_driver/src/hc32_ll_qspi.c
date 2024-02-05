@@ -6,6 +6,7 @@
    Change Logs:
    Date             Author          Notes
    2023-05-31       CDT             First version
+   2023-09-30       CDT             Optimize QSPI_ClearStatus function
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
@@ -232,10 +233,10 @@ int32_t QSPI_Init(const stc_qspi_init_t *pstcQspiInit)
             u32Duty = QSPI_FCR_DUTY;
         }
         MODIFY_REG32(CM_QSPI->CR, QSPI_CR_CLR_MASK, (pstcQspiInit->u32ClockDiv | pstcQspiInit->u32SpiMode |
-                     pstcQspiInit->u32PrefetchMode | pstcQspiInit->u32ReadMode));
+                                                     pstcQspiInit->u32PrefetchMode | pstcQspiInit->u32ReadMode));
         WRITE_REG32(CM_QSPI->CSCR, ((pstcQspiInit->u32ReleaseTime >> 8U) | pstcQspiInit->u32IntervalTime));
         MODIFY_REG32(CM_QSPI->FCR, QSPI_FCR_CLR_MASK, (pstcQspiInit->u32DummyCycle | pstcQspiInit->u32AddrWidth |
-                     pstcQspiInit->u32SetupTime | (pstcQspiInit->u32ReleaseTime & 0xFFU) | u32Duty));
+                                                       pstcQspiInit->u32SetupTime | (pstcQspiInit->u32ReleaseTime & 0xFFU) | u32Duty));
     }
 
     return i32Ret;
@@ -357,7 +358,7 @@ int32_t QSPI_CustomReadConfig(const stc_qspi_custom_mode_t *pstcCustomMode)
         DDL_ASSERT(IS_QSPI_DATA_PROTOCOL(pstcCustomMode->u32DataProtocol));
 
         MODIFY_REG32(CM_QSPI->CR, QSPI_CUSTOM_MD_CLR_MASK, (pstcCustomMode->u32InstrProtocol |
-                     pstcCustomMode->u32AddrProtocol | pstcCustomMode->u32DataProtocol));
+                                                            pstcCustomMode->u32AddrProtocol | pstcCustomMode->u32DataProtocol));
         WRITE_REG32(CM_QSPI->CCMD, pstcCustomMode->u8InstrCode);
     }
 
@@ -472,7 +473,7 @@ void QSPI_ClearStatus(uint32_t u32Flag)
     /* Check parameters */
     DDL_ASSERT(IS_QSPI_CLR_FLAG(u32Flag));
 
-    SET_REG32_BIT(CM_QSPI->SR2, u32Flag);
+    WRITE_REG32(CM_QSPI->SR2, u32Flag);
 }
 
 /**

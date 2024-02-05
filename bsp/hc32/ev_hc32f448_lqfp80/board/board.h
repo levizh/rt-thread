@@ -46,8 +46,6 @@ void PeripheralRegister_Unlock(void);
 void PeripheralClock_Config(void);
 void SystemBase_Config(void);
 void SystemClock_Config(void);
-en_functional_state_t INTC_GetIntSrcStatus(en_int_src_t enIntSrc);
-en_flag_status_t USART_GetFunc(CM_USART_TypeDef *USARTx, uint32_t u32Func);
 
 #ifdef __cplusplus
 }
