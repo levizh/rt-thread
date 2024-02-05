@@ -1,22 +1,31 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Change Logs:
- * Date           Author       Notes
- * 2022-04-28     CDT          first version
- */
-
-
-/*
  * 程序清单：这是一个 串口 设备使用例程
  * 例程导出了 uart_sample 命令到控制终端
  * 命令调用格式：uart_sample uart1
  * 命令解释：命令第二个参数是要使用的串口设备名称，为空则使用默认的串口设备
  * 程序功能：通过串口输出字符串"hello RT-Thread!"，然后错位输出输入的字符
+ *
+ * 中断方式，修改rtconfig.h
+ *     //#define RT_SERIAL_USING_DMA
+ *     #define BSP_USING_UART
+ *     #define BSP_USING_UART1
+ *     //#define BSP_UART1_RX_USING_DMA
+ *     //#define BSP_UART1_TX_USING_DMA
+ *     #define BSP_USING_UART2
+ *     //#define BSP_UART2_RX_USING_DMA
+ *     //#define BSP_UART2_TX_USING_DMA
+ *
+ * DMA方式，修改rtconfig.h
+ *     #define RT_SERIAL_USING_DMA
+ *     #define BSP_USING_UART
+ *     #define BSP_USING_UART1
+ *     #define BSP_UART1_RX_USING_DMA
+ *     #define BSP_UART1_TX_USING_DMA
+ *     #define BSP_USING_UART2
+ *     #define BSP_UART2_RX_USING_DMA
+ *     #define BSP_UART2_TX_USING_DMA
 */
+
 #include <rtthread.h>
 
 #if defined BSP_USING_UART1
