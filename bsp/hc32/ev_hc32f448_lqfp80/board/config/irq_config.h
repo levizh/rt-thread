@@ -88,12 +88,12 @@ extern "C" {
 #define BSP_DMA2_CH5_IRQ_NUM            INT011_IRQn
 #define BSP_DMA2_CH5_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 
-//todo UART IRQn definition
 #if defined(BSP_USING_UART1)
 #define BSP_UART1_IRQ_NUM               USART1_IRQn
 #define BSP_UART1_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART1_TX_USING_DMA)
+#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART1_TX_USING_DMA)) || \
+    defined(RT_USING_SERIAL_V2)
 #define BSP_UART1_TX_CPLT_IRQ_NUM       USART1_TCI_IRQn
 #define BSP_UART1_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -103,7 +103,8 @@ extern "C" {
 #define BSP_UART2_IRQ_NUM               USART2_IRQn
 #define BSP_UART2_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART2_TX_USING_DMA)
+#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART2_TX_USING_DMA)) || \
+    defined(RT_USING_SERIAL_V2)
 #define BSP_UART2_TX_CPLT_IRQ_NUM       USART2_TCI_IRQn
 #define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -118,7 +119,8 @@ extern "C" {
 #define BSP_UART4_IRQ_NUM               USART4_IRQn
 #define BSP_UART4_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART4_TX_USING_DMA)
+#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART4_TX_USING_DMA)) || \
+    defined(RT_USING_SERIAL_V2)
 #define BSP_UART4_TX_CPLT_IRQ_NUM       USART4_TCI_IRQn
 #define BSP_UART4_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
@@ -128,7 +130,8 @@ extern "C" {
 #define BSP_UART5_IRQ_NUM               USART5_IRQn
 #define BSP_UART5_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
 
-#if defined(BSP_UART5_TX_USING_DMA)
+#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART5_TX_USING_DMA)) || \
+    defined(RT_USING_SERIAL_V2)
 #define BSP_UART5_TX_CPLT_IRQ_NUM       USART5_TCI_IRQn
 #define BSP_UART5_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
