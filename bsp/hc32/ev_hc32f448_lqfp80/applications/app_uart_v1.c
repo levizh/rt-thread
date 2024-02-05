@@ -146,7 +146,7 @@ int uart_sample(int argc, char *argv[])
         rt_kprintf("find %s failed!\n", uart_name);
         return RT_ERROR;
     }
-#if defined (RT_SERIAL_USING_DMA)
+#if defined (RT_SERIAL_USING_DMA) && defined (BSP_UART1_RX_USING_DMA) && defined (BSP_UART1_TX_USING_DMA)
     static char msg_pool[256U];
     /* 初始化消息队列 */
     rt_mq_init(&rx_mq, "rx_mq",
@@ -159,13 +159,13 @@ int uart_sample(int argc, char *argv[])
     open_flag |= RT_DEVICE_FLAG_DMA_RX;
     /* 以DMA发送模式打开串口设备 */
     open_flag |= RT_DEVICE_FLAG_DMA_TX;
-    const static char communication_mode[] = "Communication using DMA!\r\n";
-#else
+    const static char communication_mode[] = "drv_usart_v1: communication using DMA \r\n";
+#elif !defined (RT_SERIAL_USING_DMA) && !defined (BSP_UART1_RX_USING_DMA) && !defined (BSP_UART1_TX_USING_DMA)
     /* 以中断模式打开串口设备 */
     open_flag = RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_INT_TX;
     /* 初始化信号量 */
     rt_sem_init(&rx_sem, "rx_sem", 0, RT_IPC_FLAG_FIFO);
-    const static char communication_mode[] = "Communication using INT!\r\n";
+    const static char communication_mode[] = "drv_usart_v1: communication using interrupt \r\n";
 #endif
 
     rt_device_open(serial, open_flag);
