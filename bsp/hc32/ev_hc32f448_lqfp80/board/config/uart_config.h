@@ -43,6 +43,7 @@ extern "C" {
         .clock          = UART1_RX_DMA_CLOCK,                   \
         .trigger_select = UART1_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART1_RI,                    \
+        .flag           = UART1_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART1_RX_DMA_IRQn,                    \
@@ -63,7 +64,7 @@ extern "C" {
 #endif /* UART1_RXTO_CONFIG */
 #endif /* BSP_UART1_RX_USING_DMA */
 
-#if defined(BSP_UART1_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART1_TX_USING_DMA)
 #ifndef UART1_TX_CPLT_CONFIG
 #define UART1_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -74,8 +75,22 @@ extern "C" {
             .int_src    = INT_SRC_USART1_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART1_TX_CPLT_CONFIG
+#define UART1_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART1_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART1_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART1_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART1_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART1_TX_USING_DMA)
 #ifndef UART1_DMA_TX_CONFIG
 #define UART1_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -84,6 +99,7 @@ extern "C" {
         .clock          = UART1_TX_DMA_CLOCK,                   \
         .trigger_select = UART1_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART1_TI,                    \
+        .flag           = UART1_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART1_TX_DMA_IRQn,                    \
@@ -118,6 +134,7 @@ extern "C" {
         .clock          = UART2_RX_DMA_CLOCK,                   \
         .trigger_select = UART2_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART2_RI,                    \
+        .flag           = UART2_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART2_RX_DMA_IRQn,                    \
@@ -138,7 +155,7 @@ extern "C" {
 #endif /* UART2_RXTO_CONFIG */
 #endif /* BSP_UART2_RX_USING_DMA */
 
-#if defined(BSP_UART2_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART2_TX_USING_DMA)
 #ifndef UART2_TX_CPLT_CONFIG
 #define UART2_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -149,8 +166,22 @@ extern "C" {
             .int_src    = INT_SRC_USART2_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART2_TX_CPLT_CONFIG
+#define UART2_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART2_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART2_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART2_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART2_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART2_TX_USING_DMA)
 #ifndef UART2_DMA_TX_CONFIG
 #define UART2_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -159,6 +190,7 @@ extern "C" {
         .clock          = UART2_TX_DMA_CLOCK,                   \
         .trigger_select = UART2_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART2_TI,                    \
+        .flag           = UART2_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART2_TX_DMA_IRQn,                    \
@@ -183,6 +215,20 @@ extern "C" {
         .tx_int_src    = INT_SRC_USART3_TI,                     \
     }
 #endif /* UART3_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART3_TX_CPLT_CONFIG
+#define UART3_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART3_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART3_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART3_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART3_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART3 */
 
 #if defined(BSP_USING_UART4)
@@ -208,6 +254,7 @@ extern "C" {
         .clock          = UART4_RX_DMA_CLOCK,                   \
         .trigger_select = UART4_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART4_RI,                    \
+        .flag           = UART4_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART4_RX_DMA_IRQn,                    \
@@ -228,7 +275,7 @@ extern "C" {
 #endif /* UART4_RXTO_CONFIG */
 #endif /* BSP_UART4_RX_USING_DMA */
 
-#if defined(BSP_UART4_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART4_TX_USING_DMA)
 #ifndef UART4_TX_CPLT_CONFIG
 #define UART4_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -239,8 +286,22 @@ extern "C" {
             .int_src    = INT_SRC_USART4_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART4_TX_CPLT_CONFIG
+#define UART4_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART4_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART4_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART4_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART4_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART4_TX_USING_DMA)
 #ifndef UART4_DMA_TX_CONFIG
 #define UART4_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -249,6 +310,7 @@ extern "C" {
         .clock          = UART4_TX_DMA_CLOCK,                   \
         .trigger_select = UART4_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART4_TI,                    \
+        .flag           = UART4_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART4_TX_DMA_IRQn,                    \
@@ -283,6 +345,7 @@ extern "C" {
         .clock          = UART5_RX_DMA_CLOCK,                   \
         .trigger_select = UART5_RX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART5_RI,                    \
+        .flag           = UART5_RX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART5_RX_DMA_IRQn,                    \
@@ -303,7 +366,7 @@ extern "C" {
 #endif /* UART5_RXTO_CONFIG */
 #endif /* BSP_UART5_RX_USING_DMA */
 
-#if defined(BSP_UART5_TX_USING_DMA)
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART5_TX_USING_DMA)
 #ifndef UART5_TX_CPLT_CONFIG
 #define UART5_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -314,8 +377,22 @@ extern "C" {
             .int_src    = INT_SRC_USART5_TCI,                   \
         },                                                      \
     }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
+#ifndef UART5_TX_CPLT_CONFIG
+#define UART5_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART5_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART5_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART5_TCI,                   \
+        },                                                      \
+    }
+#endif
 #endif /* UART5_TX_CPLT_CONFIG */
 
+#if defined(BSP_UART5_TX_USING_DMA)
 #ifndef UART5_DMA_TX_CONFIG
 #define UART5_DMA_TX_CONFIG                                     \
     {                                                           \
@@ -324,6 +401,7 @@ extern "C" {
         .clock          = UART5_TX_DMA_CLOCK,                   \
         .trigger_select = UART5_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART5_TI,                    \
+        .flag           = UART5_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART5_TX_DMA_IRQn,                    \
@@ -348,6 +426,20 @@ extern "C" {
         .tx_int_src    = INT_SRC_USART6_TI,                     \
     }
 #endif /* UART6_CONFIG */
+
+#if defined(RT_USING_SERIAL_V2)
+#ifndef UART6_TX_CPLT_CONFIG
+#define UART6_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART6_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART6_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART6_TCI,                   \
+        },                                                      \
+    }
+#endif
+#endif /* UART6_TX_CPLT_CONFIG */
 #endif /* BSP_USING_UART6 */
 
 #ifdef __cplusplus

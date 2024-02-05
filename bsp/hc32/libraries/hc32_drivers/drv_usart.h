@@ -81,7 +81,7 @@ struct hc32_uart
 {
     struct hc32_uart_config *config;
 #ifdef RT_SERIAL_USING_DMA
-    rt_size_t               dma_rx_remain_index;
+    rt_size_t               dma_rx_remaining_cnt;
 #endif
     rt_uint16_t             uart_dma_flag;
     struct rt_serial_device serial;
