@@ -1,21 +1,14 @@
 /*
  * 程序清单：这是一个 串口 设备使用例程
  * 例程导出了 uart_sample 命令到控制终端
- * 命令调用格式：uart_sample uart1
- * 命令解释：命令第二个参数是要使用的串口设备名称，为空则使用默认的串口设备
- * 程序功能：通过串口输出字符串"hello RT-Thread!"，然后错位输出输入的字符
+ * 命令解释：命令第二个参数是要使用的串口设备名称，为空则使用默认的串口设备(uart1)
+ * 程序功能：通过串口输出字符串: 
+ *     drv_usart: drv_usart_v1
+ *     commnucation：using DMA/interrupt,
+ *     uart_ch: uartx (x对应测试通道)
+ *     输出输入的字符
  *
- * 中断方式，修改rtconfig.h
- *     //#define RT_SERIAL_USING_DMA
- *     #define BSP_USING_UART
- *     #define BSP_USING_UART1
- *     //#define BSP_UART1_RX_USING_DMA
- *     //#define BSP_UART1_TX_USING_DMA
- *     #define BSP_USING_UART2
- *     //#define BSP_UART2_RX_USING_DMA
- *     //#define BSP_UART2_TX_USING_DMA
- *
- * DMA方式，修改rtconfig.h
+ * 修改rtconfig.h
  *     #define RT_SERIAL_USING_DMA
  *     #define BSP_USING_UART
  *     #define BSP_USING_UART1
@@ -24,14 +17,22 @@
  *     #define BSP_USING_UART2
  *     #define BSP_UART2_RX_USING_DMA
  *     #define BSP_UART2_TX_USING_DMA
-*/
+ *     #define BSP_USING_UART6
+ *
+ * 命令调用格式：
+ * uart1 中断，命令调用格式：uart_sample uart1
+ * uart1 中断，命令调用格式：uart_sample uart1 int
+ * uart1  DMA，命令调用格式：uart_sample uart1 dma
+ * uart6 中断，命令调用格式：uart_sample uart6
+ *
+ */
 
 #include <rtthread.h>
 
-#if defined BSP_USING_UART1
-#define SAMPLE_UART_NAME       "uart1"
+#if defined (BSP_USING_UART1) || defined (BSP_USING_UART6)
 
-#if defined (RT_SERIAL_USING_DMA)
+#define SAMPLE_DEFAULT_UART_NAME       "uart1"
+
 /* 串口接收消息结构*/
 struct rx_msg
 {
@@ -41,16 +42,15 @@ struct rx_msg
 
 /* 消息队列控制块 */
 static struct rt_messagequeue rx_mq;
-#else
+
 /* 用于接收消息的信号量 */
 static struct rt_semaphore rx_sem;
-#endif
+
 static rt_device_t serial;
 
-/* 接收数据回调函数 */
-static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
+/* DMA接收数据回调函数 */
+static rt_err_t uart_input_dma(rt_device_t dev, rt_size_t size)
 {
-#if defined (RT_SERIAL_USING_DMA)
     struct rx_msg msg;
     rt_err_t result;
 
@@ -63,12 +63,15 @@ static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
         rt_kprintf("message queue full！\n");
     }
     return result;
-#else
+}
+
+/* INT接收数据回调函数 */
+static rt_err_t uart_input_int(rt_device_t dev, rt_size_t size)
+{
     /* 串口接收到数据后产生中断，调用此回调函数，然后发送接收信号量 */
     rt_sem_release(&rx_sem);
 
     return RT_EOK;
-#endif
 }
 
 /* 发送完成回调函数 */
@@ -77,20 +80,17 @@ static rt_err_t uart_ouput(rt_device_t dev, void *buffer)
     return RT_EOK;
 }
 
-static void serial_thread_entry(void *parameter)
+static void serial_thread_entry_dma(void *parameter)
 {
-#if defined (RT_SERIAL_USING_DMA)
     struct rx_msg msg;
     rt_err_t result;
     rt_uint32_t rx_length;
     static char rx_buffer[RT_SERIAL_RB_BUFSZ + 1U];
     static rt_uint32_t buf_size = sizeof(rx_buffer);
     static rt_uint32_t put_index = 0;
-#endif
 
     while (1)
     {
-#if defined (RT_SERIAL_USING_DMA)
         rt_memset(&msg, 0, sizeof(msg));
         /* 从消息队列中读取消息*/
         result = rt_mq_recv(&rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
@@ -109,8 +109,15 @@ static void serial_thread_entry(void *parameter)
                 put_index %= sizeof(rx_buffer);
             }
         }
-#else
-        char ch;
+    }
+}
+
+static void serial_thread_entry_int(void *parameter)
+{
+    char ch;
+
+    while (1)
+    {
         /* 从串口读取一个字节的数据，没有读取到则等待接收信号量 */
         while (rt_device_read(serial, -1, &ch, 1) != 1)
         {
@@ -119,24 +126,44 @@ static void serial_thread_entry(void *parameter)
         }
         /* 读取到的数据通过串口错位输出 */
         rt_device_write(serial, 0, &ch, 1);
-#endif
     }
 }
 
 int uart_sample(int argc, char *argv[])
 {
+    rt_thread_t thread;
     rt_err_t ret = RT_EOK;
+    rt_size_t n;
     rt_err_t open_flag = 0UL;
-    char uart_name[RT_NAME_MAX];
-    const static char str[] = "hello RT-Thread!\r\n";
+    static char uart_name[RT_NAME_MAX];
+    static char comm_mode[RT_NAME_MAX];
+    const static char comm_mode_int[] = "int";
+    const static char comm_mode_dma[] = "dma";
+    const static char comm_info_dma[] = "\r\n drv_version: drv_usart_v1 \r\n communication: using DMA \r\n uart_ch: ";
+    const static char comm_info_int[] = "\r\n drv_version: drv_usart_v1 \r\n communication: using interrupt \r\n uart_ch: ";
+    static char comm_info[150];
 
-    if (argc == 2)
+    rt_memset(uart_name, 0, sizeof(uart_name));
+    rt_memset(comm_mode, 0, sizeof(comm_mode));
+
+    if (argc == 1)
+    {
+        rt_strncpy(uart_name, SAMPLE_DEFAULT_UART_NAME, RT_NAME_MAX);
+        rt_strncpy(comm_mode, comm_mode_int, sizeof(comm_mode_int));
+    }
+    else if (argc == 2)
     {
         rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
+        rt_strncpy(comm_mode, comm_mode_int, sizeof(comm_mode_int));
     }
-    else
+    else if (argc == 3)
     {
-        rt_strncpy(uart_name, SAMPLE_UART_NAME, RT_NAME_MAX);
+        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
+        rt_strncpy(comm_mode, argv[2], RT_NAME_MAX);
+    }
+    else {
+        rt_kprintf("argc error!\n");
+        return RT_ERROR;
     }
 
     /* 查找系统中的串口设备 */
@@ -146,40 +173,61 @@ int uart_sample(int argc, char *argv[])
         rt_kprintf("find %s failed!\n", uart_name);
         return RT_ERROR;
     }
-#if defined (RT_SERIAL_USING_DMA) && defined (BSP_UART1_RX_USING_DMA) && defined (BSP_UART1_TX_USING_DMA)
-    static char msg_pool[256U];
-    /* 初始化消息队列 */
-    rt_mq_init(&rx_mq, "rx_mq",
-               msg_pool,                 /* 存放消息的缓冲区 */
-               sizeof(struct rx_msg),    /* 一条消息的最大长度 */
-               sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
-               RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
 
-    /* 以DMA接收模式打开串口设备 */
-    open_flag |= RT_DEVICE_FLAG_DMA_RX;
-    /* 以DMA发送模式打开串口设备 */
-    open_flag |= RT_DEVICE_FLAG_DMA_TX;
-    const static char communication_mode[] = "drv_usart_v1: communication using DMA \r\n";
-#elif !defined (RT_SERIAL_USING_DMA) && !defined (BSP_UART1_RX_USING_DMA) && !defined (BSP_UART1_TX_USING_DMA)
-    /* 以中断模式打开串口设备 */
-    open_flag = RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_INT_TX;
-    /* 初始化信号量 */
-    rt_sem_init(&rx_sem, "rx_sem", 0, RT_IPC_FLAG_FIFO);
-    const static char communication_mode[] = "drv_usart_v1: communication using interrupt \r\n";
-#endif
+    if (0 == rt_strncmp(comm_mode, comm_mode_dma, 3))
+    {
+        static char msg_pool[256U];
+        /* 初始化消息队列 */
+        rt_mq_init(&rx_mq, "rx_mq",
+                    msg_pool,                 /* 存放消息的缓冲区 */
+                    sizeof(struct rx_msg),    /* 一条消息的最大长度 */
+                    sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
+                    RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
 
-    rt_device_open(serial, open_flag);
+        /* 以DMA接收和发送模式打开串口设备 */
+        open_flag |= RT_DEVICE_FLAG_DMA_RX | RT_DEVICE_FLAG_DMA_TX;
+        rt_device_open(serial, open_flag);
 
-    /* 设置接收回调函数 */
-    rt_device_set_rx_indicate(serial, uart_input);
-    /* 设置发送回调函数 */
-    rt_device_set_tx_complete(serial,uart_ouput);
-    /* 发送字符串 */
-    rt_device_write(serial, 0, str, (sizeof(str) - 1));
-    rt_device_write(serial, 0, communication_mode, (sizeof(communication_mode) - 1));
-    /* 创建 serial 线程 */
-    rt_thread_t thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
-    /* 创建成功则启动线程 */
+        /* 设置回调函数 */
+        rt_device_set_rx_indicate(serial, uart_input_dma);
+        rt_device_set_tx_complete(serial,uart_ouput);
+
+        /* 发送字符串 */
+        n = rt_strlen(comm_info_dma);
+        rt_strncpy(comm_info, comm_info_dma, n);
+        rt_strncpy(comm_info + n, uart_name, rt_strlen(uart_name));
+        rt_device_write(serial, 0, comm_info, rt_strlen(comm_info));
+
+        /* 创建 serial 线程 */
+        thread = rt_thread_create("serial", serial_thread_entry_dma, RT_NULL, 1024, 25, 10);
+    }
+    else if (0 == rt_strncmp(comm_mode, comm_mode_int, 3))
+    {
+        /* 以中断模式打开串口设备 */
+        open_flag = RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_INT_TX;
+        rt_sem_init(&rx_sem, "rx_sem", 0, RT_IPC_FLAG_FIFO);
+
+        rt_device_open(serial, open_flag);
+
+        /* 设置回调函数 */
+        rt_device_set_rx_indicate(serial, uart_input_int);
+        rt_device_set_tx_complete(serial, uart_ouput);
+
+        /* 发送字符串 */
+        n = rt_strlen(comm_info_int);
+        rt_strncpy(comm_info, comm_info_int, n);
+        rt_strncpy(comm_info + n, uart_name, rt_strlen(uart_name));
+        rt_device_write(serial, 0, comm_info, rt_strlen(comm_info));
+
+        /* 创建 serial 线程 */
+        thread = rt_thread_create("serial", serial_thread_entry_int, RT_NULL, 1024, 25, 10);
+    }
+    else
+    {
+        rt_kprintf("communication mode error, please input cmd: uart_sample %s int or uart_sample uartx dma!\n", uart_name);
+        return RT_ERROR;
+    }
+
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
