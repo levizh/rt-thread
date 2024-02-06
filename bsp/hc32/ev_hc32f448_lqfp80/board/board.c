@@ -43,12 +43,12 @@ void SystemClock_Config(void)
 #endif
 
     /* PCLK0, HCLK Max 200MHz */
-    /* PCLK1, PCLK4, EX BUS Max 100MHz */
-    /* PCLK2 Max 60MHz */
+    /* PCLK1, PCLK4 Max 100MHz */
+    /* PCLK2, EXCLK Max 60MHz */
     /* PCLK3 Max 50MHz */
     CLK_SetClockDiv(CLK_BUS_CLK_ALL,
                     (CLK_PCLK0_DIV1 | CLK_PCLK1_DIV2 | CLK_PCLK2_DIV4 |
-                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV2 |
+                     CLK_PCLK3_DIV4 | CLK_PCLK4_DIV2 | CLK_EXCLK_DIV4 |
                      CLK_HCLK_DIV1));
 
     GPIO_AnalogCmd(XTAL_PORT, XTAL_IN_PIN | XTAL_OUT_PIN, ENABLE);
