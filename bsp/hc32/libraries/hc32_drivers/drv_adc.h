@@ -60,9 +60,9 @@ struct adc_dev_init_params
 
 struct adc_dev_dma_priv_ops
 {
-    rt_err_t (*dma_trig_start) (void);
-    rt_err_t (*dma_trig_stop) (void);
-    rt_err_t (*dma_trig_config) (void);
+    rt_err_t (*dma_trig_start)(void);
+    rt_err_t (*dma_trig_stop)(void);
+    rt_err_t (*dma_trig_config)(void);
 };
 
 struct adc_dev_priv_params

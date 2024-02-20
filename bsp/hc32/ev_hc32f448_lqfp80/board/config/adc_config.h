@@ -58,7 +58,6 @@ extern "C" {
             .int_src                    = ADC1_EOCA_DMA_INT_SRC,                \
         },                                                                      \
     }
-    
 #endif /* ADC1_EOCA_DMA_CONFIG */
 #endif /* BSP_ADC1_USING_DMA */
 #endif /* BSP_USING_ADC1 */
@@ -102,7 +101,6 @@ extern "C" {
             .int_src                    = ADC2_EOCA_DMA_INT_SRC,                \
         },                                                                      \
     }
-    
 #endif /* ADC2_EOCA_DMA_CONFIG */
 #endif /* BSP_ADC2_USING_DMA */
 #endif /* BSP_USING_ADC2 */
@@ -146,7 +144,6 @@ extern "C" {
             .int_src                    = ADC3_EOCA_DMA_INT_SRC,                \
         },                                                                      \
     }
-    
 #endif /* ADC3_EOCA_DMA_CONFIG */
 #endif /* BSP_ADC3_USING_DMA */
 #endif /* BSP_USING_ADC3 */
