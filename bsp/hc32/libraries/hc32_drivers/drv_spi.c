@@ -316,7 +316,7 @@ static void hc32_spi_enable(CM_SPI_TypeDef *SPIx)
         SPI_Cmd(SPIx, ENABLE);
     }
 #else
-    #error "Please select first the target HC32xxxx device used in your application."
+#error "Please select first the target HC32xxxx device used in your application."
 #endif
 }
 
@@ -341,9 +341,8 @@ static void hc32_spi_set_trans_mode(CM_SPI_TypeDef *SPIx, uint32_t u32Mode)
         CLR_REG32_BIT(SPIx->CR, SPI_CR_TXMDS);
     }
 #else
-    #error "Please select first the target HC32xxxx device used in your application."
+#error "Please select first the target HC32xxxx device used in your application."
 #endif
-    
 }
 
 #ifdef BSP_SPI_USING_DMA
@@ -354,7 +353,7 @@ static uint32_t hc32_spi_get_trans_mode(CM_SPI_TypeDef *SPIx)
 #elif defined (HC32F448)
     return READ_REG32_BIT(SPIx->CR, SPI_CR_TXMDS);
 #else
-    #error "Please select first the target HC32xxxx device used in your application."
+#error "Please select first the target HC32xxxx device used in your application."
 #endif
 }
 

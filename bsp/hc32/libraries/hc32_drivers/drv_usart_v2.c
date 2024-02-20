@@ -161,13 +161,13 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
     uart_init.u32ClockSrc = USART_CLK_SRC_INTERNCLK;
 #if defined (HC32F4A0) || defined (HC32F4A2)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-        (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
+            (CM_USART6 == uart->config->Instance) || (CM_USART7 == uart->config->Instance))
 #elif defined (HC32F460)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-        (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
+            (CM_USART3 == uart->config->Instance) || (CM_USART4 == uart->config->Instance))
 #elif defined (HC32F448)
     if ((CM_USART1 == uart->config->Instance) || (CM_USART2 == uart->config->Instance) || \
-        (CM_USART4 == uart->config->Instance) || (CM_USART5 == uart->config->Instance))
+            (CM_USART4 == uart->config->Instance) || (CM_USART5 == uart->config->Instance))
 #endif
     {
         uart_init.u32CKOutput = USART_CK_OUTPUT_ENABLE;
@@ -812,31 +812,31 @@ static void hc32_usart_handler(struct hc32_uart *uart)
 
 #if defined (RT_SERIAL_USING_DMA)
     if ((SET == USART_GetStatus(uart->config->Instance, USART_FLAG_RX_TIMEOUT)) && \
-        (ENABLE == USART_GetFuncState(uart->config->Instance, USART_RX_TIMEOUT)) && \
-        (ENABLE == INTC_GetIntSrcState(uart->config->rxto_int_src)))
+            (ENABLE == USART_GetFuncState(uart->config->Instance, USART_RX_TIMEOUT)) && \
+            (ENABLE == INTC_GetIntSrcState(uart->config->rxto_int_src)))
     {
         hc32_uart_rxto_irq_handler(uart);
     }
 #endif
 
     if ((SET == USART_GetStatus(uart->config->Instance, USART_FLAG_RX_FULL)) && \
-        (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_RX)) && \
-        (ENABLE == INTC_GetIntSrcState(uart->config->rx_int_src)))
+            (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_RX)) && \
+            (ENABLE == INTC_GetIntSrcState(uart->config->rx_int_src)))
     {
         hc32_uart_rx_irq_handler(uart);
     }
 
     if ((SET == USART_GetStatus(uart->config->Instance, USART_FLAG_TX_EMPTY)) && \
-        (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_TX_EMPTY)) && \
-        (ENABLE == INTC_GetIntSrcState(uart->config->tx_int_src)))
+            (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_TX_EMPTY)) && \
+            (ENABLE == INTC_GetIntSrcState(uart->config->tx_int_src)))
     {
         hc32_uart_tx_irq_handler(uart);
     }
 
     if ((SET == USART_GetStatus(uart->config->Instance, (USART_FLAG_OVERRUN | \
                                 USART_FLAG_FRAME_ERR | USART_FLAG_PARITY_ERR))) && \
-        (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_RX))  && \
-        (ENABLE == INTC_GetIntSrcState(uart->config->rxerr_int_src)))
+            (ENABLE == USART_GetFuncState(uart->config->Instance, USART_INT_RX))  && \
+            (ENABLE == INTC_GetIntSrcState(uart->config->rxerr_int_src)))
     {
         hc32_uart_rxerr_irq_handler(uart);
     }

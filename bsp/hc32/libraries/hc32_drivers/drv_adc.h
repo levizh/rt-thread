@@ -51,6 +51,20 @@ struct adc_dev_init_params
     rt_bool_t continue_conv_mode_enable;
     rt_bool_t data_reg_auto_clear;
     uint32_t eoc_poll_time_max;
+    struct dma_config *adc_eoca_dma;
+};
+
+struct adc_dev_dma_priv_ops
+{
+    rt_err_t (*dma_trig_start)(void);
+    rt_err_t (*dma_trig_stop)(void);
+    rt_err_t (*dma_trig_config)(void);
+};
+
+struct adc_dev_priv_params
+{
+    uint32_t flag;
+    struct adc_dev_dma_priv_ops *ops;
 };
 
 /*******************************************************************************
