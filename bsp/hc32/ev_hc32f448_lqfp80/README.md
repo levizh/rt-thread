@@ -60,7 +60,7 @@ EV_F448_LQ80_Rev1.0 开发板常用 **板载资源** 如下：
 | ADC           |     支持     | ADC1: CH10, CH11, <br>ADC3: CH1 |
 | CAN           |     支持     |              CAN1、CAN2                      |
 | GPIO          |     支持     | PA0, PA1... PH2 ---> PIN: 0, 1...82 |
-| I2C           |     支持     | 软件模拟<br>硬件I2C1~2、<br>I2C1支持EEPROM（BL24C256） |
+| I2C           |     支持     | 软件模拟<br>硬件I2C1~2<br>I2C1支持EEPROM（BL24C256） |
 | Hwtimer           |     支持     | Hwtimer1~5 |
 | SPI           |     支持     | SPI1~3<br>SPI1支持W25Q |
 | UART          |     支持     |              UART1~6<br>UART2为console使用                 |
