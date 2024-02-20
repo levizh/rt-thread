@@ -8,6 +8,8 @@
  * 2022-04-28     CDT                  first version
  * 2022-06-08     xiaoxiaolisunny      add hc32f460 series
  * 2022-06-14     CDT                  fix a bug of internal trigger
+ * 2024-02-20     CDT                  support HC32F448
+ *                                     add function for associating with the dma
  */
 
 #include <board.h>

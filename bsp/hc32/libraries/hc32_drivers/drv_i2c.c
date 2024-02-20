@@ -564,7 +564,7 @@ int hc32_hw_i2c_init(void)
         i2c_objs[i].i2c_bus.ops = &hc32_i2c_ops;
         i2c_objs[i].config = &i2c_config[i];
         i2c_objs[i].i2c_bus.timeout = i2c_config[i].timeout;
-        hc32_i2c_get_dma_info();    // TODO, move out of this for loop?
+        hc32_i2c_get_dma_info();
         if (i2c_objs[i].i2c_dma_flag & I2C_USING_TX_DMA_FLAG)
         {
             i2c_objs[i].config->i2c_tx_dma = i2c_config[i].i2c_tx_dma;

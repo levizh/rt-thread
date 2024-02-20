@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
- * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
- * 2023-xx-xx     CDT          first version
+ * 2024-02-20     CDT          first version
  */
 
 #ifndef __DAC_CONFIG_H__

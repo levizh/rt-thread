@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2022-04-28     CDT          first version
+ * 2024-02-20     CDT          first version
  */
 
 #ifndef __I2C_CONFIG_H__

@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author            Notes
  * 2023-06-21     CDT               first version
+ * 2024-02-20     CDT               support HC32F448
  */
 
 #include <rtdevice.h>
