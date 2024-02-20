@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2006-2024, RT-Thread Development Team
  * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
