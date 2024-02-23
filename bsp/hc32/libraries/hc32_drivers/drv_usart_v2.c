@@ -47,10 +47,7 @@
 #if defined (HC32F460)
     #define FCG_USART_CLK               FCG_Fcg1PeriphClockCmd
 
-#elif defined (HC32F4A0) || defined (HC32F4A2)
-    #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
-
-#elif defined (HC32F448)
+#elif defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448)
     #define FCG_USART_CLK               FCG_Fcg3PeriphClockCmd
 
 #endif
@@ -539,7 +536,6 @@ static void hc32_uart_tc_irq_handler(struct hc32_uart *uart)
     {
 #ifdef RT_SERIAL_USING_DMA
         DMA_ClearTransCompleteStatus(uart->config->dma_tx->Instance, (DMA_FLAG_TC_CH0 | DMA_FLAG_BTC_CH0) << uart->config->dma_tx->channel);
-
 #endif
         rt_hw_serial_isr(&uart->serial, RT_SERIAL_EVENT_TX_DMADONE);
     }
@@ -1970,7 +1966,7 @@ static const struct rt_uart_ops hc32_uart_ops =
     .transmit = hc32_transmit
 };
 
-int hc32_hw_uart_init(void)
+int rt_hw_usart_init(void)
 {
     rt_err_t result = RT_EOK;
     rt_size_t obj_num = sizeof(uart_obj) / sizeof(struct hc32_uart);
@@ -2011,8 +2007,6 @@ int hc32_hw_uart_init(void)
 
     return result;
 }
-
-INIT_BOARD_EXPORT(hc32_hw_uart_init);
 
 #endif
 
