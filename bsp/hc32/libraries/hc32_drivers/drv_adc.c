@@ -8,6 +8,8 @@
  * 2022-04-28     CDT                  first version
  * 2022-06-08     xiaoxiaolisunny      add hc32f460 series
  * 2022-06-14     CDT                  fix a bug of internal trigger
+ * 2024-02-20     CDT                  support HC32F448
+ *                                     add function for associating with the dma
  */
 
 #include <board.h>
@@ -28,6 +30,19 @@ typedef struct
 } adc_device;
 
 #if defined(BSP_USING_ADC1) || defined(BSP_USING_ADC2) || defined(BSP_USING_ADC3)
+
+enum
+{
+#ifdef BSP_USING_ADC1
+    ADC1_INDEX,
+#endif
+#ifdef BSP_USING_ADC2
+    ADC2_INDEX,
+#endif
+#ifdef BSP_USING_ADC3
+    ADC3_INDEX,
+#endif
+};
 
 static adc_device _g_adc_dev_array[] =
 {
@@ -116,12 +131,24 @@ static rt_err_t _adc_enable(struct rt_adc_device *device, rt_int8_t channel, rt_
 {
     adc_device *p_adc_dev = rt_container_of(device, adc_device, rt_adc);
     ADC_ChCmd(p_adc_dev->instance, ADC_SEQ_A, channel, (en_functional_state_t)enabled);
+
+    /* user_data != NULL */
+    if (device->parent.user_data != RT_NULL)
+    {
+        struct adc_dev_priv_params *adc_dev_priv = device->parent.user_data;
+        if ((ADC_USING_EOCA_DMA_FLAG == adc_dev_priv->flag) && (adc_dev_priv->ops->dma_trig_config != RT_NULL))
+        {
+            adc_dev_priv->ops->dma_trig_config();
+        }
+    }
+
     return 0;
 }
 
 static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt_uint32_t *value)
 {
     rt_err_t rt_ret = -RT_ERROR;
+    rt_uint32_t timeCnt;
 
     if (!value)
     {
@@ -129,22 +156,24 @@ static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt
     }
 
     adc_device *p_adc_dev = rt_container_of(device, adc_device, rt_adc);
-    if (p_adc_dev->init.hard_trig_enable == RT_FALSE && p_adc_dev->instance->STR == 0)
+    if (p_adc_dev->init.hard_trig_enable == RT_FALSE)
     {
-        ADC_Start(p_adc_dev->instance);
-    }
-
-    uint32_t start_time = rt_tick_get();
-    do
-    {
-        if (ADC_GetStatus(p_adc_dev->instance, ADC_FLAG_EOCA) == SET)
+        if (p_adc_dev->instance->STR == 0)
         {
-            ADC_ClearStatus(p_adc_dev->instance, ADC_FLAG_EOCA);
-            rt_ret = LL_OK;
-            break;
+            ADC_Start(p_adc_dev->instance);
         }
-    }
-    while ((rt_tick_get() - start_time) < p_adc_dev->init.eoc_poll_time_max);
+
+        uint32_t start_time = rt_tick_get();
+        do
+        {
+            if (ADC_GetStatus(p_adc_dev->instance, ADC_FLAG_EOCA) == SET)
+            {
+                ADC_ClearStatus(p_adc_dev->instance, ADC_FLAG_EOCA);
+                rt_ret = LL_OK;
+                break;
+            }
+        }
+        while ((rt_tick_get() - start_time) < p_adc_dev->init.eoc_poll_time_max);
 
         if (rt_ret == LL_OK)
         {
@@ -304,6 +333,7 @@ int rt_hw_adc_init(void)
     int32_t ll_ret = 0;
 
     _adc_clock_enable();
+    hc32_adc_get_dma_info();
     uint32_t dev_cnt = sizeof(_g_adc_dev_array) / sizeof(_g_adc_dev_array[0]);
     for (; i < dev_cnt; i++)
     {

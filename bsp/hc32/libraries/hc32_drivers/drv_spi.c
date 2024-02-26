@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
  * 2023-09-30     CDT          Delete dma transmit interrupt
+ * 2024-02-20     CDT          support HC32F448
  */
 
 /*******************************************************************************

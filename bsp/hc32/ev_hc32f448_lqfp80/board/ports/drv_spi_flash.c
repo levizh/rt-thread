@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2006-2023, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
- * 2022-04-28     CDT          first version
+ * 2024-02-20     CDT          first version
  */
 
 #include <board.h>
@@ -61,7 +62,7 @@ static int rt_hw_spi_flash_with_sfud_init(void)
         rt_hw_spi_flash_reset(SPI_FLASH_DEVICE_NAME);
         if (RT_NULL == rt_sfud_flash_probe(SPI_FLASH_CHIP, SPI_FLASH_DEVICE_NAME))
         {
-            return RT_ERROR;
+            return -RT_ERROR;
         }
     }
 
@@ -80,7 +81,7 @@ static int rt_hw_fs_init(void)
     if (!mtd_dev)
     {
         LOG_E("Can't create a mtd device on '%s' partition.", FS_PARTITION_NAME);
-        return RT_ERROR;
+        return -RT_ERROR;
     }
     else
     {
@@ -104,13 +105,13 @@ static int rt_hw_fs_init(void)
                 else
                 {
                     LOG_E("Failed to initialize filesystem!");
-                    return RT_ERROR;
+                    return -RT_ERROR;
                 }
             }
             else
             {
                 LOG_E("Failed to Format fs!");
-                return RT_ERROR;
+                return -RT_ERROR;
             }
         }
     }

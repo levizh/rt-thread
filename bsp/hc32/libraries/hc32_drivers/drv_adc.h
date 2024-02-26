@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
+ * 2024-02-20     CDT          add structure for associating with the dma
  */
 
 
@@ -16,7 +17,10 @@
  * Include files
  ******************************************************************************/
 #include <rtthread.h>
-#include "rtdevice.h"
+#include <rtdevice.h>
+#include "board_config.h"
+#include "drv_irq.h"
+#include "drv_dma.h"
 
 #include "hc32_ll.h"
 
@@ -70,6 +74,7 @@ struct adc_dev_priv_params
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
+#define ADC_USING_EOCA_DMA_FLAG     (1U)
 
 /*******************************************************************************
  * Global variable definitions ('extern')
