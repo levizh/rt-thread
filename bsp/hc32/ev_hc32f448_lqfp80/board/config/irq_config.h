@@ -158,6 +158,11 @@ extern "C" {
 #define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
+#if defined (BSP_USING_QSPI)
+#define BSP_QSPI_ERR_IRQ_NUM            QSPI_IRQn
+#define BSP_QSPI_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif /* BSP_USING_QSPI */
+
 #if defined(BSP_USING_TMRA_1)
 #define BSP_USING_TMRA_1_IRQ_NUM        TMRA_1_OVF_UDF_IRQn
 #define BSP_USING_TMRA_1_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT

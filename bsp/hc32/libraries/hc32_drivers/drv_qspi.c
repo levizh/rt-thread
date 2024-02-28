@@ -279,8 +279,37 @@ static void hc32_qspi_word_to_byte(uint32_t u32Word, uint8_t *pu8Byte, uint8_t u
     while ((u32ByteNum--) != 0UL);
 }
 
-static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
-                                     uint8_t *pu8Addr, uint32_t u32AddrLen, const uint8_t *pu8WriteBuf, uint32_t u32BufLen)
+static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol, rt_uint8_t value)
+{
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+    /* direct communication mode only support 1 line */
+    RT_ASSERT(1 == protocol);
+    QSPI_WriteDirectCommValue(value);
+#elif defined (HC32F448)
+    rt_uint32_t dcom_protocol_line;
+
+    switch (protocol)
+    {
+    case 1:
+        dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_1LINE;
+        break;
+    case 2:
+        dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_2LINE;
+        break;
+    case 4:
+        dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_4LINE;
+        break;
+    default:
+        dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_1LINE;
+        break;
+    }
+    QSPI_WriteDirectCommValue(dcom_protocol_line, value);
+#endif
+}
+
+static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message,
+                                     uint8_t u8Instr, uint32_t u32InstrLen, uint8_t *pu8Addr, uint32_t u32AddrLen,
+                                     const uint8_t *pu8WriteBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
     int32_t i32Ret = LL_OK;
@@ -295,13 +324,13 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8I
     QSPI_EnterDirectCommMode();
     if (0UL != u32InstrLen)
     {
-        QSPI_WriteDirectCommValue(u8Instr);
+        hc32_qspi_write_direct_comm_value(message->instruction.qspi_lines, u8Instr);
     }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
         for (u32Count = 0UL; u32Count < u32AddrLen; u32Count++)
         {
-            QSPI_WriteDirectCommValue(pu8Addr[u32Count]);
+            hc32_qspi_write_direct_comm_value(message->address.qspi_lines, pu8Addr[u32Count]);
         }
     }
     if ((NULL != pu8WriteBuf) && (0UL != u32BufLen))
@@ -352,7 +381,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8I
 #else
         for (u32Count = 0UL; u32Count < u32BufLen; u32Count++)
         {
-            QSPI_WriteDirectCommValue(pu8WriteBuf[u32Count]);
+            hc32_qspi_write_direct_comm_value(message->qspi_data_lines, pu8WriteBuf[u32Count]);
         }
 #endif
     }
@@ -361,8 +390,9 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8I
     return i32Ret;
 }
 
-static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8Instr, uint32_t u32InstrLen,
-                                    uint8_t *pu8Addr, uint32_t u32AddrLen, uint8_t *pu8ReadBuf, uint32_t u32BufLen)
+static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_message *message,
+                                    uint8_t u8Instr, uint32_t u32InstrLen, uint8_t *pu8Addr, uint32_t u32AddrLen,
+                                    uint8_t *pu8ReadBuf, uint32_t u32BufLen)
 {
     uint32_t u32Count;
     int32_t i32Ret = LL_OK;
@@ -377,13 +407,13 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, uint8_t u8In
     QSPI_EnterDirectCommMode();
     if (0UL != u32InstrLen)
     {
-        QSPI_WriteDirectCommValue(u8Instr);
+        hc32_qspi_write_direct_comm_value(message->instruction.qspi_lines, u8Instr);
     }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
         for (u32Count = 0UL; u32Count < u32AddrLen; u32Count++)
         {
-            QSPI_WriteDirectCommValue(pu8Addr[u32Count]);
+            hc32_qspi_write_direct_comm_value(message->address.qspi_lines, pu8Addr[u32Count]);
         }
     }
     if ((NULL != pu8ReadBuf) && (0UL != u32BufLen))
@@ -472,7 +502,7 @@ static int32_t hc32_qspi_write(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_me
         u8AddrBuf[u32AddrLen] = 0xFF;
         u32AddrLen += 1;
     }
-    i32Ret = hc32_qspi_write_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, tx_buf, length);
+    i32Ret = hc32_qspi_write_instr(qspi_bus, message, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, tx_buf, length);
 
     return i32Ret;
 }
@@ -623,7 +653,7 @@ static int32_t hc32_qspi_read(struct hc32_qspi_bus *qspi_bus, struct rt_qspi_mes
             u8AddrBuf[u32AddrLen] = 0xFF;
             u32AddrLen += 1;
         }
-        i32Ret = hc32_qspi_read_instr(qspi_bus, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, rx_buf, length);
+        i32Ret = hc32_qspi_read_instr(qspi_bus, message, u8Instr, u32InstrLen, u8AddrBuf, u32AddrLen, rx_buf, length);
     }
 
     return i32Ret;
