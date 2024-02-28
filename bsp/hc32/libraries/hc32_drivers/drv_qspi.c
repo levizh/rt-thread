@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2023-06-15     CDT          first version
  * 2023-09-30     CDT          Delete dma transmit interrupt
+ * 2024-02-28     CDT          support HC32F448
  */
 
 /*******************************************************************************
@@ -279,16 +280,12 @@ static void hc32_qspi_word_to_byte(uint32_t u32Word, uint8_t *pu8Byte, uint8_t u
     while ((u32ByteNum--) != 0UL);
 }
 
-static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol, rt_uint8_t value)
+#if defined (HC32F448)
+static rt_uint32_t hc32_qspi_get_dcom_protocol_line(rt_uint8_t protocol_line)
 {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
-    /* direct communication mode only support 1 line */
-    RT_ASSERT(1 == protocol);
-    QSPI_WriteDirectCommValue(value);
-#elif defined (HC32F448)
     rt_uint32_t dcom_protocol_line;
 
-    switch (protocol)
+    switch (protocol_line)
     {
     case 1:
         dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_1LINE;
@@ -303,7 +300,19 @@ static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol, rt_uint8_t va
         dcom_protocol_line = QSPI_DIRECT_COMM_PROTOCOL_1LINE;
         break;
     }
-    QSPI_WriteDirectCommValue(dcom_protocol_line, value);
+
+    return dcom_protocol_line;
+}
+#endif
+
+static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol_line, rt_uint8_t value)
+{
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+    /* direct communication mode only support 1 line */
+    RT_ASSERT(1 == protocol_line);
+    QSPI_WriteDirectCommValue(value);
+#elif defined (HC32F448)
+    QSPI_WriteDirectCommValue(hc32_qspi_get_dcom_protocol_line(protocol_line), value);
 #endif
 }
 
@@ -319,6 +328,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
     uint32_t u32DmaTransSize;
     uint32_t u32TxIndex = 0U;
     rt_uint32_t u32TimeoutCnt;
+    rt_uint32_t src_addr;
 #endif
 
     QSPI_EnterDirectCommMode();
@@ -340,7 +350,12 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
         AOS_SetTriggerEventSrc(qspi_dma->trigger_select, qspi_dma->trigger_event);
         /* Config Dma */
         DMA_StructInit(&stcDmaInit);
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
         stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
+#elif defined (HC32F448)
+        rt_uint16_t dcom_line = (rt_uint16_t)hc32_qspi_get_dcom_protocol_line(message->qspi_data_lines);
+        stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_16BIT;
+#endif
         stcDmaInit.u32SrcAddrInc    = DMA_SRC_ADDR_INC;
         stcDmaInit.u32DestAddrInc   = DMA_DEST_ADDR_FIX;
         DMA_Init(qspi_dma->Instance, qspi_dma->channel, &stcDmaInit);
@@ -356,8 +371,23 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
                 u32DmaTransSize = u32BufLen;
                 u32BufLen = 0U;
             }
+
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+            src_addr = (rt_uint32_t)&pu8WriteBuf[u32TxIndex];
+#elif defined (HC32F448)
+            if (u32DmaTransSize > qspi_bus->config->dma_tx_buf_size)
+            {
+                LOG_E("qspi dma transmit size over buffer size!");
+                i32Ret = LL_ERR;
+                break;
+            }
+            for (rt_uint32_t i = 0; i < u32DmaTransSize; i++) {
+                qspi_bus->config->dma_tx_buf[i] = (rt_uint16_t)pu8WriteBuf[u32TxIndex + i] | dcom_line;
+            }
+            src_addr = (rt_uint32_t)qspi_bus->config->dma_tx_buf;
+#endif
             DMA_ClearTransCompleteStatus(qspi_dma->Instance, qspi_dma->flag);
-            DMA_SetSrcAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&pu8WriteBuf[u32TxIndex]);
+            DMA_SetSrcAddr(qspi_dma->Instance, qspi_dma->channel, src_addr);
             DMA_SetDestAddr(qspi_dma->Instance, qspi_dma->channel, (uint32_t)&qspi_bus->config->Instance->DCOM);
             DMA_SetTransCount(qspi_dma->Instance, qspi_dma->channel, 1UL);
             DMA_SetBlockSize(qspi_dma->Instance, qspi_dma->channel, (uint16_t)u32DmaTransSize);
@@ -832,6 +862,10 @@ static void hc32_get_qspi_info(void)
 #ifdef BSP_QSPI_USING_DMA
     static struct dma_config qspi_dma = QSPI_DMA_CONFIG;
     qspi_config.dma_qspi    = &qspi_dma;
+#if defined (HC32F448)
+    qspi_config.dma_tx_buf_size = QSPI_DMA_TX_BUFSIZE;
+    qspi_config.dma_tx_buf = rt_malloc(qspi_config.dma_tx_buf_size<<1);
+#endif
 #endif
     qspi_bus_obj.config = &qspi_config;
 }
