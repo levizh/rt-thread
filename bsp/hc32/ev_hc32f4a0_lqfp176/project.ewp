@@ -1981,16 +1981,16 @@
   <group>
     <name>Applications</name>
     <file>
-      <name>$PROJ_DIR$\applications\app_spi.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\applications\main.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\applications\xtal32_fcm.c</name>
+      <name>$PROJ_DIR$\applications\app_qspi.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\applications\app_qspi.c</name>
+      <name>$PROJ_DIR$\applications\app_spi.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\applications\xtal32_fcm.c</name>
     </file>
   </group>
   <group>

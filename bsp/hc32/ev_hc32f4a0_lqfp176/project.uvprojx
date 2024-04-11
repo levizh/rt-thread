@@ -381,9 +381,9 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>app_spi.c</FileName>
+              <FileName>app_qspi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\app_spi.c</FilePath>
+              <FilePath>applications\app_qspi.c</FilePath>
             </File>
           </Files>
           <Files>
@@ -395,16 +395,16 @@
           </Files>
           <Files>
             <File>
-              <FileName>app_qspi.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\app_qspi.c</FilePath>
+              <FilePath>applications\main.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>app_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\main.c</FilePath>
+              <FilePath>applications\app_spi.c</FilePath>
             </File>
           </Files>
         </Group>
