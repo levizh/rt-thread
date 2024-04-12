@@ -11,7 +11,6 @@
 
 #include <rtdevice.h>
 #include "board_config.h"
-#include "tca9539.h"
 
 /**
  * The below functions will initialize HC32 board.
@@ -38,11 +37,11 @@ rt_err_t rt_hw_board_uart_init(CM_USART_TypeDef *USARTx)
         GPIO_SetFunc(USART2_TX_PORT, USART2_TX_PIN, USART2_TX_FUNC);
         break;
 #endif
-#if defined(BSP_USING_UART6)
-    case (rt_uint32_t)CM_USART6:
+#if defined(BSP_USING_UART5)
+    case (rt_uint32_t)CM_USART5:
         /* Configure USART RX/TX pin. */
-        GPIO_SetFunc(USART6_RX_PORT, USART6_RX_PIN, USART6_RX_FUNC);
-        GPIO_SetFunc(USART6_TX_PORT, USART6_TX_PIN, USART6_TX_FUNC);
+        GPIO_SetFunc(USART5_RX_PORT, USART5_RX_PIN, USART5_RX_FUNC);
+        GPIO_SetFunc(USART5_TX_PORT, USART5_TX_PIN, USART5_TX_FUNC);
         break;
 #endif
     default:

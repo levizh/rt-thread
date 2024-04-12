@@ -14,7 +14,7 @@
 #include <board.h>
 
 /* defined the LED_GREEN pin: PA2 */
-#define LED_GREEN_PIN GET_PIN(A, 2)
+#define LED_GREEN_PIN GET_PIN(C, 9)
 
 int main(void)
 {

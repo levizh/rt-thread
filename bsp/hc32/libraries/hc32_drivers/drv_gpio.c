@@ -29,6 +29,8 @@
     #define PIN_MAX_NUM                     ((GPIO_PORT_H * 16) + (__CLZ(__RBIT(GPIO_PIN_02))) + 1)
 #elif defined (HC32F448)
     #define PIN_MAX_NUM                     ((GPIO_PORT_H * 16) + (__CLZ(__RBIT(GPIO_PIN_02))) + 1)
+#elif defined (HC32F472)
+    #define PIN_MAX_NUM                     ((GPIO_PORT_F * 16) + (__CLZ(__RBIT(GPIO_PIN_08))) + 1)
 #endif
 
 #define ITEM_NUM(items)                 sizeof(items) / sizeof(items[0])
