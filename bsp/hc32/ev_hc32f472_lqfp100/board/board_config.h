@@ -56,40 +56,49 @@
 
 /************************ I2C port **********************/
 #if defined(BSP_USING_I2C1)
-    #define I2C1_SDA_PORT                   (GPIO_PORT_E)
-    #define I2C1_SDA_PIN                    (GPIO_PIN_00)
-    #define I2C1_SDA_FUNC                   (GPIO_FUNC_48)
+    #define I2C1_SDA_PORT                   (GPIO_PORT_B)
+    #define I2C1_SDA_PIN                    (GPIO_PIN_09)
+    #define I2C1_SDA_FUNC                   (GPIO_FUNC_54)
 
-    #define I2C1_SCL_PORT                   (GPIO_PORT_E)
-    #define I2C1_SCL_PIN                    (GPIO_PIN_01)
-    #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
+    #define I2C1_SCL_PORT                   (GPIO_PORT_B)
+    #define I2C1_SCL_PIN                    (GPIO_PIN_06)
+    #define I2C1_SCL_FUNC                   (GPIO_FUNC_55)
 #endif
-
-#if defined(BSP_USING_I2C2) // TODO, ch2 for test only
+ // TODO, ch2/3 for test only
+#if defined(BSP_USING_I2C2)
     #define I2C2_SDA_PORT                   (GPIO_PORT_A)
     #define I2C2_SDA_PIN                    (GPIO_PIN_09)
-    #define I2C2_SDA_FUNC                   (GPIO_FUNC_50)
+    #define I2C2_SDA_FUNC                   (GPIO_FUNC_56)
 
     #define I2C2_SCL_PORT                   (GPIO_PORT_A)
     #define I2C2_SCL_PIN                    (GPIO_PIN_10)
-    #define I2C2_SCL_FUNC                   (GPIO_FUNC_51)
+    #define I2C2_SCL_FUNC                   (GPIO_FUNC_57)
 #endif
 
+#if defined(BSP_USING_I2C3)
+    #define I2C3_SDA_PORT                   (GPIO_PORT_A)
+    #define I2C3_SDA_PIN                    (GPIO_PIN_09)
+    #define I2C3_SDA_FUNC                   (GPIO_FUNC_58)
+
+    #define I2C3_SCL_PORT                   (GPIO_PORT_A)
+    #define I2C3_SCL_PIN                    (GPIO_PIN_10)
+    #define I2C3_SCL_FUNC                   (GPIO_FUNC_59)
+#endif
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
-    #define ADC1_CH_PORT                    (GPIO_PORT_C)
-    #define ADC1_CH_PIN                     (GPIO_PIN_00)
+    #define ADC1_CH_PORT                    (GPIO_PORT_A)
+    #define ADC1_CH_PIN                     (GPIO_PIN_06)
 #endif
 
 #if defined(BSP_USING_ADC2)
     #define ADC2_CH_PORT                    (GPIO_PORT_C)
-    #define ADC2_CH_PIN                     (GPIO_PIN_01)
+    #define ADC2_CH_PIN                     (GPIO_PIN_04)
 #endif
 
 #if defined(BSP_USING_ADC3)
-    #define ADC3_CH_PORT                    (GPIO_PORT_E)
-    #define ADC3_CH_PIN                     (GPIO_PIN_03)
+    #define ADC3_CH_PORT                    (GPIO_PORT_C)
+    #define ADC3_CH_PIN                     (GPIO_PIN_01)
 #endif
 
 /***********  DAC configure *********/
@@ -102,23 +111,33 @@
 
 /***********  CAN configure *********/
 #if defined(BSP_USING_CAN1)
-    #define CAN1_TX_PORT                    (GPIO_PORT_C)
+    #define CAN1_TX_PORT                    (GPIO_PORT_D)
     #define CAN1_TX_PIN                     (GPIO_PIN_12)
-    #define CAN1_TX_PIN_FUNC                (GPIO_FUNC_56)
+    #define CAN1_TX_PIN_FUNC                (GPIO_FUNC_60)
 
     #define CAN1_RX_PORT                    (GPIO_PORT_D)
-    #define CAN1_RX_PIN                     (GPIO_PIN_00)
-    #define CAN1_RX_PIN_FUNC                (GPIO_FUNC_57)
+    #define CAN1_RX_PIN                     (GPIO_PIN_13)
+    #define CAN1_RX_PIN_FUNC                (GPIO_FUNC_61)
 #endif
 
 #if defined(BSP_USING_CAN2)
-    #define CAN2_TX_PORT                    (GPIO_PORT_H)
-    #define CAN2_TX_PIN                     (GPIO_PIN_02)
-    #define CAN2_TX_PIN_FUNC                (GPIO_FUNC_56)
+    #define CAN2_TX_PORT                    (GPIO_PORT_C)
+    #define CAN2_TX_PIN                     (GPIO_PIN_07)
+    #define CAN2_TX_PIN_FUNC                (GPIO_FUNC_60)
 
-    #define CAN2_RX_PORT                    (GPIO_PORT_E)
-    #define CAN2_RX_PIN                     (GPIO_PIN_04)
-    #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_57)
+    #define CAN2_RX_PORT                    (GPIO_PORT_D)
+    #define CAN2_RX_PIN                     (GPIO_PIN_11)
+    #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_61)
+#endif
+
+#if defined(BSP_USING_CAN3)
+    #define CAN3_TX_PORT                    (GPIO_PORT_C)
+    #define CAN3_TX_PIN                     (GPIO_PIN_06)
+    #define CAN3_TX_PIN_FUNC                (GPIO_FUNC_62)
+
+    #define CAN3_RX_PORT                    (GPIO_PORT_A)
+    #define CAN3_RX_PIN                     (GPIO_PIN_05)
+    #define CAN3_RX_PIN_FUNC                (GPIO_FUNC_63)
 #endif
 
 /************************* SPI port ***********************/
@@ -127,16 +146,16 @@
     #define SPI1_CS_PIN                 (GPIO_PIN_07)
 
     #define SPI1_SCK_PORT               (GPIO_PORT_B)
-    #define SPI1_SCK_PIN                (GPIO_PIN_14)
-    #define SPI1_SCK_FUNC               (GPIO_FUNC_47)
+    #define SPI1_SCK_PIN                (GPIO_PIN_02)
+    #define SPI1_SCK_FUNC               (GPIO_FUNC_44)
 
     #define SPI1_MOSI_PORT              (GPIO_PORT_B)
-    #define SPI1_MOSI_PIN               (GPIO_PIN_13)
-    #define SPI1_MOSI_FUNC              (GPIO_FUNC_44)
+    #define SPI1_MOSI_PIN               (GPIO_PIN_00)
+    #define SPI1_MOSI_FUNC              (GPIO_FUNC_45)
 
-    #define SPI1_MISO_PORT              (GPIO_PORT_D)
-    #define SPI1_MISO_PIN               (GPIO_PIN_09)
-    #define SPI1_MISO_FUNC              (GPIO_FUNC_45)
+    #define SPI1_MISO_PORT              (GPIO_PORT_B)
+    #define SPI1_MISO_PIN               (GPIO_PIN_01)
+    #define SPI1_MISO_FUNC              (GPIO_FUNC_46)
 
     #define SPI1_WP_PORT                (GPIO_PORT_D)
     #define SPI1_WP_PIN                 (GPIO_PIN_10)

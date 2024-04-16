@@ -158,6 +158,11 @@ extern "C" {
 #define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
+#if defined(BSP_USING_SPI4)
+#define BSP_SPI4_ERR_IRQ_NUM            SPI4_IRQn
+#define BSP_SPI4_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#endif
+
 #if defined (BSP_USING_QSPI)
 #define BSP_QSPI_ERR_IRQ_NUM            QSPI_IRQn
 #define BSP_QSPI_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
@@ -187,6 +192,11 @@ extern "C" {
 #define BSP_USING_TMRA_5_IRQ_NUM        TMRA_5_OVF_UDF_IRQn
 #define BSP_USING_TMRA_5_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_TMRA_5 */
+
+#if defined(BSP_USING_TMRA_6)
+#define BSP_USING_TMRA_6_IRQ_NUM        TMRA_6_OVF_UDF_IRQn
+#define BSP_USING_TMRA_6_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_TMRA_6 */
 
 #if defined(BSP_USING_CAN1)
 #define BSP_CAN1_IRQ_NUM                MCAN1_INT0_IRQn

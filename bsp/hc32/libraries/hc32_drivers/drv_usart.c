@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
  * 2023-10-09     CDT          support HC32F448
+ * 2024-04-15     CDT          support HC32F472
  */
 
 /*******************************************************************************
@@ -270,7 +271,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
 #if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     NVIC_EnableIRQ(uart->config->rxerr_irq.irq_config.irq_num);
 #elif defined (HC32F448) || defined (HC32F472)
-    INTC_IntSrcCmd(uart->config->tx_int_src, ENABLE);
+    INTC_IntSrcCmd(uart->config->tx_int_src, ENABLE);  //todo
     INTC_IntSrcCmd(uart->config->rx_int_src, DISABLE);
     INTC_IntSrcCmd(uart->config->rxerr_int_src, ENABLE);
     NVIC_EnableIRQ(uart->config->irq_num);
@@ -332,7 +333,7 @@ static rt_err_t hc32_control(struct rt_serial_device *serial, int cmd, void *arg
             hc32_install_irq_handler(&uart->config->rx_irq.irq_config, uart->config->rx_irq.irq_callback, RT_TRUE);
             USART_FuncCmd(uart->config->Instance, USART_INT_RX, ENABLE);
         }
-        else
+        else if (RT_DEVICE_FLAG_INT_TX == ctrl_arg)
         {
             INTC_IrqSignOut(uart->config->tx_irq.irq_config.irq_num);
             hc32_install_irq_handler(&uart->config->tx_irq.irq_config, uart->config->tx_irq.irq_callback, RT_TRUE);
@@ -347,7 +348,7 @@ static rt_err_t hc32_control(struct rt_serial_device *serial, int cmd, void *arg
             INTC_IntSrcCmd(uart->config->rx_int_src, ENABLE);
             USART_FuncCmd(uart->config->Instance, USART_INT_RX, ENABLE);
         }
-        else
+        else if (RT_DEVICE_FLAG_INT_TX == ctrl_arg)
         {
             USART_FuncCmd(uart->config->Instance, USART_TX | USART_INT_TX_EMPTY, ENABLE);
         }
@@ -1621,7 +1622,7 @@ static void hc32_uart_get_dma_info(void)
 
 #ifdef BSP_USING_UART5
     uart_obj[UART5_INDEX].uart_dma_flag = 0;
-#if defined (HC32F448)
+#if defined (HC32F448) || defined (HC32F472)
 #ifdef BSP_UART5_RX_USING_DMA
     uart_obj[UART5_INDEX].uart_dma_flag |= RT_DEVICE_FLAG_DMA_RX;
     static struct dma_config uart5_dma_rx = UART5_DMA_RX_CONFIG;
