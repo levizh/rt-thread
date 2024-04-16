@@ -132,6 +132,12 @@
 /* CYW43012 WiFi */
 
 
+/* BL808 WiFi */
+
+
+/* CYW43439 WiFi */
+
+
 /* IoT Cloud */
 
 
@@ -173,13 +179,18 @@
 
 /* peripheral libraries and drivers */
 
+/* HAL & SDK Drivers */
+
+/* STM32 HAL & SDK Drivers */
+
+
+/* Kendryte SDK */
+
+
 /* sensors drivers */
 
 
 /* touch drivers */
-
-
-/* Kendryte SDK */
 
 
 /* AI packages */
@@ -238,6 +249,13 @@
 /* Hardware Drivers Config */
 
 #define SOC_HC32F4A0SI
+
+/* On-chip Drivers */
+
+#define BSP_USING_ON_CHIP_FLASH_CACHE
+#define BSP_USING_ON_CHIP_FLASH_ICODE_CACHE
+#define BSP_USING_ON_CHIP_FLASH_DCODE_CACHE
+#define BSP_USING_ON_CHIP_FLASH_ICODE_PREFETCH
 
 /* Onboard Peripheral Drivers */
 
