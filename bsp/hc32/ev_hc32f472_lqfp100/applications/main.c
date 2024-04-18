@@ -13,7 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 
-/* defined the LED_GREEN pin: PA2 */
+/* defined the LED_GREEN pin: PC9 */
 #define LED_GREEN_PIN GET_PIN(C, 9)
 
 int main(void)

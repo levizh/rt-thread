@@ -6,7 +6,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2024-02-20     CDT          first version
+ * 2024-04-18     CDT          first version
  */
 
 #ifndef __QSPI_CONFIG_H__
@@ -65,11 +65,6 @@ extern "C" {
         }                                                   \
     }
 #endif /* QSPI_DMA_CONFIG */
-
-/* unit: half-word, DMA data width of QSPI transmitting is 16bit */
-#ifndef QSPI_DMA_TX_BUFSIZE
-#define QSPI_DMA_TX_BUFSIZE             256
-#endif /* QSPI_DMA_TX_BUFSIZE */
 #endif /* BSP_QSPI_USING_DMA */
 #endif /* BSP_USING_QSPI */
 
