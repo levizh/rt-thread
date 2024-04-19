@@ -1004,6 +1004,13 @@ static void qspi_err_irq_handler(void)
     rt_interrupt_leave();
 }
 
+#if defined (HC32F448) || defined (HC32F472)
+void QSPI_Handler(void)
+{
+    qspi_err_irq_handler();
+}
+#endif
+
 /**
   * @brief  This function attach device to QSPI bus.
   * @param  bus_name                    QSPI bus name
@@ -1085,7 +1092,12 @@ static int rt_hw_qspi_bus_init(void)
 {
     hc32_get_qspi_info();
     /* register the handle */
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     hc32_install_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, qspi_bus_obj.config->err_irq.irq_callback, RT_FALSE);
+#elif defined (HC32F448) || defined (HC32F472)
+    hc32_install_independ_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, RT_FALSE);
+#endif
+
     return hc32_qspi_register_bus(&qspi_bus_obj, "qspi1");
 }
 INIT_BOARD_EXPORT(rt_hw_qspi_bus_init);
