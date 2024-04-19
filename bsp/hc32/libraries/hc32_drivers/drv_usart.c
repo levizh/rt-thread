@@ -271,7 +271,7 @@ static rt_err_t hc32_configure(struct rt_serial_device *serial, struct serial_co
 #if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
     NVIC_EnableIRQ(uart->config->rxerr_irq.irq_config.irq_num);
 #elif defined (HC32F448) || defined (HC32F472)
-    INTC_IntSrcCmd(uart->config->tx_int_src, ENABLE);  //todo
+    INTC_IntSrcCmd(uart->config->tx_int_src, ENABLE);
     INTC_IntSrcCmd(uart->config->rx_int_src, DISABLE);
     INTC_IntSrcCmd(uart->config->rxerr_int_src, ENABLE);
     NVIC_EnableIRQ(uart->config->irq_num);

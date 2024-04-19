@@ -274,30 +274,30 @@
 #if defined(BSP_USING_QSPI)
     #ifndef BSP_QSPI_USING_SOFT_CS
         /* QSSN */
-        #define QSPI_FLASH_CS_PORT              (GPIO_PORT_C)
-        #define QSPI_FLASH_CS_PIN               (GPIO_PIN_07)
-        #define QSPI_FLASH_CS_FUNC              (GPIO_FUNC_7)
+        #define QSPI_FLASH_CS_PORT              (GPIO_PORT_B)
+        #define QSPI_FLASH_CS_PIN               (GPIO_PIN_12)
+        #define QSPI_FLASH_CS_FUNC              (GPIO_FUNC_5)
     #endif
     /* QSCK */
     #define QSPI_FLASH_SCK_PORT             (GPIO_PORT_B)
-    #define QSPI_FLASH_SCK_PIN              (GPIO_PIN_14)
-    #define QSPI_FLASH_SCK_FUNC             (GPIO_FUNC_7)
+    #define QSPI_FLASH_SCK_PIN              (GPIO_PIN_13)
+    #define QSPI_FLASH_SCK_FUNC             (GPIO_FUNC_5)
     /* QSIO0 */
-    #define QSPI_FLASH_IO0_PORT             (GPIO_PORT_B)
-    #define QSPI_FLASH_IO0_PIN              (GPIO_PIN_13)
-    #define QSPI_FLASH_IO0_FUNC             (GPIO_FUNC_7)
+    #define QSPI_FLASH_IO0_PORT             (GPIO_PORT_A)
+    #define QSPI_FLASH_IO0_PIN              (GPIO_PIN_07)
+    #define QSPI_FLASH_IO0_FUNC             (GPIO_FUNC_5)
     /* QSIO1 */
-    #define QSPI_FLASH_IO1_PORT             (GPIO_PORT_D)
-    #define QSPI_FLASH_IO1_PIN              (GPIO_PIN_09)
-    #define QSPI_FLASH_IO1_FUNC             (GPIO_FUNC_7)
+    #define QSPI_FLASH_IO1_PORT             (GPIO_PORT_B)
+    #define QSPI_FLASH_IO1_PIN              (GPIO_PIN_14)
+    #define QSPI_FLASH_IO1_FUNC             (GPIO_FUNC_5)
     /* QSIO2 */
-    #define QSPI_FLASH_IO2_PORT             (GPIO_PORT_D)
+    #define QSPI_FLASH_IO2_PORT             (GPIO_PORT_B)
     #define QSPI_FLASH_IO2_PIN              (GPIO_PIN_10)
-    #define QSPI_FLASH_IO2_FUNC             (GPIO_FUNC_7)
+    #define QSPI_FLASH_IO2_FUNC             (GPIO_FUNC_4)
     /* QSIO3 */
-    #define QSPI_FLASH_IO3_PORT             (GPIO_PORT_D)
+    #define QSPI_FLASH_IO3_PORT             (GPIO_PORT_B)
     #define QSPI_FLASH_IO3_PIN              (GPIO_PIN_11)
-    #define QSPI_FLASH_IO3_FUNC             (GPIO_FUNC_7)
+    #define QSPI_FLASH_IO3_FUNC             (GPIO_FUNC_4)
 #endif
 
 /*********** TMRA_PULSE_ENCODER configure *********/
