@@ -1,4 +1,15 @@
 /*
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-11-10     CDT          first version
+ */
+
+/*
  * 程序清单：这是一个串口设备 开启 DMA 模式后使用例程
  * 例程导出了 uart_dma_sample 命令到控制终端
  * 命令调用格式：uart_dma_sample uart1
@@ -115,7 +126,7 @@ static void serial_thread_entry(void *parameter)
     }
 }
 
-int uart_sample(int argc, char *argv[])
+int uart_sample_v2(int argc, char *argv[])
 {
     rt_err_t ret = RT_EOK;
     char uart_name[RT_NAME_MAX];
@@ -174,5 +185,5 @@ int uart_sample(int argc, char *argv[])
     return ret;
 }
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(uart_sample, uart device sample);
+MSH_CMD_EXPORT(uart_sample_v2, uart device sample);
 #endif

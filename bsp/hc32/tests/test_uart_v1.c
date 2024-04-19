@@ -1,6 +1,16 @@
 /*
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-11-10     CDT          first version
+ */
+/*
  * 程序清单：这是一个 串口 设备使用例程
- * 例程导出了 uart_sample 命令到控制终端
+ * 例程导出了 uart_sample_v1 命令到控制终端
  * 命令解释：命令第二个参数是要使用的串口设备名称，为空则使用默认的串口设备(uart1)
  * 程序功能：通过串口输出字符串:
  *     drv_usart: drv_usart_v1
@@ -20,10 +30,10 @@
  *     #define BSP_USING_UART5
  *
  * 命令调用格式：
- * uart1 中断，命令调用格式：uart_sample uart1 int
- * uart1 DMA，命令调用格式：uart_sample uart1 dma
- * uart5 中断，命令调用格式：uart_sample uart5 int
- * uart5 DMA，命令调用格式：uart_sample uart5 dma
+ * uart1 中断，命令调用格式：uart_sample_v1 uart1 int
+ * uart1 DMA，命令调用格式：uart_sample_v1 uart1 dma
+ * uart5 中断，命令调用格式：uart_sample_v1 uart5 int
+ * uart5 DMA，命令调用格式：uart_sample_v1 uart5 dma
  */
 
 #include <rtthread.h>
@@ -130,7 +140,7 @@ static void serial_thread_entry_int(void *parameter)
     }
 }
 
-int uart_sample(int argc, char *argv[])
+int uart_sample_v1(int argc, char *argv[])
 {
     rt_thread_t thread;
     rt_err_t ret = RT_EOK;
@@ -179,9 +189,7 @@ int uart_sample(int argc, char *argv[])
     config.baud_rate = BAUD_RATE_115200;      //baudrate 115200
     config.data_bits = DATA_BITS_8;           //data bit 8
     config.stop_bits = STOP_BITS_1;           //stop bit 1
-    config.bufsz     = 256;                   //buff size 256
     config.parity    = PARITY_NONE;
-
     rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
 
     if (0 == rt_strncmp(comm_mode, comm_mode_dma, 3))
@@ -234,7 +242,7 @@ int uart_sample(int argc, char *argv[])
     }
     else
     {
-        rt_kprintf("communication mode error, please input cmd: uart_sample %s int or uart_sample uartx dma!\n", uart_name);
+        rt_kprintf("communication mode error, please input cmd: uart_sample_v1 %s int or uart_sample_v1 uartx dma!\n", uart_name);
         return RT_ERROR;
     }
 
@@ -250,5 +258,5 @@ int uart_sample(int argc, char *argv[])
     return ret;
 }
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(uart_sample, uart device sample);
+MSH_CMD_EXPORT(uart_sample_v1, uart device sample);
 #endif
