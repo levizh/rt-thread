@@ -42,12 +42,20 @@
 #define W25Q_PAGE_PER_SECTOR            (W25Q_SECTOR_SIZE / W25Q_PAGE_SIZE)
 #define W25Q_MAX_ADDR                   (0x800000UL)
 
-#define W25Q_QSPI_DATA_LINE_WIDTH       4
+#define W25Q_QSPI_DATA_LINE_WIDTH       1
 #define W25Q_QSPI_RD_MD                 (W25Q_FAST_RD_QUAD_IO)
 
 #define W25Q_QSPI_WR_RD_ADDR            0x4000
 #define W25Q_QSPI_DATA_BUF_LEN          0x2000
+#define W25Q_QSPI_WR_CMD                W25Q64_QUAD_INPUT_PAGE_PROGRAM
 
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+    #ifndef BSP_QSPI_USING_SOFT_CS
+        #if (W25Q_QSPI_WR_CMD == W25Q64_QUAD_INPUT_PAGE_PROGRAM)
+            #error "QUAD PAGE PROGRAM must use soft CS pin!!"
+        #endif
+    #endif
+#endif
 
 #if W25Q_QSPI_RD_MD == W25Q_STD_RD
     #define W25Q_QSPI_RD_DUMMY_CYCLE    0
@@ -372,7 +380,7 @@ int32_t w25q_write_data(struct rt_qspi_device *device, uint32_t u32Addr, uint8_t
         {
             rt_kprintf("qspi send cmd failed!\n");
         }
-        w25q_txBuf[0] = W25Q64_QUAD_INPUT_PAGE_PROGRAM;
+        w25q_txBuf[0] = W25Q_QSPI_WR_CMD;
         w25q_txBuf[1] = (u32Addr >> 16) & 0xFFU;
         w25q_txBuf[2] = (u32Addr >> 8) & 0xFFU;
         w25q_txBuf[3] = u32Addr & 0xFFU;
