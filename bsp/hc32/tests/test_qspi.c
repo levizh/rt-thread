@@ -79,7 +79,11 @@ static int rt_hw_qspi_flash_init(void)
 #ifndef BSP_QSPI_USING_SOFT_CS
     if (RT_EOK != rt_hw_qspi_bus_attach_device("qspi1", "qspi10", RT_NULL, W25Q_QSPI_DATA_LINE_WIDTH, RT_NULL, RT_NULL))
 #else
+#if defined (HC32F472)
+    if (RT_EOK != rt_hw_qspi_bus_attach_device("qspi1", "qspi10", GET_PIN(B, 12), W25Q_QSPI_DATA_LINE_WIDTH, RT_NULL, RT_NULL))
+#else
     if (RT_EOK != rt_hw_qspi_bus_attach_device("qspi1", "qspi10", GET_PIN(C, 7), W25Q_QSPI_DATA_LINE_WIDTH, RT_NULL, RT_NULL))
+#endif
 #endif
     {
         rt_kprintf("Failed to attach the qspi device.");
@@ -339,7 +343,7 @@ void w25q_write_read_data(struct rt_qspi_device *device, uint32_t u32Addr)
     }
     if (rt_memcmp(u8WrBuf, u8RdBuf, W25Q_QSPI_DATA_BUF_LEN) == 0)
     {
-        rt_kprintf("qspi write and read test ok! addr=%06x\n", u32Addr);
+        rt_kprintf("qspi write and read test ok: addr=0x%06X\n", u32Addr);
     }
     else
     {
