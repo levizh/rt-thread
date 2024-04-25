@@ -336,7 +336,7 @@
               <MiscControls />
               <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, __RTTHREAD__, __DEBUG, HC32F448</Define>
               <Undefine />
-              <IncludePath>..\..\..\components\drivers\include;..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\inc;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\poll;board\config;board\ports;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\drivers\include;..\..\..\components\finsh;board;..\..\..\components\libc\compilers\common\include;..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\libcpu\arm\common;..\libraries\hc32f448_ddl\drivers\cmsis\Include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;.;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\stdio;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;applications</IncludePath>
+              <IncludePath>..\..\..\components\drivers\include;..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\inc;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\poll;board\config;board\ports;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\drivers\include;..\..\..\components\finsh;board;..\..\..\components\libc\compilers\common\include;..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\libcpu\arm\common;..\libraries\hc32f448_ddl\drivers\cmsis\Include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;.;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\stdio;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;..\platform\tca9539;applications</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -379,6 +379,13 @@
       <Groups>
         <Group>
           <GroupName>Applications</GroupName>
+          <Files>
+            <File>
+              <FileName>xtal32_fcm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>applications\xtal32_fcm.c</FilePath>
+            </File>
+          </Files>
           <Files>
             <File>
               <FileName>main.c</FileName>
