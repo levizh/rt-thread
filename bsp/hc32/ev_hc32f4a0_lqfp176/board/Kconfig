@@ -98,6 +98,10 @@ menu "Onboard Peripheral Drivers"
         select BSP_USING_I2C1
         default n
 
+    config BSP_USING_EXT_IO
+        bool
+        default y
+
 endmenu
 
 menu "On-chip Peripheral Drivers"

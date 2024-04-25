@@ -23,20 +23,38 @@
     #include "spi_flash_sfud.h"
 #endif
 
-#define SPI_BUS_NAME                    "spi1"
-#define SPI_FLASH_DEVICE_NAME           "spi10"
-#define SPI_FLASH_CHIP                  "w25q64"
-#define SPI_FLASH_SS_PORT               GPIO_PORT_C
-#define SPI_FLASH_SS_PIN                GPIO_PIN_07
+#if defined(HC32F4A0) || defined(HC32F448)
+    #define SPI_BUS_NAME                "spi1"
+    #define SPI_FLASH_DEVICE_NAME       "spi10"
+    #define SPI_FLASH_CHIP              "w25q64"
+    #define SPI_FLASH_SS_PORT           GPIO_PORT_C
+    #define SPI_FLASH_SS_PIN            GPIO_PIN_07
+#elif defined(HC32F460)
+    #define SPI_BUS_NAME                "spi3"
+    #define SPI_FLASH_DEVICE_NAME       "spi30"
+    #define SPI_FLASH_CHIP              "w25q64"
+    #define SPI_FLASH_SS_PORT           GPIO_PORT_C
+    #define SPI_FLASH_SS_PIN            GPIO_PIN_07
+#elif defined(HC32F472)
+    #define SPI_BUS_NAME                "spi1"
+    #define SPI_FLASH_DEVICE_NAME       "spi10"
+    #define SPI_FLASH_CHIP              "w25q64"
+    #define SPI_FLASH_SS_PORT           GPIO_PORT_B
+    #define SPI_FLASH_SS_PIN            GPIO_PIN_12
+#endif
+#define SPI_FLASH_CMD_ENABLE_RESET      0x66
+#define SPI_FLASH_CMD_RESET_DEVICE      0x99
+
 /* Partition Name */
 #define FS_PARTITION_NAME              "filesystem"
+
 
 #ifdef RT_USING_SFUD
 static void rt_hw_spi_flash_reset(char *spi_dev_name)
 {
     struct rt_spi_device *spi_dev_w25;
-    rt_uint8_t w25_en_reset = 0x66;
-    rt_uint8_t w25_reset_dev = 0x99;
+    rt_uint8_t w25_en_reset = SPI_FLASH_CMD_ENABLE_RESET;
+    rt_uint8_t w25_reset_dev = SPI_FLASH_CMD_RESET_DEVICE;
 
     spi_dev_w25 = (struct rt_spi_device *)rt_device_find(spi_dev_name);
     if (!spi_dev_w25)

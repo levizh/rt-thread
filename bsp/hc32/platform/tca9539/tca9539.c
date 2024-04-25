@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
  * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -28,7 +27,13 @@
 #define BSP_TCA9539_I2C_BUS_NAME        "i2c1"
 #define BSP_TCA9539_DEV_ADDR            (0x74U)
 
-#define TCA9539_RST_PIN                 (32)    /* PB15 */
+#if defined(HC32F4A0)
+    #define TCA9539_RST_PIN             (45)    /* PC13 */
+#elif defined(HC32F448)
+    #define TCA9539_RST_PIN             (31)    /* PB15 */
+#elif defined(HC32F472)
+    #define TCA9539_RST_PIN             (44)    /* PC12 */
+#endif
 
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')

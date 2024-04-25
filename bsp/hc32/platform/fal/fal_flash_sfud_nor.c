@@ -9,31 +9,38 @@
  */
 
 #include <fal.h>
-
 #include <sfud.h>
 #ifdef RT_USING_SFUD
     #include <spi_flash_sfud.h>
 #endif
 
 #ifndef FAL_USING_NOR_FLASH_DEV_NAME
-    #define FAL_USING_NOR_FLASH_DEV_NAME            "w25q64"
+    #define FAL_USING_NOR_FLASH_DEV_NAME        "w25q64"
 #endif
+
+#define EXT_NOR_FLASH_START_ADDR        0
+#define EXT_NOR_FLASH_CHIP_SIZE         8 * 1024 * 1024
+#define EXT_NOR_FLASH_BLOCK_SIZE        4096
+#define EXT_NOR_FLASH_WR_MIN_GRAN       1
+
 
 static int init(void);
 static int read(long offset, uint8_t *buf, size_t size);
 static int write(long offset, const uint8_t *buf, size_t size);
 static int erase(long offset, size_t size);
 
+
 static sfud_flash_t sfud_dev = NULL;
 struct fal_flash_dev ext_nor_flash0 =
 {
     .name       = FAL_USING_NOR_FLASH_DEV_NAME,
-    .addr       = 0,
-    .len        = 8 * 1024 * 1024,
-    .blk_size   = 4096,
+    .addr       = EXT_NOR_FLASH_START_ADDR,
+    .len        = EXT_NOR_FLASH_CHIP_SIZE,
+    .blk_size   = EXT_NOR_FLASH_BLOCK_SIZE,
     .ops        = {init, read, write, erase},
-    .write_gran = 1
+    .write_gran = EXT_NOR_FLASH_WR_MIN_GRAN,
 };
+
 
 static int init(void)
 {
