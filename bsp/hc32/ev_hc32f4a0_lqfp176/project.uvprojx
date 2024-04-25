@@ -336,7 +336,7 @@
               <MiscControls />
               <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, HC32F4A0, __RTTHREAD__, __DEBUG</Define>
               <Undefine />
-              <IncludePath>..\..\..\components\libc\posix\io\stdio;..\..\..\components\libc\compilers\common\extension;..\..\..\components\libc\compilers\common\include;..\..\..\include;..\libraries\hc32f4a0_ddl\cmsis\Device\HDSC\hc32f4xx\Include;..\libraries\hc32_drivers;..\..\..\components\libc\posix\io\poll;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\extension\fcntl\octal;.;..\..\..\components\drivers\include;applications;..\libraries\hc32f4a0_ddl\hc32_ll_driver\inc;board\config;..\..\..\components\finsh;..\..\..\libcpu\arm\common;..\..\..\components\libc\posix\ipc;board\ports;board;..\..\..\components\drivers\include;..\..\..\libcpu\arm\cortex-m4;board\config\usb_config;..\libraries\hc32f4a0_ddl\cmsis\Include</IncludePath>
+              <IncludePath>..\..\..\components\drivers\include;board\ports;applications;..\..\..\components\drivers\include;..\..\..\components\drivers\include;.;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\libc\posix\io\poll;..\..\..\components\finsh;..\..\..\components\libc\compilers\common\include;..\libraries\hc32f4a0_ddl\hc32_ll_driver\inc;..\..\..\libcpu\arm\common;board\config;board;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;..\libraries\hc32f4a0_ddl\cmsis\Include;..\libraries\hc32f4a0_ddl\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\components\libc\posix\io\stdio;board\config\usb_config;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;..\platform\tca9539</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -381,13 +381,6 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>app_qspi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\app_qspi.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
               <FileName>xtal32_fcm.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\xtal32_fcm.c</FilePath>
@@ -398,13 +391,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>app_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\app_spi.c</FilePath>
             </File>
           </Files>
         </Group>
