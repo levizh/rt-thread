@@ -725,7 +725,7 @@
         <option>
           <name>IlinkConfigDefines</name>
           <state>_LINK_FLASH_= 0</state>
-          <state>_HC32F472_256K_= 1</state>
+          <state>_HC32F472_512K_= 1</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -1710,7 +1710,7 @@
         <option>
           <name>IlinkConfigDefines</name>
           <state>_LINK_FLASH_= 0</state>
-          <state>_HC32F472_256K_= 1</state>
+          <state>_HC32F472_512K_= 1</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
