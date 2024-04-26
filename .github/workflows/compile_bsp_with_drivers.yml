@@ -37,7 +37,7 @@ jobs:
     name: BSP Compilation with More Drivers
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -52,7 +52,7 @@ jobs:
           git config --global http.postBuffer 524288000
           git remote -v
           git fetch origin
-          python -c "import tools.menuconfig; tools.menuconfig.touch_env()"
+          python -c "import tools.menukconfig; tools.menukconfig.touch_env()"
 
       - name: Install Arm ToolChains
         if: ${{ success() }}
