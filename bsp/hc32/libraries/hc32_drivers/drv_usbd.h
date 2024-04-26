@@ -1,19 +1,5 @@
-<<<<<<<< HEAD:bsp/hc32/libraries/hc32_drivers/drv_usbd.h
 /*
  * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
-========
-/**
- *******************************************************************************
- * @file  usb_lib.h
- * @brief Header of the Core Layer Driver
- @verbatim
-   Change Logs:
-   Date             Author          Notes
-   2022-03-31       CDT             First version
- @endverbatim
- *******************************************************************************
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
->>>>>>>> master:bsp/hc32/libraries/hc32f460_ddl/midwares/hc32/usb/usb_lib.h
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -42,7 +28,6 @@ extern "C"
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
 
-<<<<<<<< HEAD:bsp/hc32/libraries/hc32_drivers/drv_usbd.h
 /* The bit of the diepint/doepint */
 #define XFER_COMPL           (1UL)
 #define EPDISABLED           (1UL<<1)
@@ -82,8 +67,6 @@ extern "C"
 #define USB_EP0_STATUS_OUT   (5U)
 #define USB_EP0_STALL        (6U)
 
-========
->>>>>>>> master:bsp/hc32/libraries/hc32f460_ddl/midwares/hc32/usb/usb_lib.h
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
@@ -177,7 +160,6 @@ typedef struct
 #endif
 } usb_core_instance;
 
-<<<<<<<< HEAD:bsp/hc32/libraries/hc32_drivers/drv_usbd.h
 typedef struct
 {
     void (* Reset)(usb_core_instance *pdev);
@@ -192,11 +174,6 @@ typedef struct
     void (* IsoOUTIncomplete)(usb_core_instance *pdev);
 } usb_dev_int_cbk_typedef;
 
-========
-/*******************************************************************************
- * Global variable definitions ('extern')
- ******************************************************************************/
->>>>>>>> master:bsp/hc32/libraries/hc32f460_ddl/midwares/hc32/usb/usb_lib.h
 
 /*******************************************************************************
   Global function prototypes (definition in C source)
