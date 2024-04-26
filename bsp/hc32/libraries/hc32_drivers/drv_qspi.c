@@ -311,7 +311,7 @@ static int32_t hc32_qspi_send_cmd(struct hc32_qspi_bus *qspi_bus, struct rt_qspi
     else
 #endif
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifndef BSP_QSPI_USING_SOFT_CS
         if (LL_OK != hc32_qspi_check_direct_comm_param(message, QSPI_DIRECT_COMM_LINE_ONE))
         {
@@ -375,7 +375,7 @@ static rt_uint32_t hc32_qspi_get_dcom_protocol_line(rt_uint8_t protocol_line)
 
 static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol_line, rt_uint8_t value)
 {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
     (void)protocol_line;
     QSPI_WriteDirectCommValue(value);
 #elif defined (HC32F448)
@@ -383,7 +383,7 @@ static void hc32_qspi_write_direct_comm_value(rt_uint8_t protocol_line, rt_uint8
 #endif
 }
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
 static void hc32_qspi_set_trans_protocol(uint32_t u32Line)
 {
@@ -429,7 +429,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
     rt_uint32_t src_addr;
 #endif
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifndef BSP_QSPI_USING_SOFT_CS
     /* Enter direct communication mode */
     SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -440,14 +440,14 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
 #endif
     if (0UL != u32InstrLen)
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->instruction.qspi_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
 #endif
         hc32_qspi_write_direct_comm_value(message->instruction.qspi_lines, u8Instr);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
@@ -455,7 +455,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
     }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->address.qspi_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -465,7 +465,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
         {
             hc32_qspi_write_direct_comm_value(message->address.qspi_lines, pu8Addr[u32Count]);
         }
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
@@ -473,7 +473,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
     }
     if ((NULL != pu8WriteBuf) && (0UL != u32BufLen))
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->qspi_data_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -485,7 +485,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
         AOS_SetTriggerEventSrc(qspi_dma->trigger_select, qspi_dma->trigger_event);
         /* Config Dma */
         DMA_StructInit(&stcDmaInit);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
         stcDmaInit.u32DataWidth     = DMA_DATAWIDTH_8BIT;
 #elif defined (HC32F448)
         rt_uint16_t dcom_line = (rt_uint16_t)hc32_qspi_get_dcom_protocol_line(message->qspi_data_lines);
@@ -507,7 +507,7 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
                 u32BufLen = 0U;
             }
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
             src_addr = (rt_uint32_t)&pu8WriteBuf[u32TxIndex];
 #elif defined (HC32F448)
             if (u32DmaTransSize > qspi_bus->config->dma_tx_buf_size)
@@ -551,14 +551,14 @@ static int32_t hc32_qspi_write_instr(struct hc32_qspi_bus *qspi_bus, struct rt_q
         }
 #endif
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         /* Exit direct communication mode */
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
 #endif
     }
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifndef BSP_QSPI_USING_SOFT_CS
     /* Exit direct communication mode */
     CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -585,7 +585,7 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
     rt_uint32_t u32TimeoutCnt;
 #endif
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifndef BSP_QSPI_USING_SOFT_CS
     /* Enter direct communication mode */
     SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -596,14 +596,14 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
 #endif
     if (0UL != u32InstrLen)
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->instruction.qspi_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
 #endif
         hc32_qspi_write_direct_comm_value(message->instruction.qspi_lines, u8Instr);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
@@ -611,7 +611,7 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
     }
     if ((NULL != pu8Addr) && (0UL != u32AddrLen))
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->address.qspi_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -621,7 +621,7 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
         {
             hc32_qspi_write_direct_comm_value(message->address.qspi_lines, pu8Addr[u32Count]);
         }
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
@@ -629,7 +629,7 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
     }
     if ((NULL != pu8ReadBuf) && (0UL != u32BufLen))
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         hc32_qspi_set_trans_protocol(message->qspi_data_lines);
         SET_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -686,14 +686,14 @@ static int32_t hc32_qspi_read_instr(struct hc32_qspi_bus *qspi_bus, struct rt_qs
         }
 #endif
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifdef BSP_QSPI_USING_SOFT_CS
         /* Exit direct communication mode */
         CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
 #endif
 #endif
     }
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472)
 #ifndef BSP_QSPI_USING_SOFT_CS
     /* Exit direct communication mode */
     CLR_REG32_BIT(CM_QSPI->CR, QSPI_CR_DCOME);
@@ -1092,7 +1092,7 @@ static int rt_hw_qspi_bus_init(void)
 {
     hc32_get_qspi_info();
     /* register the handle */
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, qspi_bus_obj.config->err_irq.irq_callback, RT_FALSE);
 #elif defined (HC32F448) || defined (HC32F472)
     hc32_install_independ_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, RT_FALSE);

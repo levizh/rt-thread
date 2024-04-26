@@ -145,7 +145,7 @@ static void _timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
         (void)TMRA_Init(tmr_device->tmr_handle, &stcTmraInit);
 
         TMRA_IntCmd(tmr_device->tmr_handle, TMRA_INT_OVF, ENABLE);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+#if defined (HC32F460) || defined (HC32F4A0)
         hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_TRUE);
 #elif defined (HC32F448)
         hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
@@ -154,7 +154,7 @@ static void _timer_init(struct rt_hwtimer_device *timer, rt_uint32_t state)
     else    /* close */
     {
         TMRA_DeInit(tmr_device->tmr_handle);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2)
+#if defined (HC32F460) || defined (HC32F4A0)
         hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_FALSE);
 #elif defined (HC32F448)
         hc32_install_independ_irq_handler(&irq_config, RT_FALSE);

@@ -59,7 +59,7 @@
 #define CAN_BIT_TIMING_CANFD_ARBITRATION                    (1U << 1)
 #define CAN_BIT_TIMING_CANFD_DATA                           (1U << 2)
 
-#if defined(HC32F4A0) || defined(HC32F4A2)
+#if defined(HC32F4A0)
     #define FILTER_COUNT                                    (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -214,7 +214,7 @@ static const struct canfd_baud_rate_tab _g_baudrate_fd[] =
 
 static can_device _g_can_dev_array[] =
 {
-#if defined(HC32F4A0) || defined(HC32F4A2)
+#if defined(HC32F4A0)
 #ifdef BSP_USING_CAN1
     {
         {0},
@@ -1225,7 +1225,7 @@ static void _irq_handler_can2(void)
 
 static void _enable_can_clock(void)
 {
-#if defined(HC32F4A0) || defined(HC32F4A2)
+#if defined(HC32F4A0)
 #if defined(BSP_USING_CAN1)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
 #endif

@@ -30,7 +30,7 @@
           <SLE66CMisc />
           <SLE66AMisc />
           <SLE66LinkerMisc />
-          <SFDFile>../libraries/hc32f448_ddl/drivers/cmsis/Device/HDSC/hc32f4xx/Source/ARM/sfr/HC32F448.SFR</SFDFile>
+          <SFDFile>../libraries/hc32f448_ddl/cmsis/Device/HDSC/hc32f4xx/Source/ARM/sfr/HC32F448.SFR</SFDFile>
           <bCustSvd>1</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath />
@@ -336,7 +336,7 @@
               <MiscControls />
               <Define>__STDC_LIMIT_MACROS, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, USE_DDL_DRIVER, __RTTHREAD__, __DEBUG, HC32F448</Define>
               <Undefine />
-              <IncludePath>..\..\..\components\drivers\include;..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\inc;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\poll;board\config;board\ports;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\drivers\include;..\..\..\components\finsh;board;..\..\..\components\libc\compilers\common\include;..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\libcpu\arm\common;..\libraries\hc32f448_ddl\drivers\cmsis\Include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;.;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\stdio;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;..\platform\tca9539;applications</IncludePath>
+              <IncludePath>..\libraries\hc32f448_ddl\hc32_ll_driver\inc;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\poll;board\config;board\ports;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\drivers\include;..\..\..\components\finsh;board;..\..\..\components\libc\compilers\common\include;..\..\..\libcpu\arm\common;..\libraries\hc32f448_ddl\cmsis\Include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\drivers\include;.;..\..\..\components\libc\posix\ipc;..\..\..\components\libc\posix\io\stdio;..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Include;..\..\..\libcpu\arm\cortex-m4;..\libraries\hc32_drivers;..\..\..\include;..\platform\tca9539;applications</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -381,16 +381,16 @@
           <GroupName>Applications</GroupName>
           <Files>
             <File>
-              <FileName>xtal32_fcm.c</FileName>
+              <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\xtal32_fcm.c</FilePath>
+              <FilePath>applications\main.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>xtal32_fcm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>applications\main.c</FilePath>
+              <FilePath>applications\xtal32_fcm.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -584,7 +584,7 @@
             <File>
               <FileName>startup_hc32f448.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\ARM\startup_hc32f448.s</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Source\ARM\startup_hc32f448.s</FilePath>
             </File>
           </Files>
           <Files>
@@ -738,121 +738,121 @@
           <GroupName>Libraries</GroupName>
           <Files>
             <File>
-              <FileName>hc32_ll_clk.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_clk.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_icg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_icg.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_utility.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_utility.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_fcg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcg.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_interrupts.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_sram.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_pwc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_aos.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_aos.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>hc32_ll_fcm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcm.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
               <FileName>hc32_ll.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
-              <FileName>system_hc32f448.c</FileName>
+              <FileName>hc32_ll_clk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\system_hc32f448.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_clk.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
               <FileName>hc32_ll_efm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_efm.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_efm.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
               <FileName>hc32_ll_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_gpio.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_gpio.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_utility.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_utility.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
               <FileName>hc32_ll_usart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_usart.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_usart.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
-              <FileName>hc32_ll_rmu.c</FileName>
+              <FileName>hc32_ll_interrupts.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_rmu.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_interrupts.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_aos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_aos.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>system_hc32f448.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Source\system_hc32f448.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_fcm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_fcm.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
               <FileName>hc32_ll_tmr0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_tmr0.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_tmr0.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_icg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_icg.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_rmu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_rmu.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_fcg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_fcg.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_pwc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_pwc.c</FilePath>
+            </File>
+          </Files>
+          <Files>
+            <File>
+              <FileName>hc32_ll_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_sram.c</FilePath>
             </File>
           </Files>
           <Files>
             <File>
               <FileName>hc32_ll_dma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_dma.c</FilePath>
+              <FilePath>..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_dma.c</FilePath>
             </File>
           </Files>
         </Group>

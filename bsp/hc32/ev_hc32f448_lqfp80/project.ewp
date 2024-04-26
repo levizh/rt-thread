@@ -317,25 +317,25 @@
         <option>
           <name>CCIncludePath2</name>
           <state />
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
           <state>$PROJ_DIR$\..\..\..\components\finsh</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
           <state>$PROJ_DIR$\board\ports</state>
-          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Include</state>
+          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
           <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
           <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\board\config</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
           <state>$PROJ_DIR$\board</state>
         </option>
@@ -1306,25 +1306,25 @@
         <option>
           <name>CCIncludePath2</name>
           <state />
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
           <state>$PROJ_DIR$\..\..\..\components\finsh</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
           <state>$PROJ_DIR$\board\ports</state>
-          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Include</state>
+          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
           <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
           <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\board\config</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\inc</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
           <state>$PROJ_DIR$\board</state>
         </option>
@@ -2095,7 +2095,7 @@
       <name>$PROJ_DIR$\board\board_config.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\IAR\startup_hc32f448.s</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Source\IAR\startup_hc32f448.s</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_common.c</name>
@@ -2167,55 +2167,55 @@
   <group>
     <name>Libraries</name>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_clk.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_icg.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_clk.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_utility.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_efm.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcg.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_gpio.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_interrupts.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_utility.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_sram.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_usart.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_pwc.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_interrupts.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_aos.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_aos.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_fcm.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\cmsis\Device\HDSC\hc32f4xx\Source\system_hc32f448.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_fcm.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\cmsis\Device\HDSC\hc32f4xx\Source\system_hc32f448.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_tmr0.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_efm.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_icg.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_gpio.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_rmu.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_usart.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_fcg.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_rmu.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_pwc.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_tmr0.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_sram.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\drivers\hc32_ll_driver\src\hc32_ll_dma.c</name>
+      <name>$PROJ_DIR$\..\libraries\hc32f448_ddl\hc32_ll_driver\src\hc32_ll_dma.c</name>
     </file>
   </group>
   <group>
