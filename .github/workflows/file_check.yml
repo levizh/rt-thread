@@ -1,6 +1,13 @@
 name: Check File Format and License
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - documentation/**
+      - '**/README.md'
+      - '**/README_zh.md'
 
 jobs:
   scancode_job:
@@ -8,7 +15,7 @@ jobs:
     name: Scan code format and license
     if: github.repository_owner == 'RT-Thread'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v3
         with:

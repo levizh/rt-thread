@@ -2,11 +2,10 @@
 from building import *
 import rtconfig
 
-cwd     = GetCurrentDir()
-
+cwd = GetCurrentDir()
 src = []
 
-src     += Glob('*.c')
+src += Glob('*.c')
 CPPPATH = [cwd]
 LOCAL_CFLAGS = ''
 
@@ -15,6 +14,6 @@ if rtconfig.PLATFORM in ['gcc', 'armclang']:
 elif rtconfig.PLATFORM in ['armcc']:
     LOCAL_CFLAGS += ' --c99'
 
-group = DefineGroup('FAL', src, depend = ['RT_USING_FAL'], CPPPATH = CPPPATH, LOCAL_CFLAGS = LOCAL_CFLAGS)
+group = DefineGroup('Fal', src, depend = ['RT_USING_FAL'], CPPPATH = CPPPATH, LOCAL_CFLAGS = LOCAL_CFLAGS)
 
 Return('group')

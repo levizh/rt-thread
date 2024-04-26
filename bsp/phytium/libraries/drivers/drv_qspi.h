@@ -11,13 +11,10 @@
  *
  */
 
-#ifndef __DRT_QSPI_H__
-#define __DRT_QSPI_H__
+#ifndef __DRV_QSPI_H__
+#define __DRV_QSPI_H__
 
-#include <rtthread.h>
-#ifdef RT_USING_QSPI
-#define PHYTIUM_QSPI_NAME "qspi"
-
+#include "rtdef.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -25,9 +22,10 @@ extern "C"
 
 rt_err_t phytium_qspi_bus_attach_device(const char *bus_name, const char *device_name);
 
+int rt_hw_qspi_init(void);
+
 #ifdef __cplusplus
 }
-#endif
 #endif
 #endif // !DRT_QSPI_H
 

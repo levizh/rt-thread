@@ -259,6 +259,7 @@
 
 /* Onboard Peripheral Drivers */
 
+#define BSP_USING_EXT_IO
 
 /* On-chip Peripheral Drivers */
 

@@ -317,27 +317,28 @@
         <option>
           <name>CCIncludePath2</name>
           <state />
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
           <state>$PROJ_DIR$\..\..\..\components\finsh</state>
-          <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
-          <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
+          <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Include</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
+          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\.</state>
+          <state>$PROJ_DIR$\board</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\board\ports</state>
-          <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
           <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\hc32_ll_driver\inc</state>
-          <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
-          <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
-          <state>$PROJ_DIR$\board\config</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
           <state>$PROJ_DIR$\board\config\usb_config</state>
-          <state>$PROJ_DIR$\board</state>
+          <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\board\config</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1306,27 +1307,28 @@
         <option>
           <name>CCIncludePath2</name>
           <state />
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
           <state>$PROJ_DIR$\..\..\..\components\finsh</state>
-          <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
-          <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
+          <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Include</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\ipc</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
+          <state>$PROJ_DIR$\..\platform\tca9539</state>
+          <state>$PROJ_DIR$\.</state>
+          <state>$PROJ_DIR$\board</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
+          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
           <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Device\HDSC\hc32f4xx\Include</state>
           <state>$PROJ_DIR$\board\ports</state>
-          <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\stdio</state>
           <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\hc32_ll_driver\inc</state>
-          <state>$PROJ_DIR$\.</state>
           <state>$PROJ_DIR$\applications</state>
-          <state>$PROJ_DIR$\..\libraries\hc32_drivers</state>
-          <state>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\cmsis\Include</state>
           <state>$PROJ_DIR$\..\..\..\components\libc\posix\io\poll</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\extension</state>
-          <state>$PROJ_DIR$\..\..\..\components\libc\compilers\common\include</state>
-          <state>$PROJ_DIR$\board\config</state>
           <state>$PROJ_DIR$\..\..\..\include</state>
           <state>$PROJ_DIR$\board\config\usb_config</state>
-          <state>$PROJ_DIR$\board</state>
+          <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\board\config</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1984,12 +1986,6 @@
       <name>$PROJ_DIR$\applications\main.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\applications\app_qspi.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\applications\app_spi.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\applications\xtal32_fcm.c</name>
     </file>
   </group>
@@ -2223,6 +2219,9 @@
     <file>
       <name>$PROJ_DIR$\..\libraries\hc32f4a0_ddl\hc32_ll_driver\src\hc32_ll_dma.c</name>
     </file>
+  </group>
+  <group>
+    <name>PLATFORM</name>
   </group>
   <group>
     <name>POSIX</name>
