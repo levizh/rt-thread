@@ -6,6 +6,8 @@
  * Change Logs:
  * Date           Author       Notes
  * 2023-02-24     CDT          first version
+ * 2024-02-20     CDT          modify exclk clock max frequency to 40MHz for HC32F4A0
+ *                             add t_rcd_p/t_rfc_p/t_rp_p configuration
  */
 
 
