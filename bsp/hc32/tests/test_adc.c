@@ -26,6 +26,8 @@
 #define CONVERT_BITS        (1 << 12)   /* 转换位数为12位 */
 
 #ifdef RT_USING_ADC
+
+#if defined(HC32F472)
 /* Timer的配置需与文件 “adc_config.h”中的 ADC1_EOCA_DMA_CONFIG 对应 */
 /* 这里使用Timer01 A作为ADC1的触发源 */
 rt_err_t adc_dma_trig_config(void)
@@ -56,6 +58,8 @@ rt_err_t adc_dma_trig_stop(void)
 struct adc_dev_priv_params adc_priv;
 struct adc_dev_dma_priv_ops priv_ops;
 
+#endif
+
 static int adc_vol_sample(int argc, char **argv)
 {
     rt_adc_device_t adc_dev;            /* ADC 设备句柄 */
@@ -69,10 +73,16 @@ static int adc_vol_sample(int argc, char **argv)
     if (argc == 2) {
         if (0 == rt_strcmp(argv[1], "adc2")) {
             rt_strcpy(adc_device, "adc2");
+#if defined(HC32F472)
             adc_max_channel = 8;
+#endif
         } else if (0 == rt_strcmp(argv[1], "adc3")) {
             rt_strcpy(adc_device, "adc3");
+#if defined(HC32F472)
             adc_max_channel = 12;
+#elif defined(HC32F4A0)
+            adc_max_channel = 20;
+#endif
         }
     }
 
@@ -82,6 +92,7 @@ static int adc_vol_sample(int argc, char **argv)
         rt_kprintf("adc sample run failed! can't find %s device!\n", adc_device);
         return RT_ERROR;
     }
+#if defined(HC32F472)
     adc_priv.flag = ADC_USING_EOCA_DMA_FLAG;
     
     priv_ops.dma_trig_config = &adc_dma_trig_config;
@@ -90,6 +101,7 @@ static int adc_vol_sample(int argc, char **argv)
     adc_priv.ops = &priv_ops;
     
     adc_dev->parent.user_data = &adc_priv;
+#endif
     /* 遍历所有通道 */
     for (adc_channel = 0; adc_channel < adc_max_channel; adc_channel++) {
         /* 使能设备 */

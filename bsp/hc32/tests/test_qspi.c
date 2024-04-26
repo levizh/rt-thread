@@ -21,6 +21,7 @@
 #define W25Q_SECTOR_ERASE               (0x20)
 #define W25Q_RD_STATUS_REG1             (0x05)
 #define W25Q_PAGE_PROGRAM               (0x02)
+#define W25Q64_QUAD_INPUT_PAGE_PROGRAM  (0x32)
 
 #define W25Q_STD_RD                     (0x03)
 #define W25Q_FAST_RD                    (0x0B)
@@ -28,6 +29,13 @@
 #define W25Q_FAST_RD_DUAL_IO            (0xBB)
 #define W25Q_FAST_RD_QUAD_OUTPUT        (0x6B)
 #define W25Q_FAST_RD_QUAD_IO            (0xEB)
+
+#define W25Q64_RD_STATUS_REG1           (0x05)
+#define W25Q64_WR_STATUS_REG1           (0x01)
+#define W25Q64_RD_STATUS_REG2           (0x35)
+#define W25Q64_WR_STATUS_REG2           (0x31)
+#define W25Q64_RD_STATUS_REG3           (0x15)
+#define W25Q64_WR_STATUS_REG3           (0x11)
 
 #define W25Q_PAGE_SIZE                  (256UL)
 #define W25Q_SECTOR_SIZE                (1024UL * 4UL)
@@ -39,7 +47,15 @@
 
 #define W25Q_QSPI_WR_RD_ADDR            0x4000
 #define W25Q_QSPI_DATA_BUF_LEN          0x2000
+#define W25Q_QSPI_WR_CMD                W25Q64_QUAD_INPUT_PAGE_PROGRAM
 
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472)
+    #ifndef BSP_QSPI_USING_SOFT_CS
+        #if (W25Q_QSPI_WR_CMD == W25Q64_QUAD_INPUT_PAGE_PROGRAM)
+            #error "QUAD PAGE PROGRAM must use soft CS pin!!"
+        #endif
+    #endif
+#endif
 
 #if W25Q_QSPI_RD_MD == W25Q_STD_RD
     #define W25Q_QSPI_RD_DUMMY_CYCLE    0
@@ -81,7 +97,7 @@ static int rt_hw_qspi_flash_init(void)
 #else
 #if defined (HC32F472)
     if (RT_EOK != rt_hw_qspi_bus_attach_device("qspi1", "qspi10", GET_PIN(B, 12), W25Q_QSPI_DATA_LINE_WIDTH, RT_NULL, RT_NULL))
-#else
+#elif defined (HC32F4A0)
     if (RT_EOK != rt_hw_qspi_bus_attach_device("qspi1", "qspi10", GET_PIN(C, 7), W25Q_QSPI_DATA_LINE_WIDTH, RT_NULL, RT_NULL))
 #endif
 #endif
@@ -115,6 +131,7 @@ void w25q_read_uid(struct rt_qspi_device *device)
                    u8UID[0], u8UID[1], u8UID[2], u8UID[3], u8UID[4], u8UID[5], u8UID[6], u8UID[7]);
     }
 }
+
 
 int32_t w25q_check_process_done(struct rt_qspi_device *device, uint32_t u32Timeout)
 {
@@ -212,6 +229,117 @@ rt_err_t bsp_qspi_send_then_recv(struct rt_qspi_device *device, const void *send
     return result;
 }
 
+
+rt_err_t bsp_qspi_send(struct rt_qspi_device *device, const void *send_buf, rt_size_t length, uint8_t dataLine)
+{
+    RT_ASSERT(send_buf);
+    RT_ASSERT(length != 0);
+
+    struct rt_qspi_message message;
+    unsigned char *ptr = (unsigned char *)send_buf;
+    rt_size_t  count = 0;
+    rt_err_t result = 0;
+
+    message.instruction.content = ptr[0];
+    message.instruction.qspi_lines = 1;
+    count++;
+
+    /* get address */
+    if (length > 1)
+    {
+        if (device->config.medium_size > 0x1000000 && length >= 5)
+        {
+            /* medium size greater than 16Mb, address size is 4 Byte */
+            message.address.content = (ptr[1] << 24) | (ptr[2] << 16) | (ptr[3] << 8) | (ptr[4]);
+            message.address.size = 32;
+            message.address.qspi_lines = 1;
+            count += 4;
+        }
+        else if (length >= 4)
+        {
+            /* address size is 3 Byte */
+            message.address.content = (ptr[1] << 16) | (ptr[2] << 8) | (ptr[3]);
+            message.address.size = 24;
+            message.address.qspi_lines = 1;
+            count += 3;
+        }
+        else
+        {
+            /* no address stage */
+            message.address.content = 0 ;
+            message.address.qspi_lines = 0;
+            message.address.size = 0;
+        }
+
+    }
+    else
+    {
+        /* no address stage */
+        message.address.content = 0 ;
+        message.address.qspi_lines = 0;
+        message.address.size = 0;
+    }
+
+    message.alternate_bytes.content = 0;
+    message.alternate_bytes.size = 0;
+    message.alternate_bytes.qspi_lines = 0;
+
+    message.dummy_cycles = 0;
+
+    /* determine if there is data to send */
+    if (length - count > 0)
+    {
+        message.qspi_data_lines = dataLine;
+    }
+    else
+    {
+        message.qspi_data_lines = 0;
+    }
+
+    /* set send buf and send size */
+    message.parent.send_buf = ptr + count;
+    message.parent.recv_buf = RT_NULL;
+    message.parent.length = length - count;
+    message.parent.cs_take = 1;
+    message.parent.cs_release = 1;
+
+    result = rt_qspi_transfer_message(device, &message);
+    if (result == 0)
+    {
+        result = -RT_EIO;
+    }
+    else
+    {
+        result = length;
+    }
+
+    return result;
+}
+
+
+
+void w25q_write_sr(struct rt_qspi_device *device, uint8_t reg, uint8_t value)
+{
+    rt_uint8_t txBuf[5] = {0};
+
+    txBuf[0] = W25Q_WR_ENABLE;
+    if (1 != rt_qspi_send(device, txBuf, 1))
+    {
+        rt_kprintf("qspi send cmd failed!\n");
+    }
+    txBuf[0] = reg;
+    txBuf[1] = value;
+    if (2 != bsp_qspi_send(device, txBuf, 2, 1))
+    {
+        rt_kprintf("qspi send addr failed!\n");
+    }
+    if (LL_OK != w25q_check_process_done(device, 500U))
+    {
+        rt_kprintf("qspi wait busy failed!\n");
+    }
+}
+
+
 int32_t w25q_read_data(struct rt_qspi_device *device, uint32_t u32Addr, uint8_t *pu8ReadBuf, uint32_t u32Size)
 {
     int32_t i32Ret = LL_OK;
@@ -256,14 +384,24 @@ int32_t w25q_write_data(struct rt_qspi_device *device, uint32_t u32Addr, uint8_t
         {
             rt_kprintf("qspi send cmd failed!\n");
         }
-        w25q_txBuf[0] = W25Q_PAGE_PROGRAM;
+        w25q_txBuf[0] = W25Q_QSPI_WR_CMD;
         w25q_txBuf[1] = (u32Addr >> 16) & 0xFFU;
         w25q_txBuf[2] = (u32Addr >> 8) & 0xFFU;
         w25q_txBuf[3] = u32Addr & 0xFFU;
         rt_memcpy(&w25q_txBuf[4], &pu8WriteBuf[u32AddrOffset], u32TempSize);
-        if ((u32TempSize + 4) != rt_qspi_send(device, w25q_txBuf, u32TempSize + 4))
+        if (W25Q64_QUAD_INPUT_PAGE_PROGRAM == w25q_txBuf[0])
         {
-            rt_kprintf("qspi send addr failed!\n");
+            if ((u32TempSize + 4) != bsp_qspi_send(device, w25q_txBuf, u32TempSize + 4, 4))
+            {
+                rt_kprintf("qspi send addr failed!\n");
+            }
+        }
+        else
+        {
+            if ((u32TempSize + 4) != bsp_qspi_send(device, w25q_txBuf, u32TempSize + 4, 1))
+            {
+                rt_kprintf("qspi send addr failed!\n");
+            }
         }
         i32Ret = w25q_check_process_done(device, 500U);
         if (i32Ret != LL_OK)
@@ -368,6 +506,8 @@ static void qspi_thread_entry(void *parameter)
 
     /* 读取UID */
     w25q_read_uid(qspi_dev_w25q);
+    /* Set QE = 1 */
+    w25q_write_sr(qspi_dev_w25q, W25Q64_WR_STATUS_REG2, 0x02);
 
     while (1)
     {

@@ -37,7 +37,11 @@
 #define EE_ADDR                 0x50
 #define TEST_PAGE_CNT           8               // Test 8 pages
 
+#if defined(HC32F472)
 #define EE24C256
+#elif defined(HC32F4A0)
+#define EE24C02
+#endif
 
 #if defined (EE24C1024)
 /* 24C1024 not tested yet */
@@ -68,7 +72,13 @@ void i2c_test(void)
     static uint8_t i = 0;
 
 #if defined (BSP_USING_I2C_HW)
+
+#if defined(HC32F472)
     hc32_i2c = rt_i2c_bus_device_find(HW_I2C);      //hw i2c
+#elif defined(HC32F4A0)
+    hc32_i2c = rt_i2c_bus_device_find("i2c1");      //hw i2c
+#endif
+
 #else
     hc32_i2c = rt_i2c_bus_device_find("i2c1_sw");   //sw sim i2c
 #endif

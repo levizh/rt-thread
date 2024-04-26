@@ -1,9 +1,10 @@
 Import('RTT_ROOT')
 Import('rtconfig')
+
 from building import *
+import os
 
 cwd = GetCurrentDir()
-
 # add the app files.
 src = []
 
@@ -26,6 +27,15 @@ if GetDepend(['RT_USING_I2C']):
 
 if GetDepend(['BSP_USING_ETH', 'RT_USING_LWIP']):
     src += ['test_eth.c']
+    #lwIP: HTTP server
+    lwiphttp_src = []
+    lwiphttp_src = Split("""
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/altcp_proxyconnect.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/fs.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/http_client.c
+    ../../../../../components/net/lwip/lwip-2.1.2/src/apps/http/httpd.c
+    """)
+    src += lwiphttp_src
 
 if GetDepend(['RT_USING_ADC']):
     src += ['test_adc.c']
@@ -72,9 +82,6 @@ if GetDepend(['BSP_USING_USBD']):
 
 path = [cwd]
 
-
 group = DefineGroup('Tests', src, depend = [''], CPPPATH = path)
 
 Return('group')
-
-

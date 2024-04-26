@@ -13,7 +13,7 @@
  * 例程导出了 hwtimer_sample 命令到控制终端
  * 命令调用格式：hwtimer_sample  参数：oneshot 或者 period
  * 程序功能：硬件定时器超时回调函数周期性的打印当前tick值，2次tick值之差换算为时间等同于定时时间值。
- * timerA_1 固定频率 3.75MHZ,不可设定。
+ * timerA_1/timerA_12 固定频率 3.75MHZ,不可设定。
 */
 
 
@@ -22,7 +22,11 @@
 
 #ifdef BSP_USING_HWTIMER
 
+#if defined(HC32F472)
 #define HWTIMER_DEV_NAME   "tmra_1"     /* 定时器名称 */
+#elif defined(HC32F4A0)
+#define HWTIMER_DEV_NAME   "tmra_12"     /* 定时器名称 */
+#endif
 
 /* 定时器超时回调函数 */
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
