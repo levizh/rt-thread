@@ -1576,7 +1576,7 @@ static void hc32_uart_get_dma_info(void)
 
 #ifdef BSP_USING_UART3
     uart_obj[UART3_INDEX].uart_dma_flag = 0;
-#if defined (HC32F460) || defined (HC32F4A0)
+#if defined (HC32F460)
 #ifdef BSP_UART3_RX_USING_DMA
     uart_obj[UART3_INDEX].uart_dma_flag |= RT_DEVICE_FLAG_DMA_RX;
     static struct dma_config uart3_dma_rx = UART3_DMA_RX_CONFIG;
@@ -1604,7 +1604,7 @@ static void hc32_uart_get_dma_info(void)
     static struct dma_config uart4_dma_rx = UART4_DMA_RX_CONFIG;
     static struct hc32_uart_rxto uart4_rx_timeout = UART4_RXTO_CONFIG;
     uart4_dma_rx.irq_callback = hc32_uart4_dma_rx_irq_handler;
-#if defined (HC32F460) || defined (HC32F4A0)
+#if defined (HC32F460)
     uart4_rx_timeout.irq_callback = hc32_uart4_rxto_irq_handler;
 #endif
     uart_config[UART4_INDEX].rx_timeout = &uart4_rx_timeout;
@@ -1644,7 +1644,7 @@ static void hc32_uart_get_dma_info(void)
 
 #ifdef BSP_USING_UART6
     uart_obj[UART6_INDEX].uart_dma_flag = 0;
-#if defined (HC32F460) || defined (HC32F4A0)
+#if defined (HC32F4A0)
 #ifdef BSP_UART6_RX_USING_DMA
     uart_obj[UART6_INDEX].uart_dma_flag |= RT_DEVICE_FLAG_DMA_RX;
     static struct dma_config uart6_dma_rx = UART6_DMA_RX_CONFIG;
@@ -1667,6 +1667,7 @@ static void hc32_uart_get_dma_info(void)
 
 #ifdef BSP_USING_UART7
     uart_obj[UART7_INDEX].uart_dma_flag = 0;
+#if defined (HC32F4A0)
 #ifdef BSP_UART7_RX_USING_DMA
     uart_obj[UART7_INDEX].uart_dma_flag |= RT_DEVICE_FLAG_DMA_RX;
     static struct dma_config uart7_dma_rx = UART7_DMA_RX_CONFIG;
@@ -1683,6 +1684,7 @@ static void hc32_uart_get_dma_info(void)
     static struct hc32_uart_irq_config uart7_tc_irq = UART7_TX_CPLT_CONFIG;
     uart7_tc_irq.irq_callback = hc32_uart7_tc_irq_handler;
     uart_config[UART7_INDEX].tc_irq = &uart7_tc_irq;
+#endif
 #endif
 #endif
 
