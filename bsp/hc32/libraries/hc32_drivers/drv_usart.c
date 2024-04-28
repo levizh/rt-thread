@@ -757,7 +757,10 @@ static void hc32_usart_handler(struct hc32_uart *uart)
             (ENABLE == USART_GetFuncState(uart->config->Instance, USART_RX_TIMEOUT)) && \
             (ENABLE == INTC_GetIntSrcState(uart->config->rxto_int_src)))
     {
+#if defined (BSP_UART1_RX_USING_DMA) || defined (BSP_UART2_RX_USING_DMA) || \
+    defined (BSP_UART4_RX_USING_DMA) || defined (BSP_UART5_RX_USING_DMA)
         hc32_uart_rxto_irq_handler(uart);
+#endif
     }
 #endif
 
