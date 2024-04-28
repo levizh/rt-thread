@@ -41,9 +41,11 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#if defined (BSP_USING_UART1) || defined (BSP_USING_UART5)
-
+#if defined (BSP_USING_UART1)
+#define SAMPLE_DEFAULT_UART_NAME       "uart1"
+#elif defined (BSP_USING_UART5)
 #define SAMPLE_DEFAULT_UART_NAME       "uart5"
+#endif
 
 /* 串口接收消息结构*/
 struct rx_msg
@@ -261,7 +263,6 @@ int uart_sample_v1(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(uart_sample_v1, uart device sample);
-#endif
 
 #elif defined(HC32F4A0)
 
@@ -292,10 +293,10 @@ static rt_err_t uart_input(rt_device_t dev, rt_size_t size)
 #if defined (RT_SERIAL_USING_DMA)
     struct rx_msg msg;
     rt_err_t result;
-    
+
     msg.dev = dev;
     msg.size = size;
-    
+
     result = rt_mq_send(&rx_mq, &msg, sizeof(msg));
     if ( result == -RT_EFULL) {
         /* 消息队列满 */
@@ -358,8 +359,8 @@ static void serial_thread_entry(void *parameter)
         }
         /* 读取到的数据通过串口错位输出 */
         ch = ch + 1;
-        rt_device_write(serial, 0, &ch, 1);   
-#endif        
+        rt_device_write(serial, 0, &ch, 1);
+#endif
     }
 }
 
@@ -403,11 +404,11 @@ int uart_sample(int argc, char *argv[])
     /* 以中断模式打开串口设备 */
     open_flag = RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_INT_TX;
     /* 初始化信号量 */
-    rt_sem_init(&rx_sem, "rx_sem", 0, RT_IPC_FLAG_FIFO);               
+    rt_sem_init(&rx_sem, "rx_sem", 0, RT_IPC_FLAG_FIFO);
 #endif
 
     rt_device_open(serial, open_flag);
-    
+
     /* 设置接收回调函数 */
     rt_device_set_rx_indicate(serial, uart_input);
     /* 设置发送回调函数 */
