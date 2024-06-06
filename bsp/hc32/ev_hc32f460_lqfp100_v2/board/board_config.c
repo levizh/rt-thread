@@ -207,38 +207,23 @@ rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
     rt_err_t result = RT_EOK;
     switch ((rt_uint32_t)TMRAx)
     {
-#if defined(BSP_USING_PWM_TMRA_4)
-    case (rt_uint32_t)CM_TMRA_4:
-#ifdef BSP_USING_PWM_TMRA_4_CH1
-        GPIO_SetFunc(PWM_TMRA_4_CH1_PORT, PWM_TMRA_4_CH1_PIN, PWM_TMRA_4_CH1_PIN_FUNC);
+#if defined(BSP_USING_PWM_TMRA_1)
+    case (rt_uint32_t)CM_TMRA_1:
+#ifdef BSP_USING_PWM_TMRA_1_CH1
+        GPIO_SetFunc(PWM_TMRA_1_CH1_PORT, PWM_TMRA_1_CH1_PIN, PWM_TMRA_1_CH1_PIN_FUNC);
 #endif
-#ifdef BSP_USING_PWM_TMRA_4_CH2
-        GPIO_SetFunc(PWM_TMRA_4_CH2_PORT, PWM_TMRA_4_CH2_PIN, PWM_TMRA_4_CH2_PIN_FUNC);
+#ifdef BSP_USING_PWM_TMRA_1_CH2
+        GPIO_SetFunc(PWM_TMRA_1_CH2_PORT, PWM_TMRA_1_CH2_PIN, PWM_TMRA_1_CH2_PIN_FUNC);
 #endif
-#ifdef BSP_USING_PWM_TMRA_4_CH3
-        GPIO_SetFunc(PWM_TMRA_4_CH3_PORT, PWM_TMRA_4_CH3_PIN, PWM_TMRA_4_CH3_PIN_FUNC);
+#ifdef BSP_USING_PWM_TMRA_1_CH3
+        GPIO_SetFunc(PWM_TMRA_1_CH3_PORT, PWM_TMRA_1_CH3_PIN, PWM_TMRA_1_CH3_PIN_FUNC);
 #endif
-#ifdef BSP_USING_PWM_TMRA_4_CH4
-        GPIO_SetFunc(PWM_TMRA_4_CH4_PORT, PWM_TMRA_4_CH4_PIN, PWM_TMRA_4_CH4_PIN_FUNC);
-#endif
-        break;
-#endif
-#if defined(BSP_USING_PWM_TMRA_5)
-    case (rt_uint32_t)CM_TMRA_5:
-#ifdef BSP_USING_PWM_TMRA_5_CH1
-        GPIO_SetFunc(PWM_TMRA_5_CH1_PORT, PWM_TMRA_5_CH1_PIN, PWM_TMRA_5_CH1_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_5_CH2
-        GPIO_SetFunc(PWM_TMRA_5_CH2_PORT, PWM_TMRA_5_CH2_PIN, PWM_TMRA_5_CH2_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_5_CH3
-        GPIO_SetFunc(PWM_TMRA_5_CH3_PORT, PWM_TMRA_5_CH3_PIN, PWM_TMRA_5_CH3_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_5_CH4
-        GPIO_SetFunc(PWM_TMRA_5_CH4_PORT, PWM_TMRA_5_CH4_PIN, PWM_TMRA_5_CH4_PIN_FUNC);
+#ifdef BSP_USING_PWM_TMRA_1_CH4
+        GPIO_SetFunc(PWM_TMRA_1_CH4_PORT, PWM_TMRA_1_CH4_PIN, PWM_TMRA_1_CH4_PIN_FUNC);
 #endif
         break;
 #endif
+
     default:
         result = -RT_ERROR;
         break;
@@ -276,6 +261,7 @@ rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
 #endif
         break;
 #endif
+
     default:
         result = -RT_ERROR;
         break;
@@ -300,6 +286,7 @@ rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
 #endif
         break;
 #endif
+
     default:
         result = -RT_ERROR;
         break;
@@ -317,10 +304,12 @@ void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
     {
     case PM_RUN_MODE_HIGH_SPEED:
     case PM_RUN_MODE_NORMAL_SPEED:
+        // CLK_SetSysClockSrc(CLK_SYSCLK_SRC_PLL);
         SystemClock_Config();
         break;
 
     case PM_RUN_MODE_LOW_SPEED:
+        /* Ensure that system clock less than 8M */
         CLK_SetSysClockSrc(CLK_SYSCLK_SRC_XTAL);
 
     default:
