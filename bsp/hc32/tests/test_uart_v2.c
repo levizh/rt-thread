@@ -62,16 +62,18 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
+#if defined(BSP_USING_UART) && defined(RT_USING_SERIAL_V2)
+
 #if defined(HC32F472)
-#if defined (BSP_USING_UART1)
-#define SAMPLE_DEFAULT_UART_NAME       "uart1"
-#elif defined (BSP_USING_UART5)
-#define SAMPLE_DEFAULT_UART_NAME       "uart5"
-#endif
+    #if defined (BSP_USING_UART1)
+        #define SAMPLE_DEFAULT_UART_NAME       "uart1"
+    #elif defined (BSP_USING_UART5)
+        #define SAMPLE_DEFAULT_UART_NAME       "uart5"
+    #endif
 #elif defined(HC32F4A0)
-#if defined (BSP_USING_UART6)
-#define SAMPLE_UART_NAME       "uart6"      /* 串口设备名称 */
-#endif
+    #define SAMPLE_DEFAULT_UART_NAME       "uart6"
+#elif defined(HC32F460)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart2"
 #endif
 
 /* 串口接收消息结构 */
@@ -139,11 +141,15 @@ static void serial_thread_entry_dma(void *parameter)
         result = rt_mq_recv(&rx_mq, &msg, sizeof(msg), RT_WAITING_FOREVER);
         if (result > 0UL)
         {
-            while (msg.size) {
-                if (msg.size > (buf_size - put_index)) {
+            while (msg.size)
+            {
+                if (msg.size > (buf_size - put_index))
+                {
                     rx_length = rt_device_read(msg.dev, 0, rx_buffer + put_index, buf_size - put_index);
                     msg.size -= rx_length;
-                } else {
+                }
+                else
+                {
                     rx_length = rt_device_read(msg.dev, 0, rx_buffer + put_index, msg.size);
                     msg.size = 0UL;
                 }
@@ -171,8 +177,6 @@ static void serial_thread_entry_int(void *parameter)
         rt_device_write(serial, 0, &ch, 1);
     }
 }
-
-#if defined(HC32F472)
 
 int uart_sample_v2(int argc, char *argv[])
 {
@@ -206,7 +210,8 @@ int uart_sample_v2(int argc, char *argv[])
         rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
         rt_strncpy(comm_mode, argv[2], RT_NAME_MAX);
     }
-    else {
+    else
+    {
         rt_kprintf("argc error!\n");
         return RT_ERROR;
     }
@@ -219,15 +224,22 @@ int uart_sample_v2(int argc, char *argv[])
         return RT_ERROR;
     }
 
+    /* modify configure */
+    config.baud_rate = BAUD_RATE_115200;      //baudrate 115200
+    config.data_bits = DATA_BITS_8;           //data bit 8
+    config.stop_bits = STOP_BITS_1;           //stop bit 1
+    config.parity    = PARITY_NONE;
+    rt_device_control(serial, RT_DEVICE_CTRL_CONFIG, &config);
+
     if (0 == rt_strncmp(comm_mode, comm_mode_dma, 3))
     {
         static char msg_pool[256U];
         /* 初始化消息队列 */
         rt_mq_init(&rx_mq, "rx_mq",
-                    msg_pool,                 /* 存放消息的缓冲区 */
-                    sizeof(struct rx_msg),    /* 一条消息的最大长度 */
-                    sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
-                    RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
+                   msg_pool,                 /* 存放消息的缓冲区 */
+                   sizeof(struct rx_msg),    /* 一条消息的最大长度 */
+                   sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
+                   RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
 
         /* 以DMA接收和发送模式打开串口设备 */
         open_flag |= RT_DEVICE_FLAG_DMA_RX | RT_DEVICE_FLAG_DMA_TX;
@@ -235,7 +247,7 @@ int uart_sample_v2(int argc, char *argv[])
 
         /* 设置回调函数 */
         rt_device_set_rx_indicate(serial, uart_input_dma);
-        rt_device_set_tx_complete(serial,uart_ouput);
+        rt_device_set_tx_complete(serial, uart_ouput);
 
         /* 发送字符串 */
         n = rt_strlen(comm_info_dma);
@@ -286,62 +298,5 @@ int uart_sample_v2(int argc, char *argv[])
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(uart_sample_v2, uart device sample);
-
-#elif defined(HC32F4A0)
-
-int uart_dma_sample(int argc, char *argv[])
-{
-    rt_err_t ret = RT_EOK;
-    char uart_name[RT_NAME_MAX];
-    static char msg_pool[256];
-    char str[] = "hello RT-Thread!\r\n";
-
-    if (argc == 2)
-    {
-        rt_strncpy(uart_name, argv[1], RT_NAME_MAX);
-    }
-    else
-    {
-        rt_strncpy(uart_name, SAMPLE_UART_NAME, RT_NAME_MAX);
-    }
-
-    /* 查找串口设备 */
-    serial = rt_device_find(uart_name);
-    if (!serial)
-    {
-        rt_kprintf("find %s failed!\n", uart_name);
-        return RT_ERROR;
-    }
-
-    /* 初始化消息队列 */
-    rt_mq_init(&rx_mq, "rx_mq",
-               msg_pool,                 /* 存放消息的缓冲区 */
-               sizeof(struct rx_msg),    /* 一条消息的最大长度 */
-               sizeof(msg_pool),         /* 存放消息的缓冲区大小 */
-               RT_IPC_FLAG_FIFO);        /* 如果有多个线程等待，按照先来先得到的方法分配消息 */
-
-    /* 以 DMA 接收及轮询发送方式打开串口设备 */
-     rt_device_open(serial, RT_DEVICE_FLAG_RX_NON_BLOCKING | RT_DEVICE_FLAG_TX_NON_BLOCKING);
-    /* 设置接收回调函数 */
-    rt_device_set_rx_indicate(serial, uart_input);
-    /* 发送字符串 */
-    rt_device_write(serial, 0, str, (sizeof(str) - 1));
-
-    /* 创建 serial 线程 */
-    rt_thread_t thread = rt_thread_create("serial", serial_thread_entry, RT_NULL, 1024, 25, 10);
-    /* 创建成功则启动线程 */
-    if (thread != RT_NULL)
-    {
-        rt_thread_startup(thread);
-    }
-    else
-    {
-        ret = RT_ERROR;
-    }
-
-    return ret;
-}
-/* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(uart_dma_sample, uart device dma sample);
 
 #endif

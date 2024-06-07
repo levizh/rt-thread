@@ -162,11 +162,11 @@ menu "On-chip Peripheral Drivers"
                     config BSP_I2C1_SCL_PIN
                         int "i2c1 scl pin number"
                         range 1 100
-                        default 7
+                        default 79
                     config BSP_I2C1_SDA_PIN
                         int "I2C1 sda pin number"
                         range 1 100
-                        default 36
+                        default 21
                 endif
         endif
 
@@ -338,12 +338,12 @@ menu "On-chip Peripheral Drivers"
         endif
 
     menuconfig BSP_USING_WDT_TMR
-        bool "Enable Watchdog Timer"
+        bool "Enable Watchdog Timer: 10.7s(max)"
         default n
         select RT_USING_WDT
         if BSP_USING_WDT_TMR
             config BSP_USING_WDT
-                bool "WDT(10.7s(max))"
+                bool 
                 default y
 
             config BSP_WDT_CONTINUE_COUNT

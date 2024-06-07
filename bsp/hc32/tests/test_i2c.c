@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2006-2022, RT-Thread Development Team
  * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -22,70 +21,179 @@
 #include <rtdevice.h>
 #include <board.h>
 
+/*
+ * to readout/write  from/into i2c device, user could use this macro to choice
+ * either rt_i2c_master_send & rt_i2c_master_recv or rt_i2c_transfer
+*/
 #if defined(RT_USING_I2C)
 
-/*
-    to readout/write  from/into i2c device, user could use this macro to choice
-    either rt_i2c_master_send & rt_i2c_master_recv or rt_i2c_transfer
-*/
+#define USING_RT_I2C_TRANSFER
 
-//#define USING_RT_I2C_TRANSFER
+/* defined EEPROM */
+#if defined(HC32F472) || defined(HC32F460) || defined(HC32F4A0)
+    #define EE_DEV_ADDR                 0x50
+    #define EE_TEST_PAGE_CNT            8       // Test 8 pages
+#endif
 
-/* defined the LED_GREEN pin: PC9 */
-#define LED_GREEN_PIN GET_PIN(C, 9)
-
-#define EE_ADDR                 0x50
-#define TEST_PAGE_CNT           8               // Test 8 pages
-
-#if defined(HC32F472)
-#define EE24C256
+/* define EEPROM hardware */
+#if defined(HC32F472) || defined(HC32F460)
+    #define EE24C256
 #elif defined(HC32F4A0)
-#define EE24C02
+    #define EE24C02
 #endif
 
 #if defined (EE24C1024)
-/* 24C1024 not tested yet */
-#define EE_PAGE_SIZE            256     // 24C1024
-#define EE_WORD_ADR_SIZE        2       // 2 word addr
-
+    #define EE_PAGE_SIZE                256 // 24C1024
+    #define EE_WORD_ADR_SIZE            2   // 2 word addr
 #elif defined (EE24C256)
-/* 24C256 */
-#define EE_PAGE_SIZE            64      // 24C256
-#define EE_WORD_ADR_SIZE        2       // 2 word addr
-
+    #define EE_PAGE_SIZE                64  // 24C256
+    #define EE_WORD_ADR_SIZE            2   // 2 word addr
 #elif defined (EE24C02)
-/* 24C02 */
-#define EE_PAGE_SIZE            8     // 24C02
-#define EE_WORD_ADR_SIZE        1     // 1 word addr
+    #define EE_PAGE_SIZE                8   // 24C02
+    #define EE_WORD_ADR_SIZE            1   // 1 word addr
 #endif
 
-#define HW_I2C          "i2c1"
+/* device information */
+#if defined(HC32F472) || defined(HC32F4A0)
+    #define HW_I2C_DEV                  "i2c1"
+    #define SW_I2C_DEV                  "i2c1_sw"
+#elif defined(HC32F460)
+    #define HW_I2C_DEV                  "i2c3"
+    #define SW_I2C_DEV                  "i2c1_sw"
+#endif
 
-static rt_uint8_t trans_buf[EE_PAGE_SIZE * TEST_PAGE_CNT];
-static rt_uint8_t recv_buf[EE_PAGE_SIZE * TEST_PAGE_CNT];
-
-void i2c_test(void)
+/* this API is for eeprom size is smaller than  256Bytes */
+static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
 {
     struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
-    static rt_uint8_t send_buf0[0x10], send_buf1[0x10];
-
-    static uint8_t i = 0;
+    uint8_t TxBuf[EE_PAGE_SIZE + EE_WORD_ADR_SIZE] = {0};
+    struct rt_i2c_msg msg[1];
 
 #if defined (BSP_USING_I2C_HW)
-
-#if defined(HC32F472)
-    hc32_i2c = rt_i2c_bus_device_find(HW_I2C);      //hw i2c
-#elif defined(HC32F4A0)
-    hc32_i2c = rt_i2c_bus_device_find("i2c1");      //hw i2c
-#endif
-
+    hc32_i2c = rt_i2c_bus_device_find(HW_I2C_DEV);  //hw i2c
 #else
-    hc32_i2c = rt_i2c_bus_device_find("i2c1_sw");   //sw sim i2c
+    hc32_i2c = rt_i2c_bus_device_find(SW_I2C_DEV);  //sw i2c
 #endif
-    RT_ASSERT(hc32_i2c != RT_NULL);
 
-#define TCA9539_ADDRESS                 (0x74)       // TCA9539 chip address on I2C bus
-#define WM8731_REG_SAMPLING_CTRL        (0x08)       // Sampling Control Register
+    /* START --- ADR_W --- WORD_ADR(1 byte) --- DATAn --- STOP */
+    if (EE_WORD_ADR_SIZE == 2)
+    {
+        TxBuf[0] = (page * EE_PAGE_SIZE) / 256;     // addrH
+        TxBuf[1] = page * EE_PAGE_SIZE;             // addrL
+    }
+    else
+    {
+        TxBuf[0] = page * EE_PAGE_SIZE;
+    }
+    for (int i = 0; i < EE_PAGE_SIZE; i++)  // data fill
+    {
+        TxBuf[i + EE_WORD_ADR_SIZE] = *pBuf++;
+    }
+    msg[0].addr  = EE_DEV_ADDR;
+    msg[0].flags = RT_I2C_WR;
+    msg[0].len   = EE_PAGE_SIZE + EE_WORD_ADR_SIZE;
+    msg[0].buf   = TxBuf;
+
+#if defined(USING_RT_I2C_TRANSFER)
+    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
+#else
+    rt_i2c_master_send(hc32_i2c, EE_DEV_ADDR, RT_I2C_NO_STOP, TxBuf, msg[0].len / 2);
+    rt_i2c_master_send(hc32_i2c, EE_DEV_ADDR, RT_I2C_NO_START, TxBuf + msg[0].len / 2, msg[0].len - msg[0].len / 2);
+#endif
+    /* write cycle 5ms */
+    rt_thread_mdelay(5);
+}
+
+static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
+{
+    struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
+    uint8_t readAddr[EE_WORD_ADR_SIZE];
+#if defined(USING_RT_I2C_TRANSFER)
+    struct rt_i2c_msg msg[2];
+#endif
+
+#if defined (BSP_USING_I2C_HW)
+    hc32_i2c = rt_i2c_bus_device_find(HW_I2C_DEV);  //hw i2c
+#else
+    hc32_i2c = rt_i2c_bus_device_find(SW_I2C_DEV);  //sw i2c
+#endif
+
+    if (EE_WORD_ADR_SIZE == 2)
+    {
+        readAddr[0] = (page * EE_PAGE_SIZE) / 256;  // addrH
+        readAddr[1] = page * EE_PAGE_SIZE;          // addrL
+    }
+    else
+    {
+        readAddr[0] = page * EE_PAGE_SIZE;
+    }
+
+#if defined(USING_RT_I2C_TRANSFER)
+    msg[0].addr  = EE_DEV_ADDR;
+    msg[0].flags = RT_I2C_WR;
+    msg[0].len   = EE_WORD_ADR_SIZE;
+    msg[0].buf   = readAddr;
+
+    msg[1].addr  = EE_DEV_ADDR;
+    msg[1].flags = RT_I2C_RD;
+    msg[1].len   = EE_PAGE_SIZE;
+    msg[1].buf   = pBuf;
+    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
+#else
+    rt_i2c_master_send(hc32_i2c, EE_DEV_ADDR, RT_I2C_NO_STOP, readAddr, EE_WORD_ADR_SIZE);
+    rt_i2c_master_recv(hc32_i2c, EE_DEV_ADDR, 0, pBuf, EE_PAGE_SIZE);
+#endif
+}
+
+void eeprom_test(void)
+{
+    uint32_t page, i;
+    uint32_t compareValueDiff = 0;
+    static rt_uint8_t trans_buf[EE_PAGE_SIZE * EE_TEST_PAGE_CNT];
+    static rt_uint8_t recv_buf[EE_PAGE_SIZE * EE_TEST_PAGE_CNT];
+
+    /* write e2 */
+    for (i = 0; i < sizeof(trans_buf); i++)
+    {
+        trans_buf[i] = i;
+    }
+    for (page = 0; page < EE_TEST_PAGE_CNT; page++)
+    {
+        eeprom_page_write(page, trans_buf + EE_PAGE_SIZE * page);
+    }
+    /* read e2 */
+    for (i = 0; i < sizeof(trans_buf); i++)
+    {
+        recv_buf[i] = 0;
+    }
+    for (page = 0; page < EE_TEST_PAGE_CNT; page++)
+    {
+        eeprom_page_read(page, recv_buf + EE_PAGE_SIZE * page);
+    }
+    /* compare e2 */
+    for (i = 0; i < sizeof(recv_buf); i++)
+    {
+        if (trans_buf[i] != recv_buf[i])
+        {
+            compareValueDiff = 1;
+            break;
+        }
+    }
+    if (compareValueDiff == 0)
+    {
+        rt_kprintf("eeprom test ok!\r\n");
+    }
+    else
+    {
+        rt_kprintf("eeprom test failed!\r\n");
+    }
+}
+
+/* TCA9539 device */
+#if defined(HC32F472) || defined(HC32F4A0)
+
+/* TCA9539 define */
+#define TCA9539_DEV_ADDR                (0x74)       // TCA9539 chip address on I2C bus
 
 #define TCA9539_REG_INPUT_PORT0         (0x00U)
 #define TCA9539_REG_INPUT_PORT1         (0x01U)
@@ -96,176 +204,66 @@ void i2c_test(void)
 #define TCA9539_REG_CONFIG_PORT0        (0x06U)
 #define TCA9539_REG_CONFIG_PORT1        (0x07U)
 
+void tca9539_test(void)
+{
+    struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
+    static rt_uint8_t send_buf0[0x10];
+    static rt_uint8_t send_buf1[0x10], recv_buf1[0x10];
     struct rt_i2c_msg msg[2];
 
-//    uint8_t u8RegAddr = TCA9539_REG_OUTPUT_PORT1;
-//    uint16_t u16Cmd = 4;
+#if defined (BSP_USING_I2C_HW)
+    hc32_i2c = rt_i2c_bus_device_find(HW_I2C_DEV);  //hw i2c
+#else
+    hc32_i2c = rt_i2c_bus_device_find(SW_I2C_DEV);  //sw i2c
+#endif
+    RT_ASSERT(hc32_i2c != RT_NULL);
 
-    send_buf0[0] =  TCA9539_REG_CONFIG_PORT1;
-    send_buf0[1] = (uint8_t)(0x1F);
-    msg[0].addr  = TCA9539_ADDRESS;
+    send_buf0[0] = TCA9539_REG_CONFIG_PORT1;
+    send_buf0[1] = 0xFF;
+    msg[0].addr  = TCA9539_DEV_ADDR;
     msg[0].flags = RT_I2C_WR;
     msg[0].len   = 2;
     msg[0].buf   = send_buf0;
-
     rt_i2c_transfer(hc32_i2c, &msg[0], 1);
 
-    send_buf0[0] =  TCA9539_REG_OUTPUT_PORT1;
-    if (i%2) {
-        send_buf0[1] = (uint8_t)(0xE0);
-    } else {
-        send_buf0[1] = (uint8_t)(0x00);
-    }
-    i++;
-
-    msg[0].addr  = TCA9539_ADDRESS;
-    msg[0].flags = RT_I2C_WR;
-    msg[0].len   = 2;
-    msg[0].buf   = send_buf0;
-
-    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
+    send_buf0[0] = TCA9539_REG_OUTPUT_PORT1;
+    send_buf0[1] = 0xAC;
+    msg[1].addr  = TCA9539_DEV_ADDR;
+    msg[1].flags = RT_I2C_WR;
+    msg[1].len   = 2;
+    msg[1].buf   = send_buf0;
+    rt_i2c_transfer(hc32_i2c, &msg[1], 1);
 
     /* read */
     send_buf1[0] = TCA9539_REG_OUTPUT_PORT1;
-
-    msg[0].addr  = TCA9539_ADDRESS;
+    msg[0].addr  = TCA9539_DEV_ADDR;
     msg[0].flags = RT_I2C_WR;
     msg[0].len   = 1;
     msg[0].buf   = send_buf1;
 
-    msg[1].addr  = TCA9539_ADDRESS;
+    msg[1].addr  = TCA9539_DEV_ADDR;
     msg[1].flags = RT_I2C_RD;
     msg[1].len   = 1;
-    msg[1].buf   = recv_buf;
-
+    msg[1].buf   = recv_buf1;
     rt_i2c_transfer(hc32_i2c, &msg[0], 2);
-    rt_kprintf("recv: %x\r\n", recv_buf[0]);
 
+    if (recv_buf1[0] == 0xAC)
+    {
+        rt_kprintf("tca9539 test ok!\r\n");
+    }
+    else
+    {
+        rt_kprintf("tca9539 test failed!\r\n");
+    }
 }
-
-/* this API is for eeprom size is smaller than 24C16 (256Bytes) */
-static void eeprom_page_write(uint32_t page, uint8_t *pBuf)
-{
-    struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
-
-#if defined (BSP_USING_I2C_HW)
-    hc32_i2c = rt_i2c_bus_device_find(HW_I2C);      //hw i2c
-#else
-    hc32_i2c = rt_i2c_bus_device_find("i2c1_sw");   //sw sim i2c
 #endif
-/*
-    START --- ADR_W --- WORD_ADR(1 byte) --- DATAn --- STOP
-*/
-    uint8_t TxBuf[EE_PAGE_SIZE + EE_WORD_ADR_SIZE] = {0};
-    struct rt_i2c_msg msg[1];
-    /* write byte */
-    if (EE_WORD_ADR_SIZE == 2)
-    {
-      TxBuf[0] = (page * EE_PAGE_SIZE) / 256;           // addrH
-      TxBuf[1] = page * EE_PAGE_SIZE;                   // addrL
-    } else
-    {
-      TxBuf[0] = page * EE_PAGE_SIZE;
-    }
-    for (int i = 0; i < EE_PAGE_SIZE; i++)   // data field
-    {
-      TxBuf[i + EE_WORD_ADR_SIZE] = *pBuf++;
-    }
-    msg[0].addr  = EE_ADDR;
-    msg[0].flags = RT_I2C_WR;
-    msg[0].len   = EE_PAGE_SIZE + EE_WORD_ADR_SIZE;
-    msg[0].buf   = TxBuf;
-
-#if defined(USING_RT_I2C_TRANSFER)
-    rt_i2c_transfer(hc32_i2c, &msg[0], 1);
-#else
-    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,TxBuf,msg[0].len/2);
-    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_START,TxBuf + msg[0].len/2,msg[0].len - msg[0].len/2);
-#endif
-    /* write cycle 5ms */
-    rt_thread_mdelay(5);
-}
-
-static void eeprom_page_read(uint32_t page, uint8_t *pBuf)
-{
-    struct rt_i2c_bus_device *hc32_i2c = RT_NULL;
-
-#if defined(USING_RT_I2C_TRANSFER)
-    struct rt_i2c_msg msg[2];
-#endif
-    uint8_t readAddr[EE_WORD_ADR_SIZE];
-    if (EE_WORD_ADR_SIZE == 2)
-    {
-      readAddr[0] = (page * EE_PAGE_SIZE) / 256;        // addrH
-      readAddr[1] = page * EE_PAGE_SIZE;                // addrL
-    } else
-    {
-      readAddr[0] = page * EE_PAGE_SIZE;
-    }
-
-#if defined (BSP_USING_I2C_HW)
-    hc32_i2c = rt_i2c_bus_device_find(HW_I2C);          //hw i2c
-#else
-    hc32_i2c = rt_i2c_bus_device_find("i2c1_sw");   //sw sim i2c
-#endif
-
-#if defined(USING_RT_I2C_TRANSFER)
-    msg[0].addr  = EE_ADDR;
-    msg[0].flags = RT_I2C_WR;
-    msg[0].len   = EE_WORD_ADR_SIZE;
-    msg[0].buf   = readAddr;
-
-    msg[1].addr  = EE_ADDR;
-    msg[1].flags = RT_I2C_RD;
-    msg[1].len   = EE_PAGE_SIZE;
-    msg[1].buf   = pBuf;
-    rt_i2c_transfer(hc32_i2c, &msg[0], 2);
-#else
-    rt_i2c_master_send(hc32_i2c,EE_ADDR,RT_I2C_NO_STOP,readAddr,EE_WORD_ADR_SIZE);
-    rt_i2c_master_recv(hc32_i2c,EE_ADDR,0,pBuf,EE_PAGE_SIZE);
-#endif
-}
-
-void eeprom_test(void)
-{
-    uint32_t page;
-
-    for (int32_t i = 0; i < sizeof(trans_buf); i++)
-    {
-        trans_buf[i] = i;
-    }
-
-    for (page = 0; page < TEST_PAGE_CNT; page++)
-    {
-        eeprom_page_write(page, trans_buf + EE_PAGE_SIZE * page);
-    }
-    for (int32_t i = 0; i < sizeof(trans_buf); i++)
-    {
-        recv_buf[i] = 0;
-    }
-    for (page = 0; page < TEST_PAGE_CNT; page++)
-    {
-        eeprom_page_read(page, recv_buf + EE_PAGE_SIZE * page);
-        rt_kprintf("page %2d: ", page);
-        for (uint32_t i = 0; i < EE_PAGE_SIZE; i++)
-        {
-            rt_kprintf("%2X ", recv_buf[i + (page * EE_PAGE_SIZE)]);
-        }
-        rt_kprintf("\r\n");
-    }
-    rt_kprintf("\r\n");
-}
 
 static void i2c_sample(int argc, char *argv[])
 {
-    /* set LED_GREEN_PIN pin mode to output */
-    rt_pin_mode(LED_GREEN_PIN, PIN_MODE_OUTPUT);
-    rt_pin_write(LED_GREEN_PIN, PIN_HIGH);
-    rt_thread_mdelay(500);
-    rt_pin_write(LED_GREEN_PIN, PIN_LOW);
-    rt_thread_mdelay(500);
-    i2c_test();
     eeprom_test();
+#if defined(HC32F472) || defined(HC32F4A0)
+    tca9539_test();
+#endif
 }
 
 MSH_CMD_EXPORT(i2c_sample, i2c sample);

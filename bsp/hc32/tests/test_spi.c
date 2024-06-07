@@ -24,16 +24,12 @@
 #if defined(BSP_USING_SPI)
 #include "drv_spi.h"
 
-#define W25Q_SPI_DEVICE_NAME            "spi10"
-
-
 #define W25Q_FLAG_BUSY                  (0x01)
 #define W25Q_WR_ENABLE                  (0x06)
 #define W25Q_SECTOR_ERASE               (0x20)
 #define W25Q_RD_STATUS_REG1             (0x05)
 #define W25Q_PAGE_PROGRAM               (0x02)
 #define W25Q_STD_RD                     (0x03)
-
 
 #define W25Q_PAGE_SIZE                  (256UL)
 #define W25Q_SECTOR_SIZE                (1024UL * 4UL)
@@ -44,6 +40,19 @@
 #define W25Q_SPI_DATA_BUF_LEN           0x2000
 
 
+#if defined(HC32F4A0) || defined(HC32F448) || defined(HC32F472)
+    #define SPI_CS_PORT                 SPI1_CS_PORT
+    #define SPI_CS_PIN                  SPI1_CS_PIN
+
+    #define W25Q_SPI_DEVICE_NAME        "spi10"
+#elif defined(HC32F460)
+    #define SPI_CS_PORT                 SPI3_CS_PORT
+    #define SPI_CS_PIN                  SPI3_CS_PIN
+
+    #define W25Q_SPI_DEVICE_NAME        "spi30"
+#endif
+
+
 struct rt_spi_device *spi_dev_w25q;     /* SPI 设备句柄 */
 
 static uint8_t u8WrBuf[W25Q_SPI_DATA_BUF_LEN];
@@ -52,7 +61,7 @@ static uint8_t u8RdBuf[W25Q_SPI_DATA_BUF_LEN];
 
 static int rt_hw_spi_flash_init(void)
 {
-    if (RT_EOK != rt_hw_spi_device_attach("spi1", "spi10", SPI1_CS_PORT, SPI1_CS_PIN))
+    if (RT_EOK != rt_hw_spi_device_attach("spi1", "spi10", SPI_CS_PORT, SPI_CS_PIN))
     {
         rt_kprintf("Failed to attach the spi device.");
         return -RT_ERROR;

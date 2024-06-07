@@ -15,8 +15,7 @@
 #include "board_config.h"
 #include "rtconfig.h"
 
-#if defined(BSP_USING_WDT_TIM)
-#include "drv_wdt.h"
+#if defined(BSP_USING_WDT_TMR)
 
 /* macros define */
 #if defined(BSP_USING_WDT)
