@@ -437,10 +437,17 @@ menu "On-chip Peripheral Drivers"
                 default BSP_RTC_USING_XTAL32
 
                 config BSP_RTC_USING_XTAL32
-                    bool "RTC USING XTAL32"
+                    bool "RTC Using XTAL32"
 
                 config BSP_RTC_USING_LRC
-                    bool "RTC USING LRC"
+                    bool "RTC Using LRC"
+
+                config BSP_RTC_USING_XTAL_DIV
+                    bool "RTC Using XTAL Division"
+
+                config BSP_RTC_USING_EXTCLK
+                    bool "RTC Using EXTCLK input from pin(PA1)"
+                    depends on !BSP_USING_EXMC
             endchoice
         endif
 

@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2022-04-28     CDT          first version
+ * 2024-06-07     CDT          Modify the IRQ install implementation for F448/F472
  */
 
 
@@ -53,6 +54,9 @@ rt_err_t hc32_install_irq_handler(struct hc32_irq_config *irq_config,
     stcIrqSignConfig.pfnCallback = irq_hdr;
     if (LL_OK == INTC_IrqSignIn(&stcIrqSignConfig))
     {
+#if defined (HC32F448) || defined (HC32F472)
+        INTC_IntSrcCmd(stcIrqSignConfig.enIntSrc, DISABLE);
+#endif
         NVIC_ClearPendingIRQ(stcIrqSignConfig.enIRQn);
         NVIC_SetPriority(stcIrqSignConfig.enIRQn, irq_config->irq_prio);
         if (RT_TRUE == irq_enable)
@@ -76,14 +80,13 @@ rt_err_t hc32_install_independ_irq_handler(struct hc32_irq_config *irq_config,
 
     NVIC_ClearPendingIRQ(irq_config->irq_num);
     NVIC_SetPriority(irq_config->irq_num, irq_config->irq_prio);
+    INTC_IntSrcCmd(irq_config->int_src, ENABLE);
     if (RT_TRUE == irq_enable)
     {
-        INTC_IntSrcCmd(irq_config->int_src, ENABLE);
         NVIC_EnableIRQ(irq_config->irq_num);
     }
     else
     {
-        INTC_IntSrcCmd(irq_config->int_src, DISABLE);
         NVIC_DisableIRQ(irq_config->irq_num);
     }
     return RT_EOK;
