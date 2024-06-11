@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2023-02-10     CDT          first version
+ * 2024-06-11     CDT          Fix compiler warning
  */
 #include "board.h"
 
@@ -150,7 +151,7 @@ static rt_size_t hash_length = 0;
 
 static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt_size_t length)
 {
-    rt_uint32_t result = RT_EOK;
+    rt_err_t result = RT_EOK;
 
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
@@ -175,7 +176,7 @@ static rt_err_t _hash_update(struct hwcrypto_hash *ctx, const rt_uint8_t *in, rt
 
 static rt_err_t _hash_finish(struct hwcrypto_hash *ctx, rt_uint8_t *out, rt_size_t length)
 {
-    rt_uint32_t result = RT_EOK;
+    rt_err_t result = RT_EOK;
 
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
@@ -225,7 +226,7 @@ static const struct hwcrypto_hash_ops hash_ops =
 #if defined(BSP_USING_AES)
 static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symmetric_info *info)
 {
-    rt_uint32_t result = RT_EOK;
+    rt_err_t result = RT_EOK;
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
 
@@ -270,12 +271,18 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symm
     if (info->mode == HWCRYPTO_MODE_ENCRYPT)
     {
         /* AES encryption. */
-        result = AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
+        if (LL_OK != AES_Encrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out))
+        {
+            result = -RT_ERROR;
+        }
     }
     else if (info->mode == HWCRYPTO_MODE_DECRYPT)
     {
         /* AES decryption */
-        result = AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out);
+        if (LL_OK != AES_Decrypt(info->in, info->length, ctx->key, (ctx->key_bitlen / 8U), info->out))
+        {
+            result = -RT_ERROR;
+        }
     }
     else
     {
