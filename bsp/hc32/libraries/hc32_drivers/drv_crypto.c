@@ -27,11 +27,12 @@ struct hc32_hwcrypto_device
 #define DEFAULT_CRC16_CCITT_POLY    (0x1021)       /*!<  X^16 + X^12 + X^5 + 1 */
 #define DEFAULT_CRC32_POLY          (0x04C11DB7)   /*!<  X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 + X^10 +X^8 + X^7 + X^5 + X^4 + X^2+ X + 1 */
 
+static struct hwcrypto_crc_cfg crc_cfgbk = {0};
+
 static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, rt_size_t length)
 {
     rt_uint32_t result = 0;
     stc_crc_init_t stcCrcInit;
-    static struct hwcrypto_crc_cfg crc_cfgbk = {0};
     struct hc32_hwcrypto_device *hc32_hw_dev = (struct hc32_hwcrypto_device *)ctx->parent.device->user_data;
 
     rt_mutex_take(&hc32_hw_dev->mutex, RT_WAITING_FOREVER);
@@ -104,11 +105,11 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
     }
     if (16U  == ctx->crc_cfg.width)
     {
-        result = CRC_CRC16_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
+        result = CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
     }
     else        /* CRC32 */
     {
-        result = CRC_CRC32_Calculate(ctx->crc_cfg.last_val, CRC_DATA_WIDTH_8BIT, in, length);
+        result = CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
     }
 
 _exit:
@@ -251,7 +252,7 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symm
         result = -RT_ERROR;
         goto _exit;
     }
-#elif defined (HC32F4A0)
+#elif defined (HC32F4A0) || defined (HC32F448) || defined (HC32F472)
     if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8U) && \
             ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8U))
     {
@@ -316,6 +317,8 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_TRNG, ENABLE);
         /* TRNG initialization configuration. */
         TRNG_Init(TRNG_SHIFT_CNT64, TRNG_RELOAD_INIT_VAL_ENABLE);
+        /* TRNG Enable. */
+        TRNG_Cmd(ENABLE);
 
         ((struct hwcrypto_rng *)ctx)->ops = &rng_ops;
 
@@ -384,6 +387,7 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
     {
 #if defined(BSP_USING_RNG)
     case HWCRYPTO_TYPE_RNG:
+        TRNG_Cmd(DISABLE);
         TRNG_DeInit();
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_TRNG, DISABLE);
         break;
@@ -391,6 +395,7 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
 
 #if defined(BSP_USING_CRC)
     case HWCRYPTO_TYPE_CRC:
+        rt_memset(&crc_cfgbk, 0, sizeof(struct hwcrypto_crc_cfg));
         CRC_DeInit();
         FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_CRC, DISABLE);
         break;
