@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-11-09     CDT          first version
+ */
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <stdlib.h>
