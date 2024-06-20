@@ -71,7 +71,7 @@ void SystemClock_Config(void)
     stcPLLHInit.PLLCFGR_f.PLLM = 1UL - 1UL;
     stcPLLHInit.PLLCFGR_f.PLLN = 40UL - 1UL;
     stcPLLHInit.PLLCFGR_f.PLLP = 4UL - 1UL;
-    stcPLLHInit.PLLCFGR_f.PLLQ = 4UL - 1UL;
+    stcPLLHInit.PLLCFGR_f.PLLQ = 10UL - 1UL; /* 48M for USB */
     stcPLLHInit.PLLCFGR_f.PLLR = 4UL - 1UL;
     stcPLLHInit.PLLCFGR_f.PLLSRC = CLK_PLL_SRC_XTAL;
     (void)CLK_PLLInit(&stcPLLHInit);
@@ -116,6 +116,9 @@ void PeripheralClock_Config(void)
 
 #if defined(RT_USING_ADC)
     CLK_SetPeriClockSrc(CLK_PERIPHCLK_PCLK);
+#endif
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
+    CLK_SetUSBClockSrc(CLK_USBCLK_PLLQ);
 #endif
 }
 

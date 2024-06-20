@@ -18,6 +18,7 @@
 /*
  * 程序清单：这是一个 usb device 设备使用例程
  * 例程导出了 cdc_sample 命令到控制终端
+ * PC上需要使用串口助手以DTR[√]方式打开USB的虚拟串口(比如 SSCOM 有这个功能)
  * 命令调用格式：cdc_sample
  * 程序功能：首先会打印三次str_write字符串内容，同时虚拟串口可输入发送任意小于255个字符的字符串，
  * 发送内容可在Finsh串口显示。
@@ -28,7 +29,7 @@ rt_uint8_t str_read[255];
 
 static rt_err_t cdc_rx_handle(rt_device_t dev, rt_size_t size)
 {
-    /* 读取定时器当前值 */
+    /* 读取虚拟串口接收内容 */
     rt_device_read(dev, 0, str_read, size);
     rt_kprintf("Read message:  %s\n", str_read);
 }
@@ -41,7 +42,7 @@ static int cdc_sample(void)
     rt_uint8_t str_write[] = "This is a usb cdc device test!\r\n";
 
 
-    /* 查找定时器设备 */
+    /* 查找USB虚拟串口设备 */
     cdc_dev = rt_device_find(USBD_DEV_NAME);
     if (cdc_dev == RT_NULL)
     {
@@ -98,7 +99,7 @@ static int hid_sample(void)
     char str_write[2][5] = {"test", "Key0"};
 
 
-    /* 查找定时器设备 */
+    /* 查找设备 */
     hid_dev = rt_device_find(USBD_DEV_NAME);
     if (hid_dev == RT_NULL)
     {

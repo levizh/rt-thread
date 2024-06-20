@@ -24,6 +24,10 @@
 #include "irq_config.h"
 #include "drv_usbd.h"
 
+#if defined(HC32F472)
+    #define VBUS_INT_PIN            (rt_base_t)(((rt_uint16_t)USBF_VBUS_PORT * 16) + __CLZ(__RBIT(USBF_VBUS_PIN)))
+#endif
+
 extern rt_err_t rt_hw_usb_board_init(void);
 extern void rt_hw_us_delay(rt_uint32_t us);
 
@@ -391,6 +395,7 @@ static void usb_wrblanktxfifo(usb_core_instance *pdev, uint32_t epnum)
     }
 }
 
+#if defined(HC32F4A0) || defined(HC32F460)
 #ifdef VBUS_SENSING_ENABLED
 static void usb_sessionrequest_isr(usb_core_instance *pdev)
 {
@@ -403,6 +408,7 @@ static void usb_sessionrequest_isr(usb_core_instance *pdev)
         CLR_REG32_BIT(*pdev->regs.GCCTL, USBFS_GCCTL_STPPCLK | USBFS_GCCTL_GATEHCLK);
     }
 }
+#endif
 #endif
 
 static void usb_resume_isr(usb_core_instance *pdev)
@@ -707,11 +713,13 @@ static void usb_isr_handler(usb_core_instance *pdev)
         {
             usb_isooutincomplt_isr(pdev);
         }
+#if defined(HC32F4A0) || defined(HC32F460)
 #ifdef VBUS_SENSING_ENABLED
         if ((u32gintsts & VBUSV_INT) != 0UL)
         {
             usb_sessionrequest_isr(pdev);
         }
+#endif
 #endif
     }
 }
@@ -722,6 +730,27 @@ static void usbd_irq_handler(void)
     usb_isr_handler(&_hc32_usbd);
     rt_interrupt_leave();
 }
+
+#if defined(HC32F472)
+void USBFS_Handler(void)
+{
+    usbd_irq_handler();
+}
+
+#ifdef VBUS_SENSING_ENABLED
+static void vbus_irq_handler(void *args)
+{
+    if (PIN_LOW == rt_pin_read(VBUS_INT_PIN))
+    {
+        SET_REG32_BIT(_hc32_usbd.regs.DREGS->DCTL, USBFS_DCTL_SDIS);
+    }
+    else
+    {
+        CLR_REG32_BIT(_hc32_usbd.regs.DREGS->DCTL, USBFS_DCTL_SDIS);
+    }
+}
+#endif
+#endif
 
 static rt_err_t _usbd_ep_set_stall(rt_uint8_t address)
 {
@@ -763,20 +792,20 @@ static rt_err_t _usbd_ep_disable(uep_t ep)
     return RT_EOK;
 }
 
-static rt_size_t _usbd_ep_read(rt_uint8_t address, void *buffer)
+static rt_ssize_t _usbd_ep_read(rt_uint8_t address, void *buffer)
 {
     rt_size_t size = 0;
     RT_ASSERT(buffer != RT_NULL);
     return size;
 }
 
-static rt_size_t _usbd_ep_read_prepare(rt_uint8_t address, void *buffer, rt_size_t size)
+static rt_ssize_t _usbd_ep_read_prepare(rt_uint8_t address, void *buffer, rt_size_t size)
 {
     usb_readytorx(&_hc32_usbd, address, buffer, size);
     return size;
 }
 
-static rt_size_t _usbd_ep_write(rt_uint8_t address, void *buffer, rt_size_t size)
+static rt_ssize_t _usbd_ep_write(rt_uint8_t address, void *buffer, rt_size_t size)
 {
     usb_deveptx(&_hc32_usbd, address, buffer, size);
     return size;
@@ -844,9 +873,19 @@ static rt_err_t _usbd_init(rt_device_t device)
 #endif
     irq_config.irq_prio = BSP_USB_GLB_IRQ_PRIO;
     /* register interrupt */
+#if defined(HC32F4A0) || defined(HC32F460)
     hc32_install_irq_handler(&irq_config,
                              usbd_irq_handler,
                              RT_TRUE);
+#elif defined(HC32F472)
+    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
+#ifdef VBUS_SENSING_ENABLED
+    /* VBUS Extint config */
+    rt_pin_mode(VBUS_INT_PIN, PIN_MODE_INPUT);
+    rt_pin_attach_irq(VBUS_INT_PIN, PIN_IRQ_MODE_RISING_FALLING, vbus_irq_handler, (void *)"callbackargs");
+    rt_pin_irq_enable(VBUS_INT_PIN, PIN_IRQ_ENABLE);
+#endif
+#endif
     return RT_EOK;
 }
 

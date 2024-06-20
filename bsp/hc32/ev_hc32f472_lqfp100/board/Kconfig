@@ -672,6 +672,45 @@ menu "On-chip Peripheral Drivers"
                 select RT_USING_KEYSCAN
                 default n
         endif
+
+    menuconfig BSP_USING_USB
+        bool "Enable USB"
+        default n
+        select RT_USING_USB_DEVICE if BSP_USING_USBD
+        select RT_USING_USB_HOST if BSP_USING_USBH
+        if BSP_USING_USB
+            config BSP_USING_USBFS
+                bool
+                default y
+
+            choice
+                prompt "Select USB Mode"
+                default BSP_USING_USBD
+
+                config BSP_USING_USBD
+                    bool "USB Device Mode"
+
+                config BSP_USING_USBH
+                    bool "USB Host Mode"
+            endchoice
+
+            if BSP_USING_USBD
+                config BSP_USING_USBD_VBUS_SENSING
+                    bool "Enable VBUS Sensing"
+                    default y
+            endif
+
+            if BSP_USING_USBH
+                menuconfig RT_USBH_MSTORAGE
+                    bool "Enable Udisk Drivers"
+                    default n
+                    if RT_USBH_MSTORAGE
+                        config UDISK_MOUNTPOINT
+                        string "Udisk mount dir"
+                        default "/"
+                    endif
+            endif
+        endif
 endmenu
 
 menu "Board extended module Drivers"

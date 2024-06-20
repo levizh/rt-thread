@@ -306,6 +306,11 @@ extern "C" {
 #define BSP_PULSE_ENCODER_TMR6_10_UDF_IRQ_PRIO  DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_PULSE_ENCODER_TMR6_10 */
 
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
+#define BSP_USB_GLB_IRQ_NUM             USBFS_GLB_IRQn
+#define BSP_USB_GLB_IRQ_PRIO            DDL_IRQ_PRIO_DEFAULT
+#endif
+
 #ifdef __cplusplus
 }
 #endif

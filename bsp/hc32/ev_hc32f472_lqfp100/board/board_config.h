@@ -325,5 +325,19 @@
     #endif /* BSP_USING_TMR6_PULSE_ENCODER */
 #endif /* RT_USING_PULSE_ENCODER */
 
+#if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
+    #if defined(BSP_USING_USBFS)
+        /* USBFS Core*/
+        #define USBF_DP_PORT                    (GPIO_PORT_A)
+        #define USBF_DP_PIN                     (GPIO_PIN_12)
+        #define USBF_DM_PORT                    (GPIO_PORT_A)
+        #define USBF_DM_PIN                     (GPIO_PIN_11)
+        #define USBF_VBUS_PORT                  (GPIO_PORT_A)
+        #define USBF_VBUS_PIN                   (GPIO_PIN_09)
+        #define USBF_DRVVBUS_PORT               (GPIO_PORT_C)
+        #define USBF_DRVVBUS_PIN                (GPIO_PIN_09)
+    #endif
+#endif
+
 #endif
 

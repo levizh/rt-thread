@@ -218,10 +218,8 @@
         /* USBFS Core*/
         #define USBF_DP_PORT                    (GPIO_PORT_A)
         #define USBF_DP_PIN                     (GPIO_PIN_12)
-        #define USBF_DP_FUNC                    (GPIO_FUNC_10)
         #define USBF_DM_PORT                    (GPIO_PORT_A)
         #define USBF_DM_PIN                     (GPIO_PIN_11)
-        #define USBF_DM_FUNC                    (GPIO_FUNC_10)
         #define USBF_VBUS_PORT                  (GPIO_PORT_A)
         #define USBF_VBUS_PIN                   (GPIO_PIN_09)
         #define USBF_VBUS_FUNC                  (GPIO_FUNC_10)
