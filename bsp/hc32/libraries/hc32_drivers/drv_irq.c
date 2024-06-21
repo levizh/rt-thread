@@ -55,7 +55,7 @@ rt_err_t hc32_install_irq_handler(struct hc32_irq_config *irq_config,
     if (irq_config->irq_num < HC32_INT_REG_MAX_NUM)
     {
         RT_ASSERT(RT_NULL != irq_hdr);
-        INTC_IntSrcCmd(stcIrqSignConfig.enIntSrc, DISABLE);
+        INTC_IntSrcCmd(irq_config->int_src, DISABLE);
     }
     else
     {
