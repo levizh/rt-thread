@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
- * Date           Author       Notes
- * 2022-04-28     CDT          first version
- * 2024-06-14     CDT          Fixed sector number calculation
+ * Date             Author      Notes
+ * 2022-04-28       CDT         First version
+ * 2024-06-14       CDT         Fixed sector number calculation
+ * 2024-06-18       CDT         Support HC32F460,HC32F448,HC32F472
  */
 
 #include "board.h"
@@ -20,7 +21,7 @@
 #endif
 
 //#define DRV_DEBUG
-#define LOG_TAG                "drv.flash"
+#define LOG_TAG                 "drv.flash"
 #include <drv_log.h>
 
 /**
@@ -216,6 +217,7 @@ int hc32_flash_erase(rt_uint32_t addr, size_t size)
 static int fal_flash_read(long offset, rt_uint8_t *buf, size_t size);
 static int fal_flash_write(long offset, const rt_uint8_t *buf, size_t size);
 static int fal_flash_erase(long offset, size_t size);
+
 const struct fal_flash_dev hc32_onchip_flash =
 {
     .name       = "onchip_flash",

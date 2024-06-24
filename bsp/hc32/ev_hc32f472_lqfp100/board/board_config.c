@@ -155,6 +155,10 @@ void CanPhyEnable(void)
     TCA9539_WritePin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_PIN_RESET);
     TCA9539_ConfigPin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_DIR_OUT);
 #endif
+#if defined(BSP_USING_CAN3)
+    TCA9539_WritePin(CAN3_STB_PORT, CAN3_STB_PIN, TCA9539_PIN_RESET);
+    TCA9539_ConfigPin(CAN3_STB_PORT, CAN3_STB_PIN, TCA9539_DIR_OUT);
+#endif
 }
 rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
 {
@@ -172,6 +176,12 @@ rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
     case (rt_uint32_t)CM_CAN2:
         GPIO_SetFunc(CAN2_TX_PORT, CAN2_TX_PIN, CAN2_TX_PIN_FUNC);
         GPIO_SetFunc(CAN2_RX_PORT, CAN2_RX_PIN, CAN2_RX_PIN_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_CAN3)
+    case (rt_uint32_t)CM_CAN3:
+        GPIO_SetFunc(CAN3_TX_PORT, CAN3_TX_PIN, CAN3_TX_PIN_FUNC);
+        GPIO_SetFunc(CAN3_RX_PORT, CAN3_RX_PIN, CAN3_RX_PIN_FUNC);
         break;
 #endif
     default:

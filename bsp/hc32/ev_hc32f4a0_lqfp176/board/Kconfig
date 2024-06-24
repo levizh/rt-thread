@@ -558,15 +558,30 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_ADC
         if BSP_USING_ADC
-            config BSP_USING_ADC1
-                bool "using adc1"
+            menuconfig BSP_USING_ADC1
+                bool "Enable ADC1"
                 default n
-            config BSP_USING_ADC2
-                bool "using adc2"
+                if BSP_USING_ADC1
+                    config BSP_ADC1_USING_DMA
+                        bool "using adc1 dma"
+                        default n
+                endif
+            menuconfig BSP_USING_ADC2
+                bool "Enable ADC2"
                 default n
-            config BSP_USING_ADC3
-                bool "using adc3"
+                if BSP_USING_ADC2
+                    config BSP_ADC2_USING_DMA
+                        bool "using adc2 dma"
+                        default n
+                endif
+            menuconfig BSP_USING_ADC3
+                bool "Enable ADC3"
                 default n
+                if BSP_USING_ADC3
+                    config BSP_ADC3_USING_DMA
+                        bool "using adc3 dma"
+                        default n
+                endif
         endif
 
     menuconfig BSP_USING_DAC

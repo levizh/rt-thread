@@ -64,7 +64,7 @@
     #define I2C1_SCL_PIN                    (GPIO_PIN_06)
     #define I2C1_SCL_FUNC                   (GPIO_FUNC_55)
 #endif
- // TODO, ch2/3 for test only
+// TODO, ch2/3 for test only
 #if defined(BSP_USING_I2C2)
     #define I2C2_SDA_PORT                   (GPIO_PORT_A)
     #define I2C2_SDA_PIN                    (GPIO_PIN_09)
@@ -87,13 +87,13 @@
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
-    #define ADC1_CH_PORT                    (GPIO_PORT_A)
-    #define ADC1_CH_PIN                     (GPIO_PIN_06)
+    #define ADC1_CH_PORT                    (GPIO_PORT_C)
+    #define ADC1_CH_PIN                     (GPIO_PIN_01)
 #endif
 
 #if defined(BSP_USING_ADC2)
     #define ADC2_CH_PORT                    (GPIO_PORT_C)
-    #define ADC2_CH_PIN                     (GPIO_PIN_04)
+    #define ADC2_CH_PIN                     (GPIO_PIN_01)
 #endif
 
 #if defined(BSP_USING_ADC3)
@@ -127,7 +127,7 @@
 
     #define CAN2_RX_PORT                    (GPIO_PORT_D)
     #define CAN2_RX_PIN                     (GPIO_PIN_11)
-    #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_61)
+    #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_63)
 #endif
 
 #if defined(BSP_USING_CAN3)

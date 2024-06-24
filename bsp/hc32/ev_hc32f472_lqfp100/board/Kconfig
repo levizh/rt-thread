@@ -405,6 +405,9 @@ menu "On-chip Peripheral Drivers"
             config BSP_USING_CAN2
                 bool "using can2"
                 default n
+            config BSP_USING_CAN3
+                bool "using can3"
+                default n
         endif
 
     menuconfig BSP_USING_WDT_TMR
