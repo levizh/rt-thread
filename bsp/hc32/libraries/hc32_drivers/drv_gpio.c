@@ -594,11 +594,7 @@ int rt_hw_pin_init(void)
     u32MaxExtInt = ITEM_NUM(pin_irq_map);
     for (uint8_t i = 0; i < u32MaxExtInt; i++)
     {
-#if defined (HC32F4A0) || defined (HC32F460)
         hc32_install_irq_handler(&pin_irq_map[i].irq_config, pin_irq_map[i].irq_callback, RT_FALSE);
-#elif defined (HC32F448) || defined (HC32F472)
-        hc32_install_independ_irq_handler(&pin_irq_map[i].irq_config, RT_FALSE);
-#endif
     }
 
     return rt_device_pin_register("pin", &hc32_pin_ops, RT_NULL);

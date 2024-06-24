@@ -873,18 +873,14 @@ static rt_err_t _usbd_init(rt_device_t device)
 #endif
     irq_config.irq_prio = BSP_USB_GLB_IRQ_PRIO;
     /* register interrupt */
-#if defined(HC32F4A0) || defined(HC32F460)
     hc32_install_irq_handler(&irq_config,
                              usbd_irq_handler,
                              RT_TRUE);
-#elif defined(HC32F472)
-    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
 #ifdef VBUS_SENSING_ENABLED
     /* VBUS Extint config */
     rt_pin_mode(VBUS_INT_PIN, PIN_MODE_INPUT);
     rt_pin_attach_irq(VBUS_INT_PIN, PIN_IRQ_MODE_RISING_FALLING, vbus_irq_handler, (void *)"callbackargs");
     rt_pin_irq_enable(VBUS_INT_PIN, PIN_IRQ_ENABLE);
-#endif
 #endif
     return RT_EOK;
 }
