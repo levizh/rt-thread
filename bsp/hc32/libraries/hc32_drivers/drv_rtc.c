@@ -384,13 +384,8 @@ int rt_hw_rtc_init(void)
 
 #ifdef RT_USING_ALARM
     /* register interrupt */
-#if defined(HC32F4A0) || defined(HC32F460)
     hc32_install_irq_handler(&hc32_alarm_irq.irq_config, hc32_alarm_irq.irq_callback, RT_FALSE);
-#elif defined(HC32F448) || defined(HC32F472)
-    hc32_install_independ_irq_handler(&hc32_alarm_irq.irq_config, RT_FALSE);
 #endif
-#endif
-
     rtc_dev.ops = &_ops;
     result = rt_hw_rtc_register(&rtc_dev, "rtc", RT_DEVICE_FLAG_RDWR, RT_NULL);
     if (result != RT_EOK)
