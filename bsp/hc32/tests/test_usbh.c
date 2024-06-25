@@ -17,6 +17,18 @@
 #if defined(RT_USING_USB_HOST)
 
 #ifdef RT_USBH_MSTORAGE
+
+/* menuconfig:
+  1.  Hardware Drivers Config ---> On-Chip Peripheral Drivers ---> Enable USB --->
+                                                                    Select USB Mode (USB Host Mode)
+                                                                [*] Enable Udisk Drivers -->
+                                                                (/) Udisk mount dir
+  2.  RT-Thread Components ---> DFS: device virtual files system --->
+                                ......
+                                [*] Enable elm0chan fatfs
+                                ......
+ */
+
 /*
  * 程序清单：这是一个 usb host 读写U盘 使用例程
  * 例程导出了 usbh_readwrite 命令到控制终端

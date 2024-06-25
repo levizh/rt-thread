@@ -25,7 +25,7 @@
 #include "drv_usbd.h"
 
 #if defined(HC32F472)
-    #define VBUS_INT_PIN            (rt_base_t)(((rt_uint16_t)USBF_VBUS_PORT * 16) + __CLZ(__RBIT(USBF_VBUS_PIN)))
+    #define USBFS_VBUS_INT_PIN            (rt_base_t)(((rt_uint16_t)USBF_VBUS_PORT * 16) + __CLZ(__RBIT(USBF_VBUS_PIN)))
 #endif
 
 extern rt_err_t rt_hw_usb_board_init(void);
@@ -740,7 +740,7 @@ void USBFS_Handler(void)
 #ifdef VBUS_SENSING_ENABLED
 static void vbus_irq_handler(void *args)
 {
-    if (PIN_LOW == rt_pin_read(VBUS_INT_PIN))
+    if (PIN_LOW == rt_pin_read(USBFS_VBUS_INT_PIN))
     {
         SET_REG32_BIT(_hc32_usbd.regs.DREGS->DCTL, USBFS_DCTL_SDIS);
     }
@@ -878,9 +878,9 @@ static rt_err_t _usbd_init(rt_device_t device)
                              RT_TRUE);
 #ifdef VBUS_SENSING_ENABLED
     /* VBUS Extint config */
-    rt_pin_mode(VBUS_INT_PIN, PIN_MODE_INPUT);
-    rt_pin_attach_irq(VBUS_INT_PIN, PIN_IRQ_MODE_RISING_FALLING, vbus_irq_handler, (void *)"callbackargs");
-    rt_pin_irq_enable(VBUS_INT_PIN, PIN_IRQ_ENABLE);
+    rt_pin_mode(USBFS_VBUS_INT_PIN, PIN_MODE_INPUT);
+    rt_pin_attach_irq(USBFS_VBUS_INT_PIN, PIN_IRQ_MODE_RISING_FALLING, vbus_irq_handler, (void *)"callbackargs");
+    rt_pin_irq_enable(USBFS_VBUS_INT_PIN, PIN_IRQ_ENABLE);
 #endif
     return RT_EOK;
 }

@@ -24,6 +24,10 @@
 #include "irq_config.h"
 #include "drv_usbh.h"
 
+#if defined(HC32F472)
+    #define USBFS_DRVVBUS_PIN            (rt_base_t)(((rt_uint16_t)USBF_DRVVBUS_PORT * 16) + __CLZ(__RBIT(USBF_DRVVBUS_PIN)))
+#endif
+
 extern rt_err_t rt_hw_usb_board_init(void);
 extern void rt_hw_us_delay(rt_uint32_t us);
 
@@ -44,11 +48,22 @@ void usb_mdelay(const uint32_t msec)
 
 void usb_bsp_cfgvbus(usb_core_instance *pdev)
 {
-    /* reserved */
+#if defined(HC32F472)
+    rt_pin_mode(USBFS_DRVVBUS_PIN, PIN_MODE_OUTPUT);
+#endif
 }
 void usb_bsp_drivevbus(usb_core_instance *pdev, uint8_t state)
 {
-    /* reserved */
+#if defined(HC32F472)
+    if (0x00U == state)
+    {
+        rt_pin_write(USBFS_DRVVBUS_PIN, PIN_LOW);
+    }
+    else
+    {
+        rt_pin_write(USBFS_DRVVBUS_PIN, PIN_HIGH);
+    }
+#endif
 }
 
 static void usb_device_connect_callback(usb_core_instance *pdev)
@@ -662,6 +677,13 @@ static void usbh_irq_handler(void)
     usb_host_isr(&_hc32_usbh);
     rt_interrupt_leave();
 }
+
+#if defined(HC32F472)
+void USBFS_Handler(void)
+{
+    usbh_irq_handler();
+}
+#endif
 
 static void usb_host_chopen(usb_core_instance *pdev,
                             uint8_t  hc_num,

@@ -79,6 +79,9 @@ if GetDepend(['BSP_USING_EXMC', 'BSP_USING_NAND']):
 if GetDepend(['BSP_USING_USBD']):
     src += ['test_usbd.c']
 
+if GetDepend(['BSP_USING_USBH']):
+    src += ['test_usbh.c']
+
 if GetDepend(['BSP_USING_ON_CHIP_FLASH']):
     src += ['test_fal.c']
 
