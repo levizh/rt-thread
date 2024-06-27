@@ -372,9 +372,6 @@ menu "On-chip Peripheral Drivers"
             config BSP_USING_DAC1
                 bool "using dac1"
                 default n
-            config BSP_USING_DAC2
-                bool "using dac2"
-                default n
         endif
 
     menuconfig BSP_USING_CAN

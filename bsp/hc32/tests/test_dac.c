@@ -1,8 +1,8 @@
 /*
  * 程序清单： DAC 设备使用例程
- * 例程导出了 dac_sample 命令到控制终端
- * 命令调用格式：dac_sample
- * 程序功能：通过 DAC 设备将数字值转换为模拟量，并输出电压值。
+ * 例程导出了 dac_vol_sample 命令到控制终端
+ * 命令调用格式：dac_vol_sample  参数1：dac1 | dac2  参数2：DAC配置值 （可选，范围0-4095），默认1365≈1.1V
+ * 程序功能：通过 DAC 设备将数字值转换为模拟量，并输出电压值。将示波器通道连接到输出引脚，观察输出电压值
  *           示例代码参考电压为3.3V,转换位数为12位。
 */
 #include <rtthread.h>
@@ -11,7 +11,8 @@
 
 #ifdef BSP_USING_DAC
 
-#define REFER_VOLTAGE       330         /* 参考电压 3.3V,数据精度乘以100保留2位小数*/
+#define REFER_VOLTAGE                   330     /* 参考电压 3.3V,数据精度乘以100保留2位小数*/
+#define DAC_MAX_OUTPUT_VALUE            4095
 
 static int dac_vol_sample(int argc, char *argv[])
 {
@@ -26,9 +27,20 @@ static int dac_vol_sample(int argc, char *argv[])
     /* 参数无输入或者输入错误按照默认值处理 */
     if (argc >= 2)
     {
-        if (0 == rt_strcmp(argv[1], "dac2"))
+        if (0 == rt_strcmp(argv[1], "dac1"))
+        {
+            rt_strcpy(dac_device_name, "dac1");
+        }
+#if defined (HC32F4A0)
+        else if (0 == rt_strcmp(argv[1], "dac2"))
         {
             rt_strcpy(dac_device_name, "dac2");
+        }
+#endif
+        else
+        {
+            rt_kprintf("The chip hasn't the dac unit!\r\n");
+            return RT_ERROR;
         }
     }
 
@@ -50,15 +62,18 @@ static int dac_vol_sample(int argc, char *argv[])
     {
         /* 打开通道 */
         ret = rt_dac_enable(dac_dev, channel);
-
         /* 设置输出值 */
         if (argc >= 3)
         {
             value = atoi(argv[2]);
+            if (value > DAC_MAX_OUTPUT_VALUE)
+            {
+                rt_kprintf("invalid dac value!!! \n");
+                return RT_ERROR;
+            }
         }
         rt_dac_write(dac_dev, channel, value);
         rt_kprintf("Value is :%d \n", value);
-
         /* 转换为对应电压值 */
         vol = value * REFER_VOLTAGE / convertBits;
         rt_kprintf("Voltage is :%d.%02d \n", vol / 100, vol % 100);

@@ -390,6 +390,12 @@ menu "On-chip Peripheral Drivers"
             config BSP_USING_DAC2
                 bool "using dac2"
                 default n
+            config BSP_USING_DAC3
+                bool "using dac3"
+                default n
+            config BSP_USING_DAC4
+                bool "using dac4"
+                default n
         endif
 
     menuconfig BSP_USING_CAN

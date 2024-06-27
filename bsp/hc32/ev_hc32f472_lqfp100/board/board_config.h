@@ -88,7 +88,7 @@
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
     #define ADC1_CH_PORT                    (GPIO_PORT_C)
-    #define ADC1_CH_PIN                     (GPIO_PIN_01)
+    #define ADC1_CH_PIN                     (GPIO_PIN_00)
 #endif
 
 #if defined(BSP_USING_ADC2)
@@ -98,7 +98,7 @@
 
 #if defined(BSP_USING_ADC3)
     #define ADC3_CH_PORT                    (GPIO_PORT_C)
-    #define ADC3_CH_PIN                     (GPIO_PIN_01)
+    #define ADC3_CH_PIN                     (GPIO_PIN_02)
 #endif
 
 /***********  DAC configure *********/
