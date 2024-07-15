@@ -908,7 +908,11 @@ static int _usbh_pipe_xfer(upipe_t pipe, rt_uint8_t token, void *buffer, int nby
             u32NakCnt ++;
             if (u32NakCnt > MAX_NAK_CNT)
             {
+#if defined(RT_USBH_MSTORAGE) || defined (RT_USBH_HID)
+                /* Do not limit the number of Naks */
+#else
                 return -1;
+#endif
             }
             if (pipe->ep.bmAttributes == USB_EP_ATTR_INT)
             {
