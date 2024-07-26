@@ -28,7 +28,11 @@
     #define USBFS_VBUS_INT_PIN            (rt_base_t)(((rt_uint16_t)USBF_VBUS_PORT * 16) + __CLZ(__RBIT(USBF_VBUS_PIN)))
 #endif
 
-extern rt_err_t rt_hw_usb_board_init(void);
+#if !defined(BSP_USING_USBD_HS)
+    extern rt_err_t rt_hw_usbfs_board_init(void);
+#else
+    extern rt_err_t rt_hw_usbhs_board_init(void);
+#endif
 extern void rt_hw_us_delay(rt_uint32_t us);
 
 static usb_core_instance _hc32_usbd;
@@ -73,12 +77,12 @@ static struct ep_id _ep_pool[] =
     {0xFF, USB_EP_ATTR_TYPE_MASK,   USB_DIR_MASK,   0,  ID_ASSIGNED  },
 };
 
-void usb_udelay(const uint32_t usec)
+__WEAK void usb_udelay(const uint32_t usec)
 {
     rt_hw_us_delay(usec);
 }
 
-void usb_mdelay(const uint32_t msec)
+__WEAK void usb_mdelay(const uint32_t msec)
 {
     rt_thread_mdelay(msec);
 }
@@ -834,14 +838,15 @@ static rt_err_t _usbd_init(rt_device_t device)
     struct hc32_irq_config irq_config;
 
     pdev = (usb_core_instance *)device->user_data;
-    rt_hw_usb_board_init();
-#if !defined(BSP_USING_USBHS)
+#if !defined(BSP_USING_USBD_HS)
+    rt_hw_usbfs_board_init();
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_USBFS, ENABLE);
 #else
+    rt_hw_usbhs_board_init();
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_USBHS, ENABLE);
 #endif
     /* Parameters */
-#if !defined(BSP_USING_USBHS)
+#if !defined(BSP_USING_USBD_HS)
     stcPortIdentify.u8CoreID = USBFS_CORE_ID;
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
@@ -865,22 +870,27 @@ static rt_err_t _usbd_init(rt_device_t device)
     /* Enable USB Global interrupt */
     usb_ginten(&pdev->regs);
     /* NVIC Config */
-    irq_config.irq_num = BSP_USB_GLB_IRQ_NUM;
-#if !defined(BSP_USING_USBHS)
+#if !defined(BSP_USING_USBD_HS)
+    irq_config.irq_num = BSP_USBFS_GLB_IRQ_NUM;
     irq_config.int_src = INT_SRC_USBFS_GLB;
+    irq_config.irq_prio = BSP_USBFS_GLB_IRQ_PRIO;
 #else
+    irq_config.irq_num = BSP_USBHS_GLB_IRQ_NUM;
     irq_config.int_src = INT_SRC_USBHS_GLB;
+    irq_config.irq_prio = BSP_USBHS_GLB_IRQ_PRIO;
 #endif
-    irq_config.irq_prio = BSP_USB_GLB_IRQ_PRIO;
+
     /* register interrupt */
     hc32_install_irq_handler(&irq_config,
                              usbd_irq_handler,
                              RT_TRUE);
+#if defined(HC32F472)
 #ifdef VBUS_SENSING_ENABLED
     /* VBUS Extint config */
     rt_pin_mode(USBFS_VBUS_INT_PIN, PIN_MODE_INPUT);
     rt_pin_attach_irq(USBFS_VBUS_INT_PIN, PIN_IRQ_MODE_RISING_FALLING, vbus_irq_handler, (void *)"callbackargs");
     rt_pin_irq_enable(USBFS_VBUS_INT_PIN, PIN_IRQ_ENABLE);
+#endif
 #endif
     return RT_EOK;
 }

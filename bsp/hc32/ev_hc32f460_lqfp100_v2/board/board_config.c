@@ -318,7 +318,7 @@ void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)
 #endif
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
-rt_err_t rt_hw_usb_board_init(void)
+rt_err_t rt_hw_usbfs_board_init(void)
 {
     stc_gpio_init_t stcGpioCfg;
     (void)GPIO_StructInit(&stcGpioCfg);

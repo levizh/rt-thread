@@ -205,8 +205,8 @@ extern "C" {
 #endif/* RT_USING_ALARM */
 
 #if defined(BSP_USING_USBD) || defined(BSP_USING_USBH)
-#define BSP_USB_GLB_IRQ_NUM             INT003_IRQn
-#define BSP_USB_GLB_IRQ_PRIO            DDL_IRQ_PRIO_DEFAULT
+#define BSP_USBFS_GLB_IRQ_NUM           INT003_IRQn
+#define BSP_USBFS_GLB_IRQ_PRIO          DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_USBD */
 
 #if defined (BSP_USING_QSPI)

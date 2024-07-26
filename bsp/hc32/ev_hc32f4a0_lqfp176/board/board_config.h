@@ -558,7 +558,8 @@
         #define USBF_DRVVBUS_PORT               (GPIO_PORT_C)
         #define USBF_DRVVBUS_PIN                (GPIO_PIN_09)
         #define USBF_DRVVBUS_FUNC               (GPIO_FUNC_10)
-    #elif defined(BSP_USING_USBHS)
+    #endif
+    #if defined(BSP_USING_USBHS)
         /* USBHS Core*/
         #if defined(BSP_USING_USBHS_PHY_EMBED)
             #define USBH_DP_PORT                    (GPIO_PORT_B)
