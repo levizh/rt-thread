@@ -125,4 +125,4 @@ msh >
 
 维护人:
 
--  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<xhsc_mcu@xhsc.com.cn>
+-  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<xhsc_ae_cd_ap@xhsc.com.cn>
