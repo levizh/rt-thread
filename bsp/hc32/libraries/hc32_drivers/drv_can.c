@@ -339,6 +339,7 @@ static uint8_t _get_can_data_bytes_len(uint32_t dlc)
     {
         data_bytes = dlc;
     }
+#ifdef RT_CAN_USING_CANFD
     else
     {
 #ifdef RT_CAN_USING_CANFD
@@ -371,6 +372,7 @@ static uint8_t _get_can_data_bytes_len(uint32_t dlc)
         }
 #endif
     }
+#endif
 
     return data_bytes;
 }

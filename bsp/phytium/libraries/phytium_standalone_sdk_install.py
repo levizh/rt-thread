@@ -19,6 +19,6 @@ def clone_repository(branch, commit_hash):
 if __name__ == "__main__":
 
     branch_to_clone = "master"
-    commit_to_clone = "cd15b23000d0c52968dc322b6d99025195bbf446"
+    commit_to_clone = "2ff7883c95cd312c636c9f35903b46ae74f8749d"
 
     clone_repository(branch_to_clone, commit_to_clone)

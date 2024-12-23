@@ -114,65 +114,45 @@ static void _setup_debug_rxind_hook(void)
 
 #endif /* LWP_DEBUG_INIT */
 
-static void _tty_rx_notify(struct rt_device *device)
+static rt_err_t _serial_ty_bypass(struct rt_serial_device* serial, char ch,void *data)
 {
     lwp_tty_t tp;
-    struct serial_tty_context *softc;
-
-    tp = rt_container_of(device, struct lwp_tty, parent);
-    RT_ASSERT(tp);
-
-    softc = tty_softc(tp);
-
-    if (_ttyworkq)
-        rt_workqueue_submit_work(_ttyworkq, &softc->work, 0);
-}
-
-static void _tty_rx_worker(struct rt_work *work, void *data)
-{
-    char input;
-    rt_ssize_t readbytes;
-    lwp_tty_t tp = data;
-    struct serial_tty_context *softc;
-    struct rt_serial_device *serial;
+    tp = (lwp_tty_t)data;
 
     tty_lock(tp);
-
-    while (1)
-    {
-        softc = tty_softc(tp);
-        serial = softc->parent;
-        readbytes = rt_device_read(&serial->parent, -1, &input, 1);
-        if (readbytes != 1)
-        {
-            break;
-        }
-
-        ttydisc_rint(tp, input, 0);
-    }
-
+    ttydisc_rint(tp, ch, 0);
     ttydisc_rint_done(tp);
     tty_unlock(tp);
+
+    return RT_EOK;
+
 }
 
-rt_inline void _setup_serial(struct rt_serial_device *serial, lwp_tty_t tp,
+rt_inline void _setup_serial(struct rt_serial_device* serial, lwp_tty_t tp,
                              struct serial_tty_context *softc)
 {
-    struct rt_device_notify notify;
-
-    softc->backup_notify = serial->rx_notify;
-    notify.dev = &tp->parent;
-    notify.notify = _tty_rx_notify;
-
-    rt_device_init(&serial->parent);
-
-    rt_device_control(&serial->parent, RT_DEVICE_CTRL_NOTIFY_SET, &notify);
+    rt_bypass_lower_register(serial, "tty",RT_BYPASS_PROTECT_LEVEL_1, _serial_ty_bypass,(void *)tp);
 }
 
 rt_inline void _restore_serial(struct rt_serial_device *serial, lwp_tty_t tp,
                                struct serial_tty_context *softc)
 {
     rt_device_control(&serial->parent, RT_DEVICE_CTRL_NOTIFY_SET, &softc->backup_notify);
+}
+
+static void _serial_tty_set_speed(struct lwp_tty *tp)
+{
+    struct serial_tty_context *softc = (struct serial_tty_context *)(tp->t_devswsoftc);
+    struct rt_serial_device *serial;
+    struct termios serial_hw_config;
+
+    RT_ASSERT(softc);
+    serial = softc->parent;
+
+    rt_device_control(&(serial->parent), TCGETS, &serial_hw_config);
+    tp->t_termios_init_in.c_cflag |= serial_hw_config.c_cflag;
+
+    tp->t_termios_init_in.__c_ispeed = tp->t_termios_init_in.__c_ospeed = cfgetospeed(&tp->t_termios_init_in);
 }
 
 static int _serial_isbusy(struct rt_serial_device *serial)
@@ -283,6 +263,17 @@ static int serial_tty_param(struct lwp_tty *tp, struct termios *t)
     RT_ASSERT(softc);
     serial = softc->parent;
 
+    if (!tty_opened(tp))
+    {
+        /**
+         * skip configure on open since all configs are copied from the current
+         * configuration on device. So we don't bother to set it back to device
+         * again.
+         */
+        return RT_EOK;
+    }
+
+    cfsetispeed(t, t->__c_ispeed);
     return rt_device_control(&(serial->parent), TCSETS, t);
 }
 
@@ -317,8 +308,8 @@ rt_err_t rt_hw_serial_register_tty(struct rt_serial_device *serial)
             tty = lwp_tty_create(&serial_ttydevsw, softc);
             if (tty)
             {
+                _serial_tty_set_speed(tty);
                 rc = lwp_tty_register(tty, dev_name);
-                rt_work_init(&softc->work, _tty_rx_worker, tty);
 
                 if (rc != RT_EOK)
                 {
@@ -387,3 +378,66 @@ static int _tty_workqueue_init(void)
     return RT_EOK;
 }
 INIT_PREV_EXPORT(_tty_workqueue_init);
+
+static rt_err_t _match_tty_iter(struct rt_object *obj, void *data)
+{
+    rt_device_t target = *(rt_device_t *)data;
+    rt_device_t device = rt_container_of(obj, struct rt_device, parent);
+    if (device->type == RT_Device_Class_Char)
+    {
+        lwp_tty_t tp;
+        if (rt_strncmp(obj->name, "tty"TTY_NAME_PREFIX,
+            sizeof("tty"TTY_NAME_PREFIX) - 1) == 0)
+        {
+            struct serial_tty_context *softc;
+
+            tp = rt_container_of(device, struct lwp_tty, parent);
+            softc = tty_softc(tp);
+
+            if (&softc->parent->parent == target)
+            {
+                /* matched, early return */
+                *(rt_device_t *)data = device;
+                return 1;
+            }
+        }
+    }
+
+    return RT_EOK;
+}
+
+/**
+ * @brief The default console is only a backup device with lowest priority.
+ *        It's always recommended to scratch the console from the boot arguments.
+ *        And dont forget to register the device with a higher priority.
+ */
+static int _default_console_setup(void)
+{
+    rt_err_t rc;
+    rt_device_t bakdev;
+    rt_device_t ttydev;
+
+    bakdev = rt_console_get_device();
+    if (!bakdev)
+    {
+        return -RT_ENOENT;
+    }
+
+    ttydev = bakdev;
+    rt_object_for_each(RT_Object_Class_Device, _match_tty_iter, &ttydev);
+
+    if (ttydev != bakdev)
+    {
+        LOG_I("Using /dev/%.*s as default console", RT_NAME_MAX, ttydev->parent.name);
+        lwp_console_register_backend(ttydev, LWP_CONSOLE_LOWEST_PRIOR);
+        rc = RT_EOK;
+    }
+    else
+    {
+        rc = -RT_EINVAL;
+    }
+
+    return rc;
+}
+
+INIT_COMPONENT_EXPORT(_default_console_setup);

@@ -106,7 +106,7 @@ def xml_indent(elem, level=0):
             elem.tail = i
 
 
-source_ext = ["c", "h", "s", "S", "cpp", "xpm"]
+source_ext = ["c", "h", "s", "S", "cpp", "cxx", "cc", "xpm"]
 source_list = []
 
 def walk_children(child):
@@ -303,3 +303,26 @@ def ImportModule(module):
         return module
     else:
         return __import__(module, fromlist=[module])
+
+def VerTuple(version_str):
+    ver_parts = version_str.split('.')
+    ver = tuple(int(part) for part in ver_parts)
+
+    return ver
+
+def CmdExists(cmd):
+    # Check if the path directly points to an existing file.
+    if os.path.isfile(cmd):
+        return True
+    else:
+        # On Windows systems, check for common script file extensions
+        # if the file does not exist as specified.
+        if sys.platform.startswith('win'):
+            # Loop through possible extensions to cover cases where the extension is omitted in the input.
+            for ext in ['.exe', '.bat', '.ps1']:
+                # Append the extension to the command path and check if this file exists.
+                if os.path.isfile(cmd + ext):
+                    return True
+
+    # If none of the checks confirm the file exists, return False.
+    return False

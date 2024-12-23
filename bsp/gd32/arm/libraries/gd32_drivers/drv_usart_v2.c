@@ -233,13 +233,14 @@ static void dma_recv_isr (struct rt_serial_device *serial)
 {
     struct gd32_uart *uart;
     rt_size_t recv_len, counter;
+    rt_base_t level;
 
     RT_ASSERT(serial != RT_NULL);
     uart = rt_container_of(serial, struct gd32_uart, serial);
 
     recv_len = 0;
+    level = rt_hw_interrupt_disable();
     counter = dma_transfer_number_get(uart->dma.rx.periph, uart->dma.rx.channel);
-
     if (counter <= uart->dma.last_index)
     {
         recv_len = uart->dma.last_index - counter;
@@ -248,10 +249,11 @@ static void dma_recv_isr (struct rt_serial_device *serial)
     {
         recv_len = serial->config.rx_bufsz + uart->dma.last_index - counter;
     }
+    uart->dma.last_index = counter;
+    rt_hw_interrupt_enable(level);
 
     if (recv_len)
     {
-        uart->dma.last_index = counter;
         rt_hw_serial_isr(serial, RT_SERIAL_EVENT_RX_DMADONE | (recv_len << 8));
     }
 }
@@ -876,9 +878,8 @@ static void gd32_dma_config (struct rt_serial_device *serial, rt_ubase_t flag)
 static rt_err_t gd32_uart_control (struct rt_serial_device *serial, int cmd, void *arg)
 {
     struct gd32_uart *uart;
-#ifdef RT_SERIAL_USING_DMA
+
     rt_ubase_t ctrl_arg = (rt_ubase_t)arg;
-#endif
 
     RT_ASSERT(serial != RT_NULL);
     uart = rt_container_of(serial, struct gd32_uart, serial);
@@ -1025,8 +1026,10 @@ static rt_ssize_t gd32_transmit (struct rt_serial_device *serial, rt_uint8_t *bu
 
     if (uart->uart_dma_flag & RT_DEVICE_FLAG_DMA_TX)
     {
+#ifdef RT_SERIAL_USING_DMA
         _uart_dma_transmit(uart, buf, size);
         return size;
+#endif
     }
 
     gd32_uart_control(serial, RT_DEVICE_CTRL_SET_INT, (void *)tx_flag);
@@ -1039,11 +1042,7 @@ static const struct rt_uart_ops gd32_uart_ops =
     .control = gd32_uart_control,
     .putc = gd32_uart_putc,
     .getc = gd32_uart_getc,
-#ifdef RT_SERIAL_USING_DMA
     .transmit = gd32_transmit,
-#else
-    .transmit = RT_NULL,
-#endif
 };
 
 static void gd32_uart_get_config (void)

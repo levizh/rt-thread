@@ -71,8 +71,9 @@ void gic_common_sgi_config(void *base, void *data, int irq_base)
         pirq = rt_pic_find_ipi(data, ipi);      \
         pirq->mode = RT_IRQ_MODE_EDGE_RISING;   \
 
-        DECLARE_GIC_IPI(RT_SCHEDULE_IPI, 0);
-        DECLARE_GIC_IPI(RT_STOP_IPI, 1);
+        DECLARE_GIC_IPI(RT_SCHEDULE_IPI, RT_SCHEDULE_IPI);
+        DECLARE_GIC_IPI(RT_STOP_IPI, RT_STOP_IPI);
+        DECLARE_GIC_IPI(RT_SMP_CALL_IPI, RT_SMP_CALL_IPI);
 
 #undef DECLARE_GIC_IPI
     }
@@ -171,5 +172,13 @@ void gic_common_cpu_config(void *base, int nr, void (*sync_access)(void *), void
     if (sync_access)
     {
         sync_access(data);
+    }
+}
+
+void gic_fill_ppi_affinity(rt_bitmap_t *affinity)
+{
+    for (int cpuid = 0; cpuid < RT_CPUS_NR; ++cpuid)
+    {
+        RT_IRQ_AFFINITY_SET(affinity, cpuid);
     }
 }

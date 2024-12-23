@@ -142,16 +142,8 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
     # set BSP_ROOT in ENV
     Env['BSP_ROOT'] = Dir('#').abspath
     os.environ["BSP_DIR"] = Dir('#').abspath
-    # set PKGS_ROOT in ENV
-    if not "PKGS_DIR" in os.environ:
-        if "ENV_ROOT" in os.environ:
-            os.environ["PKGS_DIR"] = os.path.join(os.environ["ENV_ROOT"], "packages")
-        elif sys.platform == "win32":
-            os.environ["PKGS_DIR"] = os.path.join(os.environ["USERPROFILE"], ".env/packages")
-        else:
-            os.environ["PKGS_DIR"] = os.path.join(os.environ["HOME"], ".env/packages")
 
-    sys.path = sys.path + [os.path.join(Rtt_Root, 'tools'), os.path.join(Rtt_Root, 'tools/kconfiglib')]
+    sys.path += os.path.join(Rtt_Root, 'tools')
 
     # {target_name:(CROSS_TOOL, PLATFORM)}
     tgt_dict = {'mdk':('keil', 'armcc'),
@@ -171,7 +163,8 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
                 'cmake-armclang':('keil', 'armclang'),
                 'xmake':('gcc', 'gcc'),
                 'codelite' : ('gcc', 'gcc'),
-                'esp-idf': ('gcc', 'gcc')}
+                'esp-idf': ('gcc', 'gcc'),
+                'zig':('gcc', 'gcc')}
     tgt_name = GetOption('target')
 
     if tgt_name:
@@ -195,14 +188,14 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
         os.environ['RTT_CC_PREFIX'] = exec_prefix
 
     # auto change the 'RTT_EXEC_PATH' when 'rtconfig.EXEC_PATH' get failed
-    if not os.path.exists(os.path.join(rtconfig.EXEC_PATH, rtconfig.CC)):
+    if not utils.CmdExists(os.path.join(rtconfig.EXEC_PATH, rtconfig.CC)):
         if 'RTT_EXEC_PATH' in os.environ:
             # del the 'RTT_EXEC_PATH' and using the 'EXEC_PATH' setting on rtconfig.py
             del os.environ['RTT_EXEC_PATH']
 
         try:
             # try to detect toolchains in env
-            envm = utils.ImportModule('env')
+            envm = utils.ImportModule('env_utility')
             # from env import GetSDKPath
             exec_path = envm.GetSDKPath(rtconfig.CC)
             if 'gcc' in rtconfig.CC:
@@ -328,7 +321,7 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
             print('--global-macros arguments are illegal!')
 
     if GetOption('genconfig'):
-        from menukconfig import genconfig
+        from env_utility import genconfig
         genconfig()
         exit(0)
 
@@ -338,23 +331,23 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
         exit(0)
 
     if GetOption('menuconfig'):
-        from menukconfig import menuconfig
+        from env_utility import menuconfig
         menuconfig(Rtt_Root)
         exit(0)
 
-    if GetOption('pyconfig-silent'):
-        from menukconfig import guiconfig_silent
-        guiconfig_silent(Rtt_Root)
+    if GetOption('defconfig'):
+        from env_utility import defconfig
+        defconfig(Rtt_Root)
         exit(0)
 
-    elif GetOption('pyconfig'):
-        from menukconfig import guiconfig
+    elif GetOption('guiconfig'):
+        from env_utility import guiconfig
         guiconfig(Rtt_Root)
         exit(0)
 
     configfn = GetOption('useconfig')
     if configfn:
-        from menukconfig import mk_rtconfig
+        from env_utility import mk_rtconfig
         mk_rtconfig(configfn)
         exit(0)
 
@@ -850,6 +843,11 @@ def DoBuilding(target, objects):
         objects = sorted(objects)
         objects.append(objects_in_group)
 
+        # generate build/compile_commands.json
+        if GetOption('cdb') and utils.VerTuple(SCons.__version__) >= (4, 0, 0):
+            Env.Tool("compilation_db")
+            Env.CompilationDatabase('build/compile_commands.json')
+
         program = Env.Program(target, objects)
 
     EndBuilding(target, program)
@@ -925,7 +923,7 @@ def GenTargetProject(program = None):
 
     if GetOption('target') == 'cmake' or GetOption('target') == 'cmake-armclang':
         from cmake import CMakeProject
-        CMakeProject(Env,Projects)
+        CMakeProject(Env, Projects, GetOption('project-name'))
 
     if GetOption('target') == 'xmake':
         from xmake import XMakeProject
@@ -934,6 +932,10 @@ def GenTargetProject(program = None):
     if GetOption('target') == 'esp-idf':
         from esp_idf import ESPIDFProject
         ESPIDFProject(Env, Projects)
+
+    if GetOption('target') == 'zig':
+        from zigbuild import ZigBuildProject
+        ZigBuildProject(Env, Projects)
 
 def EndBuilding(target, program = None):
     from mkdist import MkDist

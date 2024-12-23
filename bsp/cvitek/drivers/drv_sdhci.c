@@ -10,16 +10,20 @@
 #include <rthw.h>
 #include <rtthread.h>
 #include <rtdevice.h>
-#include "stdbool.h"
+#include <mmu.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "board.h"
+#include "cache.h"
 
 #define DBG_TAG     "drv.sdio"
 #define DBG_LEVEL   DBG_INFO
 #include <rtdbg.h>
 
-#include <drivers/mmcsd_core.h>
-#include <drivers/sdio.h>
+#include <drivers/dev_mmcsd_core.h>
+#include <drivers/dev_sdio.h>
 
 #include "drv_sdhci.h"
 
@@ -28,7 +32,7 @@
 struct rthw_sdhci
 {
     struct rt_mmcsd_host *host;
-    rt_uint32_t *base;
+    rt_ubase_t base;
     rt_uint32_t irq;
     volatile rt_err_t cmd_error;
     volatile rt_err_t data_error;
@@ -39,7 +43,7 @@ struct rthw_sdhci
     rt_sem_t sem_data;
 };
 
-static uint32_t sdhci_set_card_clock(rt_uint32_t *base, uint32_t srcClock_Hz, uint32_t target_HZ)
+static uint32_t sdhci_set_card_clock(rt_ubase_t base, uint32_t srcClock_Hz, uint32_t target_HZ)
 {
     uintptr_t BASE = (uintptr_t)base;
     uint32_t divider = 1U;
@@ -115,7 +119,7 @@ static uint32_t sdhci_set_card_clock(rt_uint32_t *base, uint32_t srcClock_Hz, ui
     return -1;
 }
 
-static uint32_t SDIF_ChangeCardClock(rt_uint32_t *base, uint32_t srcClock_Hz, uint32_t target_HZ)
+static uint32_t SDIF_ChangeCardClock(rt_ubase_t base, uint32_t srcClock_Hz, uint32_t target_HZ)
 {
     uintptr_t BASE = (uintptr_t)base;
     uint32_t divider = 1U;
@@ -214,23 +218,26 @@ static void sdhci_wait_data_complete(struct rthw_sdhci *sdhci)
     }
 }
 
-uint32_t sdhci_prepare_data(struct rthw_sdhci *sdhci, struct rt_mmcsd_cmd *cmd, struct rt_mmcsd_data *data, sdhci_dma_config_t *dma_config)
+static uint32_t sdhci_prepare_data(struct rthw_sdhci *sdhci, struct rt_mmcsd_cmd *cmd, struct rt_mmcsd_data *data, rt_ubase_t start_addr, rt_uint32_t load_len)
 {
     uintptr_t BASE = (uintptr_t)sdhci->base;
 
-    uint64_t load_addr;
     uint32_t block_cnt, blksz;
     uint8_t tmp;
+    rt_ubase_t dma_addr;
 
     blksz = data->blksize;
     block_cnt = data->blks;
 
-    load_addr = (uint64_t)dma_config->dma_des_buffer_start_addr;
+    rt_hw_cpu_dcache_clean((void *)start_addr, load_len);
+#ifdef RT_USING_SMART
+        dma_addr = (rt_ubase_t)rt_kmem_v2p((void *)start_addr);
+#else
+        dma_addr = start_addr;
+#endif
 
-    csi_dcache_clean_invalid_range((uint64_t *)load_addr, dma_config->dma_des_buffer_len);
-
-    mmio_write_32(BASE + SDIF_ADMA_SA_LOW, load_addr);
-    mmio_write_32(BASE + SDIF_ADMA_SA_HIGH, (load_addr >> 32));
+    mmio_write_32(BASE + SDIF_ADMA_SA_LOW, dma_addr);
+    mmio_write_32(BASE + SDIF_ADMA_SA_HIGH, (dma_addr >> 32));
 
     mmio_write_32(BASE + SDIF_DMA_ADDRESS, block_cnt);
     mmio_write_16(BASE + SDIF_BLOCK_COUNT, 0);
@@ -289,7 +296,7 @@ static rt_err_t sdhci_send_data_cmd(struct rthw_sdhci *sdhci, struct rt_mmcsd_cm
             return -RT_ETIMEOUT;
     }
 
-    void *src_align = NULL;
+    rt_ubase_t start_addr;
     void *src_unalign = NULL;
 
     if (data)
@@ -299,20 +306,19 @@ static rt_err_t sdhci_send_data_cmd(struct rthw_sdhci *sdhci, struct rt_mmcsd_cm
         {
             if ((uint64_t)data->buf & (SDMMC_DMA_ALIGN_CACHE - 1))
             {
-                src_align = align_alloc(SDMMC_DMA_ALIGN_CACHE, dma_config.dma_des_buffer_len, (void **)&src_unalign);
-                dma_config.dma_des_buffer_start_addr = (uint32_t *)src_align;
+                start_addr = (rt_ubase_t)align_alloc(SDMMC_DMA_ALIGN_CACHE, dma_config.dma_des_buffer_len, (void **)&src_unalign);
             }
             else
             {
-                dma_config.dma_des_buffer_start_addr = (uint32_t *)data->buf;
+                start_addr = (rt_ubase_t)data->buf;
             }
         }
         else
         {
-            dma_config.dma_des_buffer_start_addr = (uint32_t *)data->buf;
+            start_addr = (rt_ubase_t)data->buf;
         }
 
-        sdhci_prepare_data(sdhci, cmd, data, &dma_config);
+        sdhci_prepare_data(sdhci, cmd, data, start_addr, dma_config.dma_des_buffer_len);
 
         mode = SDIF_TRNS_DMA;
         if (mmc_op_multi(cmd->cmd_code) || data->blks > 1)
@@ -367,12 +373,11 @@ static rt_err_t sdhci_send_data_cmd(struct rthw_sdhci *sdhci, struct rt_mmcsd_cm
 
         if (data->flags & DATA_DIR_READ)
         {
-            csi_dcache_invalid_range((uint64_t *)dma_config.dma_des_buffer_start_addr, dma_config.dma_des_buffer_len);
+            rt_hw_cpu_dcache_invalidate((void *)start_addr, dma_config.dma_des_buffer_len);
             if (src_unalign)
             {
-                memcpy((void *)data->buf, src_align, dma_config.dma_des_buffer_len);
+                memcpy((void *)data->buf, (void *)start_addr, dma_config.dma_des_buffer_len);
                 rt_free(src_unalign);
-                src_align = NULL;
                 src_unalign = NULL;
             }
         }
@@ -400,7 +405,6 @@ static void sdhci_cmd_irq(struct rthw_sdhci *sdhci, uint32_t intmask)
 
     if (intmask & SDIF_INT_RESPONSE)
     {
-        sdhci->cmd_error = RT_EOK;
         if (sdhci->response_type == RESP_R2)
         {
             /* CRC is stripped so we need to do some shifting. */
@@ -416,6 +420,8 @@ static void sdhci_cmd_irq(struct rthw_sdhci *sdhci, uint32_t intmask)
             sdhci->response[0] = mmio_read_32(BASE + SDIF_RESPONSE_01);
             LOG_D("sdhci->response: [%08x]", sdhci->response[0]);
         }
+
+        rt_sem_release(sdhci->sem_cmd);
     }
 }
 
@@ -483,7 +489,6 @@ static void sdhci_transfer_handle_irq(int irqno, void *param)
         if (intmask & SDIF_INT_CMD_MASK)
         {
             sdhci_cmd_irq(sdhci, intmask & SDIF_INT_CMD_MASK);
-            rt_sem_release(sdhci->sem_cmd);
         }
 
         if (intmask & SDIF_INT_DMA_END)
@@ -522,7 +527,7 @@ static void sdhci_transfer_handle_irq(int irqno, void *param)
     } while (intmask && --max_loop);
 }
 
-static uint32_t sdhci_set_clock(rt_uint32_t *base, uint32_t target_hz)
+static uint32_t sdhci_set_clock(rt_ubase_t base, uint32_t target_hz)
 {
     uint32_t source_clock_hz;
     uint32_t ret;
@@ -536,7 +541,7 @@ static uint32_t sdhci_set_clock(rt_uint32_t *base, uint32_t target_hz)
     return ret;
 }
 
-static void sdhci_set_bus_width(rt_uint32_t *base, uint8_t bus_width)
+static void sdhci_set_bus_width(rt_ubase_t base, uint8_t bus_width)
 {
     uintptr_t BASE = (uintptr_t)base;
     uint32_t ctrl;
@@ -559,7 +564,7 @@ static void sdhci_set_bus_width(rt_uint32_t *base, uint8_t bus_width)
     mmio_write_8(BASE + SDIF_HOST_CONTROL, ctrl);
 }
 
-static void sdhci_enable_card_power(rt_uint32_t *base, bool enable)
+static void sdhci_enable_card_power(rt_ubase_t base, bool enable)
 {
     uintptr_t BASE = (uintptr_t)base;
 
@@ -573,7 +578,7 @@ static void sdhci_enable_card_power(rt_uint32_t *base, bool enable)
     }
 }
 
-static uint32_t sdhci_detect_card_insert(rt_uint32_t *base, bool data3)
+static uint32_t sdhci_detect_card_insert(rt_ubase_t base, bool data3)
 {
     uintptr_t BASE = (uintptr_t)base;
     if (data3)
@@ -586,7 +591,7 @@ static uint32_t sdhci_detect_card_insert(rt_uint32_t *base, bool data3)
     }
 }
 
-static void sdhci_enable_card_clock(rt_uint32_t *base, bool enable)
+static void sdhci_enable_card_clock(rt_ubase_t base, bool enable)
 {
     uintptr_t BASE = (uintptr_t)base;
     if (enable)
@@ -599,7 +604,7 @@ static void sdhci_enable_card_clock(rt_uint32_t *base, bool enable)
     }
 }
 
-static void sdhci_hw_reset(rt_uint32_t *base)
+static void sdhci_hw_reset(rt_ubase_t base)
 {
     uintptr_t BASE = (uintptr_t)base;
 
@@ -613,11 +618,11 @@ static void sdhci_hw_reset(rt_uint32_t *base)
 
 #define REG_TOP_SD_PWRSW_CTRL       (0x1F4)
 
-static void sdhci_pad_setting(rt_uint32_t *base)
+static void sdhci_pad_setting(rt_ubase_t base)
 {
     uintptr_t BASE = (uintptr_t)base;
 
-    if (BASE == SDIO0_BASE)
+    if (BASE == (rt_ubase_t)SDIO0_BASE)
     {
         //set power for sd0
         mmio_write_32(TOP_BASE + REG_TOP_SD_PWRSW_CTRL, 0x9);
@@ -643,7 +648,7 @@ static void sdhci_pad_setting(rt_uint32_t *base)
         mmio_write_8(REG_SDIO0_DAT2_PIO_REG, REG_SDIO0_DAT2_PIO_VALUE);
         mmio_write_8(REG_SDIO0_DAT3_PIO_REG, REG_SDIO0_DAT3_PIO_VALUE);
     }
-    else if(BASE == SDIO1_BASE)
+    else if(BASE == (rt_ubase_t)SDIO1_BASE)
     {
         // set rtc sdio1 related register
         mmio_write_32(RTCSYS_CTRL, 0x1);
@@ -668,7 +673,7 @@ static void sdhci_pad_setting(rt_uint32_t *base)
         mmio_write_8(REG_SDIO1_DAT2_PIO_REG, REG_SDIO1_DAT2_PIO_VALUE);
         mmio_write_8(REG_SDIO1_DAT3_PIO_REG, REG_SDIO1_DAT3_PIO_VALUE);
     }
-    else if(BASE == SDIO2_BASE)
+    else if(BASE == (rt_ubase_t)SDIO2_BASE)
     {
         //set pu/down
         mmio_write_32(REG_SDIO2_RSTN_PAD_REG, (mmio_read_32(REG_SDIO2_RSTN_PAD_REG) & REG_SDIO2_PAD_MASK) | REG_SDIO2_RSTN_PAD_VALUE << REG_SDIO2_PAD_SHIFT);
@@ -690,7 +695,7 @@ static void sdhci_pad_setting(rt_uint32_t *base)
     }
 }
 
-static void sdhci_phy_init(rt_uint32_t *base)
+static void sdhci_phy_init(rt_ubase_t base)
 {
     uintptr_t BASE = (uintptr_t)base;
 
@@ -702,7 +707,7 @@ static void sdhci_phy_init(rt_uint32_t *base)
 
     sdhci_pad_setting(base);
 
-    if (BASE == SDIO2_BASE)
+    if (BASE == (rt_ubase_t)SDIO2_BASE)
     {
         //reg_0x200[0] = 1 for sd2
         mmio_write_32(vendor_base, mmio_read_32(vendor_base) | BIT(0));
@@ -711,7 +716,7 @@ static void sdhci_phy_init(rt_uint32_t *base)
     //reg_0x200[1] = 1
     mmio_write_32(vendor_base, mmio_read_32(vendor_base) | BIT(1));
 
-    if (BASE == SDIO1_BASE)
+    if (BASE == (rt_ubase_t)SDIO1_BASE)
     {
         //reg_0x200[16] = 1 for sd1
         mmio_write_32(vendor_base, mmio_read_32(vendor_base) | BIT(16));
@@ -722,7 +727,7 @@ static void sdhci_phy_init(rt_uint32_t *base)
     mmio_write_32(vendor_base + SDIF_PHY_TX_RX_DLY, 0x1000100);
 }
 
-static void sdhci_init(rt_uint32_t *base)
+static void sdhci_init(rt_ubase_t base)
 {
     uintptr_t BASE = (uintptr_t)base;
 
@@ -771,7 +776,7 @@ void rthw_sdhci_set_config(struct rthw_sdhci *sdhci)
     static bool sd1_clock_state = false;
     static bool sd2_clock_state = false;
 
-    if (BASE == SDIO0_BASE)
+    if (BASE == (rt_ubase_t)SDIO0_BASE)
     {
         LOG_D("MMC_FLAG_SDCARD.");
         if (sd0_clock_state == false)
@@ -781,7 +786,7 @@ void rthw_sdhci_set_config(struct rthw_sdhci *sdhci)
             sd0_clock_state = true;
         }
     }
-    else if (BASE == SDIO1_BASE)
+    else if (BASE == (rt_ubase_t)SDIO1_BASE)
     {
         LOG_D("MMC_FLAG_SDIO.");
         if (sd1_clock_state == false)
@@ -791,7 +796,7 @@ void rthw_sdhci_set_config(struct rthw_sdhci *sdhci)
             sd1_clock_state = true;
         }
     }
-    else if (BASE == SDIO2_BASE)
+    else if (BASE == (rt_ubase_t)SDIO2_BASE)
     {
         LOG_D("MMC_FLAG_EMMC.");
         if (sd2_clock_state == false)
@@ -839,7 +844,7 @@ static void rthw_sdhci_request(struct rt_mmcsd_host *host, struct rt_mmcsd_req *
         struct rt_mmcsd_cmd *cmd = req->cmd;
         struct rt_mmcsd_data *data = req->data;
 
-        LOG_D("[%s%s%s%s%s]REQ: CMD:%d ARG:0x%08x RES:%s%s%s%s%s%s%s%s%s rw:%c addr:%08x, blks:%d, blksize:%d datalen:%d",
+        LOG_D("[%s%s%s%s%s]REQ: CMD:%d ARG:0x%08x RES:%s%s%s%s%s%s%s%s%s rw:%c addr:%p, blks:%d, blksize:%d datalen:%d",
                 (host->card == RT_NULL) ? "Unknown" : "",
                 (host->card) && (host->card->card_type == CARD_TYPE_MMC) ? "MMC" : "",
                 (host->card) && (host->card->card_type == CARD_TYPE_SD) ? "SD" : "",
@@ -862,7 +867,7 @@ static void rthw_sdhci_request(struct rt_mmcsd_host *host, struct rt_mmcsd_req *
                 data ? data->blksize : 0,
                 data ? data->blks * data->blksize : 0);
 
-        if (cmd->cmd_code == 5)
+        if (cmd->cmd_code == SD_IO_SEND_OP_COND)
         {
             cmd->err = -RT_ERROR;
 
@@ -992,7 +997,7 @@ static int rthw_sdhci_init(void)
         return ret;
     }
 
-    sdhci->base = (rt_uint32_t *)SDIO0_BASE;
+    sdhci->base = (rt_ubase_t)SDIO0_BASE;
     sdhci->irq = SDIO0_IRQ;
     strcpy(sdhci->name, "sdio0");
     rthw_sdhci_set_config(sdhci);
@@ -1003,7 +1008,7 @@ static int rthw_sdhci_init(void)
     /* set host default attributes */
     host->ops = &ops;
     host->freq_min = 400000;
-    host->freq_max = 40000000;
+    host->freq_max = 50 * 1000 * 1000;
     host->valid_ocr = VDD_31_32 | VDD_32_33 | VDD_33_34;
     host->flags = MMCSD_BUSWIDTH_4 | MMCSD_MUTBLKWRITE | MMCSD_SUP_HIGHSPEED;
     host->max_seg_size = 512;
@@ -1021,21 +1026,21 @@ static int rthw_sdhci_init(void)
 }
 INIT_DEVICE_EXPORT(rthw_sdhci_init);
 
-void sdhci_register_dump(uint8_t argc, char **argv)
+void sdhci_reg_dump(uint8_t argc, char **argv)
 {
-    rt_uint32_t *base;
+    rt_ubase_t base;
     if (argc < 2)
     {
-        rt_kprintf("Usage: sdhci_register_dump 0/1/2\n");
+        rt_kprintf("Usage: sdhci_reg_dump 0/1/2\n");
         return;
     }
 
     if (0 == atoi(argv[1]))
-        base = (void *)(rt_uint32_t *)SDIO0_BASE;
+        base = (rt_ubase_t)SDIO0_BASE;
     else if (1 == atoi(argv[1]))
-        base = (void *)(rt_uint32_t *)SDIO1_BASE;
+        base = (rt_ubase_t)SDIO1_BASE;
     else
-        base = (void *)(rt_uint32_t *)SDIO2_BASE;
+        base = (rt_ubase_t)SDIO2_BASE;
 
     uintptr_t BASE = (uintptr_t)base;
 
@@ -1088,4 +1093,4 @@ void sdhci_register_dump(uint8_t argc, char **argv)
            mmio_read_32(BASE + SDIF_ADMA_ADDRESS));
     rt_kprintf("============================================\n");
 }
-MSH_CMD_EXPORT(sdhci_register_dump, Dump SDHCI register);
+MSH_CMD_EXPORT(sdhci_reg_dump, dump sdhci register);

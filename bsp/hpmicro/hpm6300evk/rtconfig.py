@@ -7,6 +7,7 @@ import sys
 # toolchains options
 ARCH='risc-v'
 CPU='hpmicro'
+SOC_FAMILY='HPM6300'
 CHIP_NAME='HPM6360'
 
 CROSS_TOOL='gcc'
@@ -66,7 +67,8 @@ if PLATFORM == 'gcc':
     STRIP = PREFIX + 'strip'
 
     ARCH_ABI = ' -mcmodel=medlow '
-    CFLAGS = ARCH_ABI  + ' -DUSE_NONVECTOR_MODE=1 ' + ' -ffunction-sections -fdata-sections -fno-common '
+    DEVICE = ARCH_ABI  + ' -DUSE_NONVECTOR_MODE=1 ' + ' -ffunction-sections -fdata-sections -fno-common '
+    CFLAGS = DEVICE
     AFLAGS = CFLAGS
     LFLAGS  = ARCH_ABI + '  --specs=nano.specs --specs=nosys.specs  -u _printf_float -u _scanf_float -nostartfiles -Wl,--gc-sections '
 
@@ -80,8 +82,8 @@ if PLATFORM == 'gcc':
         LFLAGS += ' -O0'
         LINKER_FILE = 'board/linker_scripts/ram_rtt.ld'
     elif BUILD == 'ram_release':
-        CFLAGS += ' -O2 -Os'
-        LFLAGS += ' -O2 -Os'
+        CFLAGS += ' -O2'
+        LFLAGS += ' -O2'
         LINKER_FILE = 'board/linker_scripts/ram_rtt.ld'
     elif BUILD == 'flash_debug':
         CFLAGS += ' -gdwarf-2'
@@ -91,13 +93,13 @@ if PLATFORM == 'gcc':
         CFLAGS += ' -DFLASH_XIP=1'
         LINKER_FILE = 'board/linker_scripts/flash_rtt.ld'
     elif BUILD == 'flash_release':
-        CFLAGS += ' -O2 -Os'
-        LFLAGS += ' -O2 -Os'
+        CFLAGS += ' -O2'
+        LFLAGS += ' -O2'
         CFLAGS += ' -DFLASH_XIP=1'
         LINKER_FILE = 'board/linker_scripts/flash_rtt.ld'
     else:
-        CFLAGS += ' -O2 -Os'
-        LFLAGS += ' -O2 -Os'
+        CFLAGS += ' -O2'
+        LFLAGS += ' -O2'
         LINKER_FILE = 'board/linker_scripts/flash_rtt.ld'
     LFLAGS += ' -T ' + LINKER_FILE
 
