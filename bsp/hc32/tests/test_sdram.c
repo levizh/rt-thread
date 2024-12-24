@@ -4,10 +4,10 @@
  * 程序功能：以8/16/32bit方式分别对整个SDRAM存储空间进行写和读操作，比较数据是否一致
  *
  * 注意: 修改函数SystemClock_Config，调用函数CLK_SetClockDiv参数，
- *     CLK_EXCLK_DIV2改为CLK_EXCLK_DIV4;
+ *     CLK_EXCLK_DIV2改为CLK_EXCLK_DIV8(EXCLK: 30MHz);
  *
  * menuconfig:
- *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or Nand  ---->  Using SDRAM
+ *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or NAND  ---->  Using SDRAM (IS42S16400J7TLI)
  */
 
 #include <rtthread.h>
