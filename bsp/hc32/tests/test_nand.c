@@ -7,8 +7,7 @@
  *     CLK_EXCLK_DIV2改为CLK_EXCLK_DIV4;
  *
  * menuconfig:
- *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable NAND FLASH(MT29F2G08AB)
- *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or Nand  ---->  Using Nand
+ *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or NAND  ---->  Using NAND (MT29F2G08AB)
  */
 
 #include <stdlib.h>

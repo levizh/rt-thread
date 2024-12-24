@@ -257,12 +257,12 @@ static rt_err_t _nand_read_id(struct rt_mtd_nand_device *device)
     return RT_EOK;
 }
 
-static rt_ssize_t _nand_read_page(struct rt_mtd_nand_device *device,
-                                  rt_off_t page,
-                                  rt_uint8_t *data,
-                                  rt_uint32_t data_len,
-                                  rt_uint8_t *spare,
-                                  rt_uint32_t spare_len)
+static rt_err_t _nand_read_page(struct rt_mtd_nand_device *device,
+                                rt_off_t page,
+                                rt_uint8_t *data,
+                                rt_uint32_t data_len,
+                                rt_uint8_t *spare,
+                                rt_uint32_t spare_len)
 {
     rt_err_t result = RT_EOK;
     struct rthw_nand *hw_nand = (struct rthw_nand *)device;
@@ -325,12 +325,12 @@ _exit:
     return result;
 }
 
-static rt_ssize_t _nand_write_page(struct rt_mtd_nand_device *device,
-                                   rt_off_t page,
-                                   const rt_uint8_t *data,
-                                   rt_uint32_t data_len,
-                                   const rt_uint8_t *spare,
-                                   rt_uint32_t spare_len)
+static rt_err_t _nand_write_page(struct rt_mtd_nand_device *device,
+                                 rt_off_t page,
+                                 const rt_uint8_t *data,
+                                 rt_uint32_t data_len,
+                                 const rt_uint8_t *spare,
+                                 rt_uint32_t spare_len)
 {
     rt_err_t result = RT_EOK;
     struct rthw_nand *hw_nand = (struct rthw_nand *)device;
