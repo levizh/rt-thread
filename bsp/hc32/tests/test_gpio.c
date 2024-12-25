@@ -1,8 +1,8 @@
 /*
  * 程序清单：这是一个 PIN 设备使用例程
- * 例程导出了 pin_beep_sample 命令到控制终端
- * 命令调用格式：pin_beep_sample
- * 程序功能：通过按键控制蜂鸣器对应引脚的电平状态控制蜂鸣器
+ * 例程导出了 pin_sample 命令到控制终端
+ * 命令调用格式：pin_sample
+ * 程序功能：通过按键控制LED引脚的电平状态
 */
 
 #include <rtthread.h>
@@ -12,13 +12,16 @@
 #if defined(BSP_USING_GPIO)
 #include "drv_gpio.h"
 
-
-#define LED1_PIN_NUM            GET_PIN(C, 9)
-#define KEY1_PIN_NUM            GET_PIN(A, 0)
-
+#if defined(HC32F4A0)
+    /* 1）配置RTT工程
+    *     menuconfig:
+    *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable TCA9539
+    */
+    #define LED1_PIN_NUM                GET_PIN(B, 11)  /* LED10 */
+    #define KEY1_PIN_NUM                GET_PIN(A, 0)   /* K10  */
+#endif
 
 static uint8_t u8LedState = 1;
-
 
 void led_control(void *args)
 {
@@ -33,7 +36,7 @@ void led_control(void *args)
     }
 }
 
-static void pin_beep_sample(void)
+static void pin_sample(void)
 {
     /* LED引脚为输出模式 */
     rt_pin_mode(LED1_PIN_NUM, PIN_MODE_OUTPUT);
@@ -50,6 +53,6 @@ static void pin_beep_sample(void)
     rt_pin_irq_enable(KEY1_PIN_NUM, PIN_IRQ_ENABLE);
 }
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(pin_beep_sample, pin beep sample);
+MSH_CMD_EXPORT(pin_sample, pin sample);
 
 #endif

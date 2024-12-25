@@ -1,18 +1,12 @@
 /*
- * Copyright (c) 2022, Xiaohua Semiconductor Co., Ltd.
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Change Logs:
- * Date           Author       Notes
- * 2023-11-10     CDT          first version
- */
-
-/*
  * 程序清单： FAL使用例程
  * 例程导出了 fal_sample 命令到控制终端
  * 命令调用格式：fal_sample
- * 程序功能：
+ * 1）配置RTT工程
+ *     menuconfig:
+ *     RT-Thread Components  --->  FAL: flash abstraction layer
+ *                           --->  Device Drivers  --->  Using SPI Bus/Device device drivers  --->  Using Serial Flash Universal Driver
+ *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable on-chip FLASH
 */
 #include <rtthread.h>
 #include <rtdevice.h>
