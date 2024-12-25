@@ -56,12 +56,12 @@
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
-    #define ADC1_CH_PORT                    (GPIO_PORT_C)
+    #define ADC1_CH_PORT                    (GPIO_PORT_C)   /* Default ADC12_IN10 */
     #define ADC1_CH_PIN                     (GPIO_PIN_00)
 #endif
 
 #if defined(BSP_USING_ADC2)
-    #define ADC2_CH_PORT                    (GPIO_PORT_C)
+    #define ADC2_CH_PORT                    (GPIO_PORT_C)   /* Default ADC12_IN11 */
     #define ADC2_CH_PIN                     (GPIO_PIN_01)
 #endif
 
