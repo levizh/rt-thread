@@ -3,8 +3,8 @@
  * 例程导出了 dac_vol_sample 命令到控制终端
  * 命令调用格式：dac_vol_sample  参数1：dac1 | dac2  参数2：DAC配置值 （可选，范围0-4095），默认1365≈1.1V
  * 程序功能：通过 DAC 设备将数字值转换为模拟量，并输出电压值。将示波器通道连接到输出引脚，观察输出电压值
- *           示例代码参考电压为3.3V,转换位数为12位。
-*/
+ *          示例代码参考电压为3.3V,转换位数为12位。
+ */
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <stdlib.h>
@@ -73,10 +73,10 @@ static int dac_vol_sample(int argc, char *argv[])
             }
         }
         rt_dac_write(dac_dev, channel, value);
-        rt_kprintf("Value is :%d \n", value);
+        rt_kprintf("%s CH%d Value is :%d \n", dac_device_name, channel, value);
         /* 转换为对应电压值 */
         vol = value * REFER_VOLTAGE / convertBits;
-        rt_kprintf("Voltage is :%d.%02d \n", vol / 100, vol % 100);
+        rt_kprintf("%s CH%d Voltage is :%d.%02dV \n", dac_device_name, channel, vol / 100, vol % 100);
     }
 
     return ret;

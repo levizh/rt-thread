@@ -21,7 +21,7 @@
 #define DBG_LVL             DBG_INFO
 
 #include <rtdbg.h>
-#ifdef RT_USING_ADC
+#ifdef BSP_USING_ADC
 typedef struct
 {
     struct rt_adc_device rt_adc;
@@ -380,4 +380,4 @@ int rt_hw_adc_init(void)
 INIT_DEVICE_EXPORT(rt_hw_adc_init);
 #endif
 
-#endif  /* RT_USING_ADC */
+#endif  /* BSP_USING_ADC */

@@ -20,7 +20,7 @@
 #include "board_config.h"
 #include "drv_adc.h"
 
-#ifdef RT_USING_ADC
+#ifdef BSP_USING_ADC
 
 #define REFER_VOLTAGE                   3300        /* 参考电压 3.3V,单位mv */
 #define CONVERT_BITS                    (1 << 12)   /* 转换位数为12位       */
