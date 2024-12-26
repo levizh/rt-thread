@@ -9,12 +9,20 @@
  * 2023-11-15     CDT          first version
  */
 
-
-
 #include <rtthread.h>
 #include <rtdevice.h>
 
 #ifdef RT_USB_DEVICE_CDC
+/* menuconfig:
+  1.Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable USB--->
+                                                            [*]Use USBFS Core
+                                                                Select USB Mode(USB Device Mode)
+                                                            [*]Enable VBUS Sensing for Device
+  2.RT-Thread Components--->
+        Using USB legacy version--->
+            Using USB device--->Device type--->
+                [*]Enable to use device as CDC device
+*/
 /*
  * 程序清单：这是一个 usb device 设备使用例程
  * 例程导出了 cdc_sample 命令到控制终端
@@ -22,7 +30,7 @@
  * 命令调用格式：cdc_sample
  * 程序功能：首先会打印三次str_write字符串内容，同时虚拟串口可输入发送任意小于255个字符的字符串，
  * 发送内容可在Finsh串口显示。
-*/
+ */
 
 #define USBD_DEV_NAME   "vcom"     /* 名称 */
 rt_uint8_t str_read[255];
@@ -32,7 +40,7 @@ static rt_err_t cdc_rx_handle(rt_device_t dev, rt_size_t size)
     /* 读取虚拟串口接收内容 */
     rt_device_read(dev, 0, str_read, size);
     rt_kprintf("Read message:  %s\n", str_read);
-    
+
     return RT_EOK;
 }
 
@@ -85,7 +93,7 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 
 /* F4A0 only FS can used with spi flash */
 #if (defined(HC32F4A0) && defined(BSP_USING_USBFS)) || \
-     defined(HC32F460)  || defined(HC32F472) 
+     defined(HC32F460)  || defined(HC32F472)
 
 /* Enable spibus1, SFUD, usb msc */
 /* menuconfig:
@@ -102,7 +110,7 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 4. RT-Thread Components--->Using USB legacy version
                                                 [*]Using USB device--->
                                                     Device type--->...Mass Storage device
-                                                    (spiflash)msc class disk name 
+                                                    (spiflash)msc class disk name
 
 */
 #include "drv_gpio.h"
@@ -167,11 +175,14 @@ INIT_COMPONENT_EXPORT(rt_hw_spi_flash_with_sfud_init);
 #include "drv_gpio.h"
 
 /* menuconfig:
-  RT-Thread Components--->Device Drivers--->Using USB
-                                                Using USB device--->
-                                                    Device type--->
-                                                       [*]Use to HID device as General HID device
-
+1. Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable USB--->
+                                                            [*]Use USBFS Core
+                                                                Select USB Mode(USB Device Mode)
+                                                            [*]Enable VBUS Sensing for Device
+2. RT-Thread Components--->
+    Using USB legacy version--->
+        Using USB device--->Device type--->
+            [*]Enable to use device as HID device
 */
 /*
  * 程序清单：这是一个 usb hid device 设备使用例程
@@ -232,21 +243,31 @@ static int hid_sample(void)
 MSH_CMD_EXPORT(hid_sample, usbd hid sample);
 #endif
 
-
 #ifdef RT_USB_DEVICE_WINUSB
+/* menuconfig:
+1. Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable USB--->
+                                                            [*]Use USBFS Core
+                                                                Select USB Mode(USB Device Mode)
+                                                            [*]Enable VBUS Sensing for Device
+2. RT-Thread Components--->
+    Using USB legacy version--->
+        Using USB device--->Device type--->
+            [*]Enable to use device as winusb device
+*/
 /*
  * 程序清单：这是一个 usb WINUSB device 设备使用例程
- * RTT 的WINUSB Windows无法免驱，需要使用zadig安装winusb驱动程序
+ * RTT 的WINUSB Windows无法免驱，需要使用zadig安装winusb驱动程序(如设备管理器-通用串行总线设备-RTT Win USB已识别则不需要安装)。
  * 例程导出了 winusb_sample 命令到控制终端
  * 命令调用格式：winusb_sample
- * 软件：Bus Hound, WinUSB_Test.exe, 串口助手。
- * 程序功能：MSH命令发送winusb_sample，运行测试程序。打开bus hound软件，选择RTT WINUSB。
- * 通过WinUSB_Test.exe可发送bulk数据（100字符以内）到设备，设备收到后会回发给主机，通过bus hound可以查看。
- * 注意：1、WinUSB_Test.exe中的GUID与驱动程序中设定保持一致；
+ * 软件：llcom.exe
+ * 程序功能：MSH命令发送winusb_sample，运行测试程序。
+ * 打开llcom.exe软件，选择小工具-WinUSB设备-选择对应RTT Win USB设备-打开-勾选Hex发送-发送数据。
+ * 通过llcom.exe可发送bulk数据（100字符以内）到设备，设备收到后会回发给主机(llcom.exe)，同时通过MSH终端显示收到的HEX数据。
+ * 注意：1、llcom.exe中的GUID与驱动程序中设定保持一致(通过设备管理器选择RTT Win USB设备的属性来查看)；
  *      2、win_usb_read()函数中的UIO_REQUEST_READ_FULL改为UIO_REQUEST_READ_BEST，实现数据即读即取;
-           否则需要接满传入的size数量，才会回调接收函数。
- * 
-*/
+ *         否则需要接满传入的size数量，才会回调接收函数。
+ *
+ */
 #define WINUSB_DEV_NAME   "winusb"     /* 名称 */
 uint8_t str_read[100];
 
