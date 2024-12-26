@@ -194,7 +194,7 @@ static void hc32_udelay(rt_uint32_t us)
 static const struct rt_i2c_bit_ops hc32_bit_ops_default =
 {
     .data     = RT_NULL,
-    .pin_init = hc_i2c_pin_init,
+    .pin_init = hc32_i2c_pin_init,
     .set_sda  = hc32_set_sda,
     .set_scl  = hc32_set_scl,
     .get_sda  = hc32_get_sda,

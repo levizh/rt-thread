@@ -8,6 +8,14 @@
  * Date           Author       Notes
  * 2023-11-09     CDT          first version
  */
+
+/*
+ * 程序清单：这是 WDT 设备使用例程
+ * 例程导出了 wdt_sample 命令到控制终端。
+ * 命令调用格式：wdt_sample set_timeout x
+ * 命令解释：x 对应的是超时时间，以实际计算的接近值为准
+*/
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <stdlib.h>
@@ -15,9 +23,9 @@
 #ifdef BSP_USING_WDT_TMR
 
 #if defined(BSP_USING_WDT)
-#define WDT_DEVICE_NAME     "wdt"
+    #define WDT_DEVICE_NAME     "wdt"
 #elif defined(BSP_USING_SWDT)
-#define WDT_DEVICE_NAME     "swdt"
+    #define WDT_DEVICE_NAME     "swdt"
 #endif
 
 static rt_device_t wdg_dev;
@@ -95,13 +103,16 @@ static int wdt_sample(int argc, char *argv[])
 
         rt_thread_idle_sethook(idle_hook);
 
-        for (;;) {
+        for (;;)
+        {
             rt_thread_mdelay(1000);
             rt_device_control(wdg_dev, RT_DEVICE_CTRL_WDT_GET_TIMELEFT, &timeleft);
             rt_kprintf("timeleft = %d S\n", timeleft);
             wdt_cnt++;
         }
-    } else {
+    }
+    else
+    {
         _wdt_cmd_print_usage();
         return -RT_ERROR;
     }

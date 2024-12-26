@@ -1,10 +1,9 @@
 /*
  * 程序清单：这是 RTC 设备使用例程和 Alarm 使用示例。
- * 例程分别导出了 rtc_sample 命令和 alarm_sample 到控制终端。
- * 命令调用格式：wdt_sample wdt
- * 命令解释：命令第二个参数是要使用的WDT设备名称，为空则使用默认的"wdt"
- * 程序功能：查找、初始化WDT设备，设置超时时间后启动WDT。在经过10次Feed后
- * 移除Feed WDT的操作，等待超时重启。
+ * 例程导出了 rtc_sample 命令到控制终端。
+ * 命令调用格式：rtc_sample x
+ * 命令解释：命令第二个参数是要使用的功能对应的编号，
+ *           RTC 基本功能对应的编号为 0~3，Alarm 功能对应的编号为 4~9
 */
 
 #include <rtthread.h>

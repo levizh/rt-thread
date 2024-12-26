@@ -40,14 +40,22 @@
 #define W25Q_SPI_DATA_BUF_LEN           0x2000
 
 
-#if defined(HC32F4A0) || defined(HC32F448) || defined(HC32F472)
+#if defined(HC32F4A0) || defined(HC32F448)
     #define SPI_CS_PORT                 SPI1_CS_PORT
     #define SPI_CS_PIN                  SPI1_CS_PIN
+    #define SPI_CS_PORT_PIN             GET_PIN(C, 7)
+
+    #define W25Q_SPI_DEVICE_NAME        "spi10"
+#elif defined(HC32F472)
+    #define SPI_CS_PORT                 SPI1_CS_PORT
+    #define SPI_CS_PIN                  SPI1_CS_PIN
+    #define SPI_CS_PORT_PIN             GET_PIN(B, 12)
 
     #define W25Q_SPI_DEVICE_NAME        "spi10"
 #elif defined(HC32F460)
     #define SPI_CS_PORT                 SPI3_CS_PORT
     #define SPI_CS_PIN                  SPI3_CS_PIN
+    #define SPI_CS_PORT_PIN             GET_PIN(C, 7)
 
     #define W25Q_SPI_DEVICE_NAME        "spi30"
 #endif
@@ -61,7 +69,7 @@ static uint8_t u8RdBuf[W25Q_SPI_DATA_BUF_LEN];
 
 static int rt_hw_spi_flash_init(void)
 {
-    if (RT_EOK != rt_hw_spi_device_attach("spi1", "spi10", SPI_CS_PORT, SPI_CS_PIN))
+    if (RT_EOK != rt_hw_spi_device_attach("spi1", "spi10", SPI_CS_PORT_PIN))
     {
         rt_kprintf("Failed to attach the spi device.");
         return -RT_ERROR;
@@ -290,10 +298,7 @@ static void spi_thread_entry(void *parameter)
     cfg.data_width = 8;
     cfg.mode = RT_SPI_MASTER | RT_SPI_MODE_0 | RT_SPI_MSB;
     cfg.max_hz = 80 * 1000 * 1000;  /* 80M */
-    if (RT_EOK != rt_spi_configure(spi_dev_w25q, &cfg))
-    {
-        rt_kprintf("spi config failed!\n");
-    }
+    rt_spi_configure(spi_dev_w25q, &cfg);
     /* 读取UID */
     w25q_read_uid(spi_dev_w25q);
 
