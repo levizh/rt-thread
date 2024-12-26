@@ -9,8 +9,6 @@
  * 2023-11-15     CDT          first version
  */
 
-
-
 #include <rtthread.h>
 #include <rtdevice.h>
 
@@ -27,6 +25,7 @@
                                 ......
                                 [*] Enable elm0chan fatfs
                                 ......
+  3.如果命令执行不成功，需参考对应Board目录下的README.md文件(注意事项中的USB Host部分)
  */
 
 /*
