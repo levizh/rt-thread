@@ -90,20 +90,24 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 /* Enable spibus1, SFUD, usb msc */
 /* menuconfig:
 1. Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable SPI BUS--->Enable SPI1 BUS
-2. RT-Thread Components--->Device Drivers--->Using SPI Bus/Device device drivers
-                                                Using Serial Flash Universal Driver
-                                                    Using auto probe flash JEDEC SFDP parameters
-                                                    Using defined supported flash chip information table
-                                                    (xxxxxx)Default spi maximum speed(HZ)
-3. RT-Thread Components--->Device Drivers--->Using USB
-                                                Using USB device--->
+2. Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable USB--->
+                                                            [*]Use USBFS Core
+                                                                Select USB Mode(USB Device Mode)
+                                                            [*]Enable VBUS Sensing for Device
+3. RT-Thread Components--->Device Drivers--->Using SPI Bus/Device device drivers
+                                                [*]Using Serial Flash Universal Driver
+                                                    [*]Using auto probe flash JEDEC SFDP parameters
+                                                    [*]Using defined supported flash chip information table
+                                                    (50000000)Default spi maximum speed(HZ)
+4. RT-Thread Components--->Using USB legacy version
+                                                [*]Using USB device--->
                                                     Device type--->...Mass Storage device
-                                                                   (spiflash)msc class disk name 
+                                                    (spiflash)msc class disk name 
 
 */
-
+#include "drv_gpio.h"
 #include "drv_spi.h"
-#include "spi_flash_sfud.h"
+#include "dev_spi_flash_sfud.h"
 #define SPI_BUS_NAME                    "spi1"
 #define SPI_FLASH_DEVICE_NAME           "spi10"
 #define SPI_FLASH_CHIP                  RT_USB_MSTORAGE_DISK_NAME /* msc class disk name */
@@ -138,8 +142,11 @@ static void rt_hw_spi_flash_reset(char *spi_dev_name)
 
 static int rt_hw_spi_flash_with_sfud_init(void)
 {
-    rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, SPI_FLASH_SS_PORT, SPI_FLASH_SS_PIN);
-
+#if defined(HC32F4A0) || defined(HC32F460)
+    rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, GET_PIN(C, 7));
+#elif defined(HC32F472)
+    rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, GET_PIN(B, 12));
+#endif
     if (RT_NULL == rt_sfud_flash_probe(SPI_FLASH_CHIP, SPI_FLASH_DEVICE_NAME))
     {
         rt_hw_spi_flash_reset(SPI_FLASH_DEVICE_NAME);
@@ -223,14 +230,6 @@ static int hid_sample(void)
 }
 /* 导出到 msh 命令列表中 */
 MSH_CMD_EXPORT(hid_sample, usbd hid sample);
-#endif
-
-
-#ifdef RT_USB_DEVICE_MSTORAGE
-
-/* 注意：only FS can used with spi flash */
-/* spi1 请使能DMA tx 和DMA rx. */
-/* msc class disk name 请命名为w25q64 */
 #endif
 
 
