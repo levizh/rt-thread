@@ -9,15 +9,20 @@
  * 2022-04-28     CDT          first version
  */
 
+/*
+ * 程序清单：这是 PWM 设备使用例程
+ * 例程导出了 pwm_sample 命令到控制终端。
+ * 命令调用格式：pwm_sample x
+ * 命令解释：x 对应的是设备名称，可以通过 list device 获取，例如：pwm_sample pwm_a1
+*/
+
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
 
 #ifdef BSP_USING_PWM
-/* defined the LED_GREEN pin: PC9 */
-#define LED_GREEN_PIN GET_PIN(C, 9)
 
-#define PWM_DEV_CHANNEL     1
+#define PWM_DEV_CHANNEL                 1
 
 struct rt_device_pwm *pwm_dev;
 
@@ -26,9 +31,6 @@ static rt_int32_t pwm_sample(int argc, char *argv[])
 {
     rt_uint32_t period = 50000;
     rt_uint32_t pulse = 45000;
-
-    /* set LED_GREEN_PIN pin mode to output */
-    rt_pin_mode(LED_GREEN_PIN, PIN_MODE_OUTPUT);
 
     if (argc != 2)
     {
@@ -60,7 +62,7 @@ static rt_int32_t pwm_sample(int argc, char *argv[])
         }
     }
 }
-MSH_CMD_EXPORT(pwm_sample,pwm_sample [opt])
+MSH_CMD_EXPORT(pwm_sample, pwm_sample [opt])
 #endif
 /*
  EOF

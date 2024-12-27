@@ -68,7 +68,7 @@ if GetDepend('RT_USING_HWCRYPTO'):
     src += ['test_crypto.c']
 
 if GetDepend(['RT_USING_SDIO']):
-    src += ['drv_sdio.c']
+    src += ['test_sdmmc.c']
 
 if GetDepend(['BSP_USING_EXMC', 'BSP_USING_SDRAM']):
     src += ['test_sdram.c']

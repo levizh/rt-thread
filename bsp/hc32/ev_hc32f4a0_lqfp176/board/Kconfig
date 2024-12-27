@@ -343,11 +343,11 @@ menu "On-chip Peripheral Drivers"
                     config BSP_I2C1_SCL_PIN
                         int "i2c1 scl pin number"
                         range 1 176
-                        default 51
+                        default 8       # PA8
                     config BSP_I2C1_SDA_PIN
                         int "I2C1 sda pin number"
                         range 1 176
-                        default 90
+                        default 23      # PB7
                 endif
         endif
 
