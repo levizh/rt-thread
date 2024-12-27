@@ -14,7 +14,7 @@
  * 命令调用格式：hwtimer_sample  hwtimer_sample [option1] [option2] [option3]
  *                                            option1: [tmra_1/2/3..] 定时器单元
  *                                            option2: [oneshot/period] 定时模式
- *                                            option3: 超时时间，单位秒
+ *                                            option3: 超时时间，单位毫秒
  * eg:hwtimer_sample tmra_1 period 1000
  * 程序功能：每隔一秒打印一次定时器运行时间值，在定时器超时回调函数中打印总tick值
  * 可以使用逻辑分析进一步查看测试管脚PA0定时时间是否准确
