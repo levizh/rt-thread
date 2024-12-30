@@ -12,13 +12,16 @@
 #if defined(BSP_USING_GPIO)
 #include "drv_gpio.h"
 
+/* 1）配置RTT工程
+*     menuconfig:
+*     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable TCA9539
+*/
 #if defined(HC32F4A0)
-    /* 1）配置RTT工程
-    *     menuconfig:
-    *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable TCA9539
-    */
     #define LED1_PIN_NUM                GET_PIN(B, 11)  /* LED10 */
     #define KEY1_PIN_NUM                GET_PIN(A, 0)   /* K10  */
+#elif defined(HC32F448)
+    #define LED1_PIN_NUM                GET_PIN(A, 2)   /* LED3 */
+    #define KEY1_PIN_NUM                GET_PIN(B, 6)   /* K5  */
 #endif
 
 static uint8_t u8LedState = 1;

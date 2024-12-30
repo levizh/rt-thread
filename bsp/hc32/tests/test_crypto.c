@@ -27,31 +27,31 @@
 static void _crypto_cmd_print_usage(void)
 {
 #if defined(BSP_USING_RNG)
-    rt_kprintf("crypto [option] \n");
+    rt_kprintf("crypto_sample [option] \n");
     rt_kprintf("  rang: get random number from rang module. \n");
-    rt_kprintf("    e.g. msh >crypto rang get \n");
+    rt_kprintf("    e.g. msh >crypto_sample rang get \n");
 #endif
 
 #if defined(BSP_USING_CRC)
-    rt_kprintf("crypto [option] \n");
+    rt_kprintf("crypto_sample [option] \n");
     rt_kprintf("  crc: test crc module. \n");
-    rt_kprintf("    e.g. msh >crypto crc 16/32 \n");
+    rt_kprintf("    e.g. msh >crypto_sample crc 16/32 \n");
 #endif
 
 #if defined(BSP_USING_AES)
-    rt_kprintf("crypto [option] \n");
+    rt_kprintf("crypto_sample [option] \n");
     rt_kprintf("  aes: test aes module. \n");
 #if defined(HC32F460)
-    rt_kprintf("    e.g. msh >crypto aes 128 \n");
+    rt_kprintf("    e.g. msh >crypto_sample aes 128 \n");
 #elif defined (HC32F4A0) || defined (HC32F448) || defined (HC32F472)
-    rt_kprintf("    e.g. msh >crypto aes 128/192/256 \n");
+    rt_kprintf("    e.g. msh >crypto_sample aes 128/192/256 \n");
 #endif
 #endif
 
 #if defined(BSP_USING_HASH)
-    rt_kprintf("crypto [option] \n");
+    rt_kprintf("crypto_sample [option] \n");
     rt_kprintf("  hash: test hash module. \n");
-    rt_kprintf("    e.g. msh >crypto hash test \n");
+    rt_kprintf("    e.g. msh >crypto_sample hash test \n");
 #endif
 }
 
