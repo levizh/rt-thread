@@ -437,22 +437,13 @@ rt_err_t _tmra_pulse_encoder_init(struct rt_pulse_encoder_device *pulse_encoder)
     irq_config.int_src = hc32_device->isr.enIntSrc_Ovf;
     irq_config.irq_prio = hc32_device->isr.u8Int_Prio_Ovf;
     /* register interrupt */
-#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&irq_config, hc32_device->isr.Irq_Ovf_Callback, RT_TRUE);
-#elif defined (HC32F448) || defined (HC32F472)
-    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
-#endif
     /* UDF interrupt configuration */
     irq_config.irq_num = hc32_device->isr.enIRQn_Udf;
     irq_config.int_src = hc32_device->isr.enIntSrc_Udf;
     irq_config.irq_prio = hc32_device->isr.u8Int_Prio_Udf;
     /* register interrupt */
-#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&irq_config, hc32_device->isr.Irq_Udf_Callback, RT_TRUE);
-#elif defined (HC32F448) || defined (HC32F472)
-    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
-#endif
-
     /* Enable the specified interrupts of TimerA. */
     TMRA_IntCmd(hc32_device->tmr_handler, TMRA_INT_OVF | TMRA_INT_UDF, ENABLE);
 
@@ -915,22 +906,13 @@ rt_err_t _tmr6_pulse_encoder_init(struct rt_pulse_encoder_device *pulse_encoder)
     irq_config.int_src = hc32_device->isr.enIntSrc_Ovf;
     irq_config.irq_prio = hc32_device->isr.u8Int_Prio_Ovf;
     /* register interrupt */
-#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&irq_config, hc32_device->isr.Irq_Ovf_Callback, RT_TRUE);
-#elif defined (HC32F448) || defined (HC32F472)
-    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
-#endif
     /* UDF interrupt configuration */
     irq_config.irq_num = hc32_device->isr.enIRQn_Udf;
     irq_config.int_src = hc32_device->isr.enIntSrc_Udf;
     irq_config.irq_prio = hc32_device->isr.u8Int_Prio_Udf;
     /* register interrupt */
-#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&irq_config, hc32_device->isr.Irq_Udf_Callback, RT_TRUE);
-#elif defined (HC32F448) || defined (HC32F472)
-    hc32_install_independ_irq_handler(&irq_config, RT_TRUE);
-#endif
-
     /* Enable the specified interrupts of Timer6. */
     TMR6_IntCmd(hc32_device->tmr_handler, TMR6_INT_OVF | TMR6_INT_UDF, ENABLE);
 
