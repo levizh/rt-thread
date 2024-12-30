@@ -14,7 +14,8 @@
  * 例程导出了 wdt_sample 命令到控制终端。
  * 命令调用格式：wdt_sample set_timeout x
  * 命令解释：x 对应的是超时时间，以实际计算的接近值为准
-*/
+ * 终端先打印N次设置的超时，然后依次递减等待N秒后复位系统(N等于设置的超时秒数)
+ */
 
 #include <rtthread.h>
 #include <rtdevice.h>
