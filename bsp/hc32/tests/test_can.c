@@ -1,9 +1,18 @@
 /*
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2023-11-10     CDT          first version
+ */
+
+/*
 * 功能
 *   展示 CAN1、CAN2、CAN3 接收消息和回发消息。
 * 代码使用方法
-*   在串口发送指令：can_sample  参数选择：can1 | can2 | can3
-*   以启动CAN收发测试，测试完某个单元后切换测试单元，需要先复位再下发参数进行测试
+*   在终端执行：can_sample  参数选择：can1 | can2 | can3 以启动CAN收发测试
 *
 * 默认波特率
 *   仲裁段:波特率500K,采样率80%
@@ -20,7 +29,7 @@
 * 命令行命令
 *   1）设置时序： (仅支持CAN FD的单元)
 *       注意：使用此项设置前，需修改 MSH 最大参数格式为 20
-*           （menuconfig-->RT-Thread Compone-->MSH: command shell-->The number of arguments for a shell command）
+*           （menuconfig-->RT-Thread Components-->MSH: command shell-->The number of arguments for a shell command）
 *       格式：
 *           can set_bittiming <count> <rt_can_bit_timing_arbitration> <rt_can_bit_timing_data>
 *       示例:
@@ -62,8 +71,16 @@
 static rt_device_t can_dev = RT_NULL;
 static struct rt_semaphore can_rx_sem;
 static rt_mutex_t can_mutex = RT_NULL;
+static rt_thread_t rx_thread;
 static uint32_t can_msg_tx_cnt = 0U;
 static uint32_t can_msg_rx_cnt = 0U;
+
+#define CAN_IF_INIT()                   do {                            \
+                                            if (can_dev == RT_NULL || can_mutex == RT_NULL) { \
+                                                rt_kprintf("failed! please first execute can_sample cmd!\n"); \
+                                                return;                 \
+                                            }                           \
+                                        } while (0)
 
 static rt_err_t can_rx_call(rt_device_t dev, rt_size_t size)
 {
@@ -75,9 +92,9 @@ static void _set_default_filter(void)
 {
     struct rt_can_filter_item can_items[5] =
     {
-        RT_CAN_FILTER_ITEM_INIT(0x100, 0, 0, 0, 0x700, RT_NULL, RT_NULL),           /* std,match ID:0x100~0x1ff，hdr= - 1， */
-        RT_CAN_FILTER_ITEM_INIT(0x12345100, 1, 0, 0, 0xFFFFFF00, RT_NULL, RT_NULL), /* ext,match ID:0x12345100~0x123451ff，hdr= - 1， */
-        {0x555, 0, 0, 0, 0x7ff, 7,}                                                 /* std,match ID:0x555，hdr= 7 */
+        RT_CAN_FILTER_ITEM_INIT(0x100, RT_CAN_STDID, RT_CAN_DTR, 0, 0x700, RT_NULL, RT_NULL),           /* std,match ID:0x100~0x1ff，hdr= - 1， */
+        RT_CAN_FILTER_ITEM_INIT(0x12345100, RT_CAN_EXTID, RT_CAN_DTR, 0, 0xFFFFFF00, RT_NULL, RT_NULL), /* ext,match ID:0x12345100~0x123451ff，hdr= - 1， */
+        {0x555, RT_CAN_STDID, RT_CAN_DTR, 0, 0x7ff, 7,}                                                 /* std,match ID:0x555，hdr= 7 */
     };
     struct rt_can_filter_config cfg = {3, 1, can_items};
     rt_err_t res;
@@ -115,6 +132,7 @@ static void _msh_cmd_set_baud(int argc, char **argv)
     if (argc == 3)
     {
         uint32_t baud = atoi(argv[2]);
+        CAN_IF_INIT();
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
         result = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD, (void *)baud);
         rt_mutex_release(can_mutex);
@@ -159,6 +177,7 @@ void _msh_cmd_set_timing(int argc, char **argv)
         }
         cfg.count = count;
         cfg.items = items;
+        CAN_IF_INIT();
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
         result = rt_device_control(can_dev, RT_CAN_CMD_SET_BITTIMING, &cfg);
         rt_mutex_release(can_mutex);
@@ -179,6 +198,7 @@ void _msh_cmd_set_baudfd(int argc, char **argv)
     if (argc == 3)
     {
         uint32_t baudfd = atoi(argv[2]);
+        CAN_IF_INIT();
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
         result = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)baudfd);
         rt_mutex_release(can_mutex);
@@ -200,6 +220,7 @@ void _msh_cmd_send_msg(int argc, char **argv)
 
     if (argc == 2)
     {
+        CAN_IF_INIT();
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
 #ifdef RT_CAN_USING_CANFD
         msg.id  = 0x300;
@@ -243,19 +264,16 @@ void _show_usage(void)
 {
     rt_kprintf("Usage: \n");
     rt_kprintf(MSH_USAGE_CAN_SET_BAUD);
+#ifdef RT_CAN_USING_CANFD
     rt_kprintf(MSH_USAGE_CAN_SET_BAUDFD);
     rt_kprintf(MSH_USAGE_CAN_SET_BITTIMING);
+#endif
     rt_kprintf(MSH_USAGE_CAN_SEND_MSG);
 }
 
 int can(int argc, char **argv)
 {
-    if (argc == 1)
-    {
-        _show_usage();
-        return 0;
-    }
-    else if (!strcmp(argv[1], "set_baud"))
+    if (!strcmp(argv[1], "set_baud"))
     {
         _msh_cmd_set_baud(argc, argv);
     }
@@ -272,6 +290,8 @@ int can(int argc, char **argv)
     else if (!strcmp(argv[1], "send_msg"))
     {
         _msh_cmd_send_msg(argc, argv);
+    } else {
+        _show_usage();
     }
 
     return 0;
@@ -283,7 +303,6 @@ int can_sample(int argc, char **argv)
     char can_name[RT_NAME_MAX] = "can1";
     char sem_name[RT_NAME_MAX] = "can_sem";
     char mutex_name[RT_NAME_MAX] = "can_mtx";
-    rt_thread_t thread;
     rt_err_t res;
 
     /* 参数无输入或者输入错误按照默认值处理 */
@@ -310,8 +329,14 @@ int can_sample(int argc, char **argv)
             rt_kprintf("The chip hasn't the can unit!\r\n");
             return RT_ERROR;
         }
+    } else {
+        rt_kprintf("Default used %s to test!\r\n", can_name);
     }
 
+    /* 设备已经打开则关闭 */
+    if (can_dev != RT_NULL) {
+        rt_device_close(can_dev);
+    }
     /* 查找设备 */
     can_dev = rt_device_find(can_name);
     if (!can_dev)
@@ -320,8 +345,11 @@ int can_sample(int argc, char **argv)
         return RT_ERROR;
     }
 
-    rt_sem_init(&can_rx_sem, sem_name, 0, RT_IPC_FLAG_FIFO);
-    can_mutex = rt_mutex_create(mutex_name, RT_IPC_FLAG_FIFO);
+    if (can_mutex == RT_NULL) {
+        rt_sem_init(&can_rx_sem, sem_name, 0, RT_IPC_FLAG_FIFO);
+        can_mutex = rt_mutex_create(mutex_name, RT_IPC_FLAG_FIFO);
+    }
+
     res = rt_device_open(can_dev, RT_DEVICE_FLAG_INT_TX | RT_DEVICE_FLAG_INT_RX);
     RT_ASSERT(res == RT_EOK);
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD, (void *)CANFD_ARBITRATION_BAUD_500K);
@@ -340,14 +368,16 @@ int can_sample(int argc, char **argv)
     rt_device_set_rx_indicate(can_dev, can_rx_call);
     _set_default_filter();
 
-    thread = rt_thread_create("can_rx", can_rx_thread, RT_NULL, 2048, 15, 10);
-    if (thread != RT_NULL)
-    {
-        rt_thread_startup(thread);
-    }
-    else
-    {
-        rt_kprintf("create can_rx thread failed!\n");
+    if (rx_thread == RT_NULL) {
+        rx_thread = rt_thread_create("can_rx", can_rx_thread, RT_NULL, 2048, 15, 10);
+        if (rx_thread != RT_NULL)
+        {
+            rt_thread_startup(rx_thread);
+        }
+        else
+        {
+            rt_kprintf("create can_rx rx_thread failed!\n");
+        }
     }
 
     return RT_EOK;
