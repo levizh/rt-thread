@@ -1,5 +1,9 @@
 /*
 * 功能
+* 程序清单：这是一个 PM 设备使用例程
+* 例程导出了 pm_sample_init 命令到控制终端
+* 命令调用格式：pm_sample_init
+*
 *   展示RTT休眠模式的进入和退出
 *   hc32 drv_pm 支持的RTT休眠模式包括： idle、deep、standby、shutdown
 *   每种休眠模式与芯片低功耗模式的对应关系是：
@@ -26,49 +30,65 @@
 
 #if defined(BSP_USING_PM)
 
-#define EFM_ERASE_TIME_MAX_IN_MILLISECOND                   (20)
+#define EFM_ERASE_TIME_MAX_IN_MILLISECOND       (20)
 
 #if defined (HC32F4A0)
-#define PLL_SRC                                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
-#define BSP_KEY_PORT                                        (GPIO_PORT_A)   /* Key10 */
-#define BSP_KEY_PIN                                         (GPIO_PIN_00)
-#define BSP_KEY_EXTINT                                      (EXTINT_CH00)
-#define BSP_KEY_INT_SRC                                     (INT_SRC_PORT_EIRQ0)
-#define BSP_KEY_IRQn                                        (INT001_IRQn)
-#define BSP_KEY_INTC_STOP_WKUP_EXTINT                       (INTC_STOP_WKUP_EXTINT_CH0)
-#define BSP_KEY_EVT                                         (EVT_SRC_PORT_EIRQ0)
-#define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP                       (PWC_PD_WKUP_TRIG_WKUP0)
-#define BSP_KEY_PWC_PD_WKUP_WKUP                            (PWC_PD_WKUP_WKUP00)
+    #define PLL_SRC                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
+    #define BSP_KEY_PORT                        (GPIO_PORT_A)   /* Key10 */
+    #define BSP_KEY_PIN                         (GPIO_PIN_00)
+    #define BSP_KEY_EXTINT                      (EXTINT_CH00)
+    #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ0)
+    #define BSP_KEY_IRQn                        (INT001_IRQn)
+    #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH0)
+    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ0)
+    #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP0)
+    #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP00)
 
-#define MCO_PORT                                            (GPIO_PORT_A)
-#define MCO_PIN                                             (GPIO_PIN_08)
-#define MCO_GPIO_FUNC                                       (GPIO_FUNC_1)
+    #define MCO_PORT                            (GPIO_PORT_A)
+    #define MCO_PIN                             (GPIO_PIN_08)
+    #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
 
 #elif defined (HC32F460)
-#define PLL_SRC                                             ((CM_CMU->PLLCFGR & CMU_PLLCFGR_PLLSRC) >> CMU_PLLCFGR_PLLSRC_POS)
-#define BSP_KEY_PORT                                        (GPIO_PORT_B)   /* Key10 */
-#define BSP_KEY_PIN                                         (GPIO_PIN_01)
-#define BSP_KEY_EXTINT                                      (EXTINT_CH01)
-#define BSP_KEY_INT_SRC                                     (INT_SRC_PORT_EIRQ1)
-#define BSP_KEY_IRQn                                        (INT001_IRQn)
-#define BSP_KEY_INTC_STOP_WKUP_EXTINT                       (INTC_STOP_WKUP_EXTINT_CH1)
-#define BSP_KEY_EVT                                         (EVT_SRC_PORT_EIRQ1)
-#define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP                       (PWC_PD_WKUP_TRIG_WKUP1)
-#define BSP_KEY_PWC_PD_WKUP_WKUP                            (PWC_PD_WKUP_WKUP01)
+    #define PLL_SRC                             ((CM_CMU->PLLCFGR & CMU_PLLCFGR_PLLSRC) >> CMU_PLLCFGR_PLLSRC_POS)
+    #define BSP_KEY_PORT                        (GPIO_PORT_B)   /* Key10 */
+    #define BSP_KEY_PIN                         (GPIO_PIN_01)
+    #define BSP_KEY_EXTINT                      (EXTINT_CH01)
+    #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ1)
+    #define BSP_KEY_IRQn                        (INT001_IRQn)
+    #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH1)
+    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ1)
+    #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
+    #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP01)
 
-#define MCO_PORT                                            (GPIO_PORT_A)
-#define MCO_PIN                                             (GPIO_PIN_08)
-#define MCO_GPIO_FUNC                                       (GPIO_FUNC_1)
+    #define MCO_PORT                            (GPIO_PORT_A)
+    #define MCO_PIN                             (GPIO_PIN_08)
+    #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
+
+#elif defined (HC32F448)
+    #define PLL_SRC                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
+    #define BSP_KEY_PORT                        (GPIO_PORT_B)   /* Key5 */
+    #define BSP_KEY_PIN                         (GPIO_PIN_06)
+    #define BSP_KEY_EXTINT                      (EXTINT_CH06)
+    #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ6)
+    #define BSP_KEY_IRQn                        (INT001_IRQn)
+    #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH6)
+    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ6)
+    #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
+    #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP12)
+
+    #define MCO_PORT                            (GPIO_PORT_A)
+    #define MCO_PIN                             (GPIO_PIN_08)
+    #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
 #endif
 
-#define KEYCNT_BACKUP_ADDR                                  (uint32_t *)(0x200F0010)
-#define KEYCNT_CMD_SLEEP_NONE                               (0)
-#define KEYCNT_CMD_SLEEP_IDLE                               (1)
-#define KEYCNT_CMD_SLEEP_DEEP                               (3)
-#define KEYCNT_CMD_SLEEP_STANDBY                            (5)
-#define KEYCNT_CMD_SLEEP_SHUTDOWN                           (7)
+#define KEYCNT_BACKUP_ADDR                      (uint32_t *)(0x200F0010)
+#define KEYCNT_CMD_SLEEP_NONE                   (0)
+#define KEYCNT_CMD_SLEEP_IDLE                   (1)
+#define KEYCNT_CMD_SLEEP_DEEP                   (3)
+#define KEYCNT_CMD_SLEEP_STANDBY                (5)
+#define KEYCNT_CMD_SLEEP_SHUTDOWN               (7)
 
- #define PM_DBG
+#define PM_DBG
 #if defined PM_DBG
     #define pm_dbg  rt_kprintf
 #else
@@ -251,7 +271,7 @@ static void pm_cmd_handler(void *parameter)
     while (1)
     {
         if ((KEYCNT_CMD_SLEEP_IDLE == g_keycnt_cmd) || (KEYCNT_CMD_SLEEP_DEEP == g_keycnt_cmd) || \
-            (KEYCNT_CMD_SLEEP_STANDBY == g_keycnt_cmd) || (KEYCNT_CMD_SLEEP_SHUTDOWN == g_keycnt_cmd))
+                (KEYCNT_CMD_SLEEP_STANDBY == g_keycnt_cmd) || (KEYCNT_CMD_SLEEP_SHUTDOWN == g_keycnt_cmd))
         {
             switch (g_keycnt_cmd)
             {
@@ -299,7 +319,7 @@ static void pm_run_main(void *parameter)
 
         rt_thread_mdelay(100);
 
-        rt_kprintf("system clock switch to %s speed\n\n",speed[run_index]);
+        rt_kprintf("system clock switch to %s speed\n\n", speed[run_index]);
         if (++run_index >= ARRAY_SZ(run_mode))
         {
             run_index = 0;
@@ -364,6 +384,8 @@ static void _vbat_init(void)
         rt_thread_delay(10);
     }
     FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMB, ENABLE);
+#elif defined (HC32F448)
+    FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMB, ENABLE);
 #elif defined (HC32F460)
     FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMRET, ENABLE);
 #endif
@@ -401,7 +423,6 @@ int pm_sample_init(void)
     }
     return RT_EOK;
 }
-
-INIT_APP_EXPORT(pm_sample_init);
+MSH_CMD_EXPORT(pm_sample_init, pm sample init);
 
 #endif /* end of BSP_USING_PM */

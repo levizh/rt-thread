@@ -67,7 +67,9 @@ static int rtc_sample(int argc, char *argv[])
     rt_uint8_t idx;
     rt_uint16_t temp1, temp2, temp3;
     time_t now;
+#if defined(RT_USING_ALARM)
     struct tm p_tm;
+#endif
 
     if (argc < 2)
     {
