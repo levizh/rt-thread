@@ -78,13 +78,13 @@
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)
-    #define ADC1_CH_PORT                    (GPIO_PORT_C)   /* Default ADC123_IN10 */
+    #define ADC1_CH_PORT                    (GPIO_PORT_C)   /* Default ADC12_IN10 */
     #define ADC1_CH_PIN                     (GPIO_PIN_00)
 #endif
 
 #if defined(BSP_USING_ADC2)
-    #define ADC2_CH_PORT                    (GPIO_PORT_C)   /* Default ADC123_IN11 */
-    #define ADC2_CH_PIN                     (GPIO_PIN_01)
+    #define ADC2_CH_PORT                    (GPIO_PORT_A)   /* Default ADC12_IN4 */
+    #define ADC2_CH_PIN                     (GPIO_PIN_04)
 #endif
 
 #if defined(BSP_USING_ADC3)
