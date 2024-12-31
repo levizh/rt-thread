@@ -71,7 +71,8 @@ static void sdmmc_thread_entry(void *parameter)
 
     rt_kprintf("sector=[%d, %d]: ......test start...... !\r\n", sector_start, sector_end);
 
-    for (sector_cur_start = sector_start; sector_cur_start <= sector_end; sector_cur_start += SDMMC_TEST_SECTORS_PER_TIME) {
+    for (sector_cur_start = sector_start; sector_cur_start <= sector_end; sector_cur_start += SDMMC_TEST_SECTORS_PER_TIME)
+    {
         sector_cur_end = sector_cur_start + SDMMC_TEST_SECTORS_PER_TIME - 1UL;
 
         /* initialize buffer data */

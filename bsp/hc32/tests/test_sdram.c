@@ -37,7 +37,7 @@ static rt_err_t sdram_8bit_test(void)
     }
     time_cast = rt_tick_get() - start_time;
     rt_kprintf("write data success, total time: %d.%03dS.\r\n", time_cast / RT_TICK_PER_SECOND,
-                time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
+               time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
 
     /* read data */
     rt_kprintf("start reading and verifying data, waiting....\r\n");
@@ -72,7 +72,7 @@ static rt_err_t sdram_16bit_test(void)
     rt_kprintf("\r\n************************* %s *************************\r\n", __func__);
 
     /* write data */
-    rt_kprintf("writing the 0x%08X haflword data, waiting....\r\n", SDRAM_SIZE/data_width);
+    rt_kprintf("writing the 0x%08X haflword data, waiting....\r\n", SDRAM_SIZE / data_width);
     start_time = rt_tick_get();
     for (i = 0; i < SDRAM_SIZE / data_width; i++)
     {
@@ -80,7 +80,7 @@ static rt_err_t sdram_16bit_test(void)
     }
     time_cast = rt_tick_get() - start_time;
     rt_kprintf("write data success, total time: %d.%03dS.\r\n", time_cast / RT_TICK_PER_SECOND,
-                time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
+               time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
 
     /* read data */
     rt_kprintf("start reading and verifying data, waiting....\r\n");
@@ -115,7 +115,7 @@ static rt_err_t sdram_32bit_test(void)
     rt_kprintf("\r\n************************* %s *************************\r\n", __func__);
 
     /* write data */
-    rt_kprintf("writing the 0x%08X bytes data, waiting....\r\n", SDRAM_SIZE/data_width);
+    rt_kprintf("writing the 0x%08X bytes data, waiting....\r\n", SDRAM_SIZE / data_width);
     start_time = rt_tick_get();
     for (i = 0; i < SDRAM_SIZE / data_width; i++)
     {
@@ -123,7 +123,7 @@ static rt_err_t sdram_32bit_test(void)
     }
     time_cast = rt_tick_get() - start_time;
     rt_kprintf("write data success, total time: %d.%03dS.\r\n", time_cast / RT_TICK_PER_SECOND,
-                time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
+               time_cast % RT_TICK_PER_SECOND / ((RT_TICK_PER_SECOND * 1 + 999) / 1000));
 
     /* read data */
     rt_kprintf("start reading and verifying data, waiting....\r\n");

@@ -88,7 +88,7 @@ static void hc32_i2c_pin_init(void)
 {
     rt_size_t obj_num = sizeof(i2c_obj) / sizeof(struct hc32_soft_i2c);
 
-    for(rt_size_t i = 0; i < obj_num; i++)
+    for (rt_size_t i = 0; i < obj_num; i++)
     {
         hc32_i2c_gpio_init(&i2c_obj[i]);
     }

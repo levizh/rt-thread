@@ -40,7 +40,8 @@
 #define SYM_BYTE_SIZE       (SYM_W_BYTE * SYM_H_BYTE)
 
 /* soft i2c command defines */
-enum SW_I2C_CMD{
+enum SW_I2C_CMD
+{
     SW_I2C_INIT = 0x01,
     SSD1306_CMD_INIT,
     SSD1306_CMD_DISPLAY,
@@ -59,7 +60,7 @@ static void ssd1306_deinit(struct rt_i2c_bus_device *i2c_dev);
 
 /* write_reg ssd1306 basic opertion */
 static void ssd1306_write_single_reg(struct rt_i2c_bus_device *i2c_dev,
-                rt_bool_t is_write_cmd, rt_uint8_t data)
+                                     rt_bool_t is_write_cmd, rt_uint8_t data)
 {
     rt_uint8_t buff[2];
     struct rt_i2c_msg msgs;
@@ -67,7 +68,7 @@ static void ssd1306_write_single_reg(struct rt_i2c_bus_device *i2c_dev,
     msgs.addr = SSD1306_ADDR;
     msgs.flags = RT_I2C_WR;
 
-    if(RT_TRUE == is_write_cmd)
+    if (RT_TRUE == is_write_cmd)
     {
         buff[0] = SSD1306_MD_CMD;
     }
@@ -80,7 +81,7 @@ static void ssd1306_write_single_reg(struct rt_i2c_bus_device *i2c_dev,
     msgs.buf = buff;
     msgs.len = 2;
 
-    if(1 != rt_i2c_transfer(i2c_dev, &msgs, 1))
+    if (1 != rt_i2c_transfer(i2c_dev, &msgs, 1))
     {
         rt_kprintf("failed to send cmd\n");
     }
@@ -88,8 +89,8 @@ static void ssd1306_write_single_reg(struct rt_i2c_bus_device *i2c_dev,
 
 /* write_reg ssd1306 basic opertion */
 static void ssd1306_write_mult_reg(struct rt_i2c_bus_device *i2c_dev,
-                rt_bool_t is_write_cmd, rt_uint8_t len, rt_uint8_t *data
-                /*rt_uint8_t data*/)
+                                   rt_bool_t is_write_cmd, rt_uint8_t len, rt_uint8_t *data
+                                   /*rt_uint8_t data*/)
 {
     rt_uint8_t *buff = NULL;
     struct rt_i2c_msg msgs;
@@ -98,7 +99,7 @@ static void ssd1306_write_mult_reg(struct rt_i2c_bus_device *i2c_dev,
     msgs.flags = RT_I2C_WR;
     buff = (rt_uint8_t *)rt_malloc((len + 1) * sizeof(rt_uint8_t));
 
-    if(RT_TRUE == is_write_cmd)
+    if (RT_TRUE == is_write_cmd)
     {
         buff[0] = SSD1306_MD_CMD;
     }
@@ -110,7 +111,7 @@ static void ssd1306_write_mult_reg(struct rt_i2c_bus_device *i2c_dev,
     msgs.buf = buff;
     msgs.len = len + 1;
 
-    if(1 != rt_i2c_transfer(i2c_dev, &msgs, 1))
+    if (1 != rt_i2c_transfer(i2c_dev, &msgs, 1))
     {
         rt_kprintf("failed to send cmd\n");
     }
@@ -122,7 +123,7 @@ static int sw_i2c_sample(int argc, char *argv[])
 {
     static struct rt_i2c_bus_device *rt_i2c_dev;
     /* print soft i2c usage */
-    if(argc <= 1)
+    if (argc <= 1)
     {
         rt_kprintf("soft i2c usage as following:\n");
         rt_kprintf("sw_i2c_sample %d: soft i2c init\n", SW_I2C_INIT);
@@ -132,30 +133,30 @@ static int sw_i2c_sample(int argc, char *argv[])
         return RT_ERROR;
     }
 
-    switch(*argv[1] - '0')
+    switch (*argv[1] - '0')
     {
-        case SW_I2C_INIT:
-            rt_i2c_dev = (struct rt_i2c_bus_device *)rt_device_find(SW_I2C_NAME);
-            if(NULL == rt_i2c_dev)
-            {
-                rt_kprintf("failed to find i2c device %s\n", SW_I2C_NAME);
-                return RT_ERROR;
-            }
-            break;
-        /* communicate with eeprom to soft i2c read function */
-        case SSD1306_CMD_INIT:
-            ssd1306_init(rt_i2c_dev);
+    case SW_I2C_INIT:
+        rt_i2c_dev = (struct rt_i2c_bus_device *)rt_device_find(SW_I2C_NAME);
+        if (NULL == rt_i2c_dev)
+        {
+            rt_kprintf("failed to find i2c device %s\n", SW_I2C_NAME);
+            return RT_ERROR;
+        }
         break;
-        /* communicate with ssd1306 to soft i2c read function */
-        case SSD1306_CMD_DISPLAY:
-            ssd1306_roll_display(rt_i2c_dev);
-            break;
-        case SSD1306_CMD_DEINIT:
-            ssd1306_deinit(rt_i2c_dev);
-            break;
-        default:
-            rt_kprintf("unkwon command\n");
-            break;
+    /* communicate with eeprom to soft i2c read function */
+    case SSD1306_CMD_INIT:
+        ssd1306_init(rt_i2c_dev);
+        break;
+    /* communicate with ssd1306 to soft i2c read function */
+    case SSD1306_CMD_DISPLAY:
+        ssd1306_roll_display(rt_i2c_dev);
+        break;
+    case SSD1306_CMD_DEINIT:
+        ssd1306_deinit(rt_i2c_dev);
+        break;
+    default:
+        rt_kprintf("unkwon command\n");
+        break;
     }
 
     return RT_EOK;
@@ -164,23 +165,24 @@ static int sw_i2c_sample(int argc, char *argv[])
 /* ssd1306 de-init and turn off */
 static void ssd1306_deinit(struct rt_i2c_bus_device *i2c_dev)
 {
-    rt_uint8_t ssd_deinit_array[] = {
+    rt_uint8_t ssd_deinit_array[] =
+    {
         0X8D, /* set charge pump */
         0X10, /* turn off charge pump */
         0XAE, /* OLED sleep */
     };
 
     ssd1306_write_mult_reg(i2c_dev, RT_TRUE,
-            sizeof(ssd_deinit_array) / sizeof(ssd_deinit_array[0]), 
-            ssd_deinit_array);
+                           sizeof(ssd_deinit_array) / sizeof(ssd_deinit_array[0]),
+                           ssd_deinit_array);
 }
 
 /* ssd oled initialize */
 static void ssd1306_init(struct rt_i2c_bus_device *i2c_dev)
 {
     ssd1306_write_mult_reg(i2c_dev, RT_TRUE,
-            sizeof(ssd_init_array) / sizeof(ssd_init_array[0]), 
-            ssd_init_array);
+                           sizeof(ssd_init_array) / sizeof(ssd_init_array[0]),
+                           ssd_init_array);
 }
 
 /*
@@ -191,22 +193,22 @@ static void ssd1306_init(struct rt_i2c_bus_device *i2c_dev)
 */
 
 void mOledWriteCharHnWm(struct rt_i2c_bus_device *i2c_dev,
-                            uint8_t page, uint8_t col, uint8_t *ArrChar)
+                        uint8_t page, uint8_t col, uint8_t *ArrChar)
 {
-    if(ArrChar == NULL)
+    if (ArrChar == NULL)
         return;
     rt_kprintf("x=%3d, y=%d\n", col, page);
-    for(uint8_t page_idx = 0; page_idx < SYM_H_BYTE; page_idx++)
+    for (uint8_t page_idx = 0; page_idx < SYM_H_BYTE; page_idx++)
     {
         /* set start page: page0-page1 */
         ssd1306_write_single_reg(i2c_dev, RT_TRUE, 0xb0 + page + page_idx);
         /* lower 4-bit address of column start */
-        ssd1306_write_single_reg(i2c_dev, RT_TRUE, 0x00 + ((col & 0x0F)>> 0));
+        ssd1306_write_single_reg(i2c_dev, RT_TRUE, 0x00 + ((col & 0x0F) >> 0));
         /* higher 4-bit address of column start */
-        ssd1306_write_single_reg(i2c_dev, RT_TRUE, 0x10 + ((col & 0xF0)>> 4));
+        ssd1306_write_single_reg(i2c_dev, RT_TRUE, 0x10 + ((col & 0xF0) >> 4));
         /* send a character(total BYTE_CHAR byte) from array */
         ssd1306_write_mult_reg(i2c_dev, RT_FALSE, SYM_W_BYTE,
-                                ArrChar + SYM_W_BYTE * page_idx);
+                               ArrChar + SYM_W_BYTE * page_idx);
     }
 }
 
@@ -219,7 +221,7 @@ static void ssd1306_roll_display(struct rt_i2c_bus_device *i2c_dev)
     /* using a write times related variable control position */
     static rt_uint16_t u16WriteTimes = 0;
 
-    if(u16WriteTimes >= (SSD_COL_SIZE / SYM_W_PIX) * (SSD_PAGE_SIZE / (SYM_H_PIX / PAGE_PIX_SIZE)))
+    if (u16WriteTimes >= (SSD_COL_SIZE / SYM_W_PIX) * (SSD_PAGE_SIZE / (SYM_H_PIX / PAGE_PIX_SIZE)))
     {
         u16WriteTimes = 0;
     }
@@ -230,15 +232,15 @@ static void ssd1306_roll_display(struct rt_i2c_bus_device *i2c_dev)
     offset_page = 0;
     offset_col = 0;
     /* each write cycle finish the data writing in array */
-    for(idx = 0; idx < sizeof(logo_array) / sizeof(logo_array[0]); idx++)
+    for (idx = 0; idx < sizeof(logo_array) / sizeof(logo_array[0]); idx++)
     {
         offset_col = idx * SYM_W_PIX;
-        if(base_col + offset_col >= SSD_COL_SIZE)
+        if (base_col + offset_col >= SSD_COL_SIZE)
         {
-            /* 
-                base_col + offset_col = [128, 256), page_offset = 1, 
+            /*
+                base_col + offset_col = [128, 256), page_offset = 1,
                 base_col + offset_col = [256, 384), page_offset = 2,
-                ... 
+                ...
             */
             offset_page = (base_col + offset_col) / SSD_COL_SIZE;
         }
@@ -247,7 +249,8 @@ static void ssd1306_roll_display(struct rt_i2c_bus_device *i2c_dev)
     u16WriteTimes++;
 }
 
-rt_uint8_t ssd_init_array[] = {
+rt_uint8_t ssd_init_array[] =
+{
     0xAE, /* display off */
     0x20, /* Set Memory Addressing Mode */
     0x10, /* Set addressing orient */
@@ -280,12 +283,13 @@ rt_uint8_t ssd_init_array[] = {
 };
 
 
-rt_uint8_t logo_array[][SYM_BYTE_SIZE] = {
+rt_uint8_t logo_array[][SYM_BYTE_SIZE] =
+{
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x44, 0x44, 0x6C, 0x74, 0x54, 0x6C, 0x44, 0x44, /*"X"*/
     0x44, 0x7C, 0x54, 0x10, 0x10, 0x54, 0x7C, 0x44, /*"H"*/
     0x00, 0x68, 0x54, 0x54, 0x54, 0x54, 0x24, 0x00, /*"S"*/
-    0x38, 0x6C, 0x44, 0x44, 0x44, 0x44, 0x24, 0x00, /*"C"*/ 
+    0x38, 0x6C, 0x44, 0x44, 0x44, 0x44, 0x24, 0x00, /*"C"*/
 };
 
 MSH_CMD_EXPORT(sw_i2c_sample, soft i2c sample);
@@ -293,6 +297,6 @@ MSH_CMD_EXPORT(sw_i2c_sample, soft i2c sample);
 #endif /* BSP_USING_I2C1_SW */
 
 #endif/* RT_USING_I2C */
- /*
- EOF
+/*
+EOF
 */

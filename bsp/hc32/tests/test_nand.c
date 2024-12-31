@@ -90,7 +90,7 @@ static rt_err_t nand_write(struct rt_mtd_nand_device *mtd_nand, int block, rt_of
 
 static rt_err_t nand_erase(struct rt_mtd_nand_device *mtd_nand, int block)
 {
-    if  ((mtd_nand == RT_NULL) || (block >= mtd_nand->block_total))
+    if ((mtd_nand == RT_NULL) || (block >= mtd_nand->block_total))
     {
         rt_kprintf("%s: parameters invallid!\n", __func__);
         return -RT_ERROR;
@@ -164,7 +164,8 @@ static void nand_thread_entry(void *parameter)
 
     while (1)
     {
-        for (block = 0UL; block < mtd_nand->block_total; block++) {
+        for (block = 0UL; block < mtd_nand->block_total; block++)
+        {
             for (i = 0UL; i < mtd_nand->page_size; i++)
             {
                 page_rbuf[i] = 0U;

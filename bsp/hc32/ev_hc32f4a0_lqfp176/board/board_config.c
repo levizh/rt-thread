@@ -523,7 +523,7 @@ rt_err_t rt_hw_usbfs_board_init(void)
 {
     stc_gpio_init_t stcGpioCfg;
     (void)GPIO_StructInit(&stcGpioCfg);
-    
+
     stcGpioCfg.u16PinAttr = PIN_ATTR_ANALOG;
     (void)GPIO_Init(USBF_DM_PORT, USBF_DM_PIN, &stcGpioCfg);
     (void)GPIO_Init(USBF_DP_PORT, USBF_DP_PIN, &stcGpioCfg);

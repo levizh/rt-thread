@@ -290,7 +290,9 @@ int can(int argc, char **argv)
     else if (!strcmp(argv[1], "send_msg"))
     {
         _msh_cmd_send_msg(argc, argv);
-    } else {
+    }
+    else
+    {
         _show_usage();
     }
 
@@ -329,12 +331,15 @@ int can_sample(int argc, char **argv)
             rt_kprintf("The chip hasn't the can unit!\r\n");
             return RT_ERROR;
         }
-    } else {
+    }
+    else
+    {
         rt_kprintf("Default used %s to test!\r\n", can_name);
     }
 
     /* 设备已经打开则关闭 */
-    if (can_dev != RT_NULL) {
+    if (can_dev != RT_NULL)
+    {
         rt_device_close(can_dev);
     }
     /* 查找设备 */
@@ -345,7 +350,8 @@ int can_sample(int argc, char **argv)
         return RT_ERROR;
     }
 
-    if (can_mutex == RT_NULL) {
+    if (can_mutex == RT_NULL)
+    {
         rt_sem_init(&can_rx_sem, sem_name, 0, RT_IPC_FLAG_FIFO);
         can_mutex = rt_mutex_create(mutex_name, RT_IPC_FLAG_FIFO);
     }
@@ -368,7 +374,8 @@ int can_sample(int argc, char **argv)
     rt_device_set_rx_indicate(can_dev, can_rx_call);
     _set_default_filter();
 
-    if (rx_thread == RT_NULL) {
+    if (rx_thread == RT_NULL)
+    {
         rx_thread = rt_thread_create("can_rx", can_rx_thread, RT_NULL, 2048, 15, 10);
         if (rx_thread != RT_NULL)
         {

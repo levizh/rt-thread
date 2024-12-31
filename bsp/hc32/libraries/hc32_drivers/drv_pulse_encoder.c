@@ -150,9 +150,12 @@ static void TMRA_1_Udf_callback(void)
 void TMRA_1_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_1_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_1_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_1_Udf_callback();
     }
 }
@@ -174,9 +177,12 @@ static void TMRA_2_Udf_callback(void)
 void TMRA_2_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_2_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_2_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_2_Udf_callback();
     }
 }
@@ -198,9 +204,12 @@ static void TMRA_3_Udf_callback(void)
 void TMRA_3_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_3_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_3_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_3_Udf_callback();
     }
 }
@@ -222,9 +231,12 @@ static void TMRA_4_Udf_callback(void)
 void TMRA_4_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_4_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_4_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_4_Udf_callback();
     }
 }
@@ -246,9 +258,12 @@ static void TMRA_5_Udf_callback(void)
 void TMRA_5_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_5_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_5_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_5_Udf_callback();
     }
 }
@@ -270,9 +285,12 @@ static void TMRA_6_Udf_callback(void)
 void TMRA_6_Ovf_Udf_Handler(void)
 {
     CM_TMRA_TypeDef *tmr_handler = hc32_pulse_encoder_tmra_obj[PULSE_ENCODER_TMRA_6_INDEX].tmr_handler;
-    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET) {
+    if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_OVF) == SET)
+    {
         TMRA_6_Ovf_callback();
-    } else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET) {
+    }
+    else if (TMRA_GetStatus(tmr_handler, TMRA_FLAG_UDF) == SET)
+    {
         TMRA_6_Udf_callback();
     }
 }
@@ -633,9 +651,12 @@ void TMR6_1_Udf_callback(void)
 void TMR6_1_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_1_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_1_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_1_Udf_callback();
     }
 }
@@ -657,9 +678,12 @@ void TMR6_2_Udf_callback(void)
 void TMR6_2_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_2_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_2_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_2_Udf_callback();
     }
 }
@@ -681,9 +705,12 @@ void TMR6_3_Udf_callback(void)
 void TMR6_3_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_3_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_3_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_3_Udf_callback();
     }
 }
@@ -705,9 +732,12 @@ void TMR6_4_Udf_callback(void)
 void TMR6_4_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_4_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_4_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_4_Udf_callback();
     }
 }
@@ -729,9 +759,12 @@ void TMR6_5_Udf_callback(void)
 void TMR6_5_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_5_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_5_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_5_Udf_callback();
     }
 }
@@ -753,9 +786,12 @@ void TMR6_6_Udf_callback(void)
 void TMR6_6_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_6_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_6_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_6_Udf_callback();
     }
 }
@@ -777,9 +813,12 @@ void TMR6_7_Udf_callback(void)
 void TMR6_7_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_7_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_7_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_7_Udf_callback();
     }
 }
@@ -801,9 +840,12 @@ void TMR6_8_Udf_callback(void)
 void TMR6_8_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_8_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_8_Ovf_callback();
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_8_Udf_callback();
     }
 }
@@ -815,10 +857,13 @@ void TMR6_8_Ovf_Udf_Handler(void)
 void TMR6_9_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_9_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_ClearStatus(tmr_handler, TMR6_FLAG_OVF);
         hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_9_INDEX].Over_Under_Flowcount++;
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_ClearStatus(tmr_handler, TMR6_FLAG_UDF);
         hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_9_INDEX].Over_Under_Flowcount--;
     }
@@ -831,10 +876,13 @@ void TMR6_9_Ovf_Udf_Handler(void)
 void TMR6_10_Ovf_Udf_Handler(void)
 {
     CM_TMR6_TypeDef *tmr_handler = hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_10_INDEX].tmr_handler;
-    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET) {
+    if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_OVF) == SET)
+    {
         TMR6_ClearStatus(tmr_handler, TMR6_FLAG_OVF);
         hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_10_INDEX].Over_Under_Flowcount++;
-    } else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET) {
+    }
+    else if (TMR6_GetStatus(tmr_handler, TMR6_FLAG_UDF) == SET)
+    {
         TMR6_ClearStatus(tmr_handler, TMR6_FLAG_UDF);
         hc32_pulse_encoder_tmr6_obj[PULSE_ENCODER_TMR6_10_INDEX].Over_Under_Flowcount--;
     }

@@ -81,7 +81,7 @@ static int cdc_sample(void)
         rt_thread_mdelay(1000);
     }
 
-   // for (;;);
+    // for (;;);
     return ret;
 }
 /* 导出到 msh 命令列表中 */
@@ -120,11 +120,11 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 #define SPI_FLASH_DEVICE_NAME           "spi10"
 #define SPI_FLASH_CHIP                  RT_USB_MSTORAGE_DISK_NAME /* msc class disk name */
 #if defined(HC32F4A0) || defined(HC32F460)
-#define SPI_FLASH_SS_PORT               GPIO_PORT_C
-#define SPI_FLASH_SS_PIN                GPIO_PIN_07
+    #define SPI_FLASH_SS_PORT               GPIO_PORT_C
+    #define SPI_FLASH_SS_PIN                GPIO_PIN_07
 #elif defined(HC32F472)
-#define SPI_FLASH_SS_PORT               GPIO_PORT_B
-#define SPI_FLASH_SS_PIN                GPIO_PIN_12
+    #define SPI_FLASH_SS_PORT               GPIO_PORT_B
+    #define SPI_FLASH_SS_PIN                GPIO_PIN_12
 #endif
 
 static void rt_hw_spi_flash_reset(char *spi_dev_name)
@@ -195,9 +195,9 @@ INIT_COMPONENT_EXPORT(rt_hw_spi_flash_with_sfud_init);
 
 #define USBD_DEV_NAME   "hidd"     /* 名称 */
 #if defined(HC32F4A0) || defined(HC32F460)
-#define KEY_PIN_NUM     GET_PIN(A,0)          /* PA0 */
+    #define KEY_PIN_NUM     GET_PIN(A,0)          /* PA0 */
 #elif defined(HC32F472)
-#define KEY_PIN_NUM     GET_PIN(B,5)          /* PB5 */
+    #define KEY_PIN_NUM     GET_PIN(B,5)          /* PB5 */
 #endif
 
 static int hid_sample(void)
@@ -310,7 +310,7 @@ static int winusb_sample(void)
     rt_kprintf("Found and open success %s device!\n", WINUSB_DEV_NAME);
 
     ret = rt_device_set_rx_indicate(winusb_dev, winusb_rx_handle);
-    if(ret == RT_EOK)
+    if (ret == RT_EOK)
     {
         /* prepare read config,set once,read once, */
         rt_device_read(winusb_dev, 0, str_read, sizeof(str_read));

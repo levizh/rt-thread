@@ -64,7 +64,8 @@ static void crc_test(rt_uint32_t width)
     struct rt_hwcrypto_ctx *ctx;
     rt_uint32_t result = 0;
     /* CRC16_X25 */
-    struct hwcrypto_crc_cfg cfg = {
+    struct hwcrypto_crc_cfg cfg =
+    {
         .last_val = 0xFFFFU,
         .poly = 0x1021U,
         .width = CRC16_WIDTH,
@@ -72,16 +73,21 @@ static void crc_test(rt_uint32_t width)
         .flags = CRC_FLAG_REFIN | CRC_FLAG_REFOUT,
     };
     /* CRC32 */
-    if (width == CRC32_WIDTH) {
+    if (width == CRC32_WIDTH)
+    {
         cfg.last_val = 0xFFFFFFFFUL;
         cfg.poly = 0x04C11DB7UL;
         cfg.width = CRC32_WIDTH;
         cfg.xorout = 0xFFFFFFFFUL;
         cfg.flags = CRC_FLAG_REFIN | CRC_FLAG_REFOUT;
         ctx = rt_hwcrypto_crc_create(rt_hwcrypto_dev_default(), HWCRYPTO_CRC_CRC32);
-    } else if (width == CRC16_WIDTH) {
+    }
+    else if (width == CRC16_WIDTH)
+    {
         ctx = rt_hwcrypto_crc_create(rt_hwcrypto_dev_default(), HWCRYPTO_CRC_CRC16);
-    } else {
+    }
+    else
+    {
         rt_kprintf("crc%d not support! \n", width);
         return;
     }
@@ -89,7 +95,8 @@ static void crc_test(rt_uint32_t width)
     rt_hwcrypto_crc_cfg(ctx, &cfg);
 
     rt_kprintf("temp_in: ");
-    for (int i = 0; i < sizeof(temp_in) / 2U; i++) {
+    for (int i = 0; i < sizeof(temp_in) / 2U; i++)
+    {
         rt_kprintf("%d ", temp_in[i]);
     }
     rt_kprintf("\n");
@@ -120,11 +127,13 @@ static void aes_test(rt_uint16_t key_bitlen)
     const char *key;
 
     ctx = rt_hwcrypto_symmetric_create(rt_hwcrypto_dev_default(), HWCRYPTO_TYPE_AES_ECB);
-    if (ctx == RT_NULL) {
+    if (ctx == RT_NULL)
+    {
         rt_kprintf("create AES-CBC context err!");
         return;
     }
-    switch (key_bitlen) {
+    switch (key_bitlen)
+    {
     case 128:
         key = key128;
         break;
@@ -139,30 +148,36 @@ static void aes_test(rt_uint16_t key_bitlen)
         break;
     }
     result = rt_hwcrypto_symmetric_setkey(ctx, (rt_uint8_t *)key, key_bitlen);
-    if (result == RT_EOK) {
+    if (result == RT_EOK)
+    {
         result = rt_hwcrypto_symmetric_crypt(ctx, HWCRYPTO_MODE_ENCRYPT, AES_DATA_LEN, (rt_uint8_t *)enc_in, enc_out);
-        if (result != RT_EOK) {
+        if (result != RT_EOK)
+        {
             goto _exit;
         }
 
         rt_kprintf("aes src data:");
-        for (int i = 0; i < AES_DATA_LEN; i++) {
+        for (int i = 0; i < AES_DATA_LEN; i++)
+        {
             rt_kprintf("%c", enc_in[i]);
         }
         rt_kprintf("\n");
 
         rt_kprintf("aes enc data:");
-        for (int i = 0; i < AES_DATA_LEN; i++) {
+        for (int i = 0; i < AES_DATA_LEN; i++)
+        {
             rt_kprintf("%x ", enc_out[i]);
         }
         rt_kprintf("\n");
 
         result = rt_hwcrypto_symmetric_crypt(ctx, HWCRYPTO_MODE_DECRYPT, AES_DATA_LEN, (rt_uint8_t *)enc_out, dec_out);
-        if (result != RT_EOK) {
+        if (result != RT_EOK)
+        {
             goto _exit;
         }
         rt_kprintf("aes dec data:");
-        for (int i = 0; i < AES_DATA_LEN; i++) {
+        for (int i = 0; i < AES_DATA_LEN; i++)
+        {
             rt_kprintf("%c", dec_out[i]);
         }
         rt_kprintf("\n");
@@ -182,17 +197,20 @@ static void hash_sha256_test(void)
     struct rt_hwcrypto_ctx *ctx;
 
     ctx = rt_hwcrypto_hash_create(rt_hwcrypto_dev_default(), HWCRYPTO_TYPE_SHA256);
-    if (ctx != RT_NULL) {
+    if (ctx != RT_NULL)
+    {
         rt_hwcrypto_hash_update(ctx, (rt_uint8_t *)in, rt_strlen(in));
         rt_kprintf("hash in data:");
-        for (int i = 0; i < rt_strlen(in); i++) {
+        for (int i = 0; i < rt_strlen(in); i++)
+        {
             rt_kprintf("%c", in[i]);
         }
         rt_kprintf("\n");
 
         rt_hwcrypto_hash_finish(ctx, out, HASH_SHA256_MSG_DIGEST_SIZE);
         rt_kprintf("hash out data:");
-        for (int i = 0; i < HASH_SHA256_MSG_DIGEST_SIZE; i++) {
+        for (int i = 0; i < HASH_SHA256_MSG_DIGEST_SIZE; i++)
+        {
             rt_kprintf("%x ", out[i]);
         }
         rt_kprintf("\n");
@@ -205,50 +223,68 @@ static int crypto_sample(int argc, char *argv[])
 {
     rt_err_t ret = RT_EOK;
 
-    if (argc != 3) {
+    if (argc != 3)
+    {
         goto _exit;
     }
 
 #if defined(BSP_USING_RNG)
-    if (!rt_strcmp("rang", argv[1])) {
-        if (!rt_strcmp("get", argv[2])) {
+    if (!rt_strcmp("rang", argv[1]))
+    {
+        if (!rt_strcmp("get", argv[2]))
+        {
             rt_uint32_t result = rt_hwcrypto_rng_update();
             rt_kprintf("random number = %x \n", result);
-        } else {
+        }
+        else
+        {
             goto _exit;
         }
     }
 #endif
 #if defined(BSP_USING_CRC)
-    else if (!rt_strcmp("crc", argv[1])) {
+    else if (!rt_strcmp("crc", argv[1]))
+    {
         rt_uint32_t width = atoi(argv[2]);
-        if (width == CRC16_WIDTH || width == CRC32_WIDTH) {
+        if (width == CRC16_WIDTH || width == CRC32_WIDTH)
+        {
             crc_test(width);
-        } else {
+        }
+        else
+        {
             goto _exit;
         }
     }
 #endif
 #if defined(BSP_USING_AES)
-    else if (!rt_strcmp("aes", argv[1])) {
+    else if (!rt_strcmp("aes", argv[1]))
+    {
         rt_uint32_t key_bitlen = atoi(argv[2]);
-        if (key_bitlen == 128 || key_bitlen == 192 || key_bitlen == 256) {
+        if (key_bitlen == 128 || key_bitlen == 192 || key_bitlen == 256)
+        {
             aes_test(key_bitlen);
-        } else {
+        }
+        else
+        {
             goto _exit;
         }
     }
 #endif
 #if defined(BSP_USING_HASH)
-    else if (!rt_strcmp("hash", argv[1])) {
-        if (!rt_strcmp("test", argv[2])) {
+    else if (!rt_strcmp("hash", argv[1]))
+    {
+        if (!rt_strcmp("test", argv[2]))
+        {
             hash_sha256_test();
-        } else {
+        }
+        else
+        {
             goto _exit;
         }
     }
 #endif
-    else {
+    else
+    {
         goto _exit;
     }
 

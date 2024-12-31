@@ -21,15 +21,16 @@
 /* variables define */
 static rt_device_t rtc_dev;
 #if defined(RT_USING_ALARM)
-extern void rt_alarm_dump(void);
+    extern void rt_alarm_dump(void);
 
-static rt_uint16_t callback_counter, alarm_idx = 0;
-static struct rt_alarm * ptr_alarm = RT_NULL;
-static struct rt_alarm_setup alarm_setup;
+    static rt_uint16_t callback_counter, alarm_idx = 0;
+    static struct rt_alarm *ptr_alarm = RT_NULL;
+    static struct rt_alarm_setup alarm_setup;
 #endif /* RT_USING_ALARM */
 
 /* command type */
-enum RTC_CMD{
+enum RTC_CMD
+{
     CMD_OPEN_RTC        = 0x00,
     CMD_SET_TIME        = 0x01,
     CMD_SET_DATE        = 0x02,
@@ -46,10 +47,10 @@ enum RTC_CMD{
 void alarm_callback_fun(rt_alarm_t alarm, time_t timestamp)
 {
     rt_kprintf("\nuser alarm %d callback function.\n", alarm_idx);
-    if((0 == (--callback_counter)) && (alarm_idx))
+    if ((0 == (--callback_counter)) && (alarm_idx))
     {
         rt_kprintf("stop alarm %d \n", alarm_idx);
-        if(RT_EOK != rt_alarm_stop(alarm))
+        if (RT_EOK != rt_alarm_stop(alarm))
         {
             rt_kprintf("failed to stop alarm\n");
         }
@@ -91,7 +92,7 @@ static int rtc_sample(int argc, char *argv[])
     }
 
     idx = *(argv[1]) - '0';
-    switch(idx)
+    switch (idx)
     {
     case CMD_OPEN_RTC:
         /* find and open device with standard interface */
@@ -138,7 +139,7 @@ static int rtc_sample(int argc, char *argv[])
                 (argv[2][6] - '0');
         temp3 = ((argv[2][8] - '0') * 10) + \
                 (argv[2][9] - '0');
-        if(RT_EOK != set_date(temp1, temp2, temp3))
+        if (RT_EOK != set_date(temp1, temp2, temp3))
         {
             rt_kprintf("failed to set date for %s\n", SAMPLE_RTC_NAME);
             return RT_ERROR;
@@ -169,14 +170,14 @@ static int rtc_sample(int argc, char *argv[])
         alarm_setup.wktime.tm_sec = p_tm.tm_sec;
         alarm_setup.wktime.tm_isdst = -1;
         rt_kprintf("UTC alarm Time: \n%d-%02d-%02d %02d:%02d:%02d\n\n",
-            p_tm.tm_year + 1900,
-            p_tm.tm_mon + 1,
-            p_tm.tm_mday,
-            p_tm.tm_hour,
-            p_tm.tm_min,
-            p_tm.tm_sec);
+                   p_tm.tm_year + 1900,
+                   p_tm.tm_mon + 1,
+                   p_tm.tm_mday,
+                   p_tm.tm_hour,
+                   p_tm.tm_min,
+                   p_tm.tm_sec);
         ptr_alarm = rt_alarm_create(alarm_callback_fun, &alarm_setup);
-        if(RT_NULL == ptr_alarm)
+        if (RT_NULL == ptr_alarm)
         {
             rt_kprintf("failed to create rtc alarm\n");
             return RT_ERROR;
@@ -186,7 +187,7 @@ static int rtc_sample(int argc, char *argv[])
         rt_alarm_dump();
         break;
     case CMD_SET_START_ALARM:
-        if(RT_EOK != rt_alarm_start(ptr_alarm))
+        if (RT_EOK != rt_alarm_start(ptr_alarm))
         {
             rt_kprintf("failed to start rtc alarm\n");
             return RT_ERROR;
@@ -194,7 +195,7 @@ static int rtc_sample(int argc, char *argv[])
         rt_kprintf("rtc alarm started\n");
         break;
     case CMD_STOP_ALARM:
-        if(RT_EOK != rt_alarm_stop(ptr_alarm))
+        if (RT_EOK != rt_alarm_stop(ptr_alarm))
         {
             rt_kprintf("failed to stop rtc alarm\n");
             return RT_ERROR;
@@ -202,25 +203,25 @@ static int rtc_sample(int argc, char *argv[])
         rt_kprintf("rtc alarm stopped\n");
         break;
     case CMD_CTRL_ALARM:
-        if(argc < 3)
+        if (argc < 3)
         {
             rt_kprintf("unkown para to control rtc alarm\n");
             return RT_ERROR;
         }
-        switch(argv[2][0])
+        switch (argv[2][0])
         {
-            case 's':
-                alarm_setup.flag = RT_ALARM_SECOND;
-                break;
-            case 'm':
-                alarm_setup.flag = RT_ALARM_MINUTE;
-                break;
-            case 'o':
-            default:
-                alarm_setup.flag = RT_ALARM_ONESHOT;
-                break;
+        case 's':
+            alarm_setup.flag = RT_ALARM_SECOND;
+            break;
+        case 'm':
+            alarm_setup.flag = RT_ALARM_MINUTE;
+            break;
+        case 'o':
+        default:
+            alarm_setup.flag = RT_ALARM_ONESHOT;
+            break;
         }
-        if(RT_EOK != rt_alarm_control(ptr_alarm, RT_ALARM_CTRL_MODIFY, &alarm_setup))
+        if (RT_EOK != rt_alarm_control(ptr_alarm, RT_ALARM_CTRL_MODIFY, &alarm_setup))
         {
             rt_kprintf("failed to control rtc alarm\n");
         }
@@ -230,7 +231,7 @@ static int rtc_sample(int argc, char *argv[])
         rt_alarm_dump();
         break;
     case CMD_DEL_ALARM:
-        if(RT_EOK != rt_alarm_delete(ptr_alarm))
+        if (RT_EOK != rt_alarm_delete(ptr_alarm))
         {
             rt_kprintf("failed to delete alarm\n");
         }

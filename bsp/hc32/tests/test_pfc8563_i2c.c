@@ -107,7 +107,7 @@ static void pcf8563_init(const char *name)
         temp[0] = 0x08U;
         write_regs(i2c_bus, PFC8563_REG_CTRL_SR1, temp, 1);
         rt_thread_mdelay(100);
-        
+
         temp[0] = RTC_DEC2BCD(55);
         temp[1] = RTC_DEC2BCD(59);
         temp[2] = RTC_DEC2BCD(23);

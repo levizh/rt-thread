@@ -32,11 +32,11 @@
 #ifdef BSP_USING_PULSE_ENCODER
 
 #if defined (HC32F4A0)
-#define TEST_IO_A_PIN GET_PIN(A, 5)
-#define TEST_IO_B_PIN GET_PIN(A, 6)
+    #define TEST_IO_A_PIN GET_PIN(A, 5)
+    #define TEST_IO_B_PIN GET_PIN(A, 6)
 #else
-#define TEST_IO_A_PIN GET_PIN(B, 0)
-#define TEST_IO_B_PIN GET_PIN(B, 1)
+    #define TEST_IO_A_PIN GET_PIN(B, 0)
+    #define TEST_IO_B_PIN GET_PIN(B, 1)
 #endif
 
 static rt_device_t pulse_encoder_dev = RT_NULL;
@@ -44,36 +44,36 @@ static rt_device_t pulse_encoder_dev = RT_NULL;
 static void printf_connect(void)
 {
 #if defined (HC32F4A0)
-    #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
+#if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PA5-->PA8 PA6-->PA9\n");
-    #endif
-    #if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
+#endif
+#if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
     rt_kprintf("  [tmr6]*connect PA5-->PB9 PA6-->PB8\n");
-    #endif
+#endif
 #endif
 #if defined (HC32F460)
-    #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
+#if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA8 PB1-->PA9\n");
-    #endif
-    #if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
+#endif
+#if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
     rt_kprintf("  [tmr6]*connect PB0-->PE9 PB1-->PE8\n");
-    #endif
+#endif
 #endif
 #if defined (HC32F448)
-    #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
+#if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA8 PB1-->PA9\n");
-    #endif
-    #if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
+#endif
+#if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
     rt_kprintf("  [tmr6]*connect PB0-->PB5 PB1-->PB13\n");
-    #endif
+#endif
 #endif
 #if defined (HC32F472)
-    #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
+#if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA0 PB1-->PA1\n");
-    #endif
-    #if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
+#endif
+#if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
     rt_kprintf("  [tmr6]*connect PB0-->PA3 PB1-->PA7\n");
-    #endif
+#endif
 #endif
 }
 
@@ -89,20 +89,28 @@ static void _pulse_cmd_print_usage(void)
 
 static void GenClkUp(const uint16_t cnt)
 {
-    uint32_t i,j;
+    uint32_t i, j;
     rt_int32_t count;
     const uint8_t bAin[4U] = {1U, 1U, 0U, 0U};
     const uint8_t bBin[4U] = {0U, 1U, 1U, 0U};
-    for (j = 0UL; j < cnt; j++) {
-        for (i = 0UL; i < 4UL; i++) {
-            if (0U == bAin[i]) {
+    for (j = 0UL; j < cnt; j++)
+    {
+        for (i = 0UL; i < 4UL; i++)
+        {
+            if (0U == bAin[i])
+            {
                 rt_pin_write(TEST_IO_A_PIN, PIN_LOW);
-            } else {
+            }
+            else
+            {
                 rt_pin_write(TEST_IO_A_PIN, PIN_HIGH);
             }
-            if (0U == bBin[i]) {
+            if (0U == bBin[i])
+            {
                 rt_pin_write(TEST_IO_B_PIN, PIN_LOW);
-            } else {
+            }
+            else
+            {
                 rt_pin_write(TEST_IO_B_PIN, PIN_HIGH);
             }
             rt_thread_mdelay(1UL);
@@ -114,20 +122,28 @@ static void GenClkUp(const uint16_t cnt)
 
 static void GenClkDown(const uint16_t cnt)
 {
-    uint32_t i,j;
+    uint32_t i, j;
     rt_int32_t count;
     const uint8_t bAin[4U] = {0U, 1U, 1U, 0U};
     const uint8_t bBin[4U] = {1U, 1U, 0U, 0U};
-    for (j = 0UL; j < cnt; j++) {
-        for (i = 0UL; i < 4UL; i++) {
-            if (0U == bAin[i]) {
+    for (j = 0UL; j < cnt; j++)
+    {
+        for (i = 0UL; i < 4UL; i++)
+        {
+            if (0U == bAin[i])
+            {
                 rt_pin_write(TEST_IO_A_PIN, PIN_LOW);
-            } else {
+            }
+            else
+            {
                 rt_pin_write(TEST_IO_A_PIN, PIN_HIGH);
             }
-            if (0U == bBin[i]) {
+            if (0U == bBin[i])
+            {
                 rt_pin_write(TEST_IO_B_PIN, PIN_LOW);
-            } else {
+            }
+            else
+            {
                 rt_pin_write(TEST_IO_B_PIN, PIN_HIGH);
             }
             rt_thread_mdelay(1UL);
@@ -141,7 +157,8 @@ static int encoder_sample(int argc, char **argv)
 {
     rt_int32_t count;
 
-    if ((argc != 4)) {
+    if ((argc != 4))
+    {
         _pulse_cmd_print_usage();
         return RT_ERROR;
     }
@@ -167,21 +184,27 @@ static int encoder_sample(int argc, char **argv)
     GenClkUp(10);
     rt_device_read(pulse_encoder_dev, 0, &count, 1);
     rt_device_control(pulse_encoder_dev, PULSE_ENCODER_CMD_CLEAR_COUNT, RT_NULL);
-    if (count != 100) {
+    if (count != 100)
+    {
         rt_kprintf("**************Self-test failed**************\n");
         rt_device_close(pulse_encoder_dev);
         _pulse_cmd_print_usage();
         return RT_ERROR;
-    } else {
+    }
+    else
+    {
         rt_kprintf("**************Self-test success**************\n");
         rt_device_control(pulse_encoder_dev, PULSE_ENCODER_CMD_ENABLE, RT_NULL);
         GenClkUp(atoi(argv[2]));
         GenClkDown(atoi(argv[3]));
 
         rt_device_read(pulse_encoder_dev, 0, &count, 1);
-        if (count == (atoi(argv[2]) - atoi(argv[3]))) {
+        if (count == (atoi(argv[2]) - atoi(argv[3])))
+        {
             rt_kprintf("encoder_sample test success\n");
-        } else {
+        }
+        else
+        {
             rt_kprintf("encoder_sample test failed\n");
         }
 

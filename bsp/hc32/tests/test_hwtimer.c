@@ -46,7 +46,7 @@ static void _hwtimer_cmd_print_usage(void)
 static rt_err_t timeout_cb(rt_device_t dev, rt_size_t size)
 {
     static rt_uint8_t pin_cnt = 0;
-    rt_pin_write(TIMEOUT_TEST_PIN, ++pin_cnt%2);     /* 电平取反 */
+    rt_pin_write(TIMEOUT_TEST_PIN, ++pin_cnt % 2);   /* 电平取反 */
     /* 打印出的tick值由于printf原因可能有误差，可以查看测试IO来精确确认时间 */
     rt_kprintf("callback successful! ticks = %d \n", rt_tick_get() - tick);
     tick = rt_tick_get();
@@ -68,7 +68,8 @@ static int hwtimer_sample(int argc, char *argv[])
     rt_hwtimerval_t overflow_tv;                            /* 定时器超时值 */
     rt_uint32_t timer_out_s;
 
-    if ((argc != 4) || (rt_strcmp("oneshot", argv[2]) && rt_strcmp("period", argv[2]))) {
+    if ((argc != 4) || (rt_strcmp("oneshot", argv[2]) && rt_strcmp("period", argv[2])))
+    {
         _hwtimer_cmd_print_usage();
         return RT_ERROR;
     }
@@ -110,9 +111,10 @@ static int hwtimer_sample(int argc, char *argv[])
     rt_device_set_rx_indicate(hw_dev, timeout_cb);
 
     /* 设置定时器超时并启动定时器 */
-    timeout_s.sec = atoi(argv[3])/1000U;              /* 秒 */
-    timeout_s.usec = (atoi(argv[3])%1000U)*1000U;     /* 微秒 */
-    if (rt_device_write(hw_dev, 0, &timeout_s, sizeof(timeout_s)) != sizeof(timeout_s)) {
+    timeout_s.sec = atoi(argv[3]) / 1000U;            /* 秒 */
+    timeout_s.usec = (atoi(argv[3]) % 1000U) * 1000U; /* 微秒 */
+    if (rt_device_write(hw_dev, 0, &timeout_s, sizeof(timeout_s)) != sizeof(timeout_s))
+    {
         rt_kprintf("set timeout value failed\n");
         return RT_ERROR;
     }
@@ -123,8 +125,8 @@ static int hwtimer_sample(int argc, char *argv[])
     rt_pin_mode(TIMEOUT_TEST_PIN, PIN_MODE_OUTPUT);
 
     /* oneshot模式cb函数执行一次，period模式cb函数执行5次,且每秒打印一次运行时间 */
-    timer_out_s = (atoi(argv[3])/1000U) > 1 ? (atoi(argv[3])/1000U) : 1;
-    for (i = 0; i < (timer_out_s*loop_cnt); i++)
+    timer_out_s = (atoi(argv[3]) / 1000U) > 1 ? (atoi(argv[3]) / 1000U) : 1;
+    for (i = 0; i < (timer_out_s * loop_cnt); i++)
     {
         /* 延时1000ms */
         rt_thread_mdelay(1000);
