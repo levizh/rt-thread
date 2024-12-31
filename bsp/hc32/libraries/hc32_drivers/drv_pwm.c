@@ -17,7 +17,7 @@
 
 #if defined(BSP_USING_PWM)
 
-//#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG             "drv_pwm"
 #include <drv_log.h>
 
@@ -1227,7 +1227,7 @@ static void tmr6_duyt100or0_output(CM_TMR6_TypeDef *TMR6x, rt_uint32_t channel, 
 #if defined(HC32F4A0) || defined(HC32F448)
         TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_OVF, TMR6_PWM_LOW);
 #elif defined(HC32F460)
-        TMR6_PWM_SetPolarity(TMR6x, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_LOW);
+        TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_LOW);
 #endif
     }
     else
@@ -1235,7 +1235,7 @@ static void tmr6_duyt100or0_output(CM_TMR6_TypeDef *TMR6x, rt_uint32_t channel, 
 #if defined(HC32F4A0) || defined(HC32F448)
         TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_OVF, TMR6_PWM_HIGH);
 #elif defined(HC32F460)
-        TMR6_PWM_SetPolarity(TMR6x, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_HIGH);
+        TMR6_PWM_SetPolarity(TMR6x, channel, TMR6_STAT_MATCH_PERIOD, TMR6_PWM_HIGH);
 #endif
     }
 }
