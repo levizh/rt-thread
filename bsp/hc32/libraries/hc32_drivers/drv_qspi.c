@@ -1092,11 +1092,7 @@ static int rt_hw_qspi_bus_init(void)
 {
     hc32_get_qspi_info();
     /* register the handle */
-#if defined (HC32F460) || defined (HC32F4A0)
     hc32_install_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, qspi_bus_obj.config->err_irq.irq_callback, RT_FALSE);
-#elif defined (HC32F448) || defined (HC32F472)
-    hc32_install_independ_irq_handler(&qspi_bus_obj.config->err_irq.irq_config, RT_FALSE);
-#endif
 
     return hc32_qspi_register_bus(&qspi_bus_obj, "qspi1");
 }
