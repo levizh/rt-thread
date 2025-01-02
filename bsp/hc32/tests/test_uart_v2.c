@@ -55,8 +55,6 @@
  * 命令调用格式：
  * uart1 中断，命令调用格式：uart_sample_v2 uart1 int
  * uart1 DMA，命令调用格式：uart_sample_v2 uart1 dma
- * uart5 中断，命令调用格式：uart_sample_v2 uart5 int
- * uart5 DMA，命令调用格式：uart_sample_v2 uart5 dma
  */
 
 #include <rtthread.h>
@@ -65,11 +63,7 @@
 #if defined(BSP_USING_UART) && defined(RT_USING_SERIAL_V2)
 
 #if defined(HC32F472)
-    #if defined (BSP_USING_UART1)
-        #define SAMPLE_DEFAULT_UART_NAME       "uart1"
-    #elif defined (BSP_USING_UART5)
-        #define SAMPLE_DEFAULT_UART_NAME       "uart5"
-    #endif
+    #define SAMPLE_DEFAULT_UART_NAME       "uart1"
 #elif defined(HC32F448)
     #define SAMPLE_DEFAULT_UART_NAME       "uart1"
 #elif defined(HC32F4A0)
