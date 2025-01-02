@@ -1,4 +1,14 @@
 /*
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2024-12-30     CDT          first version
+ */
+
+/*
  * 程序清单：这是 RTC 设备使用例程和 Alarm 使用示例。
  * 例程导出了 rtc_sample 命令到控制终端。
  * 命令调用格式：rtc_sample x

@@ -1,4 +1,14 @@
 /*
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2024-12-30     CDT          first version
+ */
+
+/*
  * 程序清单：这是 Soft I2C 设备使用例程。
  * 例程导出了 sw_i2c_sample 到控制终端。
  * 命令调用格式：sw_i2c_sample cmd_id [options]

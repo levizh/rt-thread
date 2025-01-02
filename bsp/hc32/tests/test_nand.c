@@ -1,4 +1,14 @@
 /*
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2024-12-30     CDT          first version
+ */
+
+/*
  * 程序清单：NAND 设备使用例程，例程导出了nand_sample命令到控制终端
  * 命令调用格式：nand_sample
  * 程序功能：对整个Nand存储空间进行擦除、写和读操作，比较数据是否一致

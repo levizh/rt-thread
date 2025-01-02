@@ -1,4 +1,14 @@
 /*
+ * Copyright (c) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2024-12-30     CDT          first version
+ */
+
+/*
  * 程序清单： DAC 设备使用例程
  * 例程导出了 dac_vol_sample 命令到控制终端
  * 命令调用格式：dac_vol_sample  参数1：dac1 | dac2  参数2：DAC配置值 （可选，范围0-4095），默认1365≈1.1V
