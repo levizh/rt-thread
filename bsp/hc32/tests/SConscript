@@ -14,13 +14,13 @@ if GetDepend(['RT_USING_SERIAL']):
     else:
         src += ['test_uart_v1.c']
 
-if GetDepend(['RT_USING_SPI']):
+if GetDepend(['BSP_USING_SPI']):
     src += ['test_spi.c']
 
-if GetDepend(['RT_USING_QSPI']):
+if GetDepend(['BSP_USING_QSPI']):
     src += ['test_qspi.c']
 
-if GetDepend(['RT_USING_I2C']):
+if GetDepend(['BSP_USING_I2C']):
     src += ['test_i2c.c']
     if GetDepend(['RT_USING_I2C_BITOPS']):
         src += ['test_soft_i2c.c']
@@ -43,31 +43,31 @@ if GetDepend(['BSP_USING_ADC']):
 if GetDepend(['BSP_USING_DAC']):
     src += ['test_dac.c']
 
-if GetDepend(['RT_USING_CAN']):
+if GetDepend(['BSP_USING_CAN']):
     src += ['test_can.c']
 
-if GetDepend(['RT_USING_RTC']):
+if GetDepend(['BSP_USING_RTC']):
     src += ['test_rtc.c']
 
-if GetDepend(['RT_USING_WDT']):
+if GetDepend(['BSP_USING_WDT']):
     src += ['test_wdt.c']
 
-if GetDepend(['RT_USING_HWTIMER']):
+if GetDepend(['BSP_USING_HWTIMER']):
     src += ['test_hwtimer.c']
 
-if GetDepend(['RT_USING_PULSE_ENCODER']):
+if GetDepend(['BSP_USING_PULSE_ENCODER']):
     src += ['test_pulse_encoder.c']
 
-if GetDepend(['RT_USING_PWM']):
+if GetDepend(['BSP_USING_PWM']):
     src += ['test_pwm.c']
 
-if GetDepend(['RT_USING_PM']):
+if GetDepend(['BSP_USING_PM']):
     src += ['test_pm.c']
 
-if GetDepend('RT_USING_HWCRYPTO'):
+if GetDepend('BSP_USING_HWCRYPTO'):
     src += ['test_crypto.c']
 
-if GetDepend(['RT_USING_SDIO']):
+if GetDepend(['BSP_USING_SDIO']):
     src += ['test_sdmmc.c']
 
 if GetDepend(['BSP_USING_EXMC', 'BSP_USING_SDRAM']):

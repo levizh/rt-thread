@@ -59,17 +59,14 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 
-#if defined(BSP_USING_UART) && defined(RT_USING_SERIAL_V2)
-
-#if defined(HC32F472)
-    #define SAMPLE_DEFAULT_UART_NAME       "uart1"
-#elif defined(HC32F448)
-    #define SAMPLE_DEFAULT_UART_NAME       "uart1"
-#elif defined(HC32F4A0)
-    #define SAMPLE_DEFAULT_UART_NAME       "uart6"
-#elif defined(HC32F460)
+#if defined(HC32F460) && defined(BSP_USING_UART2)
     #define SAMPLE_DEFAULT_UART_NAME       "uart2"
-#endif
+#elif defined(HC32F4A0) && defined (BSP_USING_UART6)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart6"
+#elif (defined(HC32F448) || defined(HC32F472)) && defined (BSP_USING_UART1)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart1"
+#elif defined(HC32F472) && defined (BSP_USING_UART5)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart5"
 
 /* 串口接收消息结构 */
 struct rx_msg

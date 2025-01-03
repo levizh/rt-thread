@@ -62,7 +62,7 @@ menu "On-chip Peripheral Drivers"
         if BSP_USING_UART
             menuconfig BSP_USING_UART1
                 bool "Enable UART1"
-                default y
+                default n
                 if BSP_USING_UART1
                     config BSP_UART1_RX_USING_DMA
                         bool "Enable UART1 RX DMA"
@@ -89,7 +89,7 @@ menu "On-chip Peripheral Drivers"
 
             menuconfig BSP_USING_UART2
                 bool "Enable UART2"
-                default n
+                default y
                 if BSP_USING_UART2
                     config BSP_UART2_RX_USING_DMA
                         bool "Enable UART2 RX DMA"

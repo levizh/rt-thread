@@ -6,7 +6,9 @@
  * Change Logs:
  * Date           Author            Notes
  * 2022-06-27     lianghongquan     first version
- * 2023-02-22     CDT               add hc32f4a0 support
+ * 2023-02-22     CDT               support HC32F4A0
+ * 2024-11-20     CDT               support HC32F448
+ * 2025-01-03     CDT               support HC32F472
  */
 
 #include <board.h>
@@ -25,7 +27,7 @@
 
 #if defined(HC32F460) || defined(HC32F448)
     #define TMRA_CHANNEL_NUM_MAX     8U
-#elif defined(HC32F4A0)
+#elif defined(HC32F4A0) || defined(HC32F472)
     #define TMRA_CHANNEL_NUM_MAX     4U
 #endif
 
@@ -127,7 +129,7 @@ static rt_uint32_t tmra_get_clk_notdiv(CM_TMRA_TypeDef *TMRAx)
     rt_uint32_t u32clkFreq;
     rt_uint32_t u32BusName;
 
-#if defined(HC32F4A0) || defined(HC32F448)
+#if defined(HC32F4A0) || defined(HC32F448) || defined(HC32F472)
     switch ((rt_uint32_t)TMRAx)
     {
     case (rt_uint32_t)CM_TMRA_1:
