@@ -107,11 +107,11 @@ void SystemClock_Config(void)
 */
 void PeripheralClock_Config(void)
 {
-#if defined(BSP_USING_CAN1)
-    CLK_SetCANClockSrc(CLK_CAN1, CLK_CANCLK_SYSCLK_DIV6);
+#if defined(BSP_USING_MCAN1)
+    CLK_SetCANClockSrc(CLK_MCAN1, CLK_MCANCLK_SYSCLK_DIV5);
 #endif
-#if defined(BSP_USING_CAN2)
-    CLK_SetCANClockSrc(CLK_CAN2, CLK_CANCLK_SYSCLK_DIV6);
+#if defined(BSP_USING_MCAN2)
+    CLK_SetCANClockSrc(CLK_MCAN2, CLK_MCANCLK_SYSCLK_DIV5);
 #endif
 
 #if defined(RT_USING_ADC)

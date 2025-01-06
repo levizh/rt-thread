@@ -12,7 +12,7 @@
 * 功能
 *   展示 CAN1、CAN2、CAN3 接收消息和回发消息。
 * 代码使用方法
-*   在终端执行：can_sample  参数选择：can1 | can2 | can3 以启动CAN收发测试
+*   在终端执行：can_sample 参数选择：can1 | can2 | can3 以启动CAN收发测试
 *
 * 默认波特率
 *   仲裁段:波特率500K,采样率80%
@@ -54,12 +54,16 @@
 
 #include <rtthread.h>
 #include "rtdevice.h"
+#if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460)
 #include "drv_can.h"
+#elif defined (HC32F448)
+#include "drv_mcan.h"
+#endif
 
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(BSP_USING_CAN)
+#if defined(BSP_USING_MCAN)
 
 #define MSH_USAGE_CAN_SET_BAUD          "can set_baud <baud>        - set can baud\n"
 #define MSH_USAGE_CAN_SET_BAUDFD        "can set_baudfd <baudfd>    - set can baudfd\n"
@@ -237,7 +241,7 @@ void _msh_cmd_send_msg(int argc, char **argv)
         msg.id  = 0x300;
         msg.ide = RT_CAN_STDID;
         msg.rtr = RT_CAN_DTR;
-        msg.len = CAN_DLC64;
+        msg.len = MCAN_DLC64;
         msg.fd_frame = 1;
         msg.brs = 1;
         for (u8Tick = 0; u8Tick < 64; u8Tick++)
@@ -361,15 +365,16 @@ int can_sample(int argc, char **argv)
         return -RT_ERROR;
     }
 
-    if (can_mutex == RT_NULL)
-    {
+    rt_kprintf("found %s\n", can_name);
+
+    if (can_mutex == RT_NULL) {
         rt_sem_init(&can_rx_sem, sem_name, 0, RT_IPC_FLAG_FIFO);
         can_mutex = rt_mutex_create(mutex_name, RT_IPC_FLAG_FIFO);
     }
 
     res = rt_device_open(can_dev, RT_DEVICE_FLAG_INT_TX | RT_DEVICE_FLAG_INT_RX);
     RT_ASSERT(res == RT_EOK);
-    res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD, (void *)CANFD_ARBITRATION_BAUD_500K);
+    res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD, (void *)MCANFD_NOMINAL_BAUD_500K);
     RT_ASSERT(res == RT_EOK);
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_MODE, (void *)RT_CAN_MODE_NORMAL);
     RT_ASSERT(res == RT_EOK);
@@ -378,7 +383,7 @@ int can_sample(int argc, char **argv)
     if (can_name == "can2")
 #endif
     {
-        res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)CANFD_DATA_BAUD_4M);
+        res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)MCANFD_DATA_BAUD_4M);
         RT_ASSERT(res == RT_EOK);
     }
 #endif

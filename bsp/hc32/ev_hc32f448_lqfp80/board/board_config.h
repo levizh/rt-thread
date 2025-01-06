@@ -101,24 +101,24 @@
 #endif
 
 /***********  CAN configure *********/
-#if defined(BSP_USING_CAN1)
-    #define CAN1_TX_PORT                    (GPIO_PORT_C)
-    #define CAN1_TX_PIN                     (GPIO_PIN_12)
-    #define CAN1_TX_PIN_FUNC                (GPIO_FUNC_56)
+#if defined(BSP_USING_MCAN1)
+    #define MCAN1_TX_PORT                   (GPIO_PORT_C)
+    #define MCAN1_TX_PIN                    (GPIO_PIN_12)
+    #define MCAN1_TX_PIN_FUNC               (GPIO_FUNC_56)
 
-    #define CAN1_RX_PORT                    (GPIO_PORT_D)
-    #define CAN1_RX_PIN                     (GPIO_PIN_00)
-    #define CAN1_RX_PIN_FUNC                (GPIO_FUNC_57)
+    #define MCAN1_RX_PORT                   (GPIO_PORT_D)
+    #define MCAN1_RX_PIN                    (GPIO_PIN_00)
+    #define MCAN1_RX_PIN_FUNC               (GPIO_FUNC_57)
 #endif
 
-#if defined(BSP_USING_CAN2)
-    #define CAN2_TX_PORT                    (GPIO_PORT_H)
-    #define CAN2_TX_PIN                     (GPIO_PIN_02)
-    #define CAN2_TX_PIN_FUNC                (GPIO_FUNC_56)
+#if defined(BSP_USING_MCAN2)
+    #define MCAN2_TX_PORT                   (GPIO_PORT_H)
+    #define MCAN2_TX_PIN                    (GPIO_PIN_02)
+    #define MCAN2_TX_PIN_FUNC               (GPIO_FUNC_56)
 
-    #define CAN2_RX_PORT                    (GPIO_PORT_E)
-    #define CAN2_RX_PIN                     (GPIO_PIN_04)
-    #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_57)
+    #define MCAN2_RX_PORT                   (GPIO_PORT_E)
+    #define MCAN2_RX_PIN                    (GPIO_PIN_04)
+    #define MCAN2_RX_PIN_FUNC               (GPIO_FUNC_57)
 #endif
 
 /************************* SPI port ***********************/

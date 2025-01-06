@@ -188,10 +188,21 @@ extern "C" {
 #define BSP_USING_TMRA_5_IRQ_PRIO       DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_TMRA_5 */
 
-#if defined(BSP_USING_CAN1)
-#define BSP_CAN1_IRQ_NUM                MCAN1_INT0_IRQn
-#define BSP_CAN1_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
-#endif/* BSP_USING_CAN1 */
+#if defined(BSP_USING_MCAN1)
+#define BSP_MCAN1_INT0_IRQ_NUM          MCAN1_INT0_IRQn
+#define BSP_MCAN1_INT0_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+
+#define BSP_MCAN1_INT1_IRQ_NUM          MCAN1_INT1_IRQn
+#define BSP_MCAN1_INT1_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_MCAN1 */
+
+#if defined(BSP_USING_MCAN2)
+#define BSP_MCAN2_INT0_IRQ_NUM          MCAN2_INT0_IRQn
+#define BSP_MCAN2_INT0_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+    
+#define BSP_MCAN2_INT1_IRQ_NUM          MCAN2_INT1_IRQn
+#define BSP_MCAN2_INT1_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_MCAN2 */
 
 #if defined(RT_USING_ALARM)
 #define BSP_RTC_ALARM_IRQ_NUM           RTC_IRQn
