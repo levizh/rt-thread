@@ -215,7 +215,7 @@ extern "C" {
 #define PWM_TMR4_1_CONFIG                                       \
     {                                                           \
         .name                           = "pwm_t41",            \
-        .instance                       = CM_TMR4_1,            \
+        .instance                       = CM_TMR4,              \
         .channel                        = 0,                    \
         .stcTmr4Init =                                          \
         {                                                       \
@@ -241,70 +241,6 @@ extern "C" {
     }
 #endif /* PWM_TMR4_1_CONFIG */
 #endif /* BSP_USING_PWM_TMR4_1 */
-
-#ifdef BSP_USING_PWM_TMR4_2
-#ifndef PWM_TMR4_2_CONFIG
-#define PWM_TMR4_2_CONFIG                                       \
-    {                                                           \
-        .name                           = "pwm_t42",            \
-        .instance                       = CM_TMR4_2,            \
-        .channel                        = 0,                    \
-        .stcTmr4Init =                                          \
-        {                                                       \
-            .u16ClockDiv                = TMR4_CLK_DIV1,        \
-            .u16PeriodValue             = 0xFFFFU,              \
-            .u16CountMode               = TMR4_MD_SAWTOOTH,     \
-            .u16ClockSrc               = TMR4_CLK_SRC_INTERNCLK,\
-        },                                                      \
-        .stcTmr4OcInit =                                        \
-        {                                                       \
-            .u16CompareValue            = 0x0000,               \
-            .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
-            .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
-            .u16BufLinkTransObject      = 0U,                   \
-        },                                                      \
-        .stcTmr4PwmInit =                                       \
-        {                                                       \
-            .u16Mode                    = TMR4_PWM_MD_THROUGH,  \
-            .u16ClockDiv                = TMR4_PWM_CLK_DIV1,    \
-            .u16Polarity           = TMR4_PWM_OXH_HOLD_OXL_HOLD,\
-        },                                                      \
-    }
-#endif /* PWM_TMR4_2_CONFIG */
-#endif /* BSP_USING_PWM_TMR4_2 */
-
-#ifdef BSP_USING_PWM_TMR4_3
-#ifndef PWM_TMR4_3_CONFIG
-#define PWM_TMR4_3_CONFIG                                       \
-    {                                                           \
-        .name                           = "pwm_t43",            \
-        .instance                       = CM_TMR4_3,            \
-        .channel                        = 0,                    \
-        .stcTmr4Init =                                          \
-        {                                                       \
-            .u16ClockDiv                = TMR4_CLK_DIV1,        \
-            .u16PeriodValue             = 0xFFFFU,              \
-            .u16CountMode               = TMR4_MD_SAWTOOTH,     \
-            .u16ClockSrc               = TMR4_CLK_SRC_INTERNCLK,\
-        },                                                      \
-        .stcTmr4OcInit =                                        \
-        {                                                       \
-            .u16CompareValue            = 0x0000,               \
-            .u16OcInvalidPolarity       = TMR4_OC_INVD_LOW,     \
-            .u16CompareModeBufCond     = TMR4_OC_BUF_COND_IMMED,\
-            .u16CompareValueBufCond    = TMR4_OC_BUF_COND_PEAK, \
-            .u16BufLinkTransObject      = 0U,                   \
-        },                                                      \
-        .stcTmr4PwmInit =                                       \
-        {                                                       \
-            .u16Mode                    = TMR4_PWM_MD_THROUGH,  \
-            .u16ClockDiv                = TMR4_PWM_CLK_DIV1,    \
-            .u16Polarity           = TMR4_PWM_OXH_HOLD_OXL_HOLD,\
-        },                                                      \
-    }
-#endif /* PWM_TMR4_3_CONFIG */
-#endif /* BSP_USING_PWM_TMR4_3 */
 
 #endif /* BSP_USING_PWM_TMR4 */
 
@@ -361,7 +297,7 @@ extern "C" {
 #ifndef PWM_TMR6_2_CONFIG
 #define PWM_TMR6_2_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t62",            \
         .instance                       = CM_TMR6_2,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -408,7 +344,7 @@ extern "C" {
 #ifndef PWM_TMR6_3_CONFIG
 #define PWM_TMR6_3_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t63",            \
         .instance                       = CM_TMR6_3,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -455,7 +391,7 @@ extern "C" {
 #ifndef PWM_TMR6_4_CONFIG
 #define PWM_TMR6_4_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t64",            \
         .instance                       = CM_TMR6_4,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -502,7 +438,7 @@ extern "C" {
 #ifndef PWM_TMR6_5_CONFIG
 #define PWM_TMR6_5_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t65",            \
         .instance                       = CM_TMR6_5,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -549,7 +485,7 @@ extern "C" {
 #ifndef PWM_TMR6_6_CONFIG
 #define PWM_TMR6_6_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t66",            \
         .instance                       = CM_TMR6_6,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -596,7 +532,7 @@ extern "C" {
 #ifndef PWM_TMR6_7_CONFIG
 #define PWM_TMR6_7_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t67",            \
         .instance                       = CM_TMR6_7,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -643,7 +579,7 @@ extern "C" {
 #ifndef PWM_TMR6_8_CONFIG
 #define PWM_TMR6_8_CONFIG                                       \
     {                                                           \
-        .name                           = "pwm_t61",            \
+        .name                           = "pwm_t68",            \
         .instance                       = CM_TMR6_8,            \
         .channel                        = 0,                    \
         .stcTmr6Init =                                          \
@@ -686,6 +622,100 @@ extern "C" {
     }
 #endif /* PWM_TMR6_8_CONFIG */
 #endif /* BSP_USING_PWM_TMR6_8 */
+#ifdef BSP_USING_PWM_TMR6_9
+#ifndef PWM_TMR6_9_CONFIG
+#define PWM_TMR6_9_CONFIG                                       \
+    {                                                           \
+        .name                           = "pwm_t69",            \
+        .instance                       = CM_TMR6_9,            \
+        .channel                        = 0,                    \
+        .stcTmr6Init =                                          \
+        {                                                       \
+            .u8CountSrc                 = TMR6_CNT_SRC_SW,      \
+            .sw_count =                                         \
+            {                                                   \
+                .u32ClockDiv            = TMR6_CLK_DIV1,        \
+                .u32CountMode           = TMR6_MD_SAWTOOTH,     \
+                .u32CountDir            = TMR6_CNT_DOWN,        \
+            },                                                  \
+            .u32PeriodValue             = 0xFFFF,               \
+            .u32CountReload             = TMR6_CNT_RELOAD_ON,   \
+        },                                                      \
+        .stcPwmInit =                                           \
+        {                                                       \
+            {                                                   \
+                .u32CompareValue            = 0x0000,           \
+                .u32StartPolarity           = TMR6_PWM_LOW,     \
+                .u32StopPolarity            = TMR6_PWM_LOW,     \
+                .u32CountUpMatchAPolarity   = TMR6_PWM_HIGH,    \
+                .u32CountDownMatchAPolarity = TMR6_PWM_HIGH,    \
+                .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
+                .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
+                .u32UdfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+            },                                                  \
+            {                                                   \
+                .u32CompareValue            = 0x0000,           \
+                .u32StartPolarity           = TMR6_PWM_LOW,     \
+                .u32StopPolarity            = TMR6_PWM_LOW,     \
+                .u32CountUpMatchAPolarity   = TMR6_PWM_HOLD,    \
+                .u32CountDownMatchAPolarity = TMR6_PWM_HOLD,    \
+                .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
+                .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
+                .u32UdfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+            }                                                   \
+        },                                                      \
+    }
+#endif /* PWM_TMR6_9_CONFIG */
+#endif /* BSP_USING_PWM_TMR6_9 */
+#ifdef BSP_USING_PWM_TMR6_10
+#ifndef PWM_TMR6_10_CONFIG
+#define PWM_TMR6_10_CONFIG                                      \
+    {                                                           \
+        .name                           = "pwm_t610",           \
+        .instance                       = CM_TMR6_10,           \
+        .channel                        = 0,                    \
+        .stcTmr6Init =                                          \
+        {                                                       \
+            .u8CountSrc                 = TMR6_CNT_SRC_SW,      \
+            .sw_count =                                         \
+            {                                                   \
+                .u32ClockDiv            = TMR6_CLK_DIV1,        \
+                .u32CountMode           = TMR6_MD_SAWTOOTH,     \
+                .u32CountDir            = TMR6_CNT_DOWN,        \
+            },                                                  \
+            .u32PeriodValue             = 0xFFFF,               \
+            .u32CountReload             = TMR6_CNT_RELOAD_ON,   \
+        },                                                      \
+        .stcPwmInit =                                           \
+        {                                                       \
+            {                                                   \
+                .u32CompareValue            = 0x0000,           \
+                .u32StartPolarity           = TMR6_PWM_LOW,     \
+                .u32StopPolarity            = TMR6_PWM_LOW,     \
+                .u32CountUpMatchAPolarity   = TMR6_PWM_HIGH,    \
+                .u32CountDownMatchAPolarity = TMR6_PWM_HIGH,    \
+                .u32CountUpMatchBPolarity   = TMR6_PWM_HOLD,    \
+                .u32CountDownMatchBPolarity = TMR6_PWM_HOLD,    \
+                .u32UdfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+            },                                                  \
+            {                                                   \
+                .u32CompareValue            = 0x0000,           \
+                .u32StartPolarity           = TMR6_PWM_LOW,     \
+                .u32StopPolarity            = TMR6_PWM_LOW,     \
+                .u32CountUpMatchAPolarity   = TMR6_PWM_HOLD,    \
+                .u32CountDownMatchAPolarity = TMR6_PWM_HOLD,    \
+                .u32CountUpMatchBPolarity   = TMR6_PWM_HIGH,    \
+                .u32CountDownMatchBPolarity = TMR6_PWM_HIGH,    \
+                .u32UdfPolarity             = TMR6_PWM_LOW,     \
+                .u32OvfPolarity             = TMR6_PWM_LOW,     \
+            }                                                   \
+        },                                                      \
+    }
+#endif /* PWM_TMR6_10_CONFIG */
+#endif /* BSP_USING_PWM_TMR6_10 */
 
 #endif /* BSP_USING_PWM_TMR6 */
 

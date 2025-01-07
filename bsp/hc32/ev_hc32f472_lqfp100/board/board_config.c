@@ -287,7 +287,7 @@ rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
     switch ((rt_uint32_t)TMR4x)
     {
 #if defined(BSP_USING_PWM_TMR4_1)
-    case (rt_uint32_t)CM_TMR4_1:
+    case (rt_uint32_t)CM_TMR4:
 #ifdef BSP_USING_PWM_TMR4_1_OUH
         GPIO_SetFunc(PWM_TMR4_1_OUH_PORT, PWM_TMR4_1_OUH_PIN, PWM_TMR4_1_OUH_PIN_FUNC);
 #endif
