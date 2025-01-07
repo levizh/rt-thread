@@ -19,7 +19,7 @@
 #define LOG_TAG                     "drv_wktm"
 #include <drv_log.h>
 
-#define CMPVAL_MAX                  (0xFFFUL)
+#define CMPVAL_MAX                      (0xFFFUL)
 
 #if defined(BSP_USING_WKTM_XTAL32)
     #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_XTAL32)
@@ -29,9 +29,9 @@
     #define PWC_WKT_COUNT_FRQ           (64U)
 #else
     #if defined(HC32F4A0)
-        #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_RTCLRC)
-    #elif defined(HC32F460) || defined(HC32F448)
-        #define PWC_WKT_CLK_SRC             (PWC_WKT_CLK_SRC_LRC)
+        #define PWC_WKT_CLK_SRC         (PWC_WKT_CLK_SRC_RTCLRC)
+    #elif defined(HC32F460) || defined(HC32F448) || defined(HC32F472)
+        #define PWC_WKT_CLK_SRC         (PWC_WKT_CLK_SRC_LRC)
     #endif
     #define PWC_WKT_COUNT_FRQ           (32768UL)
 #endif
