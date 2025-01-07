@@ -41,10 +41,20 @@ static int dac_vol_sample(int argc, char *argv[])
         {
             rt_strcpy(dac_device_name, "dac1");
         }
-#if defined (HC32F4A0)
+#if defined (HC32F4A0) || defined (HC32F472)
         else if (0 == rt_strcmp(argv[1], "dac2"))
         {
             rt_strcpy(dac_device_name, "dac2");
+        }
+#endif
+#if defined (HC32F472)
+        else if (0 == rt_strcmp(argv[1], "dac3"))
+        {
+            rt_strcpy(dac_device_name, "dac3");
+        }
+        else if (0 == rt_strcmp(argv[1], "dac4"))
+        {
+            rt_strcpy(dac_device_name, "dac4");
         }
 #endif
         else
