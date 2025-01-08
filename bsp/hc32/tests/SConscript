@@ -49,7 +49,7 @@ if GetDepend(['BSP_USING_CAN']):
 if GetDepend(['BSP_USING_RTC']):
     src += ['test_rtc.c']
 
-if GetDepend(['BSP_USING_WDT']):
+if GetDepend(['BSP_USING_WDT']) or GetDepend(['BSP_USING_SWDT']):
     src += ['test_wdt.c']
 
 if GetDepend(['BSP_USING_HWTIMER']):

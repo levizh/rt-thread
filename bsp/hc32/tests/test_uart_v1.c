@@ -41,10 +41,13 @@
     #define SAMPLE_DEFAULT_UART_NAME       "uart2"
 #elif defined(HC32F4A0) && defined (BSP_USING_UART6)
     #define SAMPLE_DEFAULT_UART_NAME       "uart6"
-#elif (defined(HC32F448) || defined(HC32F472)) && defined (BSP_USING_UART1)
+#elif defined(HC32F448) && defined (BSP_USING_UART1)
     #define SAMPLE_DEFAULT_UART_NAME       "uart1"
-#elif defined(HC32F472) && defined (BSP_USING_UART5)
-    #define SAMPLE_DEFAULT_UART_NAME       "uart5"
+#elif defined(HC32F472) && defined (BSP_USING_UART1)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart1"
+#endif
+
+#if defined(SAMPLE_DEFAULT_UART_NAME)
 
 /* 串口接收消息结构*/
 struct rx_msg

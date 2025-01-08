@@ -501,6 +501,7 @@ void w25q_write_read_data(struct rt_qspi_device *device, uint32_t u32Addr)
 
 static void qspi_thread_entry(void *parameter)
 {
+    rt_err_t ret;
     struct rt_qspi_configuration qcfg = {0};
     uint32_t u32Addr = W25Q_QSPI_WR_RD_ADDR;
 
@@ -509,7 +510,8 @@ static void qspi_thread_entry(void *parameter)
     qcfg.parent.mode        = RT_SPI_MODE_0;
     qcfg.parent.data_width  = 8;
     qcfg.parent.max_hz      = 10000000UL;
-    if (RT_EOK != rt_qspi_configure(qspi_dev_w25q, &qcfg))
+    ret = rt_qspi_configure(qspi_dev_w25q, &qcfg);
+    if ((RT_EOK != ret) && (-RT_EBUSY != ret))
     {
         rt_kprintf("qspi config failed!\n");
     }
