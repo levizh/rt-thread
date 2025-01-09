@@ -44,6 +44,16 @@
 #endif
 
 /************************ I2C port **********************/
+#if defined(BSP_USING_I2C1)
+    #define I2C1_SDA_PORT                   (GPIO_PORT_A)
+    #define I2C1_SDA_PIN                    (GPIO_PIN_07)
+    #define I2C1_SDA_FUNC                   (GPIO_FUNC_48)
+
+    #define I2C1_SCL_PORT                   (GPIO_PORT_C)
+    #define I2C1_SCL_PIN                    (GPIO_PIN_04)
+    #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
+#endif
+
 #if defined(BSP_USING_I2C3)
     #define I2C3_SDA_PORT                   (GPIO_PORT_B)
     #define I2C3_SDA_PIN                    (GPIO_PIN_05)
