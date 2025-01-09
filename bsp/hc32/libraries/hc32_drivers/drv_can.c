@@ -389,9 +389,9 @@ static rt_bool_t _check_filter_params(struct rt_can_filter_config *p_filter_in)
             RT_ASSERT(p_filter_in->items[i].hdr_bank < CAN_FILTER_COUNT);
             return RT_FALSE;
         }
-        if (p_filter_in->items[i].mode == 1)
+        if (p_filter_in->items[i].mode == 0)
         {
-            RT_ASSERT(p_filter_in->items[i].mode == 0);
+            RT_ASSERT(p_filter_in->items[i].mode == 1);
             return RT_FALSE;
         }
         if (p_filter_in->items[i].rtr == 1)

@@ -24,7 +24,7 @@
 *   1）标准帧：match ID:0x100~0x1ff
 *   2）扩展帧：match ID:0x12345100~0x123451ff
 *   3）固定ID帧: match ID: 0x555
-*  测试设备发送满足以上过滤条件的消息后，需确认可接收到相同的消息，否则测试失败。
+*  测试设备发送满足以上过滤条件的消息后，会在终端打印接收到的ID和消息，并将消息原样发回给测试设备。
 *
 * 命令行命令
 *   1）设置时序： (仅支持CAN FD的单元)
@@ -90,16 +90,18 @@ static rt_err_t can_rx_call(rt_device_t dev, rt_size_t size)
 
 static void _set_default_filter(void)
 {
-    struct rt_can_filter_item can_items[5] =
+#ifdef RT_CAN_USING_HDR
+    struct rt_can_filter_item can_items[3] =
     {
-        RT_CAN_FILTER_ITEM_INIT(0x100, RT_CAN_STDID, RT_CAN_DTR, 0, 0x700, RT_NULL, RT_NULL),           /* std,match ID:0x100~0x1ff，hdr= - 1， */
-        RT_CAN_FILTER_ITEM_INIT(0x12345100, RT_CAN_EXTID, RT_CAN_DTR, 0, 0xFFFFFF00, RT_NULL, RT_NULL), /* ext,match ID:0x12345100~0x123451ff，hdr= - 1， */
-        {0x555, RT_CAN_STDID, RT_CAN_DTR, 0, 0x7ff, 7,}                                                 /* std,match ID:0x555，hdr= 7 */
+        RT_CAN_FILTER_ITEM_INIT(0x100, RT_CAN_STDID, RT_CAN_DTR, 1, 0x700, RT_NULL, RT_NULL),           /* std,match ID:0x100~0x1ff，过滤表模式为1(0表示标识符列表模式，1表示标识符屏蔽位模式)，hdr = -1(表示不指定过滤表号)，设置默认过滤表，过滤表回调函数和参数均为NULL */
+        RT_CAN_FILTER_ITEM_INIT(0x12345100, RT_CAN_EXTID, RT_CAN_DTR, 1, 0xFFFFFF00, RT_NULL, RT_NULL), /* ext,match ID:0x12345100~0x123451ff，hdr = -1 */
+        {0x555, RT_CAN_STDID, RT_CAN_DTR, 1, 0x7ff, 7}                                                  /* std,match ID:0x555，hdr= 7，指定设置7号过滤表 */
     };
-    struct rt_can_filter_config cfg = {3, 1, can_items};
+    struct rt_can_filter_config cfg = {3, 1, can_items}; /* 一共有3个过滤表，1表示初始化过滤表控制块 */
     rt_err_t res;
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_FILTER, &cfg);
     RT_ASSERT(res == RT_EOK);
+#endif
 }
 
 static void can_rx_thread(void *parameter)
@@ -114,7 +116,16 @@ static void can_rx_thread(void *parameter)
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
         /* hdr 值为 - 1，表示直接从 uselist 链表读取数据 */
         rxmsg.hdr_index = -1;
+        /* 从 CAN 读取一帧数据 */
         rt_device_read(can_dev, 0, &rxmsg, sizeof(rxmsg));
+        /* 打印数据 ID 及内容 */
+        rt_kprintf("ID:%x Data:", rxmsg.id);
+        for (int i = 0; i < 8; i++)
+        {
+            rt_kprintf("%2x ", rxmsg.data[i]);
+        }
+        rt_kprintf("\n");
+        /* 发送接收到的消息 */
         size = rt_device_write(can_dev, 0, &rxmsg, sizeof(rxmsg));
         rt_mutex_release(can_mutex);
         can_msg_rx_cnt++;
@@ -372,6 +383,7 @@ int can_sample(int argc, char **argv)
     }
 #endif
     rt_device_set_rx_indicate(can_dev, can_rx_call);
+
     _set_default_filter();
 
     if (rx_thread == RT_NULL)
