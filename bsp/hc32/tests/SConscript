@@ -61,6 +61,9 @@ if GetDepend(['BSP_USING_PULSE_ENCODER']):
 if GetDepend(['BSP_USING_PWM']):
     src += ['test_pwm.c']
 
+if GetDepend(['BSP_USING_INPUT_CAPTURE']):
+    src += ['test_tmr_capture.c']
+
 if GetDepend(['BSP_USING_PM']):
     src += ['test_pm.c']
 
