@@ -115,15 +115,23 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 #include "drv_gpio.h"
 #include "drv_spi.h"
 #include "dev_spi_flash_sfud.h"
-#define SPI_BUS_NAME                    "spi1"
-#define SPI_FLASH_DEVICE_NAME           "spi10"
+
 #define SPI_FLASH_CHIP                  RT_USB_MSTORAGE_DISK_NAME /* msc class disk name */
-#if defined(HC32F4A0) || defined(HC32F460)
+#if defined(HC32F4A0)
     #define SPI_FLASH_SS_PORT               GPIO_PORT_C
     #define SPI_FLASH_SS_PIN                GPIO_PIN_07
+    #define SPI_BUS_NAME                    "spi1"
+    #define SPI_FLASH_DEVICE_NAME           "spi10"
+#elif defined(HC32F460)
+    #define SPI_FLASH_SS_PORT               GPIO_PORT_C
+    #define SPI_FLASH_SS_PIN                GPIO_PIN_07
+    #define SPI_BUS_NAME                    "spi3"
+    #define SPI_FLASH_DEVICE_NAME           "spi30"
 #elif defined(HC32F472)
     #define SPI_FLASH_SS_PORT               GPIO_PORT_B
     #define SPI_FLASH_SS_PIN                GPIO_PIN_12
+    #define SPI_BUS_NAME                    "spi1"
+    #define SPI_FLASH_DEVICE_NAME           "spi10"
 #endif
 
 static void rt_hw_spi_flash_reset(char *spi_dev_name)
@@ -193,8 +201,10 @@ INIT_COMPONENT_EXPORT(rt_hw_spi_flash_with_sfud_init);
 */
 
 #define USBD_DEV_NAME   "hidd"     /* 名称 */
-#if defined(HC32F4A0) || defined(HC32F460)
+#if defined(HC32F4A0)
     #define KEY_PIN_NUM     GET_PIN(A,0)          /* PA0 */
+#elif defined(HC32F460)
+    #define KEY_PIN_NUM     GET_PIN(B,1)          /* PB1 */
 #elif defined(HC32F472)
     #define KEY_PIN_NUM     GET_PIN(B,5)          /* PB5 */
 #endif
