@@ -133,6 +133,15 @@ extern "C" {
 #define UART3_RX_DMA_IRQn               BSP_DMA1_CH2_IRQ_NUM
 #define UART3_RX_DMA_INT_PRIO           BSP_DMA1_CH2_IRQ_PRIO
 #define UART3_RX_DMA_INT_SRC            INT_SRC_DMA1_TC2
+#elif defined(BSP_ADC1_USING_DMA) && !defined(ADC1_EOCA_DMA_INSTANCE)
+#define ADC1_EOCA_DMA_INSTANCE          CM_DMA1
+#define ADC1_EOCA_DMA_CHANNEL           DMA_CH2
+#define ADC1_EOCA_DMA_CLOCK             (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
+#define ADC1_EOCA_DMA_TRIG_SELECT       AOS_DMA1_2
+#define ADC1_EOCA_DMA_TRANS_FLAG        DMA_FLAG_TC_CH2
+#define ADC1_EOCA_DMA_IRQn              BSP_DMA1_CH2_IRQ_NUM
+#define ADC1_EOCA_DMA_INT_PRIO          BSP_DMA1_CH2_IRQ_PRIO
+#define ADC1_EOCA_DMA_INT_SRC           INT_SRC_DMA1_TC2
 #endif
 
 /* DMA1 ch3 */
@@ -172,15 +181,6 @@ extern "C" {
 #define UART4_RX_DMA_IRQn               BSP_DMA1_CH3_IRQ_NUM
 #define UART4_RX_DMA_INT_PRIO           BSP_DMA1_CH3_IRQ_PRIO
 #define UART4_RX_DMA_INT_SRC            INT_SRC_DMA1_TC3
-#elif defined(BSP_ADC1_USING_DMA) && !defined(ADC1_EOCA_DMA_INSTANCE)
-#define ADC1_EOCA_DMA_INSTANCE          CM_DMA1
-#define ADC1_EOCA_DMA_CHANNEL           DMA_CH3
-#define ADC1_EOCA_DMA_CLOCK             (PWC_FCG0_DMA1 | PWC_FCG0_AOS)
-#define ADC1_EOCA_DMA_TRIG_SELECT       AOS_DMA1_3
-#define ADC1_EOCA_DMA_TRANS_FLAG        DMA_FLAG_TC_CH3
-#define ADC1_EOCA_DMA_IRQn              BSP_DMA1_CH3_IRQ_NUM
-#define ADC1_EOCA_DMA_INT_PRIO          BSP_DMA1_CH3_IRQ_PRIO
-#define ADC1_EOCA_DMA_INT_SRC           INT_SRC_DMA1_TC3
 #endif
 
 /* DMA2 ch0 */
