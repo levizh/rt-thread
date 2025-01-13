@@ -108,11 +108,12 @@ static void ic_rx_thread(void *parameter)
     rt_uint32_t id = *(uint32_t *)parameter;
     test_ic_t *p_test_ic = &g_arr_test_ic[id];
     ic_dev = p_test_ic->ic_dev;
+    struct rt_inputcapture_data *pData = RT_NULL;
 
     while (1)
     {
         rt_sem_take((p_test_ic->rx_sem), RT_WAITING_FOREVER);
-        struct rt_inputcapture_data *pData = (struct rt_inputcapture_data *)rt_malloc(sizeof(struct rt_inputcapture_data) * p_test_ic->ic_data_size);
+        pData = (struct rt_inputcapture_data *)rt_malloc(sizeof(struct rt_inputcapture_data) * p_test_ic->ic_data_size);
         if (pData)
         {
             rt_mutex_take(p_test_ic->mutex, RT_WAITING_FOREVER);
