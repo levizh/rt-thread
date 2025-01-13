@@ -215,6 +215,7 @@ static rt_bool_t _is_one_cond(uint32_t n)
             }
         }
     }
+
     return RT_TRUE;
 }
 
@@ -228,6 +229,7 @@ static uint32_t _get_capture_cond_bit_pos(uint32_t n)
             break;
         }
     }
+
     return i;
 }
 
@@ -331,6 +333,11 @@ static rt_err_t _tmr_capture_open(struct rt_inputcapture_device *inputcapture)
     }
 
     struct tmr_capture_dev_init_params *init_params = &(p_capture->init_params);
+    uint32_t bit_pos = _get_capture_cond_bit_pos(init_params->first_edge);
+    p_capture->input_data_level = IS_CAPTURE_COND_RASING_EDGE(bit_pos);
+    p_capture->is_first_edge = RT_TRUE;
+    p_capture->is_open = RT_TRUE;
+
     NVIC_EnableIRQ(init_params->irq_num_ovf);
     NVIC_EnableIRQ(init_params->irq_num_cap);
     do
@@ -345,11 +352,6 @@ static rt_err_t _tmr_capture_open(struct rt_inputcapture_device *inputcapture)
 #endif
     }
     while (0);
-
-    uint32_t bit_pos = _get_capture_cond_bit_pos(init_params->first_edge);
-    p_capture->input_data_level = IS_CAPTURE_COND_RASING_EDGE(bit_pos);
-    p_capture->is_first_edge = RT_TRUE;
-    p_capture->is_open = RT_TRUE;
 
     return ret;
 }
