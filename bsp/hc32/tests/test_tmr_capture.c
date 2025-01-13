@@ -54,6 +54,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+#include <stdlib.h>
 
 #define MSH_USAGE_IC_OPEN               "  ic open <unit>     - e.g., open ic3: ic open 3 \n"
 #define MSH_USAGE_IC_CLOSE              "  ic close <unit>    - e.g., close ic3: ic close 3\n"

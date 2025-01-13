@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author               Notes
- * 2025-01-10    CDT                  first version
+ * 2025-01-10     CDT                  first version
  */
 
 #include <rtconfig.h>
