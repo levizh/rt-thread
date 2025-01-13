@@ -251,7 +251,7 @@ static void _tmr_capture_init_tmr6(tmr_capture_t *p_capture, CM_TMR6_TypeDef *in
 
     FCG_Fcg2PeriphClockCmd(FCG2_PERIPH_TMR6_1 << unit, ENABLE);
 #if defined (HC32F460)
-    if (instance == CM_TMR6_3)
+    if (instance != CM_TMR6_1)
     {
         FCG_Fcg2PeriphClockCmd(FCG2_PERIPH_TMR6_1, ENABLE);
     }
