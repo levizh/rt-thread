@@ -395,11 +395,9 @@
 #define BSP_USING_GPIO
 #define BSP_USING_UART
 #define BSP_USING_UART4
-#define BSP_UART4_RX_USING_DMA
-#define BSP_UART4_TX_USING_DMA
 #define BSP_USING_I2C
 #define BSP_USING_I2C_HW
-#define BSP_USING_I2C1
+#define BSP_USING_I2C3
 /* end of On-chip Peripheral Drivers */
 
 /* Board extended module Drivers */
