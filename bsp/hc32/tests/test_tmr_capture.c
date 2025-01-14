@@ -11,7 +11,7 @@
 /*
 * 功能
 *   展示捕获单元 ic1、ic2、ic3 的捕获输入功能
-*   当捕获单元捕获到设定数量的（watermark）数据后，终端将输出这些已捕获的数据
+*   当捕获单元捕获到设定数量（watermark）的数据(微秒级别的电平宽度)后，终端将输出这些已捕获的数据
 *
 * 默认配置
 *   input pin：
@@ -61,7 +61,11 @@
 #define MSH_USAGE_IC_SET_WM             "  ic wm <unit> <wm>  - e.g., set warter mark of ic3 to 11: ic wm 3 11\n"
 #define MSH_USAGE_IC_CLR                "  ic clr <unit>      - e.g., clear data buffer of ic3: ic clr 3 \n"
 
-#define IC_DEV_CNT                      (3)
+#if defined (HC32F4A0)
+    #define IC_DEV_CNT                  (8)
+#elif defined (HC32F460)
+    #define IC_DEV_CNT                  (3)
+#endif
 #define IC_NAME_LEN                     (3)
 #define DEFAULT_WATER_MARK              (5)
 
@@ -109,7 +113,8 @@ static void ic_rx_thread(void *parameter)
     test_ic_t *p_test_ic = &g_arr_test_ic[id];
     ic_dev = p_test_ic->ic_dev;
     struct rt_inputcapture_data *pData = RT_NULL;
-
+    struct rt_inputcapture_data *pItem = RT_NULL;
+    int i = 0;
     while (1)
     {
         rt_sem_take((p_test_ic->rx_sem), RT_WAITING_FOREVER);
@@ -119,7 +124,6 @@ static void ic_rx_thread(void *parameter)
             rt_mutex_take(p_test_ic->mutex, RT_WAITING_FOREVER);
             size = rt_device_read(ic_dev, 0, pData, p_test_ic->ic_data_size);
             rt_mutex_release(p_test_ic->mutex);
-            struct rt_inputcapture_data *pItem;
             if (size == 0)
             {
                 rt_free(pData);
@@ -127,10 +131,10 @@ static void ic_rx_thread(void *parameter)
                 continue;
             }
             rt_kprintf("ic%d captured %d data:\n", id + 1, size);
-            for (int i = 0; i < size; i++)
+            for (i = 0; i < size; i++)
             {
                 pItem = pData + i;
-                rt_kprintf("%d : hi = %d, w =%d\n", i, pItem->is_high, pItem->pulsewidth_us);
+                rt_kprintf("%d : h = %d, w =%d\n", i, pItem->is_high, pItem->pulsewidth_us);
             }
             rt_free(pData);
             pData = RT_NULL;

@@ -546,20 +546,18 @@
 #endif
 
 #if defined(BSP_USING_INPUT_CAPTURE)
+#define INPUT_CAPTURE_TMR6_FUNC                     (GPIO_FUNC_3)
 #if defined(BSP_USING_INPUT_CAPTURE_TMR6_1)
     #define INPUT_CAPTURE_TMR6_1_PORT               (GPIO_PORT_B)
     #define INPUT_CAPTURE_TMR6_1_PIN                (GPIO_PIN_09)
-    #define INPUT_CAPTURE_TMR6_1_PIN_FUNC           (GPIO_FUNC_3)
 #endif
 #if defined(BSP_USING_INPUT_CAPTURE_TMR6_2)
     #define INPUT_CAPTURE_TMR6_2_PORT               (GPIO_PORT_E)
     #define INPUT_CAPTURE_TMR6_2_PIN                (GPIO_PIN_07)
-    #define INPUT_CAPTURE_TMR6_2_PIN_FUNC           (GPIO_FUNC_3)
 #endif
 #if defined(BSP_USING_INPUT_CAPTURE_TMR6_3)
     #define INPUT_CAPTURE_TMR6_3_PORT               (GPIO_PORT_A)
     #define INPUT_CAPTURE_TMR6_3_PIN                (GPIO_PIN_00)
-    #define INPUT_CAPTURE_TMR6_3_PIN_FUNC           (GPIO_FUNC_3)
 #endif
 #endif
 

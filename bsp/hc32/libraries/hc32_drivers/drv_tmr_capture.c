@@ -49,6 +49,21 @@ enum
 #ifdef BSP_USING_INPUT_CAPTURE_TMR6_3
     TMR_CAPTURE_IDX_TMR6_3,
 #endif
+#ifdef BSP_USING_INPUT_CAPTURE_TMR6_4
+    TMR_CAPTURE_IDX_TMR6_4,
+#endif
+#ifdef BSP_USING_INPUT_CAPTURE_TMR6_5
+    TMR_CAPTURE_IDX_TMR6_5,
+#endif
+#ifdef BSP_USING_INPUT_CAPTURE_TMR6_6
+    TMR_CAPTURE_IDX_TMR6_6,
+#endif
+#ifdef BSP_USING_INPUT_CAPTURE_TMR6_7
+    TMR_CAPTURE_IDX_TMR6_7,
+#endif
+#ifdef BSP_USING_INPUT_CAPTURE_TMR6_8
+    TMR_CAPTURE_IDX_TMR6_8,
+#endif
     TMR_CAPTURE_IDX_MAX,
 };
 
@@ -68,6 +83,26 @@ static rt_err_t _tmr_capture_get_pulsewidth(struct rt_inputcapture_device *input
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_3)
     static void _tmr6_3_isr_ovf(void);
     static void _tmr6_3_isr_cap(void);
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_4)
+    static void _tmr6_4_isr_ovf(void);
+    static void _tmr6_4_isr_cap(void);
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_5)
+    static void _tmr6_5_isr_ovf(void);
+    static void _tmr6_5_isr_cap(void);
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_6)
+    static void _tmr6_6_isr_ovf(void);
+    static void _tmr6_6_isr_cap(void);
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_7)
+    static void _tmr6_7_isr_ovf(void);
+    static void _tmr6_7_isr_cap(void);
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_8)
+    static void _tmr6_8_isr_ovf(void);
+    static void _tmr6_8_isr_cap(void);
 #endif
 
 /* Private define ---------------------------------------------------------------*/
@@ -90,24 +125,50 @@ static rt_err_t _tmr_capture_get_pulsewidth(struct rt_inputcapture_device *input
     #endif
 #endif
 
+#define TMR6_ISR_OVF(U)     \
+static void _tmr6_##U##_isr_ovf(void)\
+{\
+    g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_##U].ovf_cnt++;\
+    TMR6_ClearStatus(CM_TMR6_##U, TMR6_FLAG_OVF);\
+}
+
+#define TMR6_ISR_CAP(U)     \
+static void _tmr6_##U##_isr_cap(void)\
+{\
+  _tmr6_irq_cap_handler(&g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_##U]);\
+}
+
+#define TMR6_CAPTURE_CFG(U)                                                                 \
+{   {0}, INPUT_CAPTURE_CFG_TMR6_##U, 0, (CM_TMR6_##U), 0, 0, 0, 0, 0, 0,                    \
+    INT_SRC_TMR6_##U##_GCMP_A, INT_SRC_TMR6_##U##_OVF, _tmr6_##U##_isr_cap, _tmr6_##U##_isr_ovf,    \
+}
 
 /* Private variables ------------------------------------------------------------*/
 static tmr_capture_t g_tmr_capturers[] =
 {
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_1)
-    {   {0}, INPUT_CAPTURE_CFG_TMR6_1, 0, (CM_TMR6_1), 0, 0, 0, 0, 0, 0, \
-        INT_SRC_TMR6_1_GCMP_A, INT_SRC_TMR6_1_OVF, _tmr6_1_isr_cap, _tmr6_1_isr_ovf,
-    },
+    TMR6_CAPTURE_CFG(1),
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_2)
-    {   {0}, INPUT_CAPTURE_CFG_TMR6_2, 0, (CM_TMR6_2), 0, 0, 0, 0, 0, 0, \
-        INT_SRC_TMR6_2_GCMP_A, INT_SRC_TMR6_2_OVF, _tmr6_2_isr_cap, _tmr6_2_isr_ovf,
-    },
+    TMR6_CAPTURE_CFG(2),
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_3)
-    {   {0}, INPUT_CAPTURE_CFG_TMR6_3, 0, (CM_TMR6_3), 0, 0, 0, 0, 0, 0, \
-        INT_SRC_TMR6_3_GCMP_A, INT_SRC_TMR6_3_OVF, _tmr6_3_isr_cap, _tmr6_3_isr_ovf
-    },
+    TMR6_CAPTURE_CFG(3),
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_4)
+    TMR6_CAPTURE_CFG(4),
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_5)
+    TMR6_CAPTURE_CFG(5),
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_6)
+    TMR6_CAPTURE_CFG(6),
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_7)
+    TMR6_CAPTURE_CFG(7),
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_8)
+    TMR6_CAPTURE_CFG(8),
 #endif
 };
 
@@ -141,42 +202,36 @@ static void _tmr6_irq_cap_handler(tmr_capture_t *p_capture)
 }
 
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_1)
-static void _tmr6_1_isr_ovf(void)
-{
-    g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_1].ovf_cnt++;
-    TMR6_ClearStatus(CM_TMR6_1, TMR6_FLAG_OVF);
-}
-
-static void _tmr6_1_isr_cap(void)
-{
-    _tmr6_irq_cap_handler(&g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_1]);
-}
+TMR6_ISR_OVF(1)
+TMR6_ISR_CAP(1)
 #endif
-
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_2)
-static void _tmr6_2_isr_ovf(void)
-{
-    g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_2].ovf_cnt++;
-    TMR6_ClearStatus(CM_TMR6_2, TMR6_FLAG_OVF);
-}
-
-static void _tmr6_2_isr_cap(void)
-{
-    _tmr6_irq_cap_handler(&g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_2]);
-}
+TMR6_ISR_OVF(2)
+TMR6_ISR_CAP(2)
 #endif
-
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_3)
-static void _tmr6_3_isr_ovf(void)
-{
-    g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_3].ovf_cnt++;
-    TMR6_ClearStatus(CM_TMR6_3, TMR6_FLAG_OVF);
-}
-
-static void _tmr6_3_isr_cap(void)
-{
-    _tmr6_irq_cap_handler(&g_tmr_capturers[TMR_CAPTURE_IDX_TMR6_3]);
-}
+TMR6_ISR_OVF(3)
+TMR6_ISR_CAP(3)
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_4)
+TMR6_ISR_OVF(4)
+TMR6_ISR_CAP(4)
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_5)
+TMR6_ISR_OVF(5)
+TMR6_ISR_CAP(5)
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_6)
+TMR6_ISR_OVF(6)
+TMR6_ISR_CAP(6)
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_7)
+TMR6_ISR_OVF(7)
+TMR6_ISR_CAP(7)
+#endif
+#if defined (BSP_USING_INPUT_CAPTURE_TMR6_8)
+TMR6_ISR_OVF(8)
+TMR6_ISR_CAP(8)
 #endif
 
 static void _tmr_irq_init_cap(tmr_capture_t *p_capture)
