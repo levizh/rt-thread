@@ -89,6 +89,22 @@
     #define MCO_PORT                            (GPIO_PORT_A)
     #define MCO_PIN                             (GPIO_PIN_08)
     #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
+
+#elif defined (HC32F472)
+    #define PLL_SRC                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
+    #define BSP_KEY_PORT                        (GPIO_PORT_B)   /* Key5 */
+    #define BSP_KEY_PIN                         (GPIO_PIN_05)
+    #define BSP_KEY_EXTINT                      (EXTINT_CH05)
+    #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ5)
+    #define BSP_KEY_IRQn                        (INT001_IRQn)
+    #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH5)
+    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ5)
+    #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
+    #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP11)
+
+    #define MCO_PORT                            (GPIO_PORT_A)
+    #define MCO_PIN                             (GPIO_PIN_08)
+    #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
 #endif
 
 #define KEYCNT_BACKUP_ADDR                      (uint32_t *)(0x200F0010)
@@ -397,6 +413,8 @@ static void _vbat_init(void)
 #elif defined (HC32F448)
     FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMB, ENABLE);
 #elif defined (HC32F460)
+    FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMRET, ENABLE);
+#elif defined (HC32F472)
     FCG_Fcg0PeriphClockCmd(FCG0_PERIPH_SRAMRET, ENABLE);
 #endif
     pm_dbg("vbat init success\n");

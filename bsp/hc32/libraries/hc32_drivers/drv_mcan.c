@@ -80,7 +80,7 @@ typedef struct mcan_baud_rate_struct
 #define MCAN_ERR_INT                        (MCAN_INT_ARB_PHASE_ERROR | MCAN_INT_DATA_PHASE_ERROR | MCAN_INT_ERR_LOG_OVF | \
                                              MCAN_INT_ERR_PASSIVE | MCAN_INT_ERR_WARNING | MCAN_INT_BUS_OFF)
 #define MCAN_INT0_SEL                       MCAN_RX_INT
-#define MCAN_INT1_SEL                       (MCAN_TX_INT | MCAN_ERR_INT) 
+#define MCAN_INT1_SEL                       (MCAN_TX_INT | MCAN_ERR_INT)
 
 /****************************************************************************************
 * Baud rate(bit timing) configuration based on 80MHz clock
@@ -125,7 +125,8 @@ static const rt_uint32_t m_mcan_work_mode[] = {MCAN_MD_NORMAL, MCAN_MD_BUS_MON, 
 
 #ifdef RT_CAN_USING_CANFD
 static const rt_uint32_t m_mcan_fd_mode[] = {MCAN_FRAME_CLASSIC, MCAN_FRAME_ISO_FD_NO_BRS, MCAN_FRAME_ISO_FD_BRS, \
-                                             MCAN_FRAME_NON_ISO_FD_NO_BRS, MCAN_FRAME_NON_ISO_FD_BRS};
+                                             MCAN_FRAME_NON_ISO_FD_NO_BRS, MCAN_FRAME_NON_ISO_FD_BRS
+                                            };
 #endif
 
 /****************************************************************************************
@@ -147,39 +148,39 @@ static hc32_mcan_driver_t m_mcan_driver_list[] =
 #ifdef BSP_USING_MCAN1
     {
         {
-        .name = MCAN1_NAME,
-        .instance = CM_MCAN1,
-        .init_para = {.stcBitTime = MCAN1_BAUD_RATE_CFG},
-        .int0_sel = MCAN_INT0_SEL,
-        .int0_cfg = {MCAN1_INT0_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT0},
-        .int1_sel = MCAN_INT1_SEL,
-        .int1_cfg = {MCAN1_INT1_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT1},
+            .name = MCAN1_NAME,
+            .instance = CM_MCAN1,
+            .init_para = {.stcBitTime = MCAN1_BAUD_RATE_CFG},
+            .int0_sel = MCAN_INT0_SEL,
+            .int0_cfg = {MCAN1_INT0_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT0},
+            .int1_sel = MCAN_INT1_SEL,
+            .int1_cfg = {MCAN1_INT1_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT1},
         }
     },
 #endif
 #ifdef BSP_USING_MCAN2
     {
         {
-        .name = MCAN2_NAME,
-        .instance = CM_MCAN2,
-        .init_para = {.stcBitTime = MCAN2_BAUD_RATE_CFG},
-        .int0_sel = MCAN_INT0_SEL,
-        .int0_cfg = {MCAN2_INT0_IRQn, BSP_MCAN2_INT0_IRQ_PRIO, INT_SRC_MCAN2_INT0},
-        .int1_sel = MCAN_INT1_SEL,
-        .int1_cfg = {MCAN2_INT1_IRQn, BSP_MCAN2_INT1_IRQ_PRIO, INT_SRC_MCAN2_INT1},
+            .name = MCAN2_NAME,
+            .instance = CM_MCAN2,
+            .init_para = {.stcBitTime = MCAN2_BAUD_RATE_CFG},
+            .int0_sel = MCAN_INT0_SEL,
+            .int0_cfg = {MCAN2_INT0_IRQn, BSP_MCAN2_INT0_IRQ_PRIO, INT_SRC_MCAN2_INT0},
+            .int1_sel = MCAN_INT1_SEL,
+            .int1_cfg = {MCAN2_INT1_IRQn, BSP_MCAN2_INT1_IRQ_PRIO, INT_SRC_MCAN2_INT1},
         }
     },
 #endif
 };
 
 #ifdef BSP_USING_MCAN1
-static stc_mcan_filter_t m_mcan1_std_filters[MCAN1_STD_FILTER_NUM];
-static stc_mcan_filter_t m_mcan1_ext_filters[MCAN1_EXT_FILTER_NUM];
+    static stc_mcan_filter_t m_mcan1_std_filters[MCAN1_STD_FILTER_NUM];
+    static stc_mcan_filter_t m_mcan1_ext_filters[MCAN1_EXT_FILTER_NUM];
 #endif
 
 #ifdef BSP_USING_MCAN2
-static stc_mcan_filter_t m_mcan2_std_filters[MCAN2_STD_FILTER_NUM];
-static stc_mcan_filter_t m_mcan2_ext_filters[MCAN2_EXT_FILTER_NUM];
+    static stc_mcan_filter_t m_mcan2_std_filters[MCAN2_STD_FILTER_NUM];
+    static stc_mcan_filter_t m_mcan2_ext_filters[MCAN2_EXT_FILTER_NUM];
 #endif
 
 /****************************************************************************************
@@ -273,7 +274,7 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         hard->init_para.stcBitTime.u32DataTimeSeg2 = cfg->canfd_timing.num_seg2;
         hard->init_para.stcBitTime.u32DataSyncJumpWidth = cfg->canfd_timing.num_sjw;
         hard->init_para.stcBitTime.u32SspOffset = cfg->canfd_timing.num_sspoff;
-        
+
         cfg->use_bit_timing = 0;
     }
     else
@@ -285,7 +286,7 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         for (i = 0; i < len; i++)
         {
             if ((cfg->baud_rate == m_mcan_fd_baud_rate[i].baud_rate) && \
-                (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
+                    (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 hard->init_para.stcBitTime = m_mcan_fd_baud_rate[i].ll_bt;
                 break;
@@ -565,7 +566,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         for (i = 0; i < len; i++)
         {
             if ((argval == m_mcan_fd_baud_rate[i].baud_rate) && \
-                (driver->can_device.config.baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
+                    (driver->can_device.config.baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 cfg->baud_rate = argval;
                 cfg->baud_rate_fd = driver->can_device.config.baud_rate_fd;
@@ -589,7 +590,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         for (i = 0; i < len; i++)
         {
             if ((argval == m_mcan_fd_baud_rate[i].baud_rate_fd) && \
-                (driver->can_device.config.baud_rate == m_mcan_fd_baud_rate[i].baud_rate))
+                    (driver->can_device.config.baud_rate == m_mcan_fd_baud_rate[i].baud_rate))
             {
                 cfg->baud_rate_fd = argval;
                 cfg->baud_rate = driver->can_device.config.baud_rate;
@@ -741,7 +742,7 @@ static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt
     driver = (hc32_mcan_driver_t *)device->parent.user_data;
     RT_ASSERT(driver);
     hard = &driver->mcan;
-    
+
     driver->tx_box_num = boxno;
 
     RT_ASSERT(buf);
@@ -919,7 +920,7 @@ rt_inline void mcan_isr(hc32_mcan_driver_t *driver)
     {
         rt_hw_can_isr(device, RT_CAN_EVENT_RXOF_IND | (MCAN_RX_FIFO0 << 8));
     }
-    
+
     /* Rx FIFO1 lost message, handle as rx overflow */
     if (ir_status & MCAN_FLAG_RX_FIFO1_MSG_LOST)
     {
@@ -1143,7 +1144,7 @@ static void mcan_set_init_para(void)
 static void init_can_cfg(hc32_mcan_driver_t *driver)
 {
     struct can_configure can_cfg = CANDEFAULTCONFIG;
-    
+
     can_cfg.privmode = RT_CAN_MODE_NOPRIV;
     can_cfg.ticks = 50;
 #ifdef RT_CAN_USING_HDR
@@ -1191,14 +1192,15 @@ static rt_err_t rt_hw_mcan_init(void)
         MCAN_IntCmd(hard->instance, hard->int0_sel, MCAN_INT_LINE0, ENABLE);
         MCAN_IntCmd(hard->instance, hard->int1_sel, MCAN_INT_LINE1, ENABLE);
 
-        if (i > 0) {
+        if (i > 0)
+        {
             hard->init_para.stcMsgRam.u32AddrOffset = \
-                m_mcan_driver_list[i-1].mcan.init_para.stcMsgRam.u32AddrOffset + \
-                m_mcan_driver_list[i-1].mcan.init_para.stcMsgRam.u32AllocatedSize;
+                    m_mcan_driver_list[i - 1].mcan.init_para.stcMsgRam.u32AddrOffset + \
+                    m_mcan_driver_list[i - 1].mcan.init_para.stcMsgRam.u32AllocatedSize;
         }
 
         init_can_cfg(&m_mcan_driver_list[i]);
-        
+
         /* GPIO initialization */
         rt_hw_board_can_init(hard->instance);
 
@@ -1210,7 +1212,7 @@ static rt_err_t rt_hw_mcan_init(void)
 
         MCAN_Start(hard->instance);
     }
-    
+
     /* Onboard CAN transceiver enable */
     CanPhyEnable();
 

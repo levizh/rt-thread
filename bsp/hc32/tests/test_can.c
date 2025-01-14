@@ -55,9 +55,9 @@
 #include <rtthread.h>
 #include "rtdevice.h"
 #if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460)
-#include "drv_can.h"
+    #include "drv_can.h"
 #elif defined (HC32F448)
-#include "drv_mcan.h"
+    #include "drv_mcan.h"
 #endif
 
 #include <stdlib.h>
@@ -371,7 +371,8 @@ int can_sample(int argc, char **argv)
 
     rt_kprintf("found %s\n", can_name);
 
-    if (can_mutex == RT_NULL) {
+    if (can_mutex == RT_NULL)
+    {
         rt_sem_init(&can_rx_sem, sem_name, 0, RT_IPC_FLAG_FIFO);
         can_mutex = rt_mutex_create(mutex_name, RT_IPC_FLAG_FIFO);
     }

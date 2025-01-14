@@ -199,7 +199,7 @@ extern "C" {
 #if defined(BSP_USING_MCAN2)
 #define BSP_MCAN2_INT0_IRQ_NUM          MCAN2_INT0_IRQn
 #define BSP_MCAN2_INT0_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
-    
+
 #define BSP_MCAN2_INT1_IRQ_NUM          MCAN2_INT1_IRQn
 #define BSP_MCAN2_INT1_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
 #endif/* BSP_USING_MCAN2 */
