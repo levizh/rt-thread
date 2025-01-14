@@ -11,7 +11,9 @@
 #include <rtconfig.h>
 
 #if defined(BSP_USING_INPUT_CAPTURE)
-#if defined(BSP_USING_INPUT_CAPTURE_TMR6_1) || defined(BSP_USING_INPUT_CAPTURE_TMR6_2) || defined(BSP_USING_INPUT_CAPTURE_TMR6_3)
+#if defined(BSP_USING_INPUT_CAPTURE_TMR6_1) || defined(BSP_USING_INPUT_CAPTURE_TMR6_2) || defined(BSP_USING_INPUT_CAPTURE_TMR6_3) \
+|| defined(BSP_USING_INPUT_CAPTURE_TMR6_4) || defined(BSP_USING_INPUT_CAPTURE_TMR6_5) || defined(BSP_USING_INPUT_CAPTURE_TMR6_6)  \
+|| defined(BSP_USING_INPUT_CAPTURE_TMR6_7) || defined(BSP_USING_INPUT_CAPTURE_TMR6_8)
 
 #include <rtdevice.h>
 #include <drv_config.h>
@@ -202,36 +204,36 @@ static void _tmr6_irq_cap_handler(tmr_capture_t *p_capture)
 }
 
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_1)
-TMR6_ISR_OVF(1)
-TMR6_ISR_CAP(1)
+    TMR6_ISR_OVF(1)
+    TMR6_ISR_CAP(1)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_2)
-TMR6_ISR_OVF(2)
-TMR6_ISR_CAP(2)
+    TMR6_ISR_OVF(2)
+    TMR6_ISR_CAP(2)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_3)
-TMR6_ISR_OVF(3)
-TMR6_ISR_CAP(3)
+    TMR6_ISR_OVF(3)
+    TMR6_ISR_CAP(3)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_4)
-TMR6_ISR_OVF(4)
-TMR6_ISR_CAP(4)
+    TMR6_ISR_OVF(4)
+    TMR6_ISR_CAP(4)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_5)
-TMR6_ISR_OVF(5)
-TMR6_ISR_CAP(5)
+    TMR6_ISR_OVF(5)
+    TMR6_ISR_CAP(5)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_6)
-TMR6_ISR_OVF(6)
-TMR6_ISR_CAP(6)
+    TMR6_ISR_OVF(6)
+    TMR6_ISR_CAP(6)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_7)
-TMR6_ISR_OVF(7)
-TMR6_ISR_CAP(7)
+    TMR6_ISR_OVF(7)
+    TMR6_ISR_CAP(7)
 #endif
 #if defined (BSP_USING_INPUT_CAPTURE_TMR6_8)
-TMR6_ISR_OVF(8)
-TMR6_ISR_CAP(8)
+    TMR6_ISR_OVF(8)
+    TMR6_ISR_CAP(8)
 #endif
 
 static void _tmr_irq_init_cap(tmr_capture_t *p_capture)
