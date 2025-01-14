@@ -343,7 +343,6 @@ rt_err_t rt_hw_board_pwm_tmr6_init(CM_TMR6_TypeDef *TMR6x)
 #endif
 
 #ifdef RT_USING_PM
-#define EFM_ERASE_TIME_MAX_IN_MILLISECOND                   (20)
 #define PLL_SRC                                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
 
 void rt_hw_board_pm_sysclk_cfg(uint8_t run_mode)

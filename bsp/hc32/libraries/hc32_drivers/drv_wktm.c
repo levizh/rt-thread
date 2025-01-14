@@ -16,7 +16,7 @@
 #if defined(BSP_USING_PM)
 
 // #define DRV_DEBUG
-#define LOG_TAG                     "drv_wktm"
+#define LOG_TAG                         "drv_wktm"
 #include <drv_log.h>
 
 #define CMPVAL_MAX                      (0xFFFUL)
@@ -37,13 +37,13 @@
 #endif
 
 /**
- * This function get current count value of WKTM
+ * This function get timeout count value of WKTM
  * @param  None
  * @return the count value
  */
-rt_uint32_t hc32_wktm_get_current_tick(void)
+rt_uint32_t hc32_wktm_get_timeout_tick(void)
 {
-    return (CMPVAL_MAX);
+    return (RT_TICK_PER_SECOND * PWC_WKT_GetCompareValue() / PWC_WKT_COUNT_FRQ);
 }
 
 /**

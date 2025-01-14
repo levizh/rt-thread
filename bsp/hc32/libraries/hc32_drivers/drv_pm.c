@@ -234,6 +234,14 @@ static void _pm_wakeup_timer_stop(struct rt_pm *pm)
     hc32_wktm_stop();
 }
 
+static rt_tick_t _timer_get_tick(struct rt_pm *pm)
+{
+    RT_ASSERT(pm != RT_NULL);
+
+    /* Get timeout tick */
+    return hc32_wktm_get_timeout_tick();
+}
+
 /**
  * This function initialize the power manager
  * @note timer feature: only work as wake up timer
@@ -246,7 +254,7 @@ int rt_hw_pm_init(void)
         _pm_run,
         _pm_wakeup_timer_start,
         _pm_wakeup_timer_stop,
-        RT_NULL
+        _timer_get_tick,
     };
 
     rt_uint8_t timer_mask = PM_TICKLESS_TIMER_ENABLE_MASK;
