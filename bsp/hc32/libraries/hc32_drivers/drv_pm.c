@@ -173,12 +173,11 @@ static void _run_switch_low_to_high(void)
 {
     struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
 
-    st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_HIGH_SPEED);
-
 #if defined(HC32F4A0) || defined(HC32F460) || defined(HC32F448)
     PWC_LowSpeedToHighSpeed();
 #endif
 
+    st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_HIGH_SPEED);
 }
 
 static void _pm_run(struct rt_pm *pm, uint8_t mode)
