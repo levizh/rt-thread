@@ -40,9 +40,7 @@ elif rtconfig.PLATFORM in ['armcc', 'armclang']:
 elif rtconfig.PLATFORM in ['iccarm']:
     file_path = cwd + '/project.ewd'
     svd_keyword = 'HC32F4A0.svd'
-    fload_keyword = 'FlashHC32F4A0xI.board'
     split_num = 3
-    find_keyword_replace(file_path, fload_keyword, replace, split_num, '\\')
 
 find_keyword_replace(file_path, svd_keyword, replace, split_num, '/')
 

@@ -15,7 +15,6 @@ path += [cwd + '/ports']
 path += [cwd + '/config']
 path += [cwd + '/config/usb_config']
 
-
 CPPDEFINES = ['HC32F4A0', '__DEBUG']
 group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
 

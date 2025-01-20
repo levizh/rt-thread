@@ -50,9 +50,6 @@ objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
 hc32_library = 'hc32f4a0_ddl'
 rtconfig.BSP_LIBRARY_TYPE = hc32_library
 
-# include libraries
-objs.extend(SConscript(os.path.join(libraries_path_prefix, hc32_library, 'SConscript')))
-
 # include drivers
 objs.extend(SConscript(os.path.join(libraries_path_prefix, 'hc32_drivers', 'SConscript')))
 
