@@ -5,6 +5,7 @@ config SOC_HC32F460PE
     select SOC_SERIES_HC32F4
     select RT_USING_COMPONENTS_INIT
     select RT_USING_USER_MAIN
+    select PKG_USING_HC32F460_DDL
     default y
 
 menu "On-chip Drivers"
@@ -353,7 +354,7 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_WDT
         if BSP_USING_WDT_TMR
             config BSP_USING_WDT
-                bool 
+                bool
                 default y
 
             config BSP_WDT_CONTINUE_COUNT
