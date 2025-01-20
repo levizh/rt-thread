@@ -30,7 +30,7 @@ Import('PACKAGES_PATH')
 replace = PACKAGES_PATH.split("\\")[-1]
 
 if rtconfig.PLATFORM in ['gcc']:
-    file_path = cwd + './jlink/ev_hc32f4a0_lqfp176 Debug.launch'
+    file_path = cwd + './jlink/ev_hc32f448_lqfp80 Debug.launch'
     svd_keyword = 'HC32F448.svd'
     split_num = 3
 elif rtconfig.PLATFORM in ['armcc', 'armclang']:
