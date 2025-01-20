@@ -1,0 +1,29 @@
+{
+  "name": "hc32f460_ddl",
+  "description": "This package is used to store the DDL library file of HC32F460",
+  "description_zh": "该软件包用于存放HC32F460的DDL库文件",
+  "enable": "PKG_USING_HC32F460_DDL",
+  "keywords": [
+    "hc32f460_ddl",
+    "HC32F460"
+  ],
+  "category": "peripherals",
+  "author": {
+    "name": "levizh",
+    "email": "zhangxl@xhsc.com.cn",
+    "github": "levizh"
+  },
+  "license": "Apache-2.0",
+  "repository": "https://github.com/levizh/hc32f460_ddl_rtt",
+  "icon": "unknown",
+  "homepage": "https://github.com/levizh/hc32f460_ddl_rtt#readme",
+  "doc": "unknown",
+  "site": [
+    {
+      "version": "latest",
+      "URL": "https://github.com/levizh/hc32f460_ddl_rtt.git",
+      "filename": "hc32f460_ddl_rtt",
+      "VER_SHA": "main"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Kconfig file for package hc32f460_ddl
+menuconfig PKG_USING_HC32F460_DDL
+    bool "Add the HC32F460 library files."
+    default n
+
+if PKG_USING_HC32F460_DDL
+
+    config PKG_HC32F460_DDL_PATH
+        string
+        default "/packages/peripherals/hal-sdk/hc32/hc32f460_ddl"
+
+    choice
+        prompt "Version"
+        help
+            Select the package version
+
+        config PKG_USING_HC32F460_DDL_LATEST_VERSION
+            bool "latest"
+    endchoice
+
+    config PKG_HC32F460_DDL_VER
+       string
+       default "latest"    if PKG_USING_HC32F460_DDL_LATEST_VERSION
+
+endif
+

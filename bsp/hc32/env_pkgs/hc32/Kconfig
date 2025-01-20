@@ -1,0 +1,19 @@
+menu "HC32_DDL: DDL library file for HC32"
+
+if SOC_HC32F4A0SI
+    source "$PKGS_DIR/packages/peripherals/hal-sdk/hc32/hc32f4a0_ddl/Kconfig"
+endif
+
+if SOC_HC32F460PE
+    source "$PKGS_DIR/packages/peripherals/hal-sdk/hc32/hc32f460_ddl/Kconfig"
+endif
+
+if SOC_HC32F448MC
+    source "$PKGS_DIR/packages/peripherals/hal-sdk/hc32/hc32f448_ddl/Kconfig"
+endif
+
+if SOC_HC32F472MC
+    source "$PKGS_DIR/packages/peripherals/hal-sdk/hc32/hc32f472_ddl/Kconfig"
+endif
+
+endmenu

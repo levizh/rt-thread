@@ -1,0 +1,26 @@
+# Kconfig file for package hc32f472_ddl
+menuconfig PKG_USING_HC32F472_DDL
+    bool "Add the HC32F472 library files."
+    default n
+
+if PKG_USING_HC32F472_DDL
+
+    config PKG_HC32F472_DDL_PATH
+        string
+        default "/packages/peripherals/hal-sdk/hc32/hc32f472_ddl"
+
+    choice
+        prompt "Version"
+        help
+            Select the package version
+
+        config PKG_USING_HC32F472_DDL_LATEST_VERSION
+            bool "latest"
+    endchoice
+
+    config PKG_HC32F472_DDL_VER
+       string
+       default "latest"    if PKG_USING_HC32F472_DDL_LATEST_VERSION
+
+endif
+
