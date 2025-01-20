@@ -31,15 +31,15 @@ replace = PACKAGES_PATH.split("\\")[-1]
 
 if rtconfig.PLATFORM in ['gcc']:
     file_path = cwd + './jlink/ev_hc32f4a0_lqfp176 Debug.launch'
-    svd_keyword = 'HC32F4A0.svd'
+    svd_keyword = 'HC32F460.svd'
     split_num = 3
 elif rtconfig.PLATFORM in ['armcc', 'armclang']:
     file_path = cwd + './template.uvprojx'
-    svd_keyword = 'HC32F4A0.SFR'
+    svd_keyword = 'HC32F460.SFR'
     split_num = 2
 elif rtconfig.PLATFORM in ['iccarm']:
     file_path = cwd + '/project.ewd'
-    svd_keyword = 'HC32F4A0.svd'
+    svd_keyword = 'HC32F460.svd'
     split_num = 3
 
 find_keyword_replace(file_path, svd_keyword, replace, split_num, '/')
