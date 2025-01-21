@@ -41,6 +41,8 @@ elif rtconfig.PLATFORM in ['iccarm']:
     file_path = cwd + '/project.ewd'
     svd_keyword = 'HC32F472.svd'
     split_num = 3
+    board_keyword = 'FlashHC32F472xE.board'
+    find_keyword_replace(file_path, board_keyword, replace, split_num, '/')
 
 find_keyword_replace(file_path, svd_keyword, replace, split_num, '/')
 
