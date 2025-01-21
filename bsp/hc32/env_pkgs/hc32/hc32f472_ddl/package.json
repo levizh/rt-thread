@@ -10,10 +10,10 @@
   "category": "peripherals",
   "author": {
     "name": "levizh",
-    "email": "zhangxl@xhsc.com.cn",
+    "email": "levizhangxl@gmail.com",
     "github": "levizh"
   },
-  "license": "Apache-2.0",
+  "license": "BSD-3-Clause",
   "repository": "https://github.com/levizh/hc32f472_ddl_rtt",
   "icon": "unknown",
   "homepage": "https://github.com/levizh/hc32f472_ddl_rtt#readme",
