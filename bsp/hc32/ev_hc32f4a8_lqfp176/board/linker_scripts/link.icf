@@ -6,7 +6,7 @@
  *
 ********************************************************************************
 * \copyright
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2025, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -19,9 +19,6 @@
 // Check that necessary symbols have been passed to linker via command line interface
 if((!isdefinedsymbol(_LINK_RAM_)) && (!isdefinedsymbol(_LINK_FLASH_))) {
   error "Link location not defined or not supported!";
-}
-if((!isdefinedsymbol(_HC32F4A8_2M_)) && (!isdefinedsymbol(_HC32F4A8_1M_SINGLE_)) && (!isdefinedsymbol(_HC32F4A8_1M_DUAL_))) {
-  error "Mcu type or size not defined or not supported!";
 }
 
 /*******************************************************************************

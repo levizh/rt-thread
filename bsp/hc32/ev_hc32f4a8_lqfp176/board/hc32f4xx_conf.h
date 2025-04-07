@@ -5,10 +5,10 @@
  @verbatim
    Change Logs:
    Date             Author          Notes
-   2022-03-31       CDT             First version
+   2024-09-13       CDT             First version
  @endverbatim
  *******************************************************************************
- * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2025, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -53,7 +53,6 @@ extern "C"
 #define LL_PRINT_ENABLE                             (DDL_OFF)
 
 #define LL_ADC_ENABLE                               (DDL_ON)
-#define LL_AES_ENABLE                               (DDL_ON)
 #define LL_AOS_ENABLE                               (DDL_ON)
 #define LL_CAN_ENABLE                               (DDL_ON)
 #define LL_CLK_ENABLE                               (DDL_ON)
@@ -68,6 +67,7 @@ extern "C"
 #define LL_DVP_ENABLE                               (DDL_ON)
 #define LL_EFM_ENABLE                               (DDL_ON)
 #define LL_EMB_ENABLE                               (DDL_ON)
+#define LL_ERMU_ENABLE                              (DDL_ON)
 #define LL_ETH_ENABLE                               (DDL_ON)
 #define LL_EVENT_PORT_ENABLE                        (DDL_OFF)
 #define LL_FCG_ENABLE                               (DDL_ON)
@@ -75,13 +75,13 @@ extern "C"
 #define LL_FMAC_ENABLE                              (DDL_ON)
 #define LL_GPIO_ENABLE                              (DDL_ON)
 #define LL_HASH_ENABLE                              (DDL_ON)
-#define LL_HRPWM_ENABLE                             (DDL_ON)
 #define LL_I2C_ENABLE                               (DDL_ON)
 #define LL_I2S_ENABLE                               (DDL_ON)
 #define LL_INTERRUPTS_ENABLE                        (DDL_ON)
 #define LL_INTERRUPTS_SHARE_ENABLE                  (DDL_ON)
 #define LL_KEYSCAN_ENABLE                           (DDL_ON)
 #define LL_MAU_ENABLE                               (DDL_ON)
+#define LL_MCAN_ENABLE                              (DDL_ON)
 #define LL_MPU_ENABLE                               (DDL_ON)
 #define LL_NFC_ENABLE                               (DDL_ON)
 #define LL_OTS_ENABLE                               (DDL_ON)
@@ -90,6 +90,7 @@ extern "C"
 #define LL_RMU_ENABLE                               (DDL_ON)
 #define LL_RTC_ENABLE                               (DDL_ON)
 #define LL_SDIOC_ENABLE                             (DDL_ON)
+#define LL_SKE_ENABLE                               (DDL_ON)
 #define LL_SMC_ENABLE                               (DDL_ON)
 #define LL_SPI_ENABLE                               (DDL_ON)
 #define LL_SRAM_ENABLE                              (DDL_ON)
@@ -107,7 +108,7 @@ extern "C"
 /**
  * @brief The following is a list of currently supported BSP boards.
  */
-#define BSP_EV_HC32F4A8_LQFP176                     (1U)
+#define BSP_EV_HC32F4A8_LQFP176                     (11U)
 
 /**
  * @brief The macro BSP_EV_HC32F4XX is used to specify the BSP board currently
@@ -123,15 +124,16 @@ extern "C"
  * Select the components you need to use to DDL_ON.
  */
 #define BSP_24CXX_ENABLE                            (DDL_OFF)
-#define BSP_GT9XX_ENABLE                            (DDL_OFF)
-#define BSP_IS42S16400J7TLI_ENABLE                  (DDL_OFF)
+#define BSP_XPT20XX_ENABLE                          (DDL_OFF)
+#define BSP_W9825G6KH_ENABLE                        (DDL_OFF)
 #define BSP_IS62WV51216_ENABLE                      (DDL_OFF)
 #define BSP_MT29F2G08AB_ENABLE                      (DDL_OFF)
 #define BSP_NT35510_ENABLE                          (DDL_OFF)
 #define BSP_OV5640_ENABLE                           (DDL_OFF)
+#define BSP_RTL8201_ENABLE                          (DDL_OFF)
 #define BSP_TCA9539_ENABLE                          (DDL_OFF)
 #define BSP_W25QXX_ENABLE                           (DDL_OFF)
-#define BSP_WM8731_ENABLE                           (DDL_OFF)
+#define BSP_WM8988_ENABLE                           (DDL_OFF)
 
 /**
  * @brief Ethernet and PHY Configuration.
