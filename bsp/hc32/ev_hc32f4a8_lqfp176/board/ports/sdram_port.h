@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2023-02-24     CDT          first version
+ * 2025-04-07     CDT          first version
  */
 
 #ifndef __SDRAM_PORT_H__
@@ -14,11 +14,11 @@
 /* parameters for sdram peripheral */
 
 /* chip#0/1/2/3: EXMC_DMC_CHIP0/1/2/3 */
-#define SDRAM_CHIP                      EXMC_DMC_CHIP1
+#define SDRAM_CHIP                      EXMC_DMC_CHIP0
 /* bank address */
 #define SDRAM_BANK_ADDR                 (0x80000000UL)
-/* size(kbyte):8MB = 8*1024*1KBytes */
-#define SDRAM_SIZE                      (8UL * 1024UL * 1024UL)
+/* size(kbyte):32MB = 32*1024*1KBytes */
+#define SDRAM_SIZE                      (32UL * 1024UL * 1024UL)
 /* auto precharge pin: EXMC_DMC_AUTO_PRECHARGE_A8/10 */
 #define SDRAM_AUTO_PRECHARGE_PIN        EXMC_DMC_AUTO_PRECHARGE_A10
 /* data width: EXMC_DMC_MEMORY_WIDTH_16BIT, EXMC_DMC_MEMORY_WIDTH_32BIT */
@@ -39,26 +39,26 @@
 /* write burst mode: SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED/SINGLE */
 #define SDRAM_MODEREG_WRITEBURST_MODE   SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED
 
-/* timing configuration(EXCLK clock frequency: 30MHz) for IS42S16400J-7TLI */
+/* timing configuration(EXCLK clock frequency: 60MHz) for IS42S16400J-7TLI */
 /* refresh rate counter (EXCLK clock) */
-#define SDRAM_REFRESH_COUNT             (450U)
+#define SDRAM_REFRESH_COUNT             (900U)
 /* TMDR: mode register command time (EXCLK clock) */
 #define SDRAM_TMDR                      2U
 /* TRAS: RAS to precharge delay time (EXCLK clock) */
-#define SDRAM_TRAS                      2U
+#define SDRAM_TRAS                      3U
 /* TRC:  active bank x to active bank x delay time (EXCLK clock) */
-#define SDRAM_TRC                       2U
+#define SDRAM_TRC                       4U
 /* TRCD: RAS to CAS minimum delay time (EXCLK clock) */
 #define SDRAM_TRCD_B                    3U
 #define SDRAM_TRCD_P                    0U
 /* TRFC: autorefresh command time (EXCLK clock) */
-#define SDRAM_TRFC_B                    3U
+#define SDRAM_TRFC_B                    4U
 #define SDRAM_TRFC_P                    0U
 /* TRP:  precharge to RAS delay time (EXCLK clock) */
 #define SDRAM_TRP_B                     3U
 #define SDRAM_TRP_P                     0U
 /* TRRD: active bank x to active bank y delay time (EXCLK clock) */
-#define SDRAM_TRRD                      1U
+#define SDRAM_TRRD                      2U
 /* TWR: write to precharge delay time (EXCLK clock). */
 #define SDRAM_TWR                       2U
 /* TWTR: write to read delay time (EXCLK clock). */

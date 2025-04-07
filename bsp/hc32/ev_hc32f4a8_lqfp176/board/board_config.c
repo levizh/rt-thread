@@ -461,7 +461,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     (void)GPIO_Init(SDRAM_DATA13_PORT, SDRAM_DATA13_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_DATA14_PORT, SDRAM_DATA14_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_DATA15_PORT, SDRAM_DATA15_PIN, &stcGpioInit);
-    /* DMC_ADD[0:11]*/
+    /* DMC_ADD[0:12]*/
     (void)GPIO_Init(SDRAM_ADD0_PORT, SDRAM_ADD0_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD1_PORT, SDRAM_ADD1_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD2_PORT, SDRAM_ADD2_PIN, &stcGpioInit);
@@ -474,6 +474,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     (void)GPIO_Init(SDRAM_ADD9_PORT, SDRAM_ADD9_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD12_PORT, SDRAM_ADD12_PIN, &stcGpioInit);
 
     /************************** Set EXMC pin function *************************/
     /* DMC_CKE */
@@ -510,7 +511,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     GPIO_SetFunc(SDRAM_DATA13_PORT, SDRAM_DATA13_PIN, SDRAM_DATA13_FUNC);
     GPIO_SetFunc(SDRAM_DATA14_PORT, SDRAM_DATA14_PIN, SDRAM_DATA14_FUNC);
     GPIO_SetFunc(SDRAM_DATA15_PORT, SDRAM_DATA15_PIN, SDRAM_DATA15_FUNC);
-    /* DMC_ADD[0:11]*/
+    /* DMC_ADD[0:12]*/
     GPIO_SetFunc(SDRAM_ADD0_PORT,  SDRAM_ADD0_PIN,  SDRAM_ADD0_FUNC);
     GPIO_SetFunc(SDRAM_ADD1_PORT,  SDRAM_ADD1_PIN,  SDRAM_ADD1_FUNC);
     GPIO_SetFunc(SDRAM_ADD2_PORT,  SDRAM_ADD2_PIN,  SDRAM_ADD2_FUNC);
@@ -523,6 +524,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     GPIO_SetFunc(SDRAM_ADD9_PORT,  SDRAM_ADD9_PIN,  SDRAM_ADD9_FUNC);
     GPIO_SetFunc(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, SDRAM_ADD10_FUNC);
     GPIO_SetFunc(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, SDRAM_ADD11_FUNC);
+    GPIO_SetFunc(SDRAM_ADD12_PORT, SDRAM_ADD12_PIN, SDRAM_ADD12_FUNC);
 
     return result;
 }
