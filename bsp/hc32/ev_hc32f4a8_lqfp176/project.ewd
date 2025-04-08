@@ -44,7 +44,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/./packages/hc32f4a8_ddl-latest/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HC32F4A8.svd</state>
+                    <state>$PROJ_DIR$/./packages/hc32f4a8_ddl-latest/cmsis/Device/HDSC/hc32f4xx/Source/IAR/debugger/HC32F4A8.svd</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
@@ -1529,7 +1529,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/./packages/hc32f4a8_ddl-latest/cmsis/Device/HDSC/hc32f4xx/Source/IAR/svd/HC32F4A8.svd</state>
+                    <state>$PROJ_DIR$/./packages/hc32f4a8_ddl-latest/cmsis/Device/HDSC/hc32f4xx/Source/IAR/debugger/HC32F4A8.svd</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
