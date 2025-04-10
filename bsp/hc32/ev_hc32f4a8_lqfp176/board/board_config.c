@@ -141,6 +141,7 @@ void CanPhyEnable(void)
     TCA9539_WritePin(CAN_STB_PORT, CAN_STB_PIN, TCA9539_PIN_RESET);
     TCA9539_ConfigPin(CAN_STB_PORT, CAN_STB_PIN, TCA9539_DIR_OUT);
 }
+#if defined(BSP_USING_CAN)
 rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
 {
     rt_err_t result = RT_EOK;
@@ -166,6 +167,34 @@ rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx)
 
     return result;
 }
+#endif
+#if defined(BSP_USING_MCAN)
+rt_err_t rt_hw_board_mcan_init(CM_MCAN_TypeDef *MCANx)
+{
+    rt_err_t result = RT_EOK;
+
+    switch ((rt_uint32_t)MCANx)
+    {
+#if defined(BSP_USING_MCAN1)
+    case (rt_uint32_t)CM_MCAN1:
+        GPIO_SetFunc(MCAN1_TX_PORT, MCAN1_TX_PIN, MCAN1_TX_PIN_FUNC);
+        GPIO_SetFunc(MCAN1_RX_PORT, MCAN1_RX_PIN, MCAN1_RX_PIN_FUNC);
+        break;
+#endif
+#if defined(BSP_USING_MCAN2)
+    case (rt_uint32_t)CM_MCAN2:
+        GPIO_SetFunc(MCAN2_TX_PORT, MCAN2_TX_PIN, MCAN2_TX_PIN_FUNC);
+        GPIO_SetFunc(MCAN2_RX_PORT, MCAN2_RX_PIN, MCAN2_RX_PIN_FUNC);
+        break;
+#endif
+    default:
+        result = -RT_ERROR;
+        break;
+    }
+
+    return result;
+}
+#endif
 #endif
 
 

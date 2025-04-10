@@ -28,6 +28,10 @@ typedef struct hc32_mcan_config_struct
     struct hc32_irq_config int0_cfg;    /* MCAN interrupt line 0 configuration */
     uint32_t int1_sel;
     struct hc32_irq_config int1_cfg;    /* MCAN interrupt line 1 configuration */
+#if defined(HC32F4A8)
+    func_ptr_t irq_callback0;
+    func_ptr_t irq_callback1;
+#endif
 } hc32_mcan_config_t;
 
 typedef struct hc32_mcan_driver_struct
@@ -152,9 +156,9 @@ static hc32_mcan_driver_t m_mcan_driver_list[] =
             .instance = CM_MCAN1,
             .init_para = {.stcBitTime = MCAN1_BAUD_RATE_CFG},
             .int0_sel = MCAN_INT0_SEL,
-            .int0_cfg = {MCAN1_INT0_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT0},
+            .int0_cfg = {BSP_MCAN1_INT0_IRQ_NUM, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT0},
             .int1_sel = MCAN_INT1_SEL,
-            .int1_cfg = {MCAN1_INT1_IRQn, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT1},
+            .int1_cfg = {BSP_MCAN1_INT1_IRQ_NUM, BSP_MCAN1_INT0_IRQ_PRIO, INT_SRC_MCAN1_INT1},
         }
     },
 #endif
@@ -165,9 +169,9 @@ static hc32_mcan_driver_t m_mcan_driver_list[] =
             .instance = CM_MCAN2,
             .init_para = {.stcBitTime = MCAN2_BAUD_RATE_CFG},
             .int0_sel = MCAN_INT0_SEL,
-            .int0_cfg = {MCAN2_INT0_IRQn, BSP_MCAN2_INT0_IRQ_PRIO, INT_SRC_MCAN2_INT0},
+            .int0_cfg = {BSP_MCAN2_INT0_IRQ_NUM, BSP_MCAN2_INT0_IRQ_PRIO, INT_SRC_MCAN2_INT0},
             .int1_sel = MCAN_INT1_SEL,
-            .int1_cfg = {MCAN2_INT1_IRQn, BSP_MCAN2_INT1_IRQ_PRIO, INT_SRC_MCAN2_INT1},
+            .int1_cfg = {BSP_MCAN2_INT1_IRQ_NUM, BSP_MCAN2_INT1_IRQ_PRIO, INT_SRC_MCAN2_INT1},
         }
     },
 #endif
@@ -371,6 +375,7 @@ static void mcan_control_set_int(hc32_mcan_driver_t *driver, int cmd, void *arg)
     en_functional_state_t new_state = DISABLE;
     rt_uint32_t int_flag = (rt_uint32_t)arg;
     hc32_mcan_config_t *hard = &driver->mcan;
+    rt_uint32_t tmp;
 
     if (cmd == RT_DEVICE_CTRL_SET_INT)
     {
@@ -389,7 +394,6 @@ static void mcan_control_set_int(hc32_mcan_driver_t *driver, int cmd, void *arg)
         }
         break;
     case RT_DEVICE_FLAG_INT_TX:
-        rt_uint32_t tmp;
         tmp = hard->init_para.stcMsgRam.u32TxBufferNum + hard->init_para.stcMsgRam.u32TxFifoQueueNum;
         if (tmp >= 32)
         {
@@ -528,6 +532,7 @@ static rt_err_t mcan_control_set_priv(hc32_mcan_driver_t *driver, int cmd, void 
     return RT_EOK;
 }
 
+#ifdef RT_CAN_USING_CANFD
 static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt)
 {
     cfg->can_timing.prescaler = ll_bt->u32NominalPrescaler;
@@ -541,6 +546,7 @@ static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_ti
     cfg->canfd_timing.num_sjw = ll_bt->u32DataSyncJumpWidth;
     cfg->canfd_timing.num_sspoff = ll_bt->u32SspOffset;
 }
+#endif
 
 static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *arg, struct can_configure *cfg)
 {
@@ -958,7 +964,7 @@ rt_inline void mcan_isr(hc32_mcan_driver_t *driver)
 /****************************************************************************************
 * mcan irq handler
 ****************************************************************************************/
-#if defined(HC32F448)
+#if defined(HC32F448) || defined(HC32F4A8)
 #if defined(BSP_USING_MCAN1)
 void MCAN1_INT0_Handler(void)
 {
@@ -1006,7 +1012,7 @@ void MCAN2_INT1_Handler(void)
     rt_interrupt_leave();
 }
 #endif /* #if defined(BSP_USING_MCAN2) */
-#endif /* #if defined(HC32F448) IRQ handler */
+#endif
 
 /****************************************************************************************
 * mcan initialization configurations
@@ -1031,12 +1037,19 @@ static void mcan_irq_config(hc32_mcan_config_t *hard)
         NVIC_SetPriority(hard->int1_cfg.irq_num, hard->int1_cfg.irq_prio);
         NVIC_EnableIRQ(hard->int1_cfg.irq_num);
     }
-#endif /* #if defined(HC32F448) mcan_irq_config */
+#elif defined(HC32F4A8)
+    if (hard->int0_sel != 0) {
+        hc32_install_irq_handler(&hard->int0_cfg, hard->irq_callback0, RT_TRUE);
+    }
+    if (hard->int1_sel != 0) {
+        hc32_install_irq_handler(&hard->int0_cfg, hard->irq_callback1, RT_TRUE);
+    }
+#endif
 }
 
 static void mcan_enable_periph_clock(void)
 {
-#if defined(HC32F448)
+#if defined(HC32F448) || defined(HC32F4A8)
 #if defined(BSP_USING_MCAN1)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_MCAN1, ENABLE);
 #endif
@@ -1158,7 +1171,26 @@ static void init_can_cfg(hc32_mcan_driver_t *driver)
     driver->can_device.config = can_cfg;
 }
 
-extern rt_err_t rt_hw_board_can_init(CM_MCAN_TypeDef *MCANx);
+#if defined(HC32F4A8)
+/**
+ * @brief  This function gets mcan irq handle.
+ * @param  None
+ * @retval None
+ */
+static void mcan_get_irq_callback(void)
+{
+#ifdef BSP_USING_MCAN1
+    m_mcan_driver_list[MCAN1_INDEX].mcan.irq_callback0 = MCAN1_INT0_Handler;
+    m_mcan_driver_list[MCAN1_INDEX].mcan.irq_callback1 = MCAN1_INT1_Handler;
+#endif
+#ifdef BSP_USING_MCAN2
+    m_mcan_driver_list[MCAN2_INDEX].mcan.irq_callback0 = MCAN2_INT0_Handler;
+    m_mcan_driver_list[MCAN2_INDEX].mcan.irq_callback1 = MCAN2_INT1_Handler;
+#endif
+}
+#endif
+
+extern rt_err_t rt_hw_board_mcan_init(CM_MCAN_TypeDef *MCANx);
 extern void CanPhyEnable(void);
 static rt_err_t rt_hw_mcan_init(void)
 {
@@ -1168,7 +1200,9 @@ static rt_err_t rt_hw_mcan_init(void)
 
     mcan_enable_periph_clock();
     mcan_set_init_para();
-
+#if defined(HC32F4A8)
+    mcan_get_irq_callback();
+#endif
     for (i = 0; i < MCAN_DEV_CNT; i++)
     {
         hard = &m_mcan_driver_list[i].mcan;
@@ -1202,7 +1236,7 @@ static rt_err_t rt_hw_mcan_init(void)
         init_can_cfg(&m_mcan_driver_list[i]);
 
         /* GPIO initialization */
-        rt_hw_board_can_init(hard->instance);
+        rt_hw_board_mcan_init(hard->instance);
 
         /* Register CAN device */
         rt_hw_can_register(&m_mcan_driver_list[i].can_device,

@@ -42,9 +42,6 @@ extern "C" {
 #define MCANFD_DATA_BAUD_5M             (5*1000*1000UL)
 #define MCANFD_DATA_BAUD_8M             (8*1000*1000UL)
 
-
-int rt_hw_mcan_init(void);
-
 #ifdef __cplusplus
 }
 #endif

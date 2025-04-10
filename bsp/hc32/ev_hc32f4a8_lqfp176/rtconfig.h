@@ -150,6 +150,8 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_CAN
+#define RT_CAN_USING_HDR
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
@@ -298,6 +300,12 @@
 /* Kendryte SDK */
 
 /* end of Kendryte SDK */
+
+/* HC32_DDL: DDL library file for HC32 */
+
+#define PKG_USING_HC32F4A8_DDL
+#define PKG_USING_HC32F4A8_DDL_LATEST_VERSION
+/* end of HC32_DDL: DDL library file for HC32 */
 /* end of HAL & SDK Drivers */
 
 /* sensors drivers */
@@ -406,6 +414,10 @@
 #define BSP_USING_I2C
 #define BSP_USING_I2C_HW
 #define BSP_USING_I2C1
+#define RT_USING_CAN_MCAN
+#define BSP_USING_MCAN
+#define BSP_USING_MCAN1
+#define BSP_USING_MCAN2
 /* end of On-chip Peripheral Drivers */
 
 /* Board extended module Drivers */

@@ -6,11 +6,11 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2024-02-20     CDT          first version
+ * 2025-04-10     CDT          first version
  */
 
-#ifndef __CAN_CONFIG_H__
-#define __CAN_CONFIG_H__
+#ifndef __MCAN_CONFIG_H__
+#define __MCAN_CONFIG_H__
 
 #include <rtthread.h>
 #include "irq_config.h"
@@ -369,6 +369,6 @@ extern "C" {
 }
 #endif
 
-#endif /* __CAN_CONFIG_H__ */
+#endif /* __MCAN_CONFIG_H__ */
 
 

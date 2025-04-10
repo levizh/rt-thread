@@ -58,6 +58,9 @@
     #include "drv_can.h"
 #elif defined (HC32F448)
     #include "drv_mcan.h"
+#elif defined (HC32F4A8)
+    #include "drv_can.h"
+    #include "drv_mcan.h"
 #endif
 
 #include <stdlib.h>
@@ -333,7 +336,7 @@ int can_sample(int argc, char **argv)
         {
             rt_strcpy(can_name, "can1");
         }
-#if defined (HC32F4A0) || defined (HC32F448) || defined (HC32F472)
+#if defined (HC32F4A0) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8)
         else if (0 == rt_strcmp(argv[1], "can2"))
         {
             rt_strcpy(can_name, "can2");

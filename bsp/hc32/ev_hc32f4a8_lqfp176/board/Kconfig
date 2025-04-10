@@ -599,19 +599,38 @@ menu "On-chip Peripheral Drivers"
                 default n
         endif
 
-    menuconfig BSP_USING_CAN
-        bool "Enable CAN"
-        default n
+    menuconfig RT_USING_CAN_MCAN
+        bool "Enable CAN/MAN"
         select RT_USING_CAN
         select RT_CAN_USING_HDR
         select BSP_USING_TCA9539
-        if BSP_USING_CAN
-            config BSP_USING_CAN1
-                bool "using can1"
-                default n
-            config BSP_USING_CAN2
-                bool "using can2"
-                default n
+        default n
+        if RT_USING_CAN_MCAN
+            choice
+                prompt "Select CAN or MCAN"
+                default BSP_USING_CAN
+
+                config BSP_USING_CAN
+                    bool "Enable CAN"
+                config BSP_USING_MCAN
+                    bool "Enable MCAN"
+            endchoice
+            if BSP_USING_CAN
+                config BSP_USING_CAN1
+                    bool "using can1"
+                    default n
+                config BSP_USING_CAN2
+                    bool "using can2"
+                    default n
+            endif
+            if BSP_USING_MCAN
+                config BSP_USING_MCAN1
+                    bool "using mcan1"
+                    default n
+                config BSP_USING_MCAN2
+                    bool "using mcan2"
+                    default n
+            endif
         endif
 
     menuconfig BSP_USING_WDT_TMR

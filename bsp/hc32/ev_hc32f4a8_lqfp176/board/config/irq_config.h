@@ -292,6 +292,22 @@ extern "C" {
 #define BSP_CAN2_IRQ_PRIO               DDL_IRQ_PRIO_DEFAULT
 #endif /* BSP_USING_CAN2 */
 
+#if defined(BSP_USING_MCAN1)
+#define BSP_MCAN1_INT0_IRQ_NUM          INT124_IRQn
+#define BSP_MCAN1_INT0_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+
+#define BSP_MCAN1_INT1_IRQ_NUM          INT125_IRQn
+#define BSP_MCAN1_INT1_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_MCAN1 */
+
+#if defined(BSP_USING_MCAN2)
+#define BSP_MCAN2_INT0_IRQ_NUM          INT126_IRQn
+#define BSP_MCAN2_INT0_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+
+#define BSP_MCAN2_INT1_IRQ_NUM          INT127_IRQn
+#define BSP_MCAN2_INT1_IRQ_PRIO         DDL_IRQ_PRIO_DEFAULT
+#endif/* BSP_USING_MCAN2 */
+
 #if defined(BSP_USING_SDIO1)
 #define BSP_SDIO1_IRQ_NUM               INT004_IRQn
 #define BSP_SDIO1_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT

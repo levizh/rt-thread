@@ -33,7 +33,7 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define DRV_DEBUG
+// #define DRV_DEBUG
 #define LOG_TAG                         "drv.spi"
 #include <drv_log.h>
 
