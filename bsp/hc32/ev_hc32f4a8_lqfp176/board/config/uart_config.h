@@ -232,7 +232,7 @@ extern "C" {
         .flag           = UART2_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
-            .irq_num     = UART2_TX_DMA_IRQn,                   \
+            .irq_num    = UART2_TX_DMA_IRQn,                    \
             .irq_prio   = UART2_TX_DMA_INT_PRIO,                \
             .int_src    = UART2_TX_DMA_INT_SRC,                 \
         },                                                      \
@@ -269,7 +269,55 @@ extern "C" {
     }
 #endif /* UART3_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART3_RX_USING_DMA)
+#ifndef UART3_DMA_RX_CONFIG
+#define UART3_DMA_RX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART3_RX_DMA_INSTANCE,                \
+        .channel        = UART3_RX_DMA_CHANNEL,                 \
+        .clock          = UART3_RX_DMA_CLOCK,                   \
+        .trigger_select = UART3_RX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART3_RI,                    \
+        .flag           = UART3_RX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART3_RX_DMA_IRQn,                    \
+            .irq_prio   = UART3_RX_DMA_INT_PRIO,                \
+            .int_src    = UART3_RX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART3_DMA_RX_CONFIG */
+
+#ifndef UART3_RXTO_CONFIG
+#define UART3_RXTO_CONFIG                                       \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_3,                             \
+        .channel       = TMR0_CH_A,                             \
+        .clock         = FCG2_PERIPH_TMR0_3,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART3_RXTO_IRQ_NUM,                \
+            .irq_prio  = BSP_UART3_RXTO_IRQ_PRIO,               \
+            .int_src   = INT_SRC_USART3_RTO,                    \
+        },                                                      \
+    }
+#endif /* UART3_RXTO_CONFIG */
+#endif /* BSP_UART3_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART3_TX_USING_DMA)
+#ifndef UART3_TX_CPLT_CONFIG
+#define UART3_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART3_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART3_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART3_TCI,                   \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART3_TX_CPLT_CONFIG
 #define UART3_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -282,6 +330,26 @@ extern "C" {
     }
 #endif
 #endif /* UART3_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART3_TX_USING_DMA)
+#ifndef UART3_DMA_TX_CONFIG
+#define UART3_DMA_TX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART3_TX_DMA_INSTANCE,                \
+        .channel        = UART3_TX_DMA_CHANNEL,                 \
+        .clock          = UART3_TX_DMA_CLOCK,                   \
+        .trigger_select = UART3_TX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART3_TI,                    \
+        .flag           = UART3_TX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART3_TX_DMA_IRQn,                    \
+            .irq_prio   = UART3_TX_DMA_INT_PRIO,                \
+            .int_src    = UART3_TX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART3_DMA_TX_CONFIG */
+#endif /* BSP_UART3_TX_USING_DMA */
 #endif /* BSP_USING_UART3 */
 
 #if defined(BSP_USING_UART4)
@@ -312,7 +380,55 @@ extern "C" {
     }
 #endif /* UART4_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART4_RX_USING_DMA)
+#ifndef UART4_DMA_RX_CONFIG
+#define UART4_DMA_RX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART4_RX_DMA_INSTANCE,                \
+        .channel        = UART4_RX_DMA_CHANNEL,                 \
+        .clock          = UART4_RX_DMA_CLOCK,                   \
+        .trigger_select = UART4_RX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART4_RI,                    \
+        .flag           = UART4_RX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART4_RX_DMA_IRQn,                    \
+            .irq_prio   = UART4_RX_DMA_INT_PRIO,                \
+            .int_src    = UART4_RX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART4_DMA_RX_CONFIG */
+
+#ifndef UART4_RXTO_CONFIG
+#define UART4_RXTO_CONFIG                                       \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_3,                             \
+        .channel       = TMR0_CH_B,                             \
+        .clock         = FCG2_PERIPH_TMR0_3,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART4_RXTO_IRQ_NUM,                \
+            .irq_prio  = BSP_UART4_RXTO_IRQ_PRIO,               \
+            .int_src   = INT_SRC_USART4_RTO,                    \
+        },                                                      \
+    }
+#endif /* UART4_RXTO_CONFIG */
+#endif /* BSP_UART4_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART4_TX_USING_DMA)
+#ifndef UART4_TX_CPLT_CONFIG
+#define UART4_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART4_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART4_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART4_TCI,                   \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART4_TX_CPLT_CONFIG
 #define UART4_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -325,6 +441,26 @@ extern "C" {
     }
 #endif
 #endif /* UART4_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART4_TX_USING_DMA)
+#ifndef UART4_DMA_TX_CONFIG
+#define UART4_DMA_TX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART4_TX_DMA_INSTANCE,                \
+        .channel        = UART4_TX_DMA_CHANNEL,                 \
+        .clock          = UART4_TX_DMA_CLOCK,                   \
+        .trigger_select = UART4_TX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART4_TI,                    \
+        .flag           = UART4_TX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART4_TX_DMA_IRQn,                    \
+            .irq_prio   = UART4_TX_DMA_INT_PRIO,                \
+            .int_src    = UART4_TX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART4_DMA_TX_CONFIG */
+#endif /* BSP_UART4_TX_USING_DMA */
 #endif /* BSP_USING_UART4 */
 
 #if defined(BSP_USING_UART5)
@@ -355,7 +491,55 @@ extern "C" {
     }
 #endif /* UART5_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART5_RX_USING_DMA)
+#ifndef UART5_DMA_RX_CONFIG
+#define UART5_DMA_RX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART5_RX_DMA_INSTANCE,                \
+        .channel        = UART5_RX_DMA_CHANNEL,                 \
+        .clock          = UART5_RX_DMA_CLOCK,                   \
+        .trigger_select = UART5_RX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART5_RI,                    \
+        .flag           = UART5_RX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART5_RX_DMA_IRQn,                    \
+            .irq_prio   = UART5_RX_DMA_INT_PRIO,                \
+            .int_src    = UART5_RX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART5_DMA_RX_CONFIG */
+
+#ifndef UART5_RXTO_CONFIG
+#define UART5_RXTO_CONFIG                                       \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_4,                             \
+        .channel       = TMR0_CH_A,                             \
+        .clock         = FCG2_PERIPH_TMR0_4,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART5_RXTO_IRQ_NUM,                \
+            .irq_prio  = BSP_UART5_RXTO_IRQ_PRIO,               \
+            .int_src   = INT_SRC_USART5_RTO,                    \
+        },                                                      \
+    }
+#endif /* UART5_RXTO_CONFIG */
+#endif /* BSP_UART5_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART5_TX_USING_DMA)
+#ifndef UART5_TX_CPLT_CONFIG
+#define UART5_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART5_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART5_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART5_TCI,                   \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART5_TX_CPLT_CONFIG
 #define UART5_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -368,6 +552,26 @@ extern "C" {
     }
 #endif
 #endif /* UART5_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART5_TX_USING_DMA)
+#ifndef UART5_DMA_TX_CONFIG
+#define UART5_DMA_TX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART5_TX_DMA_INSTANCE,                \
+        .channel        = UART5_TX_DMA_CHANNEL,                 \
+        .clock          = UART5_TX_DMA_CLOCK,                   \
+        .trigger_select = UART5_TX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART5_TI,                    \
+        .flag           = UART5_TX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART5_TX_DMA_IRQn,                    \
+            .irq_prio   = UART5_TX_DMA_INT_PRIO,                \
+            .int_src    = UART5_TX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART5_DMA_TX_CONFIG */
+#endif /* BSP_UART5_TX_USING_DMA */
 #endif /* BSP_USING_UART5 */
 
 #if defined(BSP_USING_UART6)
@@ -580,7 +784,7 @@ extern "C" {
         .clock          = UART7_TX_DMA_CLOCK,                   \
         .trigger_select = UART7_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART7_TI,                    \
-        .flag           = UART1_TX_DMA_TRANS_FLAG,              \
+        .flag           = UART7_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART7_TX_DMA_IRQn,                    \
@@ -620,7 +824,55 @@ extern "C" {
     }
 #endif /* UART8_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART8_RX_USING_DMA)
+#ifndef UART8_DMA_RX_CONFIG
+#define UART8_DMA_RX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART8_RX_DMA_INSTANCE,                \
+        .channel        = UART8_RX_DMA_CHANNEL,                 \
+        .clock          = UART8_RX_DMA_CLOCK,                   \
+        .trigger_select = UART8_RX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART8_RI,                    \
+        .flag           = UART8_RX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART8_RX_DMA_IRQn,                    \
+            .irq_prio   = UART8_RX_DMA_INT_PRIO,                \
+            .int_src    = UART8_RX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART8_DMA_RX_CONFIG */
+
+#ifndef UART8_RXTO_CONFIG
+#define UART8_RXTO_CONFIG                                       \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_4,                             \
+        .channel       = TMR0_CH_B,                             \
+        .clock         = FCG2_PERIPH_TMR0_4,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART8_RXTO_IRQ_NUM,                \
+            .irq_prio  = BSP_UART8_RXTO_IRQ_PRIO,               \
+            .int_src   = INT_SRC_USART8_RTO,                    \
+        },                                                      \
+    }
+#endif /* UART8_RXTO_CONFIG */
+#endif /* BSP_UART8_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART8_TX_USING_DMA)
+#ifndef UART8_TX_CPLT_CONFIG
+#define UART8_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART8_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART8_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART8_TCI,                   \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART8_TX_CPLT_CONFIG
 #define UART8_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -633,6 +885,26 @@ extern "C" {
     }
 #endif
 #endif /* UART8_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART8_TX_USING_DMA)
+#ifndef UART8_DMA_TX_CONFIG
+#define UART8_DMA_TX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART8_TX_DMA_INSTANCE,                \
+        .channel        = UART8_TX_DMA_CHANNEL,                 \
+        .clock          = UART8_TX_DMA_CLOCK,                   \
+        .trigger_select = UART8_TX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART8_TI,                    \
+        .flag           = UART8_TX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART8_TX_DMA_IRQn,                    \
+            .irq_prio   = UART8_TX_DMA_INT_PRIO,                \
+            .int_src    = UART8_TX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART8_DMA_TX_CONFIG */
+#endif /* BSP_UART8_TX_USING_DMA */
 #endif /* BSP_USING_UART8 */
 
 #if defined(BSP_USING_UART9)
@@ -663,7 +935,55 @@ extern "C" {
     }
 #endif /* UART9_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART9_RX_USING_DMA)
+#ifndef UART9_DMA_RX_CONFIG
+#define UART9_DMA_RX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART9_RX_DMA_INSTANCE,                \
+        .channel        = UART9_RX_DMA_CHANNEL,                 \
+        .clock          = UART9_RX_DMA_CLOCK,                   \
+        .trigger_select = UART9_RX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART9_RI,                    \
+        .flag           = UART9_RX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART9_RX_DMA_IRQn,                    \
+            .irq_prio   = UART9_RX_DMA_INT_PRIO,                \
+            .int_src    = UART9_RX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART9_DMA_RX_CONFIG */
+
+#ifndef UART9_RXTO_CONFIG
+#define UART9_RXTO_CONFIG                                       \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_5,                             \
+        .channel       = TMR0_CH_A,                             \
+        .clock         = FCG2_PERIPH_TMR0_5,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART9_RXTO_IRQ_NUM,                \
+            .irq_prio  = BSP_UART9_RXTO_IRQ_PRIO,               \
+            .int_src   = INT_SRC_USART9_RTO,                    \
+        },                                                      \
+    }
+#endif /* UART9_RXTO_CONFIG */
+#endif /* BSP_UART9_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART9_TX_USING_DMA)
+#ifndef UART9_TX_CPLT_CONFIG
+#define UART9_TX_CPLT_CONFIG                                    \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART9_TX_CPLT_IRQ_NUM,            \
+            .irq_prio   = BSP_UART9_TX_CPLT_IRQ_PRIO,           \
+            .int_src    = INT_SRC_USART9_TCI,                   \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART9_TX_CPLT_CONFIG
 #define UART9_TX_CPLT_CONFIG                                    \
     {                                                           \
@@ -676,6 +996,26 @@ extern "C" {
     }
 #endif
 #endif /* UART9_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART9_TX_USING_DMA)
+#ifndef UART9_DMA_TX_CONFIG
+#define UART9_DMA_TX_CONFIG                                     \
+    {                                                           \
+        .Instance       = UART9_TX_DMA_INSTANCE,                \
+        .channel        = UART9_TX_DMA_CHANNEL,                 \
+        .clock          = UART9_TX_DMA_CLOCK,                   \
+        .trigger_select = UART9_TX_DMA_TRIG_SELECT,             \
+        .trigger_event  = EVT_SRC_USART9_TI,                    \
+        .flag           = UART9_TX_DMA_TRANS_FLAG,              \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART9_TX_DMA_IRQn,                    \
+            .irq_prio   = UART9_TX_DMA_INT_PRIO,                \
+            .int_src    = UART9_TX_DMA_INT_SRC,                 \
+        },                                                      \
+    }
+#endif /* UART9_DMA_TX_CONFIG */
+#endif /* BSP_UART9_TX_USING_DMA */
 #endif /* BSP_USING_UART9 */
 
 #if defined(BSP_USING_UART10)
@@ -706,7 +1046,55 @@ extern "C" {
     }
 #endif /* UART10_CONFIG */
 
-#if defined(RT_USING_SERIAL_V2)
+#if defined(BSP_UART10_RX_USING_DMA)
+#ifndef UART10_DMA_RX_CONFIG
+#define UART10_DMA_RX_CONFIG                                    \
+    {                                                           \
+        .Instance       = UART10_RX_DMA_INSTANCE,               \
+        .channel        = UART10_RX_DMA_CHANNEL,                \
+        .clock          = UART10_RX_DMA_CLOCK,                  \
+        .trigger_select = UART10_RX_DMA_TRIG_SELECT,            \
+        .trigger_event  = EVT_SRC_USART10_RI,                   \
+        .flag           = UART10_RX_DMA_TRANS_FLAG,             \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART10_RX_DMA_IRQn,                   \
+            .irq_prio   = UART10_RX_DMA_INT_PRIO,               \
+            .int_src    = UART10_RX_DMA_INT_SRC,                \
+        },                                                      \
+    }
+#endif /* UART10_DMA_RX_CONFIG */
+
+#ifndef UART10_RXTO_CONFIG
+#define UART10_RXTO_CONFIG                                      \
+    {                                                           \
+        .TMR0_Instance = CM_TMR0_5,                             \
+        .channel       = TMR0_CH_B,                             \
+        .clock         = FCG2_PERIPH_TMR0_5,                    \
+        .timeout_bits  = 20UL,                                  \
+        .irq_config    =                                        \
+        {                                                       \
+            .irq_num   = BSP_UART10_RXTO_IRQ_NUM,               \
+            .irq_prio  = BSP_UART10_RXTO_IRQ_PRIO,              \
+            .int_src   = INT_SRC_USART10_RTO,                   \
+        },                                                      \
+    }
+#endif /* UART10_RXTO_CONFIG */
+#endif /* BSP_UART10_RX_USING_DMA */
+
+#if defined(RT_USING_SERIAL_V1) && defined(BSP_UART10_TX_USING_DMA)
+#ifndef UART10_TX_CPLT_CONFIG
+#define UART10_TX_CPLT_CONFIG                                   \
+    {                                                           \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = BSP_UART10_TX_CPLT_IRQ_NUM,           \
+            .irq_prio   = BSP_UART10_TX_CPLT_IRQ_PRIO,          \
+            .int_src    = INT_SRC_USART10_TCI,                  \
+        },                                                      \
+    }
+#endif
+#elif defined(RT_USING_SERIAL_V2)
 #ifndef UART10_TX_CPLT_CONFIG
 #define UART10_TX_CPLT_CONFIG                                   \
     {                                                           \
@@ -719,7 +1107,28 @@ extern "C" {
     }
 #endif
 #endif /* UART10_TX_CPLT_CONFIG */
+
+#if defined(BSP_UART10_TX_USING_DMA)
+#ifndef UART10_DMA_TX_CONFIG
+#define UART10_DMA_TX_CONFIG                                    \
+    {                                                           \
+        .Instance       = UART10_TX_DMA_INSTANCE,               \
+        .channel        = UART10_TX_DMA_CHANNEL,                \
+        .clock          = UART10_TX_DMA_CLOCK,                  \
+        .trigger_select = UART10_TX_DMA_TRIG_SELECT,            \
+        .trigger_event  = EVT_SRC_USART10_TI,                   \
+        .flag           = UART10_TX_DMA_TRANS_FLAG,             \
+        .irq_config     =                                       \
+        {                                                       \
+            .irq_num    = UART10_TX_DMA_IRQn,                   \
+            .irq_prio   = UART10_TX_DMA_INT_PRIO,               \
+            .int_src    = UART10_TX_DMA_INT_SRC,                \
+        },                                                      \
+    }
+#endif /* UART10_DMA_TX_CONFIG */
+#endif /* BSP_UART10_TX_USING_DMA */
 #endif /* BSP_USING_UART10 */
+
 
 #ifdef __cplusplus
 }
