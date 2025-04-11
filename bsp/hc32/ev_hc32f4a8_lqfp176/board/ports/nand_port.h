@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2023-03-01     CDT          first version
+ * 2025-04-11     CDT          first version
  */
 
 #ifndef __NAND_PORT_H__
@@ -40,7 +40,7 @@
 /* ECC mode */
 #define NAND_EXMC_NFC_ECC_MD            EXMC_NFC_1BIT_ECC
 
-/* timing configuration(EXCLK clock frequency: 60MHz@3.3V) for MT29F2G08AB */
+/* timing configuration(EXCLK clock frequency: 60MHz@3.3V) */
 /* TS: ALE/CLE/CE setup time(min=10ns) */
 #define NAND_TS                         1U
 

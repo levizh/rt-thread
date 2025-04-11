@@ -39,7 +39,7 @@
 /* write burst mode: SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED/SINGLE */
 #define SDRAM_MODEREG_WRITEBURST_MODE   SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED
 
-/* timing configuration(EXCLK clock frequency: 60MHz) for IS42S16400J-7TLI */
+/* timing configuration(EXCLK clock frequency: 60MHz) */
 /* refresh rate counter (EXCLK clock) */
 #define SDRAM_REFRESH_COUNT             (900U)
 /* TMDR: mode register command time (EXCLK clock) */
