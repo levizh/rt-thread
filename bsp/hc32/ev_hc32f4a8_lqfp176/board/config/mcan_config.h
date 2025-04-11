@@ -37,7 +37,7 @@ extern "C" {
    2. User can modify the definitions of filter number, Rx FIFO number, Tx FIFO number.
    3. MCAN has two conﬁgurable Receive FIFOs, Rx FIFO0 and Rx FIFO1. There use Rx FIFO0 only by default.
       If only one FIFO is needed, use Rx FIFO0. If Rx FIFO1 is needed, define it's macro between 1 and 64,
-      and pay attention the total size of meesage RAM that to be allocated.
+      and pay attention the total size of message RAM that to be allocated.
 */
 
 #ifdef RT_CAN_USING_CANFD

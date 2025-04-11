@@ -387,7 +387,7 @@ int can_sample(int argc, char **argv)
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_MODE, (void *)RT_CAN_MODE_NORMAL);
     RT_ASSERT(res == RT_EOK);
 #ifdef RT_CAN_USING_CANFD
-#if defined (HC32F4A0)
+#if defined (HC32F4A0) || defined (HC32F4A8)
     if (can_name == "can2")
 #endif
     {

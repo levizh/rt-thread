@@ -123,6 +123,13 @@ void PeripheralClock_Config(void)
     CLK_SetCANClockSrc(CLK_CAN2, CLK_CANCLK_SYSCLK_DIV6);
 #endif
 
+#if defined(BSP_USING_MCAN1)
+    CLK_SetCANClockSrc(CLK_MCAN1, CLK_CANCLK_SYSCLK_DIV6);
+#endif
+#if defined(BSP_USING_MCAN2)
+    CLK_SetCANClockSrc(CLK_MCAN2, CLK_CANCLK_SYSCLK_DIV6);
+#endif
+
 #if defined(RT_USING_ADC)
     CLK_SetPeriClockSrc(CLK_PERIPHCLK_PCLK);
 #endif

@@ -335,6 +335,7 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
     hard->init_para.stcFilter.pstcExtFilterList = ext_filters;
     for (i = 0; i < hard->init_para.stcMsgRam.u32StdFilterNum; i++)
     {
+        hard->init_para.stcFilter.pstcStdFilterList[i].u32IdType = MCAN_STD_ID;
         if (MCAN_FilterConfig(hard->instance, &hard->init_para.stcFilter.pstcStdFilterList[i]) != LL_OK)
         {
             return -RT_ERROR;
@@ -343,6 +344,7 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
 
     for (i = 0; i < hard->init_para.stcMsgRam.u32ExtFilterNum; i++)
     {
+        hard->init_para.stcFilter.pstcExtFilterList[i].u32IdType = MCAN_EXT_ID;
         if (MCAN_FilterConfig(hard->instance, &hard->init_para.stcFilter.pstcExtFilterList[i]) != LL_OK)
         {
             return -RT_ERROR;

@@ -606,31 +606,28 @@ menu "On-chip Peripheral Drivers"
         select BSP_USING_TCA9539
         default n
         if RT_USING_CAN_MCAN
-            choice
-                prompt "Select CAN or MCAN"
-                default BSP_USING_CAN
-
-                config BSP_USING_CAN
-                    bool "Enable CAN"
-                config BSP_USING_MCAN
-                    bool "Enable MCAN"
-            endchoice
-            if BSP_USING_CAN
-                config BSP_USING_CAN1
-                    bool "using can1"
-                    default n
-                config BSP_USING_CAN2
-                    bool "using can2"
-                    default n
-            endif
-            if BSP_USING_MCAN
-                config BSP_USING_MCAN1
-                    bool "using mcan1"
-                    default n
-                config BSP_USING_MCAN2
-                    bool "using mcan2"
-                    default n
-            endif
+            config BSP_USING_CAN
+                bool "Enable CAN"
+                default n
+                if BSP_USING_CAN
+                    config BSP_USING_CAN1
+                        bool "using can1"
+                        default n
+                    config BSP_USING_CAN2
+                        bool "using can2"
+                        default n
+                endif
+            config BSP_USING_MCAN
+                bool "Enable MCAN"
+                default n
+                if BSP_USING_MCAN
+                    config BSP_USING_MCAN1
+                        bool "using mcan1"
+                        default n
+                    config BSP_USING_MCAN2
+                        bool "using mcan2"
+                        default n
+                endif
         endif
 
     menuconfig BSP_USING_WDT_TMR
