@@ -17,7 +17,7 @@
  *     CLK_EXCLK_DIV2改为CLK_EXCLK_DIV8(EXCLK: 30MHz);
  *
  * menuconfig:
- *     Hardware Drivers Config  --->  On-chip Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or NAND  ---->  Using SDRAM (IS42S16400J7TLI)
+ *     Hardware Drivers Config  --->  Onboard Peripheral Drivers  ---->  Enable EXMC  ---->  Using SDRAM or NAND  ---->  Using SDRAM
  */
 
 #include <rtthread.h>

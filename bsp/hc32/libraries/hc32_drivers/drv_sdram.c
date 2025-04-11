@@ -124,7 +124,9 @@ static rt_int32_t _sdram_init(void)
 
     /* configure DMC width && refresh period & chip & timing. */
     (void)EXMC_DMC_StructInit(&stcDmcInit);
+#if defined (HC32F4A0)
     stcDmcInit.u32SampleClock          = EXMC_DMC_SAMPLE_CLK_EXTCLK;
+#endif
     stcDmcInit.u32RefreshPeriod        = SDRAM_REFRESH_COUNT;
     stcDmcInit.u32ColumnBitsNumber     = SDRAM_COLUMN_BITS;
     stcDmcInit.u32RowBitsNumber        = SDRAM_ROW_BITS;

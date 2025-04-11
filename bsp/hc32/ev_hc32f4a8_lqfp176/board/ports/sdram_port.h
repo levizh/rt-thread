@@ -24,9 +24,9 @@
 /* data width: EXMC_DMC_MEMORY_WIDTH_16BIT, EXMC_DMC_MEMORY_WIDTH_32BIT */
 #define SDRAM_DATA_WIDTH                EXMC_DMC_MEMORY_WIDTH_16BIT
 /* column bit numbers: EXMC_DMC_COLUMN_BITS_NUM8/9/10/11/12 */
-#define SDRAM_COLUMN_BITS               EXMC_DMC_COLUMN_BITS_NUM8
+#define SDRAM_COLUMN_BITS               EXMC_DMC_COLUMN_BITS_NUM9
 /* row bit numbers: EXMC_DMC_ROW_BITS_NUM11/12/13/14/15/16 */
-#define SDRAM_ROW_BITS                  EXMC_DMC_ROW_BITS_NUM12
+#define SDRAM_ROW_BITS                  EXMC_DMC_ROW_BITS_NUM13
 /* cas latency clock number: 2, 3 */
 #define SDRAM_CAS_LATENCY               2UL
 /* burst length: EXMC_DMC_BURST_1BEAT/2BEAT/4BEAT/8BEAT/16BEAT */
