@@ -45,6 +45,8 @@
     #define SAMPLE_DEFAULT_UART_NAME       "uart1"
 #elif defined(HC32F472) && defined (BSP_USING_UART1)
     #define SAMPLE_DEFAULT_UART_NAME       "uart1"
+#elif defined(HC32F4A8) && defined (BSP_USING_UART6)
+    #define SAMPLE_DEFAULT_UART_NAME       "uart6"
 #endif
 
 #if defined(SAMPLE_DEFAULT_UART_NAME)
