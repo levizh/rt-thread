@@ -28,7 +28,7 @@
 #define TSEG1_MAX_FOR_CAN2_0                                (65U)
 #define TSEG2_MIN_FOR_CAN2_0                                (1U)
 #define TSEG2_MAX_FOR_CAN2_0                                (8U)
-#if defined(HC32F4A0) || defined(HC32F472)
+#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32F4A8)
     #define TSJW_MIN_FOR_CAN2_0                             (1U)
     #define TSJW_MAX_FOR_CAN2_0                             (16U)
 #elif defined(HC32F460)
@@ -85,7 +85,7 @@
 #endif
 
 #define NUM_PRESCALE_MAX                                    (256U)
-#if defined(HC32F4A0)
+#if defined(HC32F4A0) || defined(HC32F4A8)
     #define CAN_FILTER_COUNT                                (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -233,7 +233,7 @@ static can_device _g_can_dev_array[] =
     {
         {0},
         CAN1_INIT_PARAMS,
-#if defined(HC32F4A0) || defined(HC32F472)
+#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32F4A8)
         .instance = CM_CAN1,
 #elif defined (HC32F460)
         .instance = CM_CAN,
@@ -818,6 +818,7 @@ static rt_err_t _canfd_control(can_device *p_can_dev, int cmd, void *arg)
         {
             break;
         }
+        CAN_FD_Cmd(p_can_dev->instance, (en_functional_state_t)(p_can_dev->rt_can.config.enable_canfd));
         p_can_dev->rt_can.config.enable_canfd = (rt_uint32_t) argval;
         break;
     case RT_CAN_CMD_SET_BAUD_FD:
@@ -1271,7 +1272,7 @@ void CAN3_Handler(void)
 static void _enable_can_clock(void)
 {
 #if defined(BSP_USING_CAN1)
-#if defined(HC32F4A0) || defined(HC32F472)
+#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32FA8)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
 #elif defined(HC32F460)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN, ENABLE);

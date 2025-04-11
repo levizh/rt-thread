@@ -54,7 +54,7 @@
 
 #include <rtthread.h>
 #include "rtdevice.h"
-#if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460)
+#if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460) || defined(HC32F4A8)
     #include "drv_can.h"
 #elif defined (HC32F448)
     #include "drv_mcan.h"

@@ -56,8 +56,10 @@
  * @defgroup  BSP CAN PHY STB port/pin definition
  * @{
  */
-#define CAN_STB_PORT                    (TCA9539_IO_PORT1)
-#define CAN_STB_PIN                     (EIO_CAN_STB)
+#define CAN1_STB_PORT                   (TCA9539_IO_PORT1)
+#define CAN1_STB_PIN                    (TCA9539_IO_PIN4)
+#define CAN2_STB_PORT                   (TCA9539_IO_PORT1)
+#define CAN2_STB_PIN                    (TCA9539_IO_PIN5)
 /**
  * @}
  */
