@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (c) 2006-2022, RT-Thread Development Team
+ * Copyright (c) 2022-2025, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
- * 2023-06-15     CDT          first version
+ * 2025-04-15     CDT          first version
  */
 
 #ifndef __QSPI_CONFIG_H__
@@ -64,8 +65,13 @@ extern "C" {
         }                                                   \
     }
 #endif /* QSPI_DMA_CONFIG */
+
+/* unit: half-word, DMA data width of QSPI transmitting is 16bit */
+#ifndef QSPI_DMA_TX_BUFSIZE
+#define QSPI_DMA_TX_BUFSIZE             256
+#endif /* QSPI_DMA_TX_BUFSIZE */
 #endif /* BSP_QSPI_USING_DMA */
-#endif /* BSP_USING_SPI1 */
+#endif /* BSP_USING_QSPI */
 
 #ifdef __cplusplus
 }

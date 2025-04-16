@@ -78,7 +78,7 @@ menu "Onboard Peripheral Drivers"
                     select RT_USING_MTD_NAND
 
                 config BSP_USING_SDRAM
-                    bool "Using SDRAM (IS42S16400J7TLI)"
+                    bool "Using SDRAM (W9825G6KH)"
             endchoice
         endif
 
