@@ -395,9 +395,9 @@ int can_sample(int argc, char **argv)
         res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)MCANFD_DATA_BAUD_4M);
 #else
         res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)CANFD_DATA_BAUD_4M);
-#endif
 #if defined (HC32F4A8)
         res = rt_device_control(can_dev, RT_CAN_CMD_SET_CANFD, (void *)ENABLE);
+#endif
 #endif
         RT_ASSERT(res == RT_EOK);
     }
