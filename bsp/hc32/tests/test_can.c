@@ -54,7 +54,7 @@
 
 #include <rtthread.h>
 #include "rtdevice.h"
-#if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F472) || defined (HC32F460)
     #include "drv_can.h"
 #elif defined (HC32F448)
     #include "drv_mcan.h"
@@ -79,8 +79,6 @@ static rt_device_t can_dev = RT_NULL;
 static struct rt_semaphore can_rx_sem;
 static rt_mutex_t can_mutex = RT_NULL;
 static rt_thread_t rx_thread;
-static uint32_t can_msg_tx_cnt = 0U;
-static uint32_t can_msg_rx_cnt = 0U;
 
 #define CAN_IF_INIT()                   do {                            \
                                             if (can_dev == RT_NULL || can_mutex == RT_NULL) { \
@@ -135,7 +133,6 @@ static void can_rx_thread(void *parameter)
         /* 发送接收到的消息 */
         size = rt_device_write(can_dev, 0, &rxmsg, sizeof(rxmsg));
         rt_mutex_release(can_mutex);
-        can_msg_rx_cnt++;
         if (size == 0)
         {
             rt_kprintf("can dev write data failed!\n");
@@ -183,8 +180,8 @@ void _msh_cmd_set_timing(int argc, char **argv)
         items[0].prescaler = atoi(argv[pos++]);
         items[0].num_seg1 =  atoi(argv[pos++]);
         items[0].num_seg2 =  atoi(argv[pos++]);
-        items[0].num_sjw =  atoi(argv[pos++]);
-        items[0].num_sspoff =  atoi(argv[pos++]);
+        items[0].num_sjw =   atoi(argv[pos++]);
+        items[0].num_sspoff = atoi(argv[pos++]);
         if (count > 1)
         {
             items[1].prescaler =  atoi(argv[pos++]);
@@ -271,8 +268,8 @@ void _msh_cmd_send_msg(int argc, char **argv)
         {
             rt_kprintf("can dev write data failed!\n");
         }
+
         rt_mutex_release(can_mutex);
-        can_msg_tx_cnt++;
         rt_kprintf("send msg ok! \n");
     }
     else
@@ -386,9 +383,12 @@ int can_sample(int argc, char **argv)
     RT_ASSERT(res == RT_EOK);
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_MODE, (void *)RT_CAN_MODE_NORMAL);
     RT_ASSERT(res == RT_EOK);
+
 #ifdef RT_CAN_USING_CANFD
+    res = rt_device_control(can_dev, RT_CAN_CMD_SET_CANFD, (void *)MCAN_FD_ISO_FD_BRS); /* 使能CAN_FD BRS功能 */
+    RT_ASSERT(res == RT_EOK);
 #if defined (HC32F4A0)
-    if (can_name == "can2")
+    if (strcmp(can_name, "can2") == 0)
 #endif
     {
 #ifdef BSP_USING_MCAN
@@ -402,6 +402,7 @@ int can_sample(int argc, char **argv)
         RT_ASSERT(res == RT_EOK);
     }
 #endif
+
     rt_device_set_rx_indicate(can_dev, can_rx_call);
 
     _set_default_filter();

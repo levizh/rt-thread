@@ -18,6 +18,7 @@ extern "C" {
 #include <board.h>
 #include <rtdevice.h>
 #include <rtthread.h>
+#include <mcan_config.h>
 
 /* Attention !!!
 * If RT_CAN_USING_CANFD is enabled, RT_CAN_CMD_SET_BITTIMING is more recommended

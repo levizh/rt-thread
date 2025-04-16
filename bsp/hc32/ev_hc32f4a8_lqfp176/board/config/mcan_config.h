@@ -234,9 +234,9 @@ extern "C" {
 #define MCAN_FD_CFG_1M_5M                                   \
     {                                                       \
     .u32NominalPrescaler = 1,                               \
-    .u32NominalTimeSeg1 = 64,                               \
-    .u32NominalTimeSeg2 = 16,                               \
-    .u32NominalSyncJumpWidth = 16,                          \
+    .u32NominalTimeSeg1 = 32,                               \
+    .u32NominalTimeSeg2 = 8,                                \
+    .u32NominalSyncJumpWidth = 8,                           \
     .u32DataPrescaler = 1,                                  \
     .u32DataTimeSeg1 = 6,                                   \
     .u32DataTimeSeg2 = 2,                                   \
@@ -249,9 +249,9 @@ extern "C" {
 #define MCAN_FD_CFG_1M_8M                                   \
     {                                                       \
     .u32NominalPrescaler = 1,                               \
-    .u32NominalTimeSeg1 = 64,                               \
-    .u32NominalTimeSeg2 = 16,                               \
-    .u32NominalSyncJumpWidth = 16,                          \
+    .u32NominalTimeSeg1 = 32,                               \
+    .u32NominalTimeSeg2 = 8,                                \
+    .u32NominalSyncJumpWidth = 8,                           \
     .u32DataPrescaler = 1,                                  \
     .u32DataTimeSeg1 = 4,                                   \
     .u32DataTimeSeg2 = 1,                                   \
