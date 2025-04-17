@@ -59,9 +59,11 @@ typedef struct mcan_baud_rate_struct
 #define IS_MCAN_CC_BAUD_RATE(baud)          ((baud) == (CAN10kBaud)  || \
                                              (baud) == (CAN20kBaud)  || \
                                              (baud) == (CAN50kBaud)  || \
+                                             (baud) == (CAN100kBaud) || \
                                              (baud) == (CAN125kBaud) || \
                                              (baud) == (CAN250kBaud) || \
                                              (baud) == (CAN500kBaud) || \
+                                             (baud) == (CAN800kBaud) || \
                                              (baud) == (CAN1MBaud))
 
 #define IS_MCAN_NOMINAL_BAUD_RATE(baud)     ((baud) == (CAN500kBaud) || \
@@ -103,8 +105,7 @@ static const mcan_baud_rate_t m_mcan_fd_baud_rate[] =
     {CAN1MBaud, MCANFD_DATA_BAUD_5M, MCAN_FD_CFG_1M_5M},
     {CAN1MBaud, MCANFD_DATA_BAUD_8M, MCAN_FD_CFG_1M_8M},
 };
-#endif
-
+#else
 static const mcan_baud_rate_t m_mcan_cc_baud_rate[] =
 {
     {CAN1MBaud,   0, MCAN_CC_CFG_1M},
@@ -117,6 +118,7 @@ static const mcan_baud_rate_t m_mcan_cc_baud_rate[] =
     {CAN20kBaud,  0, MCAN_CC_CFG_20K},
     {CAN10kBaud,  0, MCAN_CC_CFG_10K},
 };
+#endif
 
 /****************************************************************************************
 * Constants
@@ -232,6 +234,8 @@ static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt
  */
 static rt_ssize_t mcan_recvmsg(struct rt_can_device *device, void *buf, rt_uint32_t boxno);
 
+static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt);
+
 static const struct rt_can_ops m_mcan_ops =
 {
     mcan_configure,
@@ -291,9 +295,10 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         for (i = 0; i < len; i++)
         {
             if ((cfg->baud_rate == m_mcan_fd_baud_rate[i].baud_rate) && \
-                    (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
+                (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 hard->init_para.stcBitTime = m_mcan_fd_baud_rate[i].ll_bt;
+				mcan_copy_bt_to_cfg(cfg, &m_mcan_fd_baud_rate[i].ll_bt);
                 break;
             }
         }
@@ -310,6 +315,7 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         if (cfg->baud_rate == m_mcan_cc_baud_rate[i].baud_rate)
         {
             hard->init_para.stcBitTime = m_mcan_cc_baud_rate[i].ll_bt;
+			mcan_copy_bt_to_cfg(cfg, &m_mcan_cc_baud_rate[i].ll_bt);
             break;
         }
     }
@@ -336,7 +342,6 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
     hard->init_para.stcFilter.pstcExtFilterList = ext_filters;
     for (i = 0; i < hard->init_para.stcMsgRam.u32StdFilterNum; i++)
     {
-        hard->init_para.stcFilter.pstcStdFilterList[i].u32IdType = MCAN_STD_ID;
         if (MCAN_FilterConfig(hard->instance, &hard->init_para.stcFilter.pstcStdFilterList[i]) != LL_OK)
         {
             return -RT_ERROR;
@@ -345,7 +350,6 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
 
     for (i = 0; i < hard->init_para.stcMsgRam.u32ExtFilterNum; i++)
     {
-        hard->init_para.stcFilter.pstcExtFilterList[i].u32IdType = MCAN_EXT_ID;
         if (MCAN_FilterConfig(hard->instance, &hard->init_para.stcFilter.pstcExtFilterList[i]) != LL_OK)
         {
             return -RT_ERROR;
@@ -507,7 +511,7 @@ static rt_err_t mcan_control_set_mode(hc32_mcan_driver_t *driver, int cmd, void 
     }
     if (argval == driver->can_device.config.mode)
     {
-        return -RT_EOK;
+        return RT_EOK;
     }
     cfg->mode = argval;
     return RT_EOK;
@@ -525,7 +529,7 @@ static rt_err_t mcan_control_set_priv(hc32_mcan_driver_t *driver, int cmd, void 
     }
     if (argval == driver->can_device.config.privmode)
     {
-        return -RT_EPERM;
+        return RT_EOK;
     }
     cfg->privmode = argval;
     return RT_EOK;
@@ -538,13 +542,13 @@ static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_ti
     cfg->can_timing.num_seg2 = ll_bt->u32NominalTimeSeg2;
     cfg->can_timing.num_sjw = ll_bt->u32NominalSyncJumpWidth;
 
-    if (ll_bt->u32DataTimeSeg1 && ll_bt->u32DataTimeSeg2) {
-        cfg->canfd_timing.prescaler = ll_bt->u32DataPrescaler;
-        cfg->canfd_timing.num_seg1 = ll_bt->u32DataTimeSeg1;
-        cfg->canfd_timing.num_seg2 = ll_bt->u32DataTimeSeg2;
-        cfg->canfd_timing.num_sjw = ll_bt->u32DataSyncJumpWidth;
-        cfg->canfd_timing.num_sspoff = ll_bt->u32SspOffset;
-    }
+#ifdef RT_CAN_USING_CANFD
+    cfg->canfd_timing.prescaler = ll_bt->u32DataPrescaler;
+    cfg->canfd_timing.num_seg1 = ll_bt->u32DataTimeSeg1;
+    cfg->canfd_timing.num_seg2 = ll_bt->u32DataTimeSeg2;
+    cfg->canfd_timing.num_sjw = ll_bt->u32DataSyncJumpWidth;
+    cfg->canfd_timing.num_sspoff = ll_bt->u32SspOffset;
+#endif
 }
 
 static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *arg, struct can_configure *cfg)
@@ -565,7 +569,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         }
         if (driver->can_device.config.baud_rate == argval)
         {
-            return -RT_EPERM;
+            return RT_EOK;
         }
         len = sizeof(m_mcan_fd_baud_rate) / sizeof(m_mcan_fd_baud_rate[0]);
         for (i = 0; i < len; i++)
@@ -574,8 +578,8 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
                 (driver->can_device.config.baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 cfg->baud_rate = argval;
-                mcan_copy_bt_to_cfg(cfg, &m_mcan_cc_baud_rate[i].ll_bt);
                 cfg->baud_rate_fd = driver->can_device.config.baud_rate_fd;
+                mcan_copy_bt_to_cfg(cfg, &m_mcan_fd_baud_rate[i].ll_bt);
                 return RT_EOK;
             }
         }
@@ -629,7 +633,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         }
         if (argval == driver->can_device.config.enable_canfd)
         {
-            return -RT_EPERM;
+            return RT_EOK;
         }
         cfg->enable_canfd = argval;
         return RT_EOK;
@@ -642,7 +646,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         }
         if (argval == driver->can_device.config.baud_rate)
         {
-            return -RT_EPERM;
+            return RT_EOK;
         }
 
         len = sizeof(m_mcan_cc_baud_rate) / sizeof(m_mcan_cc_baud_rate[0]);
@@ -651,6 +655,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
             if (argval == m_mcan_cc_baud_rate[i].baud_rate)
             {
                 cfg->baud_rate = argval;
+                mcan_copy_bt_to_cfg(cfg, &m_mcan_cc_baud_rate[i].ll_bt);
                 return RT_EOK;
             }
         }
@@ -1163,7 +1168,7 @@ static void init_can_cfg(hc32_mcan_driver_t *driver)
 #endif
 #ifdef RT_CAN_USING_CANFD
     can_cfg.baud_rate_fd = MCANFD_DATA_BAUD_4M;
-    can_cfg.enable_canfd = MCAN_FD_ISO_FD_NO_BRS;
+    can_cfg.enable_canfd = MCAN_FD_SEL;
 #endif
     can_cfg.sndboxnumber = MCAN_TX_FIFO_NUM;
     driver->can_device.config = can_cfg;
@@ -1192,7 +1197,7 @@ extern rt_err_t rt_hw_board_mcan_init(CM_MCAN_TypeDef *MCANx);
 extern void CanPhyEnable(void);
 static rt_err_t rt_hw_mcan_init(void)
 {
-    rt_uint32_t i;
+    rt_uint32_t i, filter;
     rt_uint32_t tx_boxnum;
     hc32_mcan_config_t *hard;
 
@@ -1204,6 +1209,15 @@ static rt_err_t rt_hw_mcan_init(void)
     for (i = 0; i < MCAN_DEV_CNT; i++)
     {
         hard = &m_mcan_driver_list[i].mcan;
+
+        for (filter = 0; filter < hard->init_para.stcMsgRam.u32StdFilterNum; filter++)
+        {
+            hard->init_para.stcFilter.pstcStdFilterList[filter].u32IdType = MCAN_STD_ID;
+        }
+        for (filter = 0; filter < hard->init_para.stcMsgRam.u32ExtFilterNum; filter++)
+        {
+            hard->init_para.stcFilter.pstcExtFilterList[filter].u32IdType = MCAN_EXT_ID;
+        }
 
         /* MCAN IRQ configuration */
         mcan_irq_config(hard);
@@ -1235,9 +1249,6 @@ static rt_err_t rt_hw_mcan_init(void)
 
         /* GPIO initialization */
         rt_hw_board_mcan_init(hard->instance);
-
-        /* Associated the bit time parameter */
-        // mcan_copy_bt_to_cfg(&m_mcan_driver_list[i].can_device.config, &m_mcan_driver_list[i].mcan.init_para.stcBitTime);
 
         /* Register CAN device */
         rt_hw_can_register(&m_mcan_driver_list[i].can_device,
