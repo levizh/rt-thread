@@ -78,6 +78,7 @@
                                                              baud == (CANFD_DATA_BAUD_4M) ||                   \
                                                              baud == (CANFD_DATA_BAUD_5M) ||                   \
                                                              baud == (CANFD_DATA_BAUD_8M))
+#define IS_CAN_FRAME(cmd)                               ((cmd) <= CAN_FRAME_NON_ISO_FD)
 
 #define CAN_BIT_TIMING_CANFD_ARBITRATION                    (1U << 1)
 #define CAN_BIT_TIMING_CANFD_DATA                           (1U << 2)
@@ -741,26 +742,6 @@ static void _init_ll_struct_canfd(can_device *p_can_dev)
     }
     RT_ASSERT((p_can_dev->ll_init.pstcCanFd != RT_NULL));
     CAN_FD_StructInit(p_can_dev->ll_init.pstcCanFd);
-    switch ((rt_uint32_t)p_can_dev->instance)
-    {
-#ifdef BSP_USING_CAN1
-    case (rt_uint32_t)CM_CAN1:
-        p_can_dev->ll_init.pstcCanFd->u8Mode = CAN1_CANFD_MODE;
-        break;
-#endif
-#ifdef BSP_USING_CAN2
-    case (rt_uint32_t)CM_CAN2:
-        p_can_dev->ll_init.pstcCanFd->u8Mode = CAN2_CANFD_MODE;
-        break;
-#endif
-#ifdef BSP_USING_CAN3
-    case (rt_uint32_t)CM_CAN3:
-        p_can_dev->ll_init.pstcCanFd->u8Mode = CAN3_CANFD_MODE;
-        break;
-#endif
-    default:
-        break;
-    }
 }
 
 static rt_err_t _config_can_bit_timing(can_device *p_can_dev, void *arg)
@@ -814,12 +795,21 @@ static rt_err_t _canfd_control(can_device *p_can_dev, int cmd, void *arg)
         p_can_dev->rt_can.config.baud_rate = argval;
         break;
     case RT_CAN_CMD_SET_CANFD:
+        argval = (rt_uint32_t) arg;
         if (p_can_dev->rt_can.config.enable_canfd == argval)
         {
             break;
         }
-        CAN_FD_Cmd(p_can_dev->instance, argval);
-        p_can_dev->rt_can.config.enable_canfd = (rt_uint32_t) argval;
+
+        RT_ASSERT(IS_CAN_FRAME(argval));
+        if (argval != CAN_FRAME_CLASSIC)
+        {
+            p_can_dev->ll_init.pstcCanFd->u8Mode = (argval == CAN_FRAME_ISO_FD) ? CAN_FD_MD_ISO : CAN_FD_MD_BOSCH;
+        }
+        CAN_Init(p_can_dev->instance, &p_can_dev->ll_init);
+        p_can_dev->rt_can.config.enable_canfd = argval;
+        argval = (argval > CAN_FRAME_CLASSIC) ? ENABLE : DISABLE;
+        CAN_FD_Cmd(p_can_dev->instance, (en_functional_state_t)argval);
         break;
     case RT_CAN_CMD_SET_BAUD_FD:
         argval = (rt_uint32_t) arg;
@@ -1333,7 +1323,7 @@ static void _init_ll_struct_filter(can_device *p_can_dev)
     p_can_dev->ll_init.u16FilterSelect = CAN_FILTER1;
 }
 
-static void _init_struct_by_static_cfg(can_device *p_can_dev)
+static void _init_default_cfg(can_device *p_can_dev)
 {
     struct can_configure rt_can_config  = CANDEFAULTCONFIG;
 
@@ -1348,16 +1338,15 @@ static void _init_struct_by_static_cfg(can_device *p_can_dev)
     rt_can_config.sndboxnumber = 1;
     p_can_dev->rt_can.config = rt_can_config;
 
+    CAN_StructInit(&p_can_dev->ll_init);
     if (p_can_dev->init.single_trans_mode)
     {
         p_can_dev->ll_init.u8PTBSingleShotTx = CAN_PTB_SINGLESHOT_TX_ENABLE;
     }
-
 #ifdef RT_CAN_USING_CANFD
     _init_ll_struct_canfd(p_can_dev);
 #endif
     _init_ll_struct_filter(p_can_dev);
-
 }
 
 extern rt_err_t rt_hw_board_can_init(CM_CAN_TypeDef *CANx);
@@ -1371,8 +1360,7 @@ int rt_hw_can_init(void)
     uint32_t i = 0;
     for (; i < CAN_INDEX_MAX; i++)
     {
-        CAN_StructInit(&_g_can_dev_array[i].ll_init);
-        _init_struct_by_static_cfg(&_g_can_dev_array[i]);
+        _init_default_cfg(&_g_can_dev_array[i]);
 
         /* register CAN device */
         rt_hw_board_can_init(_g_can_dev_array[i].instance);
