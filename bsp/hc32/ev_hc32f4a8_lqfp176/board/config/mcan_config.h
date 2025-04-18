@@ -42,19 +42,19 @@ extern "C" {
 
 #ifdef RT_CAN_USING_CANFD
 #define MCAN_FD_SEL                     MCAN_FD_ISO_FD_BRS
-#define MCAN_TOTAL_FILTER_NUM           (26U)
-#define MCAN_STD_FILTER_NUM             (13U)                   /* Each standard filter element size is 4 bytes */
-#define MCAN_EXT_FILTER_NUM             (13U)                   /* Each extended filter element size is 8 bytes */
-#define MCAN_TX_FIFO_NUM                (6U)
-#define MCAN_RX_FIFO_NUM                (6U)
+#define MCAN_TOTAL_FILTER_NUM           (64U)
+#define MCAN_STD_FILTER_NUM             (32U)                   /* Each standard filter element size is 4 bytes */
+#define MCAN_EXT_FILTER_NUM             (32U)                   /* Each extended filter element size is 8 bytes */
+#define MCAN_TX_FIFO_NUM                (11U)
+#define MCAN_RX_FIFO_NUM                (12U)
 #define MCAN_DATA_FIELD_SIZE            (MCAN_DATA_SIZE_64BYTE) /* Each FIFO element size is 64+8 bytes */
 #else
 #define MCAN_FD_SEL                     MCAN_FD_CLASSICAL
-#define MCAN_TOTAL_FILTER_NUM           (32U)
-#define MCAN_STD_FILTER_NUM             (16U)                   /* Each standard filter element size is 4 bytes */
-#define MCAN_EXT_FILTER_NUM             (16U)                   /* Each extended filter element size is 8 bytes */
-#define MCAN_TX_FIFO_NUM                (26U)
-#define MCAN_RX_FIFO_NUM                (26U)
+#define MCAN_TOTAL_FILTER_NUM           (64U)
+#define MCAN_STD_FILTER_NUM             (32U)                   /* Each standard filter element size is 4 bytes */
+#define MCAN_EXT_FILTER_NUM             (32U)                   /* Each extended filter element size is 8 bytes */
+#define MCAN_TX_FIFO_NUM                (32U)
+#define MCAN_RX_FIFO_NUM                (64U)
 #define MCAN_DATA_FIELD_SIZE            (MCAN_DATA_SIZE_8BYTE)  /* Each FIFO element size is 8+8 bytes */
 #endif
 

@@ -234,7 +234,9 @@ static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt
  */
 static rt_ssize_t mcan_recvmsg(struct rt_can_device *device, void *buf, rt_uint32_t boxno);
 
+#ifdef RT_CAN_USING_CANFD
 static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt);
+#endif
 
 static const struct rt_can_ops m_mcan_ops =
 {
@@ -315,7 +317,6 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         if (cfg->baud_rate == m_mcan_cc_baud_rate[i].baud_rate)
         {
             hard->init_para.stcBitTime = m_mcan_cc_baud_rate[i].ll_bt;
-			mcan_copy_bt_to_cfg(cfg, &m_mcan_cc_baud_rate[i].ll_bt);
             break;
         }
     }
@@ -535,6 +536,7 @@ static rt_err_t mcan_control_set_priv(hc32_mcan_driver_t *driver, int cmd, void 
     return RT_EOK;
 }
 
+#ifdef RT_CAN_USING_CANFD
 static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt)
 {
     cfg->can_timing.prescaler = ll_bt->u32NominalPrescaler;
@@ -542,21 +544,21 @@ static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_ti
     cfg->can_timing.num_seg2 = ll_bt->u32NominalTimeSeg2;
     cfg->can_timing.num_sjw = ll_bt->u32NominalSyncJumpWidth;
 
-#ifdef RT_CAN_USING_CANFD
     cfg->canfd_timing.prescaler = ll_bt->u32DataPrescaler;
     cfg->canfd_timing.num_seg1 = ll_bt->u32DataTimeSeg1;
     cfg->canfd_timing.num_seg2 = ll_bt->u32DataTimeSeg2;
     cfg->canfd_timing.num_sjw = ll_bt->u32DataSyncJumpWidth;
     cfg->canfd_timing.num_sspoff = ll_bt->u32SspOffset;
-#endif
 }
+#endif
 
 static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *arg, struct can_configure *cfg)
 {
     rt_uint32_t i, len;
     rt_uint32_t argval = (rt_uint32_t)arg;
+#ifdef RT_CAN_USING_CANFD
     struct rt_can_bit_timing_config *timing_configs = NULL;
-
+#endif
     switch (cmd)
     {
 #ifdef RT_CAN_USING_CANFD
@@ -655,7 +657,6 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
             if (argval == m_mcan_cc_baud_rate[i].baud_rate)
             {
                 cfg->baud_rate = argval;
-                mcan_copy_bt_to_cfg(cfg, &m_mcan_cc_baud_rate[i].ll_bt);
                 return RT_EOK;
             }
         }

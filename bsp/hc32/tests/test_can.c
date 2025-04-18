@@ -256,7 +256,11 @@ void _msh_cmd_send_msg(int argc, char **argv)
         msg.id  = 0x300;
         msg.ide = RT_CAN_STDID;
         msg.rtr = RT_CAN_DTR;
+#ifdef BSP_USING_MCAN
+        msg.len = MCAN_DLC8;
+#else
         msg.len = CAN_DLC8;
+#endif
         for (u8Tick = 0; u8Tick < 8; u8Tick++)
         {
             msg.data[u8Tick] = u8Tick + 1 + 0xA0;
