@@ -59,7 +59,7 @@ extern "C" {
 #endif
 
 #ifdef BSP_USING_MCAN1
-#define MCAN1_NAME                      ("can1")
+#define MCAN1_NAME                      ("mcan1")
 #define MCAN1_WORK_MODE                 (RT_CAN_MODE_NORMAL)
 #define MCAN1_TX_PRIV_MODE              RT_CAN_MODE_NOPRIV      /* RT_CAN_MODE_NOPRIV: Tx FIFO mode; RT_CAN_MODE_PRIV: Tx priority mode */
 
@@ -77,7 +77,7 @@ extern "C" {
 #endif /* BSP_USING_MCAN1 */
 
 #ifdef BSP_USING_MCAN2
-#define MCAN2_NAME                      ("can2")
+#define MCAN2_NAME                      ("mcan2")
 #define MCAN2_WORK_MODE                 (RT_CAN_MODE_NORMAL)
 #define MCAN2_TX_PRIV_MODE              RT_CAN_MODE_NOPRIV      /* RT_CAN_MODE_NOPRIV: Tx FIFO mode; RT_CAN_MODE_PRIV: Tx priority mode */
 
