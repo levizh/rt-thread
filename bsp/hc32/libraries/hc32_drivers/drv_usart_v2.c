@@ -1127,7 +1127,7 @@ static void hc32_uart3_tc_irq_handler(void)
 
 #if defined (RT_SERIAL_USING_DMA)
 #if defined (BSP_UART3_RX_USING_DMA)
-#if defined (HC32F460) || defined (HC32F4A0)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A8)
 static void hc32_uart3_rxto_irq_handler(void)
 {
     /* enter interrupt */
@@ -1750,7 +1750,7 @@ static void hc32_uart_get_info(void)
     uart_obj[UART3_INDEX].serial.config = config;
     uart_obj[UART3_INDEX].serial.config.rx_bufsz = BSP_UART3_RX_BUFSIZE;
     uart_obj[UART3_INDEX].serial.config.tx_bufsz = BSP_UART3_TX_BUFSIZE;
-#if defined (HC32F460)
+#if defined (HC32F460) || defined (HC32F4A8)
 #ifdef BSP_UART3_RX_USING_DMA
     uart_obj[UART3_INDEX].uart_dma_flag |= RT_DEVICE_FLAG_DMA_RX;
     static struct dma_config uart3_dma_rx = UART3_DMA_RX_CONFIG;
