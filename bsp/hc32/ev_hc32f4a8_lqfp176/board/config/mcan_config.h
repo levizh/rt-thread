@@ -21,16 +21,6 @@ extern "C" {
 
 /***********************************************************************************************/
 /***********************************************************************************************/
-// The arguments of RT command RT_CAN_CMD_SET_CANFD
-#define MCAN_FD_CLASSICAL                   0       /* CAN classical */
-#define MCAN_FD_ISO_FD_NO_BRS               1       /* ISO CAN FD without BRS */
-#define MCAN_FD_ISO_FD_BRS                  2       /* ISO CAN FD with BRS */
-#define MCAN_FD_NON_ISO_FD_NO_BRS           3       /* non-ISO CAN FD without BRS */
-#define MCAN_FD_NON_ISO_FD_BRS              4       /* non-ISO CAN FD with BRS */
-
-#define MCAN_FD_ARG_MIN                     MCAN_FD_ISO_FD_NO_BRS
-#define MCAN_FD_ARG_MAX                     MCAN_FD_NON_ISO_FD_BRS
-
 /* The default configuration for MCANs. Users can modify the configurations based on the application.
    For the message RAM:
    1. MCAN1 and MCAN2 share 2048 bytes message RAM
@@ -59,7 +49,7 @@ extern "C" {
 #endif
 
 #ifdef BSP_USING_MCAN1
-#define MCAN1_NAME                      ("can1")
+#define MCAN1_NAME                      ("mcan1")
 #define MCAN1_WORK_MODE                 (RT_CAN_MODE_NORMAL)
 #define MCAN1_TX_PRIV_MODE              RT_CAN_MODE_NOPRIV      /* RT_CAN_MODE_NOPRIV: Tx FIFO mode; RT_CAN_MODE_PRIV: Tx priority mode */
 
@@ -77,7 +67,7 @@ extern "C" {
 #endif /* BSP_USING_MCAN1 */
 
 #ifdef BSP_USING_MCAN2
-#define MCAN2_NAME                      ("can2")
+#define MCAN2_NAME                      ("mcan2")
 #define MCAN2_WORK_MODE                 (RT_CAN_MODE_NORMAL)
 #define MCAN2_TX_PRIV_MODE              RT_CAN_MODE_NOPRIV      /* RT_CAN_MODE_NOPRIV: Tx FIFO mode; RT_CAN_MODE_PRIV: Tx priority mode */
 
@@ -344,12 +334,12 @@ extern "C" {
 
 #ifdef RT_CAN_USING_CANFD
 #define MCAN1_BAUD_RATE_CFG             MCAN_FD_CFG_1M_4M
-#define MCAN1_NOMINAL_BAUD_RATE         MCANFD_NOMINAL_BAUD_1M
-#define MCAN1_DATA_BAUD_RATE            MCANFD_DATA_BAUD_4M
+#define MCAN1_NOMINAL_BAUD_RATE         CANFD_DATA_BAUD_1M
+#define MCAN1_DATA_BAUD_RATE            CANFD_DATA_BAUD_4M
 
 #define MCAN2_BAUD_RATE_CFG             MCAN_FD_CFG_1M_4M
-#define MCAN2_NOMINAL_BAUD_RATE         MCANFD_NOMINAL_BAUD_1M
-#define MCAN2_DATA_BAUD_RATE            MCANFD_DATA_BAUD_4M
+#define MCAN2_NOMINAL_BAUD_RATE         CANFD_DATA_BAUD_1M
+#define MCAN2_DATA_BAUD_RATE            CANFD_DATA_BAUD_4M
 
 #else
 #define MCAN1_BAUD_RATE_CFG             MCAN_CC_CFG_1M

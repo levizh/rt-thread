@@ -219,11 +219,7 @@ void _msh_cmd_send_msg(int argc, char **argv)
         msg.id  = 0x300;
         msg.ide = RT_CAN_STDID;
         msg.rtr = RT_CAN_DTR;
-#ifdef BSP_USING_MCAN
-        msg.len = MCAN_DLC64;
-#else
-        msg.len = CAN_DLC64;
-#endif
+        msg.len = 0xFU;
         msg.fd_frame = 1;
         msg.brs = 1;
         for (u8Tick = 0; u8Tick < 64; u8Tick++)
@@ -329,7 +325,7 @@ int can_sample(int argc, char **argv)
 
 #ifdef RT_CAN_USING_CANFD
         /* 使能CAN_FD BRS功能 */
-        res = rt_device_control(can_dev, RT_CAN_CMD_SET_CANFD, (void *)CAN_FD_ISO_FD_BRS);
+        res = rt_device_control(can_dev, RT_CAN_CMD_SET_CANFD, (void *)CAN_FRAME_ISO_FD);
         RT_ASSERT(res == RT_EOK);
         res = rt_device_control(can_dev, RT_CAN_CMD_SET_BAUD_FD, (void *)CANFD_DATA_BAUD_4M);
         RT_ASSERT(res == RT_EOK);

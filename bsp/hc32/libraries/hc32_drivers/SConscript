@@ -41,7 +41,7 @@ if GetDepend(['RT_USING_DAC']):
 if GetDepend(['RT_USING_CAN']):
     if GetDepend(['BSP_USING_CAN']):
         src += ['drv_can.c']
-    if GetDepend(['BSP_USING_CAN']):
+    if GetDepend(['BSP_USING_MCAN']):
         src += ['drv_mcan.c']
 
 if GetDepend(['RT_USING_RTC']):

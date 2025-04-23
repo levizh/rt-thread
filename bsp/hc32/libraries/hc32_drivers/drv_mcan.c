@@ -69,11 +69,11 @@ typedef struct mcan_baud_rate_struct
 #define IS_MCAN_NOMINAL_BAUD_RATE(baud)     ((baud) == (CAN500kBaud) || \
                                              (baud) == (CAN1MBaud))
 
-#define IS_MCAN_DATA_BAUD_RATE(baud)        ((baud) == (MCANFD_DATA_BAUD_1M) || \
-                                             (baud) == (MCANFD_DATA_BAUD_2M) || \
-                                             (baud) == (MCANFD_DATA_BAUD_4M) || \
-                                             (baud) == (MCANFD_DATA_BAUD_5M) || \
-                                             (baud) == (MCANFD_DATA_BAUD_8M))
+#define IS_MCAN_DATA_BAUD_RATE(baud)        ((baud) == (CANFD_DATA_BAUD_1M) || \
+                                             (baud) == (CANFD_DATA_BAUD_2M) || \
+                                             (baud) == (CANFD_DATA_BAUD_4M) || \
+                                             (baud) == (CANFD_DATA_BAUD_5M) || \
+                                             (baud) == (CANFD_DATA_BAUD_8M))
 
 #define IS_CAN_VALID_ID(ide, id)            ((((ide) == 0) && ((id) <= MCAN_STD_ID_MASK)) || \
                                              (((ide) == 1) && ((id) <= MCAN_EXT_ID_MASK)))
@@ -94,16 +94,16 @@ typedef struct mcan_baud_rate_struct
 #ifdef RT_CAN_USING_CANFD
 static const mcan_baud_rate_t m_mcan_fd_baud_rate[] =
 {
-    {CAN500kBaud, MCANFD_DATA_BAUD_1M, MCAN_FD_CFG_500K_1M},
-    {CAN500kBaud, MCANFD_DATA_BAUD_2M, MCAN_FD_CFG_500K_2M},
-    {CAN500kBaud, MCANFD_DATA_BAUD_4M, MCAN_FD_CFG_500K_4M},
-    {CAN500kBaud, MCANFD_DATA_BAUD_5M, MCAN_FD_CFG_500K_5M},
-    {CAN500kBaud, MCANFD_DATA_BAUD_8M, MCAN_FD_CFG_500K_8M},
-    {CAN1MBaud, MCANFD_DATA_BAUD_1M, MCAN_FD_CFG_1M_1M},
-    {CAN1MBaud, MCANFD_DATA_BAUD_2M, MCAN_FD_CFG_1M_2M},
-    {CAN1MBaud, MCANFD_DATA_BAUD_4M, MCAN_FD_CFG_1M_4M},
-    {CAN1MBaud, MCANFD_DATA_BAUD_5M, MCAN_FD_CFG_1M_5M},
-    {CAN1MBaud, MCANFD_DATA_BAUD_8M, MCAN_FD_CFG_1M_8M},
+    {CAN500kBaud, CANFD_DATA_BAUD_1M, MCAN_FD_CFG_500K_1M},
+    {CAN500kBaud, CANFD_DATA_BAUD_2M, MCAN_FD_CFG_500K_2M},
+    {CAN500kBaud, CANFD_DATA_BAUD_4M, MCAN_FD_CFG_500K_4M},
+    {CAN500kBaud, CANFD_DATA_BAUD_5M, MCAN_FD_CFG_500K_5M},
+    {CAN500kBaud, CANFD_DATA_BAUD_8M, MCAN_FD_CFG_500K_8M},
+    {CAN1MBaud, CANFD_DATA_BAUD_1M, MCAN_FD_CFG_1M_1M},
+    {CAN1MBaud, CANFD_DATA_BAUD_2M, MCAN_FD_CFG_1M_2M},
+    {CAN1MBaud, CANFD_DATA_BAUD_4M, MCAN_FD_CFG_1M_4M},
+    {CAN1MBaud, CANFD_DATA_BAUD_5M, MCAN_FD_CFG_1M_5M},
+    {CAN1MBaud, CANFD_DATA_BAUD_8M, MCAN_FD_CFG_1M_8M},
 };
 #else
 static const mcan_baud_rate_t m_mcan_cc_baud_rate[] =
@@ -1168,7 +1168,7 @@ static void init_can_cfg(hc32_mcan_driver_t *driver)
     can_cfg.maxhdr = MCAN_TOTAL_FILTER_NUM;
 #endif
 #ifdef RT_CAN_USING_CANFD
-    can_cfg.baud_rate_fd = MCANFD_DATA_BAUD_4M;
+    can_cfg.baud_rate_fd = CANFD_DATA_BAUD_4M;
     can_cfg.enable_canfd = MCAN_FD_SEL;
 #endif
     can_cfg.sndboxnumber = MCAN_TX_FIFO_NUM;

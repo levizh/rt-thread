@@ -809,7 +809,9 @@ static rt_err_t _canfd_control(can_device *p_can_dev, int cmd, void *arg)
         CAN_Init(p_can_dev->instance, &p_can_dev->ll_init);
         p_can_dev->rt_can.config.enable_canfd = argval;
         argval = (argval > CAN_FRAME_CLASSIC) ? ENABLE : DISABLE;
+#if defined(HC32F472) || defined(HC32F4A8)
         CAN_FD_Cmd(p_can_dev->instance, (en_functional_state_t)argval);
+#endif
         break;
     case RT_CAN_CMD_SET_BAUD_FD:
         argval = (rt_uint32_t) arg;
