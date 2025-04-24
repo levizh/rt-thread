@@ -78,7 +78,9 @@
                                                              baud == (CANFD_DATA_BAUD_4M) ||                   \
                                                              baud == (CANFD_DATA_BAUD_5M) ||                   \
                                                              baud == (CANFD_DATA_BAUD_8M))
-#define IS_CAN_FRAME(cmd)                               ((cmd) <= CAN_FRAME_NON_ISO_FD)
+#define IS_CAN_FRAME(frame)                                  ((frame) == CAN_FRAME_CLASSIC ||                  \
+                                                              (frame) == CAN_FRAME_ISO_FD  ||                  \
+                                                              (frame) == CAN_FRAME_NON_ISO_FD)
 
 #define CAN_BIT_TIMING_CANFD_ARBITRATION                    (1U << 1)
 #define CAN_BIT_TIMING_CANFD_DATA                           (1U << 2)
