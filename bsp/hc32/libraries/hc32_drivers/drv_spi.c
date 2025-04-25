@@ -39,9 +39,9 @@
 
 /* SPI max division */
 #if defined(HC32F4A0) || defined(HC32F460)
-#define SPI_MAX_DIV_VAL                 (0x7U)  /* Div256 */
+    #define SPI_MAX_DIV_VAL                 (0x7U)  /* Div256 */
 #elif defined(HC32F448) || defined(HC32F472) || defined(HC32F4A8)
-#define SPI_MAX_DIV_VAL                 (0x39U)
+    #define SPI_MAX_DIV_VAL                 (0x39U)
 #endif
 
 #ifdef BSP_SPI_USING_DMA
@@ -213,9 +213,12 @@ static rt_err_t hc32_spi_init(struct hc32_spi *spi_drv, struct rt_spi_configurat
 #if defined(HC32F4A0) || defined(HC32F460)
     stcSpiInit.u32BaudRatePrescaler = (u32Cnt << SPI_CFG2_MBR_POS);
 #elif defined(HC32F448) || defined(HC32F472) || defined(HC32F4A8)
-    if (u32Cnt <= 15U) {
+    if (u32Cnt <= 15U)
+    {
         stcSpiInit.u32BaudRatePrescaler = (u32Cnt << SPI_CFG1_CLKDIV_POS);
-    } else {
+    }
+    else
+    {
         stcSpiInit.u32BaudRatePrescaler = (((7U + ((u32Cnt - 15U) & 0x07U)) << SPI_CFG1_CLKDIV_POS) | ((1U + ((u32Cnt - 15U) >> 3U)) << SPI_CFG2_MBR_POS));
     }
 #endif

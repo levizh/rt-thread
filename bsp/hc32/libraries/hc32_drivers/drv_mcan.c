@@ -235,7 +235,7 @@ static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt
 static rt_ssize_t mcan_recvmsg(struct rt_can_device *device, void *buf, rt_uint32_t boxno);
 
 #ifdef RT_CAN_USING_CANFD
-static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt);
+    static void mcan_copy_bt_to_cfg(struct can_configure *cfg, const stc_mcan_bit_time_config_t *ll_bt);
 #endif
 
 static const struct rt_can_ops m_mcan_ops =
@@ -297,10 +297,10 @@ static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configur
         for (i = 0; i < len; i++)
         {
             if ((cfg->baud_rate == m_mcan_fd_baud_rate[i].baud_rate) && \
-                (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
+                    (cfg->baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 hard->init_para.stcBitTime = m_mcan_fd_baud_rate[i].ll_bt;
-				mcan_copy_bt_to_cfg(cfg, &m_mcan_fd_baud_rate[i].ll_bt);
+                mcan_copy_bt_to_cfg(cfg, &m_mcan_fd_baud_rate[i].ll_bt);
                 break;
             }
         }
@@ -577,7 +577,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         for (i = 0; i < len; i++)
         {
             if ((argval == m_mcan_fd_baud_rate[i].baud_rate) && \
-                (driver->can_device.config.baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
+                    (driver->can_device.config.baud_rate_fd == m_mcan_fd_baud_rate[i].baud_rate_fd))
             {
                 cfg->baud_rate = argval;
                 cfg->baud_rate_fd = driver->can_device.config.baud_rate_fd;
@@ -601,7 +601,7 @@ static rt_err_t mcan_control_set_fd(hc32_mcan_driver_t *driver, int cmd, void *a
         for (i = 0; i < len; i++)
         {
             if ((argval == m_mcan_fd_baud_rate[i].baud_rate_fd) && \
-                (driver->can_device.config.baud_rate == m_mcan_fd_baud_rate[i].baud_rate))
+                    (driver->can_device.config.baud_rate == m_mcan_fd_baud_rate[i].baud_rate))
             {
                 cfg->baud_rate_fd = argval;
                 cfg->baud_rate = driver->can_device.config.baud_rate;
@@ -1041,10 +1041,12 @@ static void mcan_irq_config(hc32_mcan_config_t *hard)
         NVIC_EnableIRQ(hard->int1_cfg.irq_num);
     }
 #elif defined(HC32F4A8)
-    if (hard->int0_sel != 0) {
+    if (hard->int0_sel != 0)
+    {
         hc32_install_irq_handler(&hard->int0_cfg, hard->irq_callback0, RT_TRUE);
     }
-    if (hard->int1_sel != 0) {
+    if (hard->int1_sel != 0)
+    {
         hc32_install_irq_handler(&hard->int1_cfg, hard->irq_callback1, RT_TRUE);
     }
 #endif
