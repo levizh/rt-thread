@@ -53,16 +53,6 @@ menu "Onboard Peripheral Drivers"
                 config ETH_INTERFACE_USING_RMII
                     bool "ETH Communication USING RMII"
             endchoice
-
-            menuconfig ETH_PHY_USING_INTERRUPT_MODE
-                bool "Enable ETH PHY interrupt mode"
-                default n
-                if ETH_PHY_USING_INTERRUPT_MODE
-                    config ETH_PHY_INTERRUPT_PIN
-                        int "ETH PHY Interrupt pin number"
-                        range 1 176
-                        default 16
-                endif
         endif
 
     config BSP_USING_EXMC
