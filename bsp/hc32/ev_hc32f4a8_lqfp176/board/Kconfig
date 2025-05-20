@@ -654,6 +654,9 @@ menu "On-chip Peripheral Drivers"
 
                 config BSP_RTC_USING_LRC
                     bool "RTC USING LRC"
+
+                config BSP_RTC_USING_XTAL_DIV
+                    bool "RTC Using XTAL Division"
             endchoice
         endif
 
