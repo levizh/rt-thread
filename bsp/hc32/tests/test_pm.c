@@ -53,6 +53,9 @@
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP0)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP00)
 
+    #define LED_GREEN_PORT                      (GPIO_PORT_C)
+    #define LED_GREEN_PIN                       (GPIO_PIN_09)
+
     #define MCO_PORT                            (GPIO_PORT_A)
     #define MCO_PIN                             (GPIO_PIN_08)
     #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
@@ -68,6 +71,9 @@
     #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP01)
+
+    #define LED_GREEN_PORT                      (GPIO_PORT_D)
+    #define LED_GREEN_PIN                       (GPIO_PIN_04)
 
     #define MCO_PORT                            (GPIO_PORT_A)
     #define MCO_PIN                             (GPIO_PIN_08)
@@ -85,6 +91,9 @@
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP12)
 
+    #define LED_GREEN_PORT                      (GPIO_PORT_A)
+    #define LED_GREEN_PIN                       (GPIO_PIN_02)
+
     #define MCO_PORT                            (GPIO_PORT_A)
     #define MCO_PIN                             (GPIO_PIN_08)
     #define MCO_GPIO_FUNC                       (GPIO_FUNC_1)
@@ -100,6 +109,9 @@
     #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ5)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP11)
+
+    #define LED_GREEN_PORT                      (GPIO_PORT_C)
+    #define LED_GREEN_PIN                       (GPIO_PIN_09)
 
 #endif
 
@@ -269,6 +281,7 @@ static void  _notify_func(uint8_t event, uint8_t mode, void *data)
         {
             return;
         }
+        GPIO_ResetPins(LED_GREEN_PORT, LED_GREEN_PIN);
         sleep_enter_func[mode]();
     }
     else
