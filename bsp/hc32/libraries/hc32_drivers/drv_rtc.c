@@ -198,11 +198,25 @@ static rt_err_t hc32_rtc_set_time_stamp(time_t time_stamp)
     #endif
 #endif
 
+#if defined(HC32F4A8)
+static en_flag_status_t VBAT_PowerDownCheck(void)
+{
+    en_flag_status_t ret;
+    ret = PWC_VBAT_GetStatus(PWC_FLAG_VBAT_POR);
+    if (SET == ret) {
+        PWC_VBAT_ClearStatus(PWC_FLAG_VBAT_POR);
+    }
+    return ret;
+}
+#endif
+
 static rt_err_t _rtc_init(void)
 {
     stc_rtc_init_t stcRtcInit;
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined(HC32F4A8)
+    if ((SET == VBAT_PowerDownCheck()) || (LL_OK != _bakup_reg_check()) || (LL_OK != _hc32_rtc_rw_check()))
+#elif defined(HC32F4A0)
     if ((LL_OK != _bakup_reg_check()) || (LL_OK != _hc32_rtc_rw_check()))
 #elif  defined(HC32F460) || defined(HC32F448) || defined(HC32F472)
     if (DISABLE == RTC_GetCounterState())
