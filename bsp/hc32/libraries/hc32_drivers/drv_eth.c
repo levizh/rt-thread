@@ -30,9 +30,9 @@
 #define MAX_ADDR_LEN                    6
 
 #if defined(HC32F4A0)
-#define BSP_PHY_ADDR_HANDLE             (&EthHandle)
+    #define BSP_PHY_ADDR_HANDLE             (&EthHandle)
 #elif defined(HC32F4A8)
-#define BSP_PHY_ADDR_HANDLE             ETH_PHY_ADDR
+    #define BSP_PHY_ADDR_HANDLE             ETH_PHY_ADDR
 #endif
 
 /*******************************************************************************
@@ -488,7 +488,7 @@ static void hc32_phy_monitor_thread(void *parameter)
     /* phy search */
     while (phy_addr == 0xFF)
     {
-        rt_uint16_t i, temp;
+        rt_uint16_t i, temp=0U;
 
         for (i = 0; i <= 0x1F; i++)
         {

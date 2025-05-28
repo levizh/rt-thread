@@ -34,9 +34,9 @@
 
 支持开发板以及集成 SoC 芯片信息如下
 
-- milk-v duo: [https://milkv.io/duo](https://milkv.io/duo)，SoC 采用 CV1800B。
-- milk-v duo256m: [https://milkv.io/duo256m](https://milkv.io/docs/duo/getting-started/duo256m)，SoC 采用 SG2002（原 CV181xC）。
-- milk-v duos: [https://milkv.io/duos](https://milkv.io/docs/duo/getting-started/duos)，SoC 采用 SG2000（原 CV181xH）。
+- Milk-V Duo: <https://milkv.io/docs/duo/getting-started/duo>，SoC 采用 CV1800B。
+- Milk-V Duo 256m: <https://milkv.io/docs/duo/getting-started/duo256m>，SoC 采用 SG2002（原 CV181xC）。
+- Milk-V Duo S: <https://milkv.io/docs/duo/getting-started/duos>，SoC 采用 SG2000（原 CV181xH）。
 
 Duo 家族开发板采用 CV18xx 系列芯片。芯片的工作模式总结如下：
 
@@ -61,8 +61,6 @@ Duo 家族开发板采用 CV18xx 系列芯片。芯片的工作模式总结如�
 
 由于开发板默认运行的大核为 "cv18xx_risc-v", 所以本文将主要介绍 "cv18xx_risc-v" 和 "c906-little" 的构建和使用。有关 "cv18xx_aarch64" 的介绍请参考 [这里](./cv18xx_aarch64/README.md)。
 
-
-
 ## 3.1. 驱动支持列表
 
 | 驱动  | 支持情况 | 备注              |
@@ -71,7 +69,7 @@ Duo 家族开发板采用 CV18xx 系列芯片。芯片的工作模式总结如�
 | gpio  | 支持     |  |
 | i2c   | 支持     |  |
 | adc   | 支持     |  |
-| spi   | 支持     | 默认CS引脚，每个数据之间CS会拉高，请根据时序选择GPIO作为CS。若读取数据，tx需持续dummy数据。|
+| spi   | 支持     | 默认 CS 引脚，每个数据之间 CS 会拉高，请根据时序选择 GPIO 作为 CS。若读取数据，tx 需持续 dummy 数据。|
 | pwm   | 支持     |  |
 | timer | 支持     |  |
 | wdt   | 支持     |  |
@@ -79,7 +77,9 @@ Duo 家族开发板采用 CV18xx 系列芯片。芯片的工作模式总结如�
 | eth   | 支持     |  |
 
 ## 3.2. 默认串口控制台管脚配置
+
 不同开发板 uart 输出管脚不同，默认配置可能导致串口无法正常显示，请根据开发板 uart 通过 `scons --menuconfig` 配置对应 uart 的输出管脚。
+
 ```shell
 $ scons --menuconfig
   General Drivers Configuration  --->
@@ -89,27 +89,25 @@ $ scons --menuconfig
           (IIC0_SCL) uart1 tx pin name
 ```
 
-| 开发板 | 大核 uart0 默认管脚 | 小核 uart1 默认管脚 |
-| ------ | ---- | ---- |
-| Duo   |  rx: UART0_RX<br>tx: UART0_TX | rx: IIC0_SDA<br>tx: IIC0_SCL |
-| Duo 256M | rx: UART0_RX<br>tx: UART0_TX | rx: IIC0_SDA<br>tx: IIC0_SCL |
-| Duo S  | rx: UART0_RX<br>tx: UART0_TX | rx: JTAG_CPU_TCK<br>tx: JTAG_CPU_TMS |
+| 开发板   | 大核 uart0 默认管脚          | 小核 uart1 默认管脚                  |
+| -------- | ---------------------------- | ------------------------------------ |
+| Duo      | rx: UART0_RX<br>tx: UART0_TX | rx: IIC0_SDA<br>tx: IIC0_SCL         |
+| Duo 256M | rx: UART0_RX<br>tx: UART0_TX | rx: IIC0_SDA<br>tx: IIC0_SCL         |
+| Duo S    | rx: UART0_RX<br>tx: UART0_TX | rx: JTAG_CPU_TCK<br>tx: JTAG_CPU_TMS |
 
-如需配置其他管脚可参考 [https://milkv.io/zh/docs/duo/getting-started](https://milkv.io/zh/docs/duo/getting-started) 对应型号的开发板。
-
+如需配置其他管脚可参考对应型号的开发板信息 <https://milkv.io/docs/duo/overview>。
 
 # 4. 编译
 
-## 4.1. Toolchain 下载
+**注：当前 bsp 只支持 Linux 编译，推荐 ubuntu 22.04**
 
-> 注：当前 bsp 只支持 Linux 编译，推荐 ubuntu 22.04
+## 4.1. Toolchain 下载
 
 1. 用于编译 RT-Thread 标准版的工具链是 `riscv64-unknown-elf-gcc` 下载地址  [https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1705395512373/Xuantie-900-gcc-elf-newlib-x86_64-V2.8.1-20240115.tar.gz](https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1705395512373/Xuantie-900-gcc-elf-newlib-x86_64-V2.8.1-20240115.tar.gz)
 
 2. 用于编译 RT-Thread Smart 版的工具链是 `riscv64-unknown-linux-musl-gcc` 下载地址 [https://github.com/RT-Thread/toolchains-ci/releases/download/v1.7/riscv64-linux-musleabi_for_x86_64-pc-linux-gnu_latest.tar.bz2](https://github.com/RT-Thread/toolchains-ci/releases/download/v1.7/riscv64-linux-musleabi_for_x86_64-pc-linux-gnu_latest.tar.bz2)
 
-
-正确解压后，导出如下环境变量，建议将这些 export 命令写入 `~/.bashrc`。**并注意在使用不同工具链时确保导出正确的一组环境变量**。
+正确解压后(假设解压到 `/opt` 下, 也可以自己设定解压后的目录)，导出如下环境变量，建议将这些 export 命令写入 `~/.bashrc`。**并注意在使用不同工具链时确保导出正确的一组环境变量**。
 
 构建 RT-Thread 标准版时按照以下配置：
 
@@ -128,17 +126,18 @@ export RTT_EXEC_PATH=/opt/riscv64-linux-musleabi_for_x86_64-pc-linux-gnu/bin
 ```
 
 ## 4.2. 依赖安装
+
 ```shell
-$ sudo apt install -y scons libncurses5-dev device-tree-compiler
+$ sudo apt install -y scons libncurses5-dev device-tree-compiler u-boot-tools xz-utils
 ```
+
+其中 u-boot-tools 包含了打包需要的 mkimage, xz-utils 包含了打包需要的 lzma。
 
 ## 4.3. 构建
 
 异构芯片需单独编译每个核的 OS，在大/小核对应的目录下，依次执行:
 
 ### 4.3.1. 开发板选择
-
-   Linux平台下，可以先执行：
 
 ```shell
 $ scons --menuconfig
@@ -149,9 +148,7 @@ $ scons --menuconfig
 ```shell
 Board Type (milkv-duo)  --->
     ( ) milkv-duo
-    ( ) milkv-duo-spinor
     (X) milkv-duo256m
-    ( ) milkv-duo256m-spinor
     ( ) milkv-duos
 ```
 
@@ -166,11 +163,11 @@ RT-Thread Kernel  --->
     [*] Enable RT-Thread Smart (microkernel on kernel/userland)
 ```
 
-**注意检查内核虚拟起始地址的配置，确保为 `0xFFFFFFC000200000`。**
+**注意检查内核虚拟起始地址的配置，确保为 `0xFFFFFFC000000000`。**
 
 ```shell
     RT-Thread Kernel  --->
-(0xFFFFFFC000200000) The virtural address of kernel start
+(0xFFFFFFC000000000) The virtural address of kernel start
     RT-Thread Components  --->
 ```
 
@@ -289,7 +286,7 @@ lwIP-2.1.2 initialized!
 found part[0], begin: 1048576, size: 128.0MB
 found part[1], begin: 135266304, size: 28.707GB
 [I/app.filesystem] device 'sd1' is mounted to '/' as FAT
-Hello RT-Smart!
+Hello RISC-V/C906B !
 msh />[E/sal.skt] not find network interface device by protocol family(1).
 [E/sal.skt] SAL socket protocol family input failed, return error -3.
 / # ls
@@ -315,7 +312,7 @@ lwIP-2.1.2 initialized!
 found part[0], begin: 1048576, size: 128.0MB
 found part[1], begin: 135266304, size: 28.707GB
 [I/app.filesystem] device 'sd1' is mounted to '/' as EXT
-Hello RT-Smart!
+Hello RISC-V/C906B !
 msh />[E/sal.skt] not find network interface device by protocol family(1).
 [E/sal.skt] SAL socket protocol family input failed, return error -3.
 / # ls 
@@ -353,8 +350,16 @@ $ sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 
 3. 如发现切换开发板编译正常，但无法正常打包，请切换至自动下载的 `cvi_bootloader` 目录，并手工运行 `git pull` 更新，或删除该目录后重新自动下载。
 
+4. 有关配置 pinmux（管脚复用）的通用方法, 以 duo256m 配置大核（`bsp/cvitek/cv18xx_risc-v`）的 UART0 输出为例。
+   - duo256m 控制台默认使用 UART0。查看 [duo256m 的板级输出引脚定义](https://milkv.io/docs/duo/getting-started/duo256m#gpio-pinout)，找到 UART0 的 `UART0_RX` 和 `UART0_TX` 对应板上引脚为 `GP13`（`XGPIOA[17]`） 和 `GP12`（`XGPIOA[16]`）。这也是我们需要连接串口线的引脚。
+   - duo256m 使用的 SoC 为 SG2002。查看 [SG2002 TRM 手册的 "CHAPTER 10 管脚复用与控制"](https://github.com/sophgo/sophgo-doc/releases)，TRM 让我们查看在线表格: <https://github.com/sophgo/sophgo-hardware/blob/master/SG200X/04_SG2002/04_SG2002_PINOUT.xls>。在 “1. 管脚信息表(QFN)” 那一页，对于 `UART0_RX`，我们搜索 “`XGPIOA[17]`” 可以找到其所在行的 "Pin Name" 那一列的值是 “`UART0_RX`”；对于 `UART0_TX`，我们搜索 “XGPIOA[16]” 可以找到其所在行的 "Pin Name" 那一列的值是 “`UART0_TX`”。***注意，这里对于 UART0，duo256m 的 “Pin Name” 和板上引脚中的 UART 信息字符串正好一致，但其他的外设就不一定了。具体的 “Pin Name” 以 xls 表格上的为准***。
+   - 执行 `scons --menuconfig`, 进入 “(Top) → General Drivers Configuration → Using UART”，设置 “uart0 rx pin name” 为 “UART0_RX”；设置 “uart0 tx pin name” 为 “UART0_TX”。这也是目前默认的配置。
+
 # 8. 联系人信息
 
-维护人：[flyingcys](https://github.com/flyingcys)
+维护人：
+
+- [flyingcys](https://github.com/flyingcys)
+- Chen Wang <unicorn_wang@outlook.com>
 
 更多信息请参考 [https://riscv-rtthread-programming-manual.readthedocs.io](https://riscv-rtthread-programming-manual.readthedocs.io)

@@ -25,7 +25,7 @@
 #define DAC_MAX_OUTPUT_VALUE            4095
 
 #if (defined (HC32F4A8) || defined (HC32F4A0)) && defined (BSP_USING_DAC2)
-extern void EthPhyDisable(void);
+    extern void EthPhyDisable(void);
 #endif /* HC32F4A8 && BSP_USING_DAC2 */
 
 static int dac_vol_sample(int argc, char *argv[])

@@ -203,7 +203,8 @@ static en_flag_status_t VBAT_PowerDownCheck(void)
 {
     en_flag_status_t ret;
     ret = PWC_VBAT_GetStatus(PWC_FLAG_VBAT_POR);
-    if (SET == ret) {
+    if (SET == ret)
+    {
         PWC_VBAT_ClearStatus(PWC_FLAG_VBAT_POR);
     }
     return ret;
