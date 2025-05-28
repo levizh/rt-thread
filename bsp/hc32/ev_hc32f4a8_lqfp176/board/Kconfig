@@ -590,7 +590,7 @@ menu "On-chip Peripheral Drivers"
         endif
 
     menuconfig RT_USING_CAN_MCAN
-        bool "Enable CAN/MAN"
+        bool "Enable CAN/MCAN"
         select RT_USING_CAN
         select RT_CAN_USING_HDR
         select BSP_USING_TCA9539
