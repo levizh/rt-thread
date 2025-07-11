@@ -1,5 +1,5 @@
 <project>
-  <fileVersion>2</fileVersion>
+  <fileVersion>3</fileVersion>
   <configuration>
     <name>Debug</name>
     <toolchain>
@@ -10,7 +10,7 @@
       <name>General</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <version>22</version>
+        <version>31</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -26,40 +26,20 @@
           <state>build\List</state>
         </option>
         <option>
-          <name>Variant</name>
-          <version>21</version>
-          <state>39</state>
-        </option>
-        <option>
           <name>GEndianMode</name>
           <state>0</state>
         </option>
         <option>
-          <name>Input variant</name>
-          <version>3</version>
-          <state>0</state>
-        </option>
-        <option>
           <name>Input description</name>
-          <state>Automatic choice of formatter.</state>
-        </option>
-        <option>
-          <name>Output variant</name>
-          <version>2</version>
-          <state>0</state>
+          <state>Automatic choice of formatter, without multibyte support.</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Automatic choice of formatter.</state>
+          <state>Automatic choice of formatter, without multibyte support.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
           <state>0</state>
-        </option>
-        <option>
-          <name>FPU</name>
-          <version>5</version>
-          <state>7</state>
         </option>
         <option>
           <name>OGCoreOrChip</name>
@@ -85,7 +65,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.40.2.8567</state>
+          <state>8.40.2.22864</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -97,7 +77,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>GD32F303xE	GD GD32F303xE</state>
+          <state>GD32E503xE	GD GD32E503xE</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -131,17 +111,12 @@
         </option>
         <option>
           <name>RTConfigPath2</name>
-          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Full.h</state>
-        </option>
-        <option>
-          <name>GFPUCoreSlave</name>
-          <version>21</version>
-          <state>39</state>
+          <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>21</version>
-          <state>39</state>
+          <version>27</version>
+          <state>59</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
@@ -155,23 +130,104 @@
           <name>GRuntimeLibThreads</name>
           <state>0</state>
         </option>
+        <option>
+          <name>CoreVariant</name>
+          <version>27</version>
+          <state>59</state>
+        </option>
+        <option>
+          <name>GFPUDeviceSlave</name>
+          <state>GD32E503xE	GD GD32E503xE</state>
+        </option>
+        <option>
+          <name>FPU2</name>
+          <version>0</version>
+          <state>6</state>
+        </option>
+        <option>
+          <name>NrRegs</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>NEON</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GFPUCoreSlave2</name>
+          <version>27</version>
+          <state>59</state>
+        </option>
+        <option>
+          <name>OGCMSISPackSelectDevice</name>
+        </option>
+        <option>
+          <name>OgLibHeap</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGLibAdditionalLocale</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGPrintfVariant</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGPrintfMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGScanfVariant</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGScanfMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GenLocaleTags</name>
+          <state />
+        </option>
+        <option>
+          <name>GenLocaleDisplayOnly</name>
+          <state />
+        </option>
+        <option>
+          <name>DSPExtension</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>TrustZone</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>TrustZoneModes</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICCARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>31</version>
+        <version>35</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
+          <state />
           <state>CLOCKS_PER_SEC=RT_TICK_PER_SECOND</state>
           <state>RT_USING_DLIBC</state>
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
-          <state>GD32F30X_HD</state>
+          <state>GD32E50X</state>
+          <state>GD32E50X_HD</state>
           <state>__RTTHREAD__</state>
+          <state>USE_STDPERIPH_DRIVER</state>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>__RT_IPC_SOURCE__</state>
           <state>__RT_KERNEL_SOURCE__</state>
@@ -270,10 +326,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>CCMultibyteSupport</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>CCDiagWarnAreErr</name>
           <state>0</state>
         </option>
@@ -303,24 +355,27 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\include</state>
-          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\cortex-m4</state>
-          <state>$PROJ_DIR$\..\libraries\gd32_drivers</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
+          <state />
           <state>$PROJ_DIR$\.</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\epoll</state>
-          <state>$PROJ_DIR$\applications</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\ipc</state>
-          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x</state>
           <state>$PROJ_DIR$\board</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\finsh</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\eventfd</state>
           <state>$PROJ_DIR$\..\..\..\..\include</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\epoll</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\ipc</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\drivers\smp_call</state>
+          <state>$PROJ_DIR$\..\libraries\gd32_drivers</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Include</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\drivers\phy</state>
+          <state>$PROJ_DIR$\applications</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x\GD\GD32E50x\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\poll</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\eventfd</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\finsh</state>
           <state>$PROJ_DIR$\..\..\..\..\components\drivers\include</state>
         </option>
         <option>
@@ -330,10 +385,6 @@
         <option>
           <name>CCCodeSection</name>
           <state>.text</state>
-        </option>
-        <option>
-          <name>IInterwork2</name>
-          <state>0</state>
         </option>
         <option>
           <name>IProcessorMode2</name>
@@ -387,18 +438,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>IccCppDialect</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>IccExceptions</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>IccRTTI</name>
-          <state>1</state>
-        </option>
-        <option>
           <name>IccStaticDestr</name>
           <state>1</state>
         </option>
@@ -431,13 +470,41 @@
           <name>CCGuardCalls</name>
           <state>1</state>
         </option>
+        <option>
+          <name>CCEncSource</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccExceptions2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccRTTI2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OICompilerExtraOption</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>AARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>9</version>
+        <version>10</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -566,10 +633,6 @@
           <state>$FILE_BNAME$.o</state>
         </option>
         <option>
-          <name>AMultibyteSupport</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>ALimitErrorsCheck</name>
           <state>0</state>
         </option>
@@ -617,7 +680,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>project.srec</state>
+          <state>template.srec</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -655,7 +718,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>16</version>
+        <version>23</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -927,7 +990,7 @@
         </option>
         <option>
           <name>CrcAlgorithm</name>
-          <version>0</version>
+          <version>1</version>
           <state>1</state>
         </option>
         <option>
@@ -938,6 +1001,58 @@
         <option>
           <name>IlinkThreadsSlave</name>
           <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLogCallGraph</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkIcfFile_AltDefault</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkHeapSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLocaleSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkTrustzoneImportLibraryOut</name>
+          <state>template_import_lib.o</state>
+        </option>
+        <option>
+          <name>OILinkExtraOption</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkRawBinaryFile2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinarySymbol2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinarySegment2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinaryAlign2</name>
+          <state />
         </option>
       </data>
     </settings>
@@ -978,7 +1093,7 @@
       <name>General</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <version>22</version>
+        <version>31</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -994,17 +1109,7 @@
           <state>Release\List</state>
         </option>
         <option>
-          <name>Variant</name>
-          <version>21</version>
-          <state>0</state>
-        </option>
-        <option>
           <name>GEndianMode</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>Input variant</name>
-          <version>3</version>
           <state>0</state>
         </option>
         <option>
@@ -1012,21 +1117,11 @@
           <state />
         </option>
         <option>
-          <name>Output variant</name>
-          <version>2</version>
-          <state>0</state>
-        </option>
-        <option>
           <name>Output description</name>
           <state />
         </option>
         <option>
           <name>GOutputBinary</name>
-          <state>0</state>
-        </option>
-        <option>
-          <name>FPU</name>
-          <version>5</version>
           <state>0</state>
         </option>
         <option>
@@ -1053,7 +1148,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state />
+          <state>8.40.2.22864</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1065,7 +1160,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state />
+          <state>Default	None</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -1102,13 +1197,8 @@
           <state />
         </option>
         <option>
-          <name>GFPUCoreSlave</name>
-          <version>21</version>
-          <state>1</state>
-        </option>
-        <option>
           <name>GBECoreSlave</name>
-          <version>21</version>
+          <version>27</version>
           <state>1</state>
         </option>
         <option>
@@ -1123,13 +1213,91 @@
           <name>GRuntimeLibThreads</name>
           <state>0</state>
         </option>
+        <option>
+          <name>CoreVariant</name>
+          <version>27</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GFPUDeviceSlave</name>
+          <state>Default	None</state>
+        </option>
+        <option>
+          <name>FPU2</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>NrRegs</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>NEON</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GFPUCoreSlave2</name>
+          <version>27</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGCMSISPackSelectDevice</name>
+        </option>
+        <option>
+          <name>OgLibHeap</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGLibAdditionalLocale</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGPrintfVariant</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGPrintfMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGScanfVariant</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGScanfMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GenLocaleTags</name>
+          <state />
+        </option>
+        <option>
+          <name>GenLocaleDisplayOnly</name>
+          <state />
+        </option>
+        <option>
+          <name>DSPExtension</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>TrustZone</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>TrustZoneModes</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>ICCARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>31</version>
+        <version>35</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1139,8 +1307,10 @@
           <state>RT_USING_DLIBC</state>
           <state>RT_USING_LIBC</state>
           <state>_DLIB_ADD_EXTRA_SYMBOLS=0</state>
-          <state>GD32F30X_HD</state>
+          <state>GD32E50X</state>
+          <state>GD32E50X_HD</state>
           <state>__RTTHREAD__</state>
+          <state>USE_STDPERIPH_DRIVER</state>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>__RT_IPC_SOURCE__</state>
           <state>__RT_KERNEL_SOURCE__</state>
@@ -1239,10 +1409,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>CCMultibyteSupport</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>CCDiagWarnAreErr</name>
           <state>0</state>
         </option>
@@ -1273,24 +1439,26 @@
         <option>
           <name>CCIncludePath2</name>
           <state />
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\include</state>
-          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\cortex-m4</state>
-          <state>$PROJ_DIR$\..\libraries\gd32_drivers</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Include</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
           <state>$PROJ_DIR$\.</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\epoll</state>
-          <state>$PROJ_DIR$\applications</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\ipc</state>
-          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x</state>
           <state>$PROJ_DIR$\board</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\finsh</state>
-          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\eventfd</state>
           <state>$PROJ_DIR$\..\..\..\..\include</state>
-          <state>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension</state>
+          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\cortex-m4</state>
+          <state>$PROJ_DIR$\..\..\..\..\libcpu\arm\common</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\epoll</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\ipc</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\drivers\smp_call</state>
+          <state>$PROJ_DIR$\..\libraries\gd32_drivers</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Include</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\drivers\phy</state>
+          <state>$PROJ_DIR$\applications</state>
+          <state>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x\GD\GD32E50x\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\poll</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\posix\io\eventfd</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\libc\compilers\common\extension\fcntl\octal</state>
+          <state>$PROJ_DIR$\..\..\..\..\components\finsh</state>
           <state>$PROJ_DIR$\..\..\..\..\components\drivers\include</state>
         </option>
         <option>
@@ -1300,10 +1468,6 @@
         <option>
           <name>CCCodeSection</name>
           <state>.text</state>
-        </option>
-        <option>
-          <name>IInterwork2</name>
-          <state>0</state>
         </option>
         <option>
           <name>IProcessorMode2</name>
@@ -1357,18 +1521,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>IccCppDialect</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>IccExceptions</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>IccRTTI</name>
-          <state>1</state>
-        </option>
-        <option>
           <name>IccStaticDestr</name>
           <state>1</state>
         </option>
@@ -1401,13 +1553,41 @@
           <name>CCGuardCalls</name>
           <state>1</state>
         </option>
+        <option>
+          <name>CCEncSource</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccExceptions2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccRTTI2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OICompilerExtraOption</name>
+          <state>1</state>
+        </option>
       </data>
     </settings>
     <settings>
       <name>AARM</name>
       <archiveVersion>2</archiveVersion>
       <data>
-        <version>9</version>
+        <version>10</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1536,10 +1716,6 @@
           <state />
         </option>
         <option>
-          <name>AMultibyteSupport</name>
-          <state>0</state>
-        </option>
-        <option>
           <name>ALimitErrorsCheck</name>
           <state>0</state>
         </option>
@@ -1625,7 +1801,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>16</version>
+        <version>23</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>0</debug>
         <option>
@@ -1897,7 +2073,7 @@
         </option>
         <option>
           <name>CrcAlgorithm</name>
-          <version>0</version>
+          <version>1</version>
           <state>1</state>
         </option>
         <option>
@@ -1908,6 +2084,58 @@
         <option>
           <name>IlinkThreadsSlave</name>
           <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLogCallGraph</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkIcfFile_AltDefault</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkEncInput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkEncOutputBom</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkHeapSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLocaleSelect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkTrustzoneImportLibraryOut</name>
+          <state>###Unitialized###</state>
+        </option>
+        <option>
+          <name>OILinkExtraOption</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkRawBinaryFile2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinarySymbol2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinarySegment2</name>
+          <state />
+        </option>
+        <option>
+          <name>IlinkRawBinaryAlign2</name>
+          <state />
         </option>
       </data>
     </settings>
@@ -1998,7 +2226,13 @@
       <name>$PROJ_DIR$\..\..\..\..\components\drivers\core\device.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\completion.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\completion_comm.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\completion_up.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\condvar.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\dataqueue.c</name>
@@ -2019,19 +2253,16 @@
       <name>$PROJ_DIR$\..\..\..\..\components\drivers\ipc\workqueue.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\components\drivers\pin\pin.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\components\drivers\pin\dev_pin.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\components\drivers\serial\serial.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\components\drivers\serial\dev_serial.c</name>
     </file>
   </group>
   <group>
     <name>Drivers</name>
     <file>
       <name>$PROJ_DIR$\board\board.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Source\IAR\startup_gd32f30x_hd.s</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\libraries\gd32_drivers\drv_gpio.c</name>
@@ -2043,10 +2274,10 @@
   <group>
     <name>Finsh</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\components\finsh\shell.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\components\finsh\msh.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\components\finsh\msh.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\components\finsh\shell.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\components\finsh\msh_parse.c</name>
@@ -2064,6 +2295,12 @@
       <name>$PROJ_DIR$\..\..\..\..\src\components.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\cpu_up.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\defunct.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\src\idle.c</name>
     </file>
     <file>
@@ -2071,12 +2308,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\src\irq.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\src\klibc\kstdio.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\src\klibc\kstring.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\src\kservice.c</name>
@@ -2104,6 +2335,24 @@
     </file>
   </group>
   <group>
+    <name>klibc</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\klibc\rt_vsscanf.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\klibc\kstring.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\klibc\kerrno.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\klibc\rt_vsnprintf_tiny.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\src\klibc\kstdio.c</name>
+    </file>
+  </group>
+  <group>
     <name>libcpu</name>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\libcpu\arm\common\div0.c</name>
@@ -2121,25 +2370,31 @@
   <group>
     <name>Libraries</name>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\CMSIS\GD\GD32F30x\Source\system_gd32f30x.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x\GD\GD32E50x\Source\IAR\startup_gd32e50x_hd.s</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Source\gd32f30x_rcu.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-cmsis-latest\GD32E50x\GD\GD32E50x\Source\system_gd32e50x.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Source\gd32f30x_usart.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Source\gd32e50x_exti.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Source\gd32f30x_exti.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Source\gd32e50x_gpio.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Source\gd32f30x_gpio.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Source\gd32e50x_misc.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\GD32F30x_Firmware_Library\GD32F30x_standard_peripheral\Source\gd32f30x_misc.c</name>
+      <name>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Source\gd32e50x_rcu.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\packages\gd32-arm-series-latest\GD32E50x\GD32E50x_standard_peripheral\Source\gd32e50x_usart.c</name>
     </file>
   </group>
   <group>
     <name>POSIX</name>
+  </group>
+  <group>
+    <name>utestcases</name>
   </group>
 </project>

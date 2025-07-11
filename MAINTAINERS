@@ -38,43 +38,166 @@
 # path: example/module/path
 # owners: John Doe(johndoe)<johndoe@example.com>, Jane Smith(janesmith)<janesmith@example.com>
 
-# Note: 
+# Note:
 # - Each entry includes a `tag` that identifies the module or functionality, a `path` that points to the relevant code location, and `owners` who are the maintainers for that part of the codebase.
 # - If there are multiple entries, each entry should be separated by a blank line. Within a single entry, there is no need to insert blank lines between the tag, path, and owners.
 # - Each entry must be sorted in alphabetical order with tag as the keyword.
 
 # Below are existing maintainer entries, divided by module:
 
+tag: at
+path: components/net/at
+owners: Chen Beidou(Ryan-CW-Code)<1831931681@qq.com>, lizhen9880(lizhen9880)<lizhen9880@126.com>
+
 tag: bsp_cvitek
 path: bsp/cvitek
 owners: Chen Wang(unicornx)<unicorn_wang@outlook.com>
+
+tag: bsp_gd32105c-eval
+path: bsp/gd32/arm/gd32105c-eval
+owners: Xiansong Cao(CXSforHPU)<19511928573@163.com>
+
+tag: bsp_gd32470z-lckfb
+path: bsp/gd32/arm/gd32470z-lckfb
+owners: Wu Ying Xiang(godmial)<2633967641@qq.com>
+
+tag: bsp_gd32e503v-eval
+path: bsp/gd32/arm/gd32e503v-eval
+owners: 蒙蒙plus(meng-plus)<chengmeng_2@outlook.com>
 
 tag: bsp_k230
 path: bsp/k230
 owners: Chen Wang(unicornx)<unicorn_wang@outlook.com>
 
+tag: bsp_lpc4088
+path: bsp/nxp/lpc/lpc408x
+owners: 蒙蒙plus(meng-plus)<chengmeng_2@outlook.com>
+
+tag: bsp_mcxa
+path: bsp/nxp/mcx/mcxa
+owners: 下里巴人(hywing)<hywing.sir@qq.com>
+
+tag: bsp_mcxn
+path: bsp/nxp/mcx/mcxn
+owners: 下里巴人(hywing)<hywing.sir@qq.com>
+
+tag: bsp_mm32f526x
+path: bsp/mm32f526x
+owners: Huanyi Mai(Maihuanyi)<m19825309307@163.com>
+
+tag: bsp_nrf5x
+path: bsp/nrf5x
+owners: Xiaowei Swenson(ReviewSun)<Sxw1204814381@outlook.com>
+
+tag: bsp_rt-spark
+path: bsp/stm32/stm32f407-rt-spark
+owners: Bingru Zhang(Rbb666)<751061401@qq.com>, Yuqiang Wang(kurisaW)<2053731441@qq.com>
+
+tag: bsp_ultrarisc
+path: bsp/ultrarisc/ur_dp1000_evb
+owners: Zhang Jing(zhangjing0303)<zhangjing@ultrarisc.com>
+
+tag: bsp_ESP32_C3
+path: bsp/ESP32_C3/builtin_imgs
+path: bsp/ESP32_C3/drivers
+owners: Damoshed_Xu(xu18838022837)<496121493@qq.com>
+
+tag: bsp_renesas
+path: bsp/renesas
+owners: Yuqiang Wang(kurisaW)<2053731441@qq.com>
+
+tag: bsp_stm32
+path: bsp/stm32
+owners: Han Lv(hamburger-os)<296570182@qq.com>, Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: bsp_stm32f429-armfly-v6
+path: bsp/stm32/stm32f429-armfly-v6
+owners: wenguang Dong(Knowbie-dwg)1429308954@qq.com
+
+tag: bsp_stm32f429-atk-apollo
+path: bsp/stm32/stm32f429-atk-apollo
+owners: lizhen9880(lizhen9880)<lizhen9880@126.com>
+
+tag: bsp_stm32h723-st-nucleo
+path: bsp/stm32/stm32h723-st-nucleo
+owners: 下里巴人(hywing)<hywing.sir@qq.com>
+
+tag: bsp_stm32g030-tiny-board
+path: bsp/stm32/stm32g030-tiny-board
+owners: 下里巴人(hywing)<hywing.sir@qq.com>
+
+tag: bsp_stm32h743-st-nucleo
+path: bsp/stm32/stm32h743-st-nucleo
+owners: PengXu(LittleGreyG)<18825981694@163.com>
+
+tag: bsp_stm32h750-artpi
+path: bsp/stm32/stm32h750-artpi
+owners: PengXu(LittleGreyG)<18825981694@163.com>
+
+tag: bsp_wch
+path: bsp/wch
+owners: Huanyi Mai(Maihuanyi)<m19825309307@163.com>
+
+tag: components
+path: components
+owners: Huanyi Mai(Maihuanyi)<m19825309307@163.com>
+
 tag: documentation
 path: documentation
-owners: Chen Wang(unicornx)<unicorn_wang@outlook.com>
+owners: Chen Wang(unicornx)<unicorn_wang@outlook.com>, Guorui Li(GorrayLi)<liguorui1213@163.com>, Lian Wang(lianux-mm)<lianux.mm@gmail.com>, Xiansong Cao(CXSforHPU)<19511928573@163.com>
+
+tag: driver_can
+path: components/drivers/can
+owners: Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: driver_i2c
+path: components/drivers/i2c
+owners: Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: driver_pm
+path: components/drivers/pm
+owners: Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: driver_spi
+path: components/drivers/spi
+owners: Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: driver_ymodem
+path: components/utilities/ymodem
+owners: Liya Huang(wdfk-prog)<1425075683@qq.com>
+
+tag: fal
+path: components/fal
+owners: Yucai Liu(illustriousness)<1486344514@qq.com>
+
+tag: kernel
+path: src
+owners: Damoshed_Xu(xu18838022837)<496121493@qq.com>, Guorui Li(GorrayLi)<liguorui1213@163.com>, Han Lv(hamburger-os)<296570182@qq.com>, Lian Wang(lianux-mm)<lianux.mm@gmail.com>, Liya Huang(wdfk-prog)<1425075683@qq.com>, Xiaowei Swenson(ReviewSun)<Sxw1204814381@outlook.com>
 
 tag: libc
 path: components/libc
-owners: Meco Jianting Man(mysterywolf)<920369182@qq.com>
+owners: Meco Jianting Man(mysterywolf)<920369182@qq.com>, Guorui Li(GorrayLi)<liguorui1213@163.com>
+
+tag: lwp
+path: components/lwp
+owners: Damoshed_Xu(xu18838022837)<496121493@qq.com>
+
+tag: maintainers
+path: MAINTAINERS
+owners: Bingru Zhang(Rbb666)<751061401@qq.com>, Yuqiang Wang(kurisaW)<2053731441@qq.com>
+
+tag: rvlibcpu
+path: libcpu/risc-v
+owners: Shun Wang(Yaochenger)<1516081466@qq.com>
 
 tag: serial_v2
 path: components/drivers/serial/dev_serial_v2.c
 path: components/drivers/include/drivers/dev_serial_v2.h
 path: examples/utest/testcases/drivers/serial_v2
-owners: Chen Bei Dou(Ryan-CW-Code)<1831931681@qq.com>
-
-tag: stm32f407-rt-spark
-path: bsp/stm32/stm32f407-rt-spark
-owners: Bingru Zhang(Rbb666)<751061401@qq.com>, Yuqiang Wang(kurisaW)<2053731441@qq.com>
+owners: Chen Beidou(Ryan-CW-Code)<1831931681@qq.com>
 
 tag: workflow
 path: .github
 owners: supper thomas(supperthomas)<78900636@qq.com>, Bingru Zhang(Rbb666)<751061401@qq.com>, Yuqiang Wang(kurisaW)<2053731441@qq.com>
 
-tag: gd32470z-lckfb-lcd
-path: bsp/gd32/arm/gd32470z-lckfb/board/ports
-owners: Wu Ying Xiang(godmial)<2633967641@qq.com>
+

@@ -203,6 +203,7 @@
         "stm32/stm32h750-weact-ministm32h7xx",
         "stm32/stm32h750-fk750m1-vbt6",
         "stm32/stm32h7s7-st-disco",
+        "stm32/stm32h7r7-artpi2",
         "stm32/stm32mp157a-st-discovery",
         "stm32/stm32mp157a-st-ev1",
         "stm32/stm32u575-st-nucleo",
@@ -249,6 +250,7 @@
         "renesas/ra6m3-ek",
         "renesas/ra6m3-hmi-board",
         "renesas/ra6e2-fpb",
+        "renesas/ra4e2-eco",
         "renesas/ra4m2-eco",
         "renesas/ra2l1-cpk",
         "renesas/ra8m1-ek",
@@ -299,6 +301,7 @@
         "gd32/arm/gd32470z-lckfb",
         "gd32/arm/gd32h759i-start",
         "gd32/arm/gd32e503v-eval",
+        "gd32/arm/gd32527I-eval",
         "n32/n32g43xcl-stb",
         "n32/n32g45xcl-stb",
         "n32/n32g45xml-stb",
@@ -389,7 +392,8 @@
       "RTT_TOOL_CHAIN": "sourcery-riscv64-unknown-elf",
       "SUB_RTT_BSP": [
         "bluetrum/ab32vg1-ab-prougen",
-        "qemu-virt64-riscv"
+        "qemu-virt64-riscv",
+        "ultrarisc/ur_dp1000_evb"
       ]
     },
     {
@@ -466,7 +470,23 @@
       "RTT_BSP": "xuantie",
       "RTT_TOOL_CHAIN": "sourcery-Xuantie-900-gcc-elf-newlib",
       "SUB_RTT_BSP": [
-        "xuantie/smartl/e906"
+        "xuantie/smartl/e902",
+        "xuantie/smartl/e906",
+        "xuantie/smartl/e907",
+        "xuantie/xiaohui/c906",
+        "xuantie/xiaohui/c907",
+        "xuantie/xiaohui/c908",
+        "xuantie/xiaohui/c910",
+        "xuantie/xiaohui/r908",
+        "xuantie/xiaohui/r910",
+        "xuantie/xiaohui/r920"
+      ]
+    },
+    {
+      "RTT_BSP": "xuantie-smart",
+      "RTT_TOOL_CHAIN": "sourcery-Xuantie-900-gcc-linux-musl",
+      "SUB_RTT_BSP": [
+        "xuantie/virt64/c906"
       ]
     }
   ]
