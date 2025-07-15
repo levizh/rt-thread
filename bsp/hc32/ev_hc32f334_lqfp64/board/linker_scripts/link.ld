@@ -181,6 +181,22 @@ SECTIONS
         __data_end__ = .;
     } >RAM
 
+    .heap_stack (COPY) :
+    {
+        . = ALIGN(8);
+        __end__ = .;
+        PROVIDE(end = .);
+        PROVIDE(_end = .);
+        *(.heap*)
+        . = ALIGN(8);
+        __HeapLimit = .;
+
+        __StackLimit = .;
+        *(.stack*)
+        . = ALIGN(8);
+        __StackTop = .;
+    } >RAM
+
     __etext_ramb = __etext + ALIGN (SIZEOF(.data), 4);
     .ramb_data : AT (__etext_ramb)
     {
@@ -217,22 +233,6 @@ SECTIONS
         . = ALIGN(4);
         __bss_end_ramb__ = .;
     } >RAMB
-
-    .heap_stack (COPY) :
-    {
-        . = ALIGN(8);
-        __end__ = .;
-        PROVIDE(end = .);
-        PROVIDE(_end = .);
-        *(.heap*)
-        . = ALIGN(8);
-        __HeapLimit = .;
-
-        __StackLimit = .;
-        *(.stack*)
-        . = ALIGN(8);
-        __StackTop = .;
-    } >RAM
 
     /DISCARD/ :
     {
