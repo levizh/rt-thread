@@ -5,7 +5,6 @@ config SOC_HC32F4A8SI
     select SOC_SERIES_HC32F4
     select RT_USING_COMPONENTS_INIT
     select RT_USING_USER_MAIN
-    select PKG_USING_HC32F4A8_DDL
     default y
 
 menu "On-chip Drivers"
