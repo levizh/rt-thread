@@ -100,6 +100,12 @@ extern "C" {
 #if defined(BSP_USING_UART3)
 #define BSP_UART3_IRQ_NUM               USART3_IRQn
 #define BSP_UART3_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
+
+#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART3_TX_USING_DMA)) || \
+    defined(RT_USING_SERIAL_V2)
+#define BSP_UART3_TX_CPLT_IRQ_NUM       USART3_TCI_IRQn
+#define BSP_UART3_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
+#endif
 #endif /* BSP_USING_UART3 */
 
 #if defined(BSP_USING_UART4)
@@ -112,22 +118,6 @@ extern "C" {
 #define BSP_UART4_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
 #endif /* BSP_USING_UART4 */
-
-#if defined(BSP_USING_UART5)
-#define BSP_UART5_IRQ_NUM               USART5_IRQn
-#define BSP_UART5_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
-
-#if (defined(RT_USING_SERIAL_V1) && defined(BSP_UART5_TX_USING_DMA)) || \
-    defined(RT_USING_SERIAL_V2)
-#define BSP_UART5_TX_CPLT_IRQ_NUM       USART5_TCI_IRQn
-#define BSP_UART5_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
-#endif
-#endif /* BSP_USING_UART5 */
-
-#if defined(BSP_USING_UART6)
-#define BSP_UART6_IRQ_NUM               USART6_IRQn
-#define BSP_UART6_IRQ_PRIO              DDL_IRQ_PRIO_DEFAULT
-#endif /* BSP_USING_UART6 */
 
 #if defined(BSP_USING_SPI1)
 #define BSP_SPI1_ERR_IRQ_NUM            SPI1_IRQn

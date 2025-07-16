@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
- * Date           Author       Notes
- * 2022-04-28     CDT          first version
- * 2023-10-09     CDT          support HC32F448
- * 2024-04-15     CDT          support HC32F472
+ * Date             Author      Notes
+ * 2022-04-28       CDT         first version
+ * 2023-10-09       CDT         support HC32F448
+ * 2024-04-15       CDT         support HC32F472
+ * 2025-07-16       CDT         Support HC32F334
  */
 
 /*******************************************************************************

@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
- * Date           Author       Notes
- * 2022-04-28     CDT          first version
- * 2024-06-07     CDT          Modify the IRQ install implementation for F448/F472
+ * Date             Author      Notes
+ * 2022-04-28       CDT         first version
+ * 2024-06-07       CDT         Modify the IRQ install implementation for F448/F472
+ * 2025-07-16       CDT         Support HC32F334
  */
 
 /*******************************************************************************

@@ -14,8 +14,8 @@
 #include <rtthread.h>
 #include <board.h>
 
-/* enable hc32f4 onchip flash driver sample */
-#define FAL_FLASH_PORT_DRIVER_HC32F4
+/* enable hc32f3 onchip flash driver sample */
+#define FAL_FLASH_PORT_DRIVER_HC32F3
 /* enable SFUD flash driver sample */
 #define FAL_FLASH_PORT_DRIVER_SFUD
 

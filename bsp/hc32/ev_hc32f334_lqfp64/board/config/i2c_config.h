@@ -39,7 +39,7 @@ extern "C" {
         .channel        = I2C1_TX_DMA_CHANNEL,                  \
         .clock          = I2C1_TX_DMA_CLOCK,                    \
         .trigger_select = I2C1_TX_DMA_TRIG_SELECT,              \
-        .trigger_event  = EVT_SRC_I2C1_TEI,                     \
+        .trigger_event  = EVT_SRC_I2C_TEI,                      \
         .flag           = I2C1_TX_DMA_TRANS_FLAG,               \
         .irq_config     =                                       \
         {                                                       \
@@ -57,7 +57,7 @@ extern "C" {
         .channel        = I2C1_RX_DMA_CHANNEL,                  \
         .clock          = I2C1_RX_DMA_CLOCK,                    \
         .trigger_select = I2C1_RX_DMA_TRIG_SELECT,              \
-        .trigger_event  = EVT_SRC_I2C1_RXI,                     \
+        .trigger_event  = EVT_SRC_I2C_RXI,                      \
         .flag           = I2C1_RX_DMA_TRANS_FLAG,               \
         .irq_config     =                                       \
         {                                                       \

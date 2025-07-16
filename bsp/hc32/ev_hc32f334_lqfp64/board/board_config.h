@@ -24,12 +24,12 @@
 
 /************************ USART port **********************/
 #if defined(BSP_USING_UART1)
-    #define USART1_RX_PORT                  (GPIO_PORT_A)
-    #define USART1_RX_PIN                   (GPIO_PIN_10)
+    #define USART1_RX_PORT                  (GPIO_PORT_B)
+    #define USART1_RX_PIN                   (GPIO_PIN_06)
     #define USART1_RX_FUNC                  (GPIO_FUNC_33)
 
-    #define USART1_TX_PORT                  (GPIO_PORT_A)
-    #define USART1_TX_PIN                   (GPIO_PIN_09)
+    #define USART1_TX_PORT                  (GPIO_PORT_B)
+    #define USART1_TX_PIN                   (GPIO_PIN_07)
     #define USART1_TX_FUNC                  (GPIO_FUNC_32)
 #endif
 
@@ -41,16 +41,6 @@
     #define USART2_TX_PORT                  (GPIO_PORT_C)
     #define USART2_TX_PIN                   (GPIO_PIN_10)
     #define USART2_TX_FUNC                  (GPIO_FUNC_36)
-#endif
-
-#if defined(BSP_USING_UART6)
-    #define USART6_RX_PORT                  (GPIO_PORT_D)
-    #define USART6_RX_PIN                   (GPIO_PIN_01)
-    #define USART6_RX_FUNC                  (GPIO_FUNC_55)
-
-    #define USART6_TX_PORT                  (GPIO_PORT_D)
-    #define USART6_TX_PIN                   (GPIO_PIN_02)
-    #define USART6_TX_FUNC                  (GPIO_FUNC_54)
 #endif
 
 /************************ I2C port **********************/
