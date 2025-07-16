@@ -306,10 +306,10 @@
 
 /* HC32 DDL Drivers */
 
-#define PKG_USING_HC32F4_CMSIS_DRIVER
-#define PKG_USING_HC32F4_CMSIS_DRIVER_LATEST_VERSION
-#define PKG_USING_HC32F4_SERIES_DRIVER
-#define PKG_USING_HC32F4_SERIES_DRIVER_LATEST_VERSION
+#define PKG_USING_HC32F3_CMSIS_DRIVER
+#define PKG_USING_HC32F3_CMSIS_DRIVER_LATEST_VERSION
+#define PKG_USING_HC32F3_SERIES_DRIVER
+#define PKG_USING_HC32F3_SERIES_DRIVER_LATEST_VERSION
 /* end of HC32 DDL Drivers */
 
 /* NXP HAL & SDK Drivers */
@@ -403,7 +403,7 @@
 /* end of Arduino libraries */
 /* end of RT-Thread online packages */
 #define SOC_FAMILY_HC32
-#define SOC_SERIES_HC32F4
+#define SOC_SERIES_HC32F3
 
 /* Hardware Drivers Config */
 
@@ -419,7 +419,6 @@
 
 /* Onboard Peripheral Drivers */
 
-#define BSP_USING_EXT_IO
 /* end of Onboard Peripheral Drivers */
 
 /* On-chip Peripheral Drivers */

@@ -19,8 +19,8 @@ def bsp_pkg_check():
     import subprocess
 
     check_paths = [
-        os.path.join("packages", "hc32-f4-cmsis-latest"),
-        os.path.join("packages", "hc32-f4-series-latest")
+        os.path.join("packages", "hc32-f3-cmsis-latest"),
+        os.path.join("packages", "hc32-f3-series-latest")
     ]
 
     need_update = not all(os.path.exists(p) for p in check_paths)

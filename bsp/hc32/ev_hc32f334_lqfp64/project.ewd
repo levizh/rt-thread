@@ -44,7 +44,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/debugger/HC32F334xA.ddf</state>
+                    <state>$PROJ_DIR$/packages/hc32-f3-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/debugger/HC32F334xA.ddf</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
@@ -112,7 +112,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$PROJ_DIR$/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/flashloader/FlashHC32F334xA.board</state>
+                    <state>$PROJ_DIR$/packages/hc32-f3-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/flashloader/FlashHC32F334xA.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>
@@ -1529,7 +1529,7 @@
                 </option>
                 <option>
                     <name>MemFile</name>
-                    <state>$PROJ_DIR$/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/debugger/HC32F334xA.ddf</state>
+                    <state>$PROJ_DIR$/packages/hc32-f3-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/debugger/HC32F334xA.ddf</state>
                 </option>
                 <option>
                     <name>RunToEnable</name>
@@ -1597,7 +1597,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$PROJ_DIR$/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/flashloader/FlashHC32F334xA.board</state>
+                    <state>$PROJ_DIR$/packages/hc32-f3-cmsis-latest/Device/HDSC/hc32f334/Source/IAR/flashloader/FlashHC32F334xA.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>
