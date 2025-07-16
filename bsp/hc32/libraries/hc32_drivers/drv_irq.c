@@ -22,7 +22,7 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#if defined (HC32F448) || defined (HC32F472)
+#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
     /* Interrupt registration max number */
     #define HC32_INT_REG_MAX_NUM        (16U)
 #endif
@@ -51,7 +51,7 @@ rt_err_t hc32_install_irq_handler(struct hc32_irq_config *irq_config,
 
     RT_ASSERT(RT_NULL != irq_config);
 
-#if defined (HC32F448) || defined (HC32F472)
+#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
     if (irq_config->irq_num < HC32_INT_REG_MAX_NUM)
     {
         RT_ASSERT(RT_NULL != irq_hdr);

@@ -35,7 +35,7 @@
 
 #if defined(BSP_USING_UART2)
     #define USART2_RX_PORT                  (GPIO_PORT_C)
-    #define USART2_RX_PIN                   (GPIO_PIN_11)
+    #define USART2_RX_PIN                   (GPIO_PIN_04)
     #define USART2_RX_FUNC                  (GPIO_FUNC_37)
 
     #define USART2_TX_PORT                  (GPIO_PORT_C)
@@ -55,25 +55,14 @@
 
 /************************ I2C port **********************/
 #if defined(BSP_USING_I2C1)
-    #define I2C1_SDA_PORT                   (GPIO_PORT_E)
-    #define I2C1_SDA_PIN                    (GPIO_PIN_00)
-    #define I2C1_SDA_FUNC                   (GPIO_FUNC_48)
+    #define I2C1_SDA_PORT                   (GPIO_PORT_B)
+    #define I2C1_SDA_PIN                    (GPIO_PIN_06)
+    #define I2C1_SDA_FUNC                   (GPIO_FUNC_52)
 
-    #define I2C1_SCL_PORT                   (GPIO_PORT_E)
-    #define I2C1_SCL_PIN                    (GPIO_PIN_01)
-    #define I2C1_SCL_FUNC                   (GPIO_FUNC_49)
+    #define I2C1_SCL_PORT                   (GPIO_PORT_B)
+    #define I2C1_SCL_PIN                    (GPIO_PIN_07)
+    #define I2C1_SCL_FUNC                   (GPIO_FUNC_53)
 #endif
-
-#if defined(BSP_USING_I2C2) // TODO, ch2 for test only
-    #define I2C2_SDA_PORT                   (GPIO_PORT_A)
-    #define I2C2_SDA_PIN                    (GPIO_PIN_09)
-    #define I2C2_SDA_FUNC                   (GPIO_FUNC_50)
-
-    #define I2C2_SCL_PORT                   (GPIO_PORT_A)
-    #define I2C2_SCL_PIN                    (GPIO_PIN_10)
-    #define I2C2_SCL_FUNC                   (GPIO_FUNC_51)
-#endif
-
 
 /***********  ADC configure *********/
 #if defined(BSP_USING_ADC1)

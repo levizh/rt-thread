@@ -208,7 +208,8 @@ SECTIONS
         __data_end_ramb__ = .;
     } >RAMB
 
-    .bss (NOLOAD):
+    __bss_start = .;
+    .bss __StackTop (NOLOAD):
     {
         . = ALIGN(4);
         _sbss = .;
@@ -223,6 +224,7 @@ SECTIONS
         *(.noinit*)
         . = ALIGN(4);
     } >RAM
+    __bss_end = .;
 
     .ramb_bss :
     {
