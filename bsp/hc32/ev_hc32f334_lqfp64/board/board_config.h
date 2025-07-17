@@ -66,8 +66,8 @@
 #endif
 
 #if defined(BSP_USING_ADC3)
-    #define ADC3_CH_PORT                    (GPIO_PORT_E)   /* Default ADC3_IN1 */
-    #define ADC3_CH_PIN                     (GPIO_PIN_03)
+    #define ADC3_CH_PORT                    (GPIO_PORT_B)   /* Default ADC3_IN1 */
+    #define ADC3_CH_PIN                     (GPIO_PIN_13)
 #endif
 
 /***********  DAC configure *********/
