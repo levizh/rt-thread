@@ -180,7 +180,7 @@ SECTIONS
         . = ALIGN(4);
         __data_end__ = .;
     } >RAM
-    
+
     .heap_stack (COPY) :
     {
         . = ALIGN(8);
