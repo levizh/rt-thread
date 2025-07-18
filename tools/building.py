@@ -58,6 +58,8 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
     AddOptions()
 
     Env = env
+    # export the default environment
+    Export('env')
 
     # prepare logging and set log
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -89,6 +91,7 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
                 'vs':('msvc', 'cl'),
                 'vs2012':('msvc', 'cl'),
                 'vsc' : ('gcc', 'gcc'),
+                'vsc_workspace':('gcc', 'gcc'),
                 'cb':('keil', 'armcc'),
                 'ua':('gcc', 'gcc'),
                 'cdk':('gcc', 'gcc'),
@@ -805,13 +808,13 @@ def GenTargetProject(program = None):
         from targets.keil import MDK2Project, MDK4Project, MDK5Project, ARMCC_Version
 
         if os.path.isfile('template.uvprojx') and GetOption('target') not in ['mdk4']: # Keil5
-            MDK5Project(GetOption('project-name') + '.uvprojx', Projects)
+            MDK5Project(Env, GetOption('project-name') + '.uvprojx', Projects)
             print("Keil5 project is generating...")
         elif os.path.isfile('template.uvproj') and GetOption('target') not in ['mdk5']: # Keil4
-            MDK4Project(GetOption('project-name') + '.uvproj', Projects)
+            MDK4Project(Env, GetOption('project-name') + '.uvproj', Projects)
             print("Keil4 project is generating...")
         elif os.path.isfile('template.Uv2') and GetOption('target') not in ['mdk4', 'mdk5']: # Keil2
-            MDK2Project(GetOption('project-name') + '.Uv2', Projects)
+            MDK2Project(Env, GetOption('project-name') + '.Uv2', Projects)
             print("Keil2 project is generating...")
         else:
             print ('No template project file found.')
@@ -822,7 +825,7 @@ def GenTargetProject(program = None):
     if GetOption('target') == 'iar':
         from targets.iar import IARProject, IARVersion
         print("IAR Version: " + IARVersion())
-        IARProject(GetOption('project-name') + '.ewp', Projects)
+        IARProject(Env, GetOption('project-name') + '.ewp', Projects)
         print("IAR project has generated successfully!")
 
     if GetOption('target') == 'vs':
@@ -847,6 +850,10 @@ def GenTargetProject(program = None):
         if GetOption('cmsispack'):
             from vscpyocd import GenerateVSCodePyocdConfig
             GenerateVSCodePyocdConfig(GetOption('cmsispack'))
+
+    if GetOption('target') == 'vsc_workspace':
+        from targets.vsc import GenerateVSCodeWorkspace
+        GenerateVSCodeWorkspace(Env)
 
     if GetOption('target') == 'cdk':
         from targets.cdk import CDKProject
@@ -927,7 +934,7 @@ def EndBuilding(target, program = None):
             if not isinstance(project_path, str) or len(project_path) == 0:
                 project_path = os.path.join(BSP_ROOT, 'rt-studio-project')
             MkDist(program, BSP_ROOT, Rtt_Root, Env, project_name, project_path)
-            child = subprocess.Popen('scons --target=eclipse --project-name="{}"'.format(project_name), 
+            child = subprocess.Popen('scons --target=eclipse --project-name="{}"'.format(project_name),
                                    cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = child.communicate()
             need_exit = True
