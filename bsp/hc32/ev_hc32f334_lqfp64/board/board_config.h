@@ -105,20 +105,20 @@
 
 /************************* SPI port ***********************/
 #if defined(BSP_USING_SPI1)
-    #define SPI1_CS_PORT                (GPIO_PORT_C)
+    #define SPI1_CS_PORT                (GPIO_PORT_B)
     #define SPI1_CS_PIN                 (GPIO_PIN_07)
 
     #define SPI1_SCK_PORT               (GPIO_PORT_B)
-    #define SPI1_SCK_PIN                (GPIO_PIN_14)
-    #define SPI1_SCK_FUNC               (GPIO_FUNC_47)
+    #define SPI1_SCK_PIN                (GPIO_PIN_05)
+    #define SPI1_SCK_FUNC               (GPIO_FUNC_49)
 
-    #define SPI1_MOSI_PORT              (GPIO_PORT_B)
-    #define SPI1_MOSI_PIN               (GPIO_PIN_13)
-    #define SPI1_MOSI_FUNC              (GPIO_FUNC_44)
+    #define SPI1_MOSI_PORT              (GPIO_PORT_A)
+    #define SPI1_MOSI_PIN               (GPIO_PIN_00)
+    #define SPI1_MOSI_FUNC              (GPIO_FUNC_50)
 
-    #define SPI1_MISO_PORT              (GPIO_PORT_D)
-    #define SPI1_MISO_PIN               (GPIO_PIN_09)
-    #define SPI1_MISO_FUNC              (GPIO_FUNC_45)
+    #define SPI1_MISO_PORT              (GPIO_PORT_A)
+    #define SPI1_MISO_PIN               (GPIO_PIN_01)
+    #define SPI1_MISO_FUNC              (GPIO_FUNC_51)
 
     #define SPI1_WP_PORT                (GPIO_PORT_D)
     #define SPI1_WP_PIN                 (GPIO_PIN_10)
