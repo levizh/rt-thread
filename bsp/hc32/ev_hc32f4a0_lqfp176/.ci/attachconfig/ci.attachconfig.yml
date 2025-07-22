@@ -8,10 +8,11 @@ devices.can:
     kconfig:
       - CONFIG_BSP_USING_CAN=y
       - CONFIG_BSP_USING_CAN1=y
+      - CONFIG_RT_CAN_USING_CANFD=y
+      - CONFIG_RT_CAN_USING_HDR=y
 devices.crypto:
     kconfig:
       - CONFIG_BSP_USING_HWCRYPTO=y
-      - CONFIG_BSP_USING_CAN1=y
       - CONFIG_BSP_USING_UQID=y
       - CONFIG_BSP_USING_RNG=y
       - CONFIG_BSP_USING_CRC=y
@@ -24,6 +25,9 @@ devices.dac:
 devices.flash:
     kconfig:
       - CONFIG_BSP_USING_ON_CHIP_FLASH=y
+      - CONFIG_RT_USING_FAL=y
+      - CONFIG_RT_USING_SPI=y
+      - CONFIG_RT_USING_SFUD=y
 devices.gpio:
     kconfig: 
       - CONFIG_BSP_USING_GPIO=y
@@ -85,18 +89,24 @@ devices.qspi:
 devices.rtc:
     kconfig:
       - CONFIG_BSP_USING_RTC=y
+      - CONFIG_RT_USING_ALARM=y
 devices.sdio:
     kconfig:
       - CONFIG_BSP_USING_SDIO=y
       - CONFIG_BSP_USING_SDIO1=y
       - CONFIG_RT_USING_DFS=y
       - CONFIG_RT_USING_DFS_ELMFAT=y
+devices.soft_i2c:
+    kconfig:
+      - CONFIG_BSP_USING_I2C=y
+      - CONFIG_BSP_USING_I2C1_SW=y
 devices.spi:
     kconfig:
       - CONFIG_BSP_USING_SPI=y
       - CONFIG_BSP_USING_SPI1=y
       - CONFIG_BSP_SPI1_TX_USING_DMA=y
       - CONFIG_BSP_SPI1_RX_USING_DMA=y
+      - CONFIG_BSP_SPI_USING_DMA=y
       - CONFIG_RT_USING_DFS=y
       - CONFIG_RT_USING_DFS_ELMFAT=y
 devices.uart_v1:
@@ -104,6 +114,7 @@ devices.uart_v1:
       - CONFIG_RT_USING_SERIAL_V1=y
       - CONFIG_BSP_USING_UART=y
       - CONFIG_BSP_USING_UART1=y
+      - CONFIG_RT_SERIAL_USING_DMA=y
       - CONFIG_BSP_UART1_RX_USING_DMA=y
       - CONFIG_BSP_UART1_TX_USING_DMA=y
 devices.uart_v2:
@@ -111,16 +122,20 @@ devices.uart_v2:
       - CONFIG_RT_USING_SERIAL_V2=y
       - CONFIG_BSP_USING_UART=y
       - CONFIG_BSP_USING_UART1=y
+      - CONFIG_RT_SERIAL_USING_DMA=y
       - CONFIG_BSP_UART1_RX_USING_DMA=y
       - CONFIG_BSP_UART1_TX_USING_DMA=y
 devices.usb_hs_device:
     kconfig:
       - CONFIG_BSP_USING_USB=y
+      - CONFIG_BSP_USING_USBD=y
       - CONFIG_BSP_USING_USBHS=y
       - CONFIG_BSP_USING_USBD_HS=y
+      - CONFIG_RT_USB_DEVICE_MSTORAGE=y
 devices.usb_hs_host:
     kconfig:
       - CONFIG_BSP_USING_USB=y
+      - CONFIG_BSP_USING_USBH=y
       - CONFIG_BSP_USING_USBHS=y
       - CONFIG_BSP_USING_USBH_HS=y
       - CONFIG_RT_USBH_MSTORAGE=y
@@ -129,11 +144,14 @@ devices.usb_hs_host:
 devices.usb_fs_device:
     kconfig:
       - CONFIG_BSP_USING_USB=y
+      - CONFIG_BSP_USING_USBD=y
       - CONFIG_BSP_USING_USBFS=y
       - CONFIG_BSP_USING_USBD_FS=y
+      - CONFIG_RT_USB_DEVICE_MSTORAGE=y
 devices.usb_fs_host:
     kconfig:
       - CONFIG_BSP_USING_USB=y
+      - CONFIG_BSP_USING_USBH=y
       - CONFIG_BSP_USING_USBFS=y
       - CONFIG_BSP_USING_USBH_FS=y
       - CONFIG_RT_USBH_MSTORAGE=y
@@ -159,16 +177,19 @@ peripheral.eth_rmii:
     kconfig:
       - CONFIG_BSP_USING_ETH=y
       - CONFIG_ETH_INTERFACE_USING_RMII=y
+      - CONFIG_ETH_PHY_USING_INTERRUPT_MODE=y
       - CONFIG_RT_USING_LWIP212=y
       - CONFIG_RT_USING_LWIP_VER_NUM=0x20102
 peripheral.exmc_nand:
     kconfig:
       - CONFIG_BSP_USING_EXMC=y
       - CONFIG_BSP_USING_NAND=y
+      - CONFIG_FINSH_USING_MSH=y
 peripheral.exmc_sdram:
     kconfig:
       - CONFIG_BSP_USING_EXMC=y
       - CONFIG_BSP_USING_SDRAM=y
+      - CONFIG_FINSH_USING_MSH=y
 peripheral.spi_flash:
     kconfig:
       - CONFIG_BSP_USING_SPI_FLASH=y
