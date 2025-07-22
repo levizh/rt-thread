@@ -1198,7 +1198,7 @@ static void mcan_get_irq_callback(void)
 
 extern rt_err_t rt_hw_board_mcan_init(CM_MCAN_TypeDef *MCANx);
 extern void CanPhyEnable(void);
-static rt_err_t rt_hw_mcan_init(void)
+static int rt_hw_mcan_init(void)
 {
     rt_uint32_t i, filter;
     rt_uint32_t tx_boxnum;
