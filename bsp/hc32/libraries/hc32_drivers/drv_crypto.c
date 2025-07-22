@@ -105,11 +105,11 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
     }
     if (16U  == ctx->crc_cfg.width)
     {
-        result = CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
+        (void)CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length, (uint16_t *)&result);
     }
     else        /* CRC32 */
     {
-        result = CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
+        (void)CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length, &result);
     }
 
 _exit:
