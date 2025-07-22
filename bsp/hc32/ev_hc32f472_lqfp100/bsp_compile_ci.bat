@@ -66,10 +66,6 @@ scons --attach=devices.rtc
 scons -j4
 scons --attach=default
 
-scons --attach=devices.sdio
-scons -j4
-scons --attach=default
-
 scons --attach=devices.soft_i2c
 scons -j4
 scons --attach=default
@@ -110,22 +106,6 @@ scons --attach=devices.watchdog_wdt
 scons -j4
 scons --attach=default
 
-
-scons --attach=peripheral.eth_mii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.eth_rmii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_nand
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_sdram
-scons -j4
-scons --attach=default
 
 scons --attach=peripheral.spi_flash
 scons -j4

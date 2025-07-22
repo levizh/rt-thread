@@ -2,10 +2,6 @@ scons --attach=devices.adc
 scons -j4
 scons --attach=default
 
-scons --attach=devices.can
-scons -j4
-scons --attach=default
-
 scons --attach=devices.crypto
 scons -j4
 scons --attach=default
@@ -34,6 +30,10 @@ scons --attach=devices.input_capture
 scons -j4
 scons --attach=default
 
+scons --attach=devices.mcan
+scons -j4
+scons --attach=default
+
 scons --attach=devices.pm
 scons -j4
 scons --attach=default
@@ -58,15 +58,7 @@ scons --attach=devices.pwm_tmra
 scons -j4
 scons --attach=default
 
-scons --attach=devices.qspi
-scons -j4
-scons --attach=default
-
 scons --attach=devices.rtc
-scons -j4
-scons --attach=default
-
-scons --attach=devices.sdio
 scons -j4
 scons --attach=default
 
@@ -86,22 +78,6 @@ scons --attach=devices.uart_v2
 scons -j4
 scons --attach=default
 
-scons --attach=devices.usb_hs_device
-scons -j4
-scons --attach=default
-
-scons --attach=devices.usb_hs_host
-scons -j4
-scons --attach=default
-
-scons --attach=devices.usb_fs_device
-scons -j4
-scons --attach=default
-
-scons --attach=devices.usb_fs_host
-scons -j4
-scons --attach=default
-
 scons --attach=devices.watchdog_swdt
 scons -j4
 scons --attach=default
@@ -110,22 +86,6 @@ scons --attach=devices.watchdog_wdt
 scons -j4
 scons --attach=default
 
-
-scons --attach=peripheral.eth_mii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.eth_rmii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_nand
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_sdram
-scons -j4
-scons --attach=default
 
 scons --attach=peripheral.spi_flash
 scons -j4

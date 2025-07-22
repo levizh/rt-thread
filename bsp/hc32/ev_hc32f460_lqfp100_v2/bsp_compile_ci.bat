@@ -10,10 +10,6 @@ scons --attach=devices.crypto
 scons -j4
 scons --attach=default
 
-scons --attach=devices.dac
-scons -j4
-scons --attach=default
-
 scons --attach=devices.flash
 scons -j4
 scons --attach=default
@@ -110,22 +106,6 @@ scons --attach=devices.watchdog_wdt
 scons -j4
 scons --attach=default
 
-
-scons --attach=peripheral.eth_mii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.eth_rmii
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_nand
-scons -j4
-scons --attach=default
-
-scons --attach=peripheral.exmc_sdram
-scons -j4
-scons --attach=default
 
 scons --attach=peripheral.spi_flash
 scons -j4

@@ -74,6 +74,10 @@ scons --attach=devices.sdio
 scons -j4
 scons --attach=default
 
+scons --attach=devices.soft_i2c
+scons -j4
+scons --attach=default
+
 scons --attach=devices.spi
 scons -j4
 scons --attach=default
