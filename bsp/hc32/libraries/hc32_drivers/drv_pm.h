@@ -124,24 +124,6 @@ struct pm_sleep_mode_shutdown_config
 (                                       (mode ==  PM_SLEEP_MODE_SHUTDOWN && PM_SLEEP_SHUTDOWN_CHECK()) || \
                                         (mode ==  PM_SLEEP_MODE_DEEP && PM_SLEEP_DEEP_CHECK())|| \
                                         (mode <=  PM_SLEEP_MODE_IDLE)))
-
-/**
- * @defgroup PWC_Sleep_Type PWC sleep mode type.
- * @{
- */
-#ifndef PWC_SLEEP_WFI
-#define PWC_SLEEP_WFI                   (0x00U)                 /*!< Enter sleep mode by WFI, and wake-up by interrupt handle. */
-#endif
-#ifndef PWC_SLEEP_WFE_INT
-#define PWC_SLEEP_WFE_INT               (0x01U)                 /*!< Enter sleep mode by WFE, and wake-up by interrupt request(SEVONPEND=1). */
-#endif
-#ifndef PWC_SLEEP_WFE_EVT
-#define PWC_SLEEP_WFE_EVT               (0x02U)                 /*!< Enter sleep mode by WFE, and wake-up by event(SEVONPEND=0). */
-#endif
-/**
- * @}
- */
-
 /*******************************************************************************
  * Global function prototypes (definition in C source)
  ******************************************************************************/
