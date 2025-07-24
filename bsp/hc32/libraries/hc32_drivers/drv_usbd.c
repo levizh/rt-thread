@@ -505,7 +505,7 @@ static void usb_outep_isr(usb_core_instance *pdev)
     uint32_t u32EpIntr;
     uint32_t u32doepint;
     uint8_t u8epnum = 0U;
-    uint32_t u8Xfer;
+    uint32_t u32Xfer;
     uint32_t u32ReadEpSize;
 
     u32EpIntr = usb_getalloepintr(&pdev->regs);
@@ -520,8 +520,8 @@ static void usb_outep_isr(usb_core_instance *pdev)
                 if (pdev->basic_cfgs.dmaen == 1U)
                 {
                     u32ReadEpSize = (READ_REG32(pdev->regs.OUTEP_REGS[u8epnum]->DOEPTSIZ) & USBFS_DOEPTSIZ_XFRSIZ);
-                    u8Xfer = LL_MIN(pdev->dev.out_ep[u8epnum].maxpacket, pdev->dev.out_ep[u8epnum].xfer_len);
-                    pdev->dev.out_ep[u8epnum].xfer_count = u8Xfer - u32ReadEpSize;
+                    u32Xfer = LL_MIN(pdev->dev.out_ep[u8epnum].maxpacket, pdev->dev.out_ep[u8epnum].xfer_len);
+                    pdev->dev.out_ep[u8epnum].xfer_count = u32Xfer - u32ReadEpSize;
                     if (u8epnum != 0U)
                     {
                         pdev->dev.out_ep[u8epnum].xfer_count = pdev->dev.out_ep[u8epnum].xfer_len - u32ReadEpSize;
