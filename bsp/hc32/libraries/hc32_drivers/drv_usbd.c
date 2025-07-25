@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2023-02-14     CDT          first version
+ * 2025-07-25     CDT          support HC32F4A8
  */
 
 /*******************************************************************************
@@ -399,7 +400,7 @@ static void usb_wrblanktxfifo(usb_core_instance *pdev, uint32_t epnum)
     }
 }
 
-#if defined(HC32F4A0) || defined(HC32F460)
+#if defined(HC32F4A0) || defined(HC32F460) || defined(HC32F4A8)
 #ifdef VBUS_SENSING_ENABLED
 static void usb_sessionrequest_isr(usb_core_instance *pdev)
 {
@@ -492,7 +493,6 @@ static void usb_inep_isr(usb_core_instance *pdev)
             if ((u32diepint & TXFEMP) != 0UL)
             {
                 usb_wrblanktxfifo(pdev, u8epnum);
-                WRITE_REG32(pdev->regs.INEP_REGS[u8epnum]->DIEPINT, TXFEMP);
             }
         }
         u8epnum++;
@@ -717,7 +717,7 @@ static void usb_isr_handler(usb_core_instance *pdev)
         {
             usb_isooutincomplt_isr(pdev);
         }
-#if defined(HC32F4A0) || defined(HC32F460)
+#if defined(HC32F4A0) || defined(HC32F460) || defined(HC32F4A8)
 #ifdef VBUS_SENSING_ENABLED
         if ((u32gintsts & VBUSV_INT) != 0UL)
         {
@@ -851,7 +851,7 @@ static rt_err_t _usbd_init(rt_device_t device)
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
 #endif
-#if defined (HC32F4A0)
+#if defined (HC32F4A0) || defined(HC32F4A8)
 #if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
 #else
