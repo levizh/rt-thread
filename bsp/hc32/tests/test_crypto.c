@@ -57,6 +57,14 @@ static void _crypto_cmd_print_usage(void)
 }
 
 #if defined(BSP_USING_CRC)
+/* menuconfig:
+   Hardware Drivers Config--->On-Chip Peripheral Driver--->Using Hardware Crypto --->
+                                                            [*]Enable Hardeware CRC
+ * CRC16命令调用：crypto_sample crc 16
+ * CRC32命令调用：crypto_sample crc 32
+ * 程序功能：打印CRC输入数据和计数结果，使用第三方软件计算数据，再做比较
+ */
+
 #define CRC16_WIDTH    16U
 #define CRC32_WIDTH    32U
 static void crc_test(rt_uint32_t width)

@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2023-02-10     CDT          first version
  * 2024-06-11     CDT          Fix compiler warning
+ * 2025-07-29     CDT          Support HC32F334
  */
 #include "board.h"
 
@@ -92,7 +93,8 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
             LOG_E("crc width only support 16/32.");
             goto _exit;
         }
-#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F448) || defined(HC32F472)
+#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F448) || defined(HC32F472) || \
+    defined(HC32F334)
         stcCrcInit.u32InitValue = ctx->crc_cfg.last_val;
 #elif defined(HC32F4A8)
         stcCrcInit.u64InitValue = ctx->crc_cfg.last_val;
@@ -114,7 +116,7 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
     {
         (void)CRC_CRC32_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length, &result);
     }
-#elif defined(HC32F448) || defined(HC32F472)
+#elif defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
     if (16U  == ctx->crc_cfg.width)
     {
         result = CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length);
