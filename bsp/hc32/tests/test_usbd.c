@@ -270,11 +270,11 @@ MSH_CMD_EXPORT(hid_sample, usbd hid sample);
  * 命令调用格式：winusb_sample
  * 软件：llcom.exe
  * 程序功能：MSH命令发送winusb_sample，运行测试程序。
- * 打开llcom.exe软件，选择小工具-WinUSB设备-选择对应RTT Win USB设备-打开-勾选Hex发送-发送数据。
+ * 打开llcom.exe软件，选择小工具-WinUSB设备-选择对应RTT Win USB设备-打开-勾选Hex发送-发送数据（注意：每次发送数据长度为4的整数倍）。
  * 通过llcom.exe可发送bulk数据（100字符以内）到设备，设备收到后会回发给主机(llcom.exe)，同时通过MSH终端显示收到的HEX数据。
  * 注意：1、llcom.exe中的GUID与驱动程序中设定保持一致(通过设备管理器选择RTT Win USB设备的属性来查看)；
- *      2、win_usb_read()函数中的UIO_REQUEST_READ_FULL改为UIO_REQUEST_READ_BEST，实现数据即读即取;
- *         否则需要接满传入的size数量，才会回调接收函数。
+ *       2、win_usb_read()函数中的UIO_REQUEST_READ_FULL改为UIO_REQUEST_READ_BEST，实现数据即读即取;
+ *          否则需要接满传入的size数量，才会回调接收函数。
  *
  */
 #define WINUSB_DEV_NAME   "winusb"     /* 名称 */
