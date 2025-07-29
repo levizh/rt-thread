@@ -585,6 +585,7 @@ static void usb_rxstsqlvl_isr(usb_core_instance *pdev)
     case STS_DATA_UPDT:
         if (0U != u16ByteCnt)
         {
+            RT_ASSERT(RT_IS_ALIGN((uint32_t)ep->xfer_buff, 4UL));
             usb_rdpkt(&pdev->regs, ep->xfer_buff, u16ByteCnt);
             ep->xfer_buff += u16ByteCnt;
             ep->xfer_count += u16ByteCnt;
