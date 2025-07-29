@@ -74,6 +74,14 @@ static void printf_connect(void)
     rt_kprintf("  [tmr6]*connect PB0-->PA3 PB1-->PA7\n");
 #endif
 #endif
+#if defined (HC32F334)
+#if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
+    rt_kprintf("  [tmra]*connect PB0-->PA0 PB1-->PA1\n");
+#endif
+#if defined(BSP_USING_PULSE_ENCODER_TMR6_1)
+    rt_kprintf("  [tmr6]*connect PB0-->PA7 PB1-->PA3\n");
+#endif
+#endif
 }
 
 static void _pulse_cmd_print_usage(void)
