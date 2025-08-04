@@ -233,22 +233,6 @@ rt_err_t rt_hw_board_pwm_tmra_init(CM_TMRA_TypeDef *TMRAx)
 #endif
         break;
 #endif
-#if defined(BSP_USING_PWM_TMRA_2)
-    case (rt_uint32_t)CM_TMRA_2:
-#ifdef BSP_USING_PWM_TMRA_2_CH1
-        GPIO_SetFunc(PWM_TMRA_2_CH1_PORT, PWM_TMRA_2_CH1_PIN, PWM_TMRA_2_CH1_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_2_CH2
-        GPIO_SetFunc(PWM_TMRA_2_CH2_PORT, PWM_TMRA_2_CH2_PIN, PWM_TMRA_2_CH2_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_2_CH3
-        GPIO_SetFunc(PWM_TMRA_2_CH3_PORT, PWM_TMRA_2_CH3_PIN, PWM_TMRA_2_CH3_PIN_FUNC);
-#endif
-#ifdef BSP_USING_PWM_TMRA_2_CH4
-        GPIO_SetFunc(PWM_TMRA_2_CH4_PORT, PWM_TMRA_2_CH4_PIN, PWM_TMRA_2_CH4_PIN_FUNC);
-#endif
-        break;
-#endif
     default:
         result = -RT_ERROR;
         break;
@@ -265,7 +249,7 @@ rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
     switch ((rt_uint32_t)TMR4x)
     {
 #if defined(BSP_USING_PWM_TMR4_1)
-    case (rt_uint32_t)CM_TMR4_1:
+    case (rt_uint32_t)CM_TMR4:
 #ifdef BSP_USING_PWM_TMR4_1_OUH
         GPIO_SetFunc(PWM_TMR4_1_OUH_PORT, PWM_TMR4_1_OUH_PIN, PWM_TMR4_1_OUH_PIN_FUNC);
 #endif
@@ -283,6 +267,12 @@ rt_err_t rt_hw_board_pwm_tmr4_init(CM_TMR4_TypeDef *TMR4x)
 #endif
 #ifdef BSP_USING_PWM_TMR4_1_OWL
         GPIO_SetFunc(PWM_TMR4_1_OWL_PORT, PWM_TMR4_1_OWL_PIN, PWM_TMR4_1_OWL_PIN_FUNC);
+#endif
+#ifdef BSP_USING_PWM_TMR4_1_OXH
+        GPIO_SetFunc(PWM_TMR4_1_OXH_PORT, PWM_TMR4_1_OXH_PIN, PWM_TMR4_1_OXH_PIN_FUNC);
+#endif
+#ifdef BSP_USING_PWM_TMR4_1_OXL
+        GPIO_SetFunc(PWM_TMR4_1_OXL_PORT, PWM_TMR4_1_OXL_PIN, PWM_TMR4_1_OXL_PIN_FUNC);
 #endif
         break;
 #endif

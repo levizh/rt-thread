@@ -482,16 +482,11 @@ menu "On-chip Peripheral Drivers"
                             config BSP_USING_PWM_TMRA_1_CH2
                                 bool "Enable timerA-1 channel2"
                                 default n
-                        endif
-                    menuconfig BSP_USING_PWM_TMRA_2
-                        bool "Enable timerA-2 output PWM"
-                        default n
-                        if BSP_USING_PWM_TMRA_2
-                            config BSP_USING_PWM_TMRA_2_CH1
-                                bool "Enable timerA-2 channel1"
+                            config BSP_USING_PWM_TMRA_1_CH3
+                                bool "Enable timerA-1 channel3"
                                 default n
-                            config BSP_USING_PWM_TMRA_2_CH2
-                                bool "Enable timerA-2 channel2"
+                            config BSP_USING_PWM_TMRA_1_CH4
+                                bool "Enable timerA-1 channel4"
                                 default n
                         endif
                 endif
@@ -520,6 +515,12 @@ menu "On-chip Peripheral Drivers"
                                 default n
                             config BSP_USING_PWM_TMR4_1_OWL
                                 bool "Enable TMR4_1_OWL channel5"
+                                default n
+                            config BSP_USING_PWM_TMR4_1_OXH
+                                bool "Enable TMR4_1_OXH channel6"
+                                default n
+                            config BSP_USING_PWM_TMR4_1_OXL
+                                bool "Enable TMR4_1_OXL channel7"
                                 default n
                         endif
                 endif

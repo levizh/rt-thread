@@ -63,6 +63,8 @@
     #define IC_DEV_CNT                  (8)
 #elif defined (HC32F460)
     #define IC_DEV_CNT                  (3)
+#elif defined (HC32F334)
+    #define IC_DEV_CNT                  (4)
 #endif
 #define IC_NAME_LEN                     (3)
 #define DEFAULT_WATER_MARK              (5)
