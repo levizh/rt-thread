@@ -99,10 +99,56 @@ static void _set_default_filter(void)
 #endif
 }
 
+static uint8_t _get_can_data_bytes_len(uint32_t dlc)
+{
+    uint8_t data_bytes = 0;
+
+    dlc &= 0xFU;
+    if (dlc <= 8U)
+    {
+        data_bytes = dlc;
+    }
+#ifdef RT_CAN_USING_CANFD
+    else
+    {
+        switch (dlc)
+        {
+        case CAN_DLC12:
+            data_bytes = 12U;
+            break;
+        case CAN_DLC16:
+            data_bytes = 16U;
+            break;
+        case CAN_DLC20:
+            data_bytes = 20U;
+            break;
+        case CAN_DLC24:
+            data_bytes = 24U;
+            break;
+        case CAN_DLC32:
+            data_bytes = 32U;
+            break;
+        case CAN_DLC48:
+            data_bytes = 48U;
+            break;
+        case CAN_DLC64:
+            data_bytes = 64U;
+            break;
+        default:
+            /* Code should never touch here */
+            break;
+        }
+    }
+#endif
+
+    return data_bytes;
+}
+
 static void can_rx_thread(void *parameter)
 {
     struct rt_can_msg rxmsg = {0};
     rt_size_t  size;
+    uint8_t data_len;
 
     while (1)
     {
@@ -115,7 +161,8 @@ static void can_rx_thread(void *parameter)
         rt_device_read(can_dev, 0, &rxmsg, sizeof(rxmsg));
         /* 打印数据 ID 及内容 */
         rt_kprintf("ID:%x Data:", rxmsg.id);
-        for (int i = 0; i < rxmsg.len; i++)
+        data_len = _get_can_data_bytes_len(rxmsg.len);
+        for (int i = 0; i < data_len; i++)
         {
             rt_kprintf("%2x ", rxmsg.data[i]);
         }
