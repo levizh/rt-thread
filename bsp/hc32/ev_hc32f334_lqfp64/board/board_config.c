@@ -136,15 +136,22 @@ rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
 #if defined(RT_USING_CAN)
 void CanPhyEnable(void)
 {
+    stc_gpio_init_t stcGpioInit;
+
 #if defined(BSP_USING_MCAN1)
-    TCA9539_WritePin(CAN1_STB_PORT, CAN1_STB_PIN, TCA9539_PIN_RESET);
-    TCA9539_ConfigPin(CAN1_STB_PORT, CAN1_STB_PIN, TCA9539_DIR_OUT);
+    GPIO_StructInit(&stcGpioInit);
+    stcGpioInit.u16PinState = PIN_STAT_RST;
+    stcGpioInit.u16PinDir   = PIN_DIR_OUT;
+    GPIO_Init(MCAN1_PHY_STBY_PORT, MCAN1_PHY_STBY_PIN, &stcGpioInit);
 #endif
 #if defined(BSP_USING_MCAN2)
-    TCA9539_WritePin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_PIN_RESET);
-    TCA9539_ConfigPin(CAN2_STB_PORT, CAN2_STB_PIN, TCA9539_DIR_OUT);
+    GPIO_StructInit(&stcGpioInit);
+    stcGpioInit.u16PinState = PIN_STAT_RST;
+    stcGpioInit.u16PinDir   = PIN_DIR_OUT;
+    GPIO_Init(MCAN2_PHY_STBY_PORT, MCAN2_PHY_STBY_PIN, &stcGpioInit);
 #endif
 }
+
 rt_err_t rt_hw_board_mcan_init(CM_MCAN_TypeDef *MCANx)
 {
     rt_err_t result = RT_EOK;
