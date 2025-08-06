@@ -190,7 +190,7 @@ rt_err_t rt_hw_spi_board_init(CM_SPI_TypeDef *CM_SPIx)
     switch ((rt_uint32_t)CM_SPIx)
     {
 #if defined(BSP_USING_SPI1)
-    case (rt_uint32_t)CM_SPI1:
+    case (rt_uint32_t)CM_SPI:
         GPIO_StructInit(&stcGpioInit);
         stcGpioInit.u16PinState = PIN_STAT_SET;
         stcGpioInit.u16PinDir   = PIN_DIR_OUT;

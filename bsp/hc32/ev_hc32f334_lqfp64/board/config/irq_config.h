@@ -120,18 +120,8 @@ extern "C" {
 #endif /* BSP_USING_UART4 */
 
 #if defined(BSP_USING_SPI1)
-#define BSP_SPI1_ERR_IRQ_NUM            SPI1_IRQn
+#define BSP_SPI1_ERR_IRQ_NUM            SPI_IRQn
 #define BSP_SPI1_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#endif
-
-#if defined(BSP_USING_SPI2)
-#define BSP_SPI2_ERR_IRQ_NUM            SPI2_IRQn
-#define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#endif
-
-#if defined(BSP_USING_SPI3)
-#define BSP_SPI3_ERR_IRQ_NUM            SPI3_IRQn
-#define BSP_SPI3_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif
 
 #if defined (BSP_USING_QSPI)

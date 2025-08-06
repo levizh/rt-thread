@@ -28,7 +28,11 @@
 
 #define FAL_PART_NAME                   "app"
 #define TEST_BUF_SIZE                   1024UL
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472) || defined (HC32F448) || defined (HC32F4A8)
 #define TEST_RW_CNT                     32UL
+#elif defined (HC32F334)
+#define TEST_RW_CNT                     4UL
+#endif
 #define TEST_RW_START_ADDR              HC32_FLASH_END_ADDRESS - (TEST_BUF_SIZE * TEST_RW_CNT)
 
 
