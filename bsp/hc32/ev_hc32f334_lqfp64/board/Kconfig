@@ -30,11 +30,6 @@ menu "Onboard Peripheral Drivers"
         bool "Enable SPI FLASH (w25q64 spi1)"
         select BSP_USING_SPI
         select BSP_USING_SPI1
-        select BSP_USING_ON_CHIP_FLASH
-        select RT_USING_SFUD
-        select RT_USING_DFS
-        select RT_USING_FAL
-        select RT_USING_MTD_NOR
         default n
 
 endmenu
