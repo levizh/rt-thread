@@ -86,7 +86,6 @@ scons --attach=devices.watchdog_wdt
 scons -j4
 scons --attach=default
 
-
 scons --attach=peripheral.spi_flash
 scons -j4
 scons --attach=default

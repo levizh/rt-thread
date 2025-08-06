@@ -191,12 +191,6 @@ rt_err_t rt_hw_spi_board_init(CM_SPI_TypeDef *CM_SPIx)
     {
 #if defined(BSP_USING_SPI1)
     case (rt_uint32_t)CM_SPI:
-        GPIO_StructInit(&stcGpioInit);
-        stcGpioInit.u16PinState = PIN_STAT_SET;
-        stcGpioInit.u16PinDir   = PIN_DIR_OUT;
-        GPIO_Init(SPI1_WP_PORT, SPI1_WP_PIN, &stcGpioInit);
-        GPIO_Init(SPI1_HOLD_PORT, SPI1_HOLD_PIN, &stcGpioInit);
-
         (void)GPIO_StructInit(&stcGpioInit);
         stcGpioInit.u16PinDrv = PIN_HIGH_DRV;
         stcGpioInit.u16PinInputType = PIN_IN_TYPE_CMOS;
