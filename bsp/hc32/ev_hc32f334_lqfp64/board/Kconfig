@@ -334,7 +334,7 @@ menu "On-chip Peripheral Drivers"
                 config BSP_USING_SWDT
                     bool "SWDT(3.72hour(max))"
                 config BSP_USING_WDT
-                    bool "WDT(10.7s(max))"
+                    bool "WDT(8.9s(max))"
             endchoice
 
             config BSP_WDT_CONTINUE_COUNT
