@@ -351,9 +351,6 @@ menu "On-chip Peripheral Drivers"
 
                 config BSP_RTC_USING_LRC
                     bool "RTC Using LRC"
-
-                config BSP_RTC_USING_XTAL_DIV
-                    bool "RTC Using XTAL Division"
             endchoice
         endif
 
@@ -569,14 +566,6 @@ menu "On-chip Peripheral Drivers"
                         bool "unit 3"
                     config BSP_USING_INPUT_CAPTURE_TMR6_4
                         bool "unit 4"
-                    config BSP_USING_INPUT_CAPTURE_TMR6_5
-                        bool "unit 5"
-                    config BSP_USING_INPUT_CAPTURE_TMR6_6
-                        bool "unit 6"
-                    config BSP_USING_INPUT_CAPTURE_TMR6_7
-                        bool "unit 7"
-                    config BSP_USING_INPUT_CAPTURE_TMR6_8
-                        bool "unit 8"
                 endif
         endif
 endmenu
