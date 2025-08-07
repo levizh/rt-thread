@@ -12,9 +12,7 @@ devices.crypto:
     kconfig:
       - CONFIG_BSP_USING_HWCRYPTO=y
       - CONFIG_BSP_USING_UQID=y
-      - CONFIG_BSP_USING_RNG=y
       - CONFIG_BSP_USING_CRC=y
-      - CONFIG_BSP_USING_HASH=y
 devices.dac:
     kconfig:
       - CONFIG_BSP_USING_DAC=y
@@ -45,7 +43,8 @@ devices.mcan:
     kconfig:
       - CONFIG_BSP_USING_MCAN=y
       - CONFIG_BSP_USING_MCAN1=y
-      - CONFIG_RT_CAN_USING_CANFD=y
+      - CONFIG_BSP_USING_MCAN2=y
+      - CONFIG_RT_USING_CAN=y
       - CONFIG_RT_CAN_USING_HDR=y
 devices.pm:
     kconfig:
@@ -105,8 +104,6 @@ devices.spi:
       - CONFIG_BSP_SPI1_TX_USING_DMA=y
       - CONFIG_BSP_SPI1_RX_USING_DMA=y
       - CONFIG_BSP_SPI_USING_DMA=y
-      - CONFIG_RT_USING_DFS=y
-      - CONFIG_RT_USING_DFS_ELMFAT=y
 devices.uart_v1:
     kconfig:
       - CONFIG_RT_USING_SERIAL_V1=y
