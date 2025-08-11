@@ -832,6 +832,7 @@ menu "On-chip Peripheral Drivers"
     menuconfig BSP_USING_USB
         bool "Enable USB"
         default n
+        depends on !RT_USING_CHERRYUSB
         if BSP_USING_USB
             config BSP_USING_USBD
                 bool

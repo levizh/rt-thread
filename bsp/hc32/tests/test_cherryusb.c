@@ -33,6 +33,33 @@
 #if defined(RT_CHERRYUSB_HOST)
 #include "usbh_core.h"
 #if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS)
+/*  使用USB Host 时，开发板建议使用5V外接电源供电，并短接 POWERSEL 的 EXT跳帽
+
+    menuconfig:关键配置
+
+    RT-Thread Kernel ---> (4096) The stack size of timer thread
+
+    RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
+                                                  [*] Enable usb host mode
+                                                      Selectot usb host ip.... --->
+                                                          [*]dwc2_hc
+                                                      [*] Enable usb cdc ecm driver
+
+    RT-Thread Components--->Network---> lwIP--->lwIP version ---> v2.1.2
+                                                ...
+                                                [*] Enable alloc ip address through DHCP
+                                                ...
+                                                (4096) the stack size of lwIP thread
+                                                [*] Not use Rx thread
+                                                [*] Not use Tx thread
+                                                ...
+                                                [*] Enable ping features
+
+
+
+*/
+
+
 /*  ECM/RNDIS 测试
 msh />ipconfig
     network interface: u0 (Default)
@@ -69,6 +96,19 @@ MSH_CMD_EXPORT(ipconfig, list network interface information);
 
 #if defined(RT_CHERRYUSB_DEVICE)
 #if defined(RT_CHERRYUSB_DEVICE_TEMPLATE_CDC_ACM)
+/*
+    menuconfig:关键配置
+
+    RT-Thread Kernel ---> (4096) The stack size of timer thread
+
+    RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
+                                                  [*] Enable usb device mode
+                                                      Selectot usb host ip.... --->
+                                                         [*]dwc2_hc
+                                                      [*] Enable usb cdc acm device
+                                                          Select usb device template...--->
+                                                             [*] cdc acm
+*/
 
 static int  cherryusb_device_cdc_acm_init(void)
 {
