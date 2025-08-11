@@ -70,6 +70,10 @@ static struct rt_semaphore can_rx_sem;
 static rt_mutex_t can_mutex = RT_NULL;
 static rt_thread_t rx_thread;
 
+#ifdef RT_CAN_USING_CANFD
+static const uint8_t mcan_data_size[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
+#endif
+
 #define CAN_IF_INIT()                   do {                            \
                                             if (can_dev == RT_NULL || can_mutex == RT_NULL) { \
                                                 rt_kprintf("failed! please first execute can_sample cmd!\n"); \
@@ -109,36 +113,7 @@ static uint8_t _get_can_data_bytes_len(uint32_t dlc)
         data_bytes = dlc;
     }
 #ifdef RT_CAN_USING_CANFD
-    else
-    {
-        switch (dlc)
-        {
-        case CAN_DLC12:
-            data_bytes = 12U;
-            break;
-        case CAN_DLC16:
-            data_bytes = 16U;
-            break;
-        case CAN_DLC20:
-            data_bytes = 20U;
-            break;
-        case CAN_DLC24:
-            data_bytes = 24U;
-            break;
-        case CAN_DLC32:
-            data_bytes = 32U;
-            break;
-        case CAN_DLC48:
-            data_bytes = 48U;
-            break;
-        case CAN_DLC64:
-            data_bytes = 64U;
-            break;
-        default:
-            /* Code should never touch here */
-            break;
-        }
-    }
+    data_bytes = mcan_data_size[dlc];
 #endif
 
     return data_bytes;

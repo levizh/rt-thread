@@ -44,7 +44,7 @@ devices.mcan:
       - CONFIG_BSP_USING_MCAN=y
       - CONFIG_BSP_USING_MCAN1=y
       - CONFIG_BSP_USING_MCAN2=y
-      - CONFIG_RT_USING_CAN=y
+      - CONFIG_RT_CAN_USING_CANFD=y
       - CONFIG_RT_CAN_USING_HDR=y
 devices.pm:
     kconfig:
