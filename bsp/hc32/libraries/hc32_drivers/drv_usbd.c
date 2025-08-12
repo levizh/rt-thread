@@ -53,7 +53,7 @@ static struct ep_id _ep_pool[] =
     {0x4,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
-#if defined (HC32F4A0)
+#if defined (HC32F4A0) || defined(HC32F4A8)
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x7,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
