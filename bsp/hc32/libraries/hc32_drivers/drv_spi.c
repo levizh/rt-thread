@@ -717,6 +717,13 @@ void SPI1_Handler(void)
 }
 #endif /* HC32F448, HC32F472 */
 
+#if defined (HC32F334)
+void SPI_Handler(void)
+{
+    hc32_spi1_err_irq_handler();
+}
+#endif /* HC32F334 */
+
 #endif /* BSP_USING_SPI1 */
 
 #if defined(BSP_USING_SPI2)
@@ -764,13 +771,14 @@ static void hc32_spi4_err_irq_handler(void)
     /* leave interrupt */
     rt_interrupt_leave();
 }
-#endif /* BSP_USING_SPI4 */
 #if defined (HC32F472)
 void SPI4_Handler(void)
 {
     hc32_spi4_err_irq_handler();
 }
 #endif /* HC32F472 */
+
+#endif /* BSP_USING_SPI4 */
 
 #if defined(BSP_USING_SPI5)
 static void hc32_spi5_err_irq_handler(void)
