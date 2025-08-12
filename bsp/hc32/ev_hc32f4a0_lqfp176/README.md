@@ -24,12 +24,12 @@ EV_F4A0_LQ176 开发板常用 **板载资源** 如下：
 
 - MCU：HC32F4A0SITB，主频240MHz，2048KB FLASH，512KB RAM
 - 外部RAM：IS62WV51216(SRAM, 1MB) IS42S16400J(SDRAM, 8MB)
-- 外部FLASH: MT29F2G08AB(Nand, 256MB) W25Q64(SPI NOR, 64MB)
+- 外部FLASH: MT29F2G08AB(Nand, 256MB) W25Q64(SPI NOR, 8MB)
 - 常用外设
   - LED：3 个， user LED(LED0,LED1,LED2)。
   - 按键：11 个，矩阵键盘(K1~K9)、WAKEUP(K10)、RESET(K11)。
-- 常用接口：USB转串口、SD卡接口、以太网接口、LCD接口、USB HS、USB FS、USB 3300、DVP接口、3.5mm耳机接口、Line in接口、喇叭接口
-- 调试接口：板载DAP调试器、标准JTAG/SWD。
+- 常用接口：SD卡接口、以太网接口、LCD接口、USB HS/HS接口、DVP接口、3.5mm耳机接口、Line in接口、CAN接口、LIN接口。
+- 调试接口：板载DAP调试器（含USB转串口）、标准JTAG/SWD。
 
 开发板更多详细信息请参考小华半导体半导体[EV_F4A0_LQ176](https://www.xhsc.com.cn)
 
@@ -37,34 +37,34 @@ EV_F4A0_LQ176 开发板常用 **板载资源** 如下：
 
 本 BSP 目前对外设的支持情况如下：
 
-| **板载外设**  | **支持情况** |               **备注**                |
+| **板载外设**  | **支持情况**  |               **备注**                |
 | :------------ | :-----------: | :-----------------------------------: |
-| USB 转串口    |      支持     |          使用 UART1                  |
-| ETH           |     支持     |              					     |
-| LED           |     支持     |           LED                        |
-| Nand | 支持 | MT29F2G08AB |
-| SDRAM | 支持 | IS42S16400J |
+| ETH           |     支持      |           RTL8201F                    |
+| Nand          |     支持      |           MT29F2G08AB                 |
+| SDRAM         |     支持      |           IS42S16400J                 |
+| USB 转串口    |     支持      |           使用 UART1                  |
 
-| **片上外设**  | **支持情况** |               **备注**                |
+| **片上外设**  | **支持情况**  |               **备注**                |
 | :------------ | :-----------: | :-----------------------------------: |
-| Crypto | 支持 | AES, CRC, HASH, RNG, UID |
-| DAC | 支持 |  |
-| ADC           |     支持     |                             |
-| CAN           |     支持     |                                       |
-| GPIO          |     支持     | PA0, PA1... PI13 ---> PIN: 0, 1...141 |
-| PM | 支持 |  |
-| Lptimer | 支持 |  |
-| Hwtimer | 支持 |  |
-| Pulse_encoder | 支持 |  |
-| PWM | 支持 |  |
-| RTC | 支持 | 闹钟精度为1分钟 |
-| WDT | 支持 |  |
-| I2C           |     支持     |              软件、硬件 I2C                 |
-| QSPI | 支持 |  |
-| SPI           |     支持     |              SPI1~6                   |
-| SDIO | 支持 |  |
-| UART V1 & V2         |     支持     |              UART1~10                 |
-| USB | 支持 | USBFS/HS Core， device/host模式 |
+| ADC           |     支持      |                                       |
+| CAN           |     支持      |                                       |
+| Crypto        |     支持      | AES, CRC, HASH, RNG                   |
+| DAC           |     支持      |                                       |
+| FLASH         |     支持      |                                       |
+| GPIO          |     支持      | PA0, PA1... PI13 ---> PIN: 0, 1...141 |
+| HwTimer       |     支持      |                                       |
+| I2C           |     支持      | 软件、硬件 I2C                        |
+| PM            |     支持      |                                       |
+| PulseEncoder  |     支持      |                                       |
+| PWM           |     支持      |                                       |
+| QSPI          |     支持      |                                       |
+| RTC           |     支持      | 闹钟精度为1分钟                       |
+| SDIO          |     支持      |                                       |
+| SPI           |     支持      |                                       |
+| InputCapture  |     支持      |                                       |
+| UART V1 & V2  |     支持      |                                       |
+| USB           |     支持      | USBFS/HS Core， device/host模式       |
+| WDT           |     支持      |                                       |
 
 ## 使用说明
 
@@ -136,4 +136,4 @@ msh >
 
 维护人:
 
--  [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<xhsc_ae_cd_ap@xhsc.com.cn>
+- [小华半导体MCU](https://www.xhsc.com.cn)，邮箱：<xhsc_ae_cd_ap@xhsc.com.cn>
