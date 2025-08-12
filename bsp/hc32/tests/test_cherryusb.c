@@ -11,7 +11,7 @@
 #include <rtdevice.h>
 #include <board.h>
 
-/* MDK: 使用 Version 5 Compiler，勾选 Option --> C/C+ --> GNU extensions
+/* MDK: 使用 Version 5 Compiler，需勾选 Option --> C/C+ --> GNU extensions
    CherryUSB 与 legacy USB 组件不可同时使用
 */
 
@@ -37,7 +37,8 @@
 
     menuconfig:关键配置
 
-    RT-Thread Kernel ---> (4096) The stack size of timer thread
+    RT-Thread Kernel --->[*] Enable soft timer with a timer thread
+                            (4096) The stack size of timer thread
 
     RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
                                                   [*] Enable usb host mode
@@ -98,8 +99,6 @@ MSH_CMD_EXPORT(ipconfig, list network interface information);
 #if defined(RT_CHERRYUSB_DEVICE_TEMPLATE_CDC_ACM)
 /*
     menuconfig:关键配置
-
-    RT-Thread Kernel ---> (4096) The stack size of timer thread
 
     RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
                                                   [*] Enable usb device mode
