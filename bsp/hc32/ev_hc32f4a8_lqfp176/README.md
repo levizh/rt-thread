@@ -23,12 +23,12 @@ EV_F4A8_LQ176 是 XHSC 官方推出的开发板，搭载 HC32F4A8SITB 芯片，�
 EV_F4A8_LQ176 开发板常用 **板载资源** 如下：
 
 - MCU：HC32F4A8SITB，主频240MHz，2048KB FLASH，512KB RAM
-- 外部RAM：IS62WV51216(SRAM, 1MB) W9825G6KH(SDRAM, 8MB)
-- 外部FLASH: MT29F2G08AB(Nand, 256MB) W25Q64(SPI NOR, 8MB)
+- 外部RAM：IS62WV51216(SRAM，1MB) W9825G6KH(SDRAM，8MB)
+- 外部FLASH: MT29F2G08AB(Nand，256MB) W25Q64(SPI NOR，8MB)
 - 常用外设
-  - LED：3 个， user LED(LED0,LED1,LED2)。
+  - LED：3 个，User LED(LED0、LED1、LED2)。
   - 按键：6个，矩阵键盘(K1~K4)、WAKEUP(K5)、RESET(K0)。
-- 常用接口：SD卡接口、以太网接口、LCD接口、USB HS/HS接口、DVP接口、3.5mm耳机接口、Line in接口、CAN接口、LIN接口、RS485接口。
+- 常用接口：SD卡接口、以太网接口、LCD接口、USB FS/HS接口、DVP接口、3.5mm耳机接口、Line in接口、CAN/MCAN接口、LIN接口、RS485接口。
 - 调试接口：板载DAP调试器（含USB转串口）、标准JTAG/SWD。
 
 开发板更多详细信息请参考小华半导体半导体[EV_F4A8_LQ176](https://www.xhsc.com.cn)
@@ -48,12 +48,13 @@ EV_F4A8_LQ176 开发板常用 **板载资源** 如下：
 | :------------ | :-----------: | :-----------------------------------: |
 | ADC           |     支持      |                                       |
 | CAN           |     支持      |                                       |
-| Crypto        |     支持      | AES, CRC, HASH, RNG                   |
+| Crypto        |     支持      | AES，CRC，HASH，RNG                   |
 | DAC           |     支持      |                                       |
 | FLASH         |     支持      |                                       |
-| GPIO          |     支持      | PA0, PA1... PI13 ---> PIN: 0, 1...141 |
+| GPIO          |     支持      | PA0，PA1...PI13 ---> PIN：0，1...141  |
 | HwTimer       |     支持      |                                       |
 | I2C           |     支持      | 软件、硬件 I2C                        |
+| InputCapture  |     支持      |                                       |
 | MCAN          |     支持      |                                       |
 | PM            |     支持      |                                       |
 | PulseEncoder  |     支持      |                                       |
@@ -62,7 +63,6 @@ EV_F4A8_LQ176 开发板常用 **板载资源** 如下：
 | RTC           |     支持      | 闹钟精度为1分钟                       |
 | SDIO          |     支持      |                                       |
 | SPI           |     支持      |                                       |
-| InputCapture  |     支持      |                                       |
 | UART V1 & V2  |     支持      |                                       |
 | USB           |     支持      | USBFS/HS Core， device/host模式       |
 | WDT           |     支持      |                                       |
