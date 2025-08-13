@@ -424,3 +424,26 @@ rt_err_t rt_hw_usbfs_board_init(void)
     return RT_EOK;
 }
 #endif
+
+#if defined(RT_USING_CHERRYUSB)
+rt_err_t rt_hw_usbfs_board_init(uint8_t devmode)
+{
+    stc_gpio_init_t stcGpioCfg;
+    (void)GPIO_StructInit(&stcGpioCfg);
+
+    stcGpioCfg.u16PinAttr = PIN_ATTR_ANALOG;
+    (void)GPIO_Init(USBF_DM_PORT, USBF_DM_PIN, &stcGpioCfg);
+    (void)GPIO_Init(USBF_DP_PORT, USBF_DP_PIN, &stcGpioCfg);
+    if (0U != devmode)
+    {
+        /* reserved */
+    }
+    else
+    {
+        GPIO_OutputCmd(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN, ENABLE);
+        GPIO_SetPins(USBF_DRVVBUS_PORT, USBF_DRVVBUS_PIN); /* DRV VBUS with GPIO funciton */
+    }
+    return RT_EOK;
+}
+
+#endif

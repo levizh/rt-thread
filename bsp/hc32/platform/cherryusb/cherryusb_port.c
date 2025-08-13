@@ -159,6 +159,13 @@ static void usbh_hs_irq_handler(void)
 }
 #endif
 
+#if defined(HC32F472)
+void USBFS_Handler(void)
+{
+    usbh_fs_irq_handler();
+}
+#endif
+
 void usb_hc_low_level_init(struct usbh_bus *bus)
 {
     struct hc32_irq_config irq_config;
@@ -213,6 +220,13 @@ static void usbd_fs_irq_handler(void)
 static void usbd_hs_irq_handler(void)
 {
     USBD_IRQHandler(g_usb_hs_busid);
+}
+#endif
+
+#if defined(HC32F472)
+void USBFS_Handler(void)
+{
+    usbd_fs_irq_handler();
 }
 #endif
 

@@ -32,10 +32,10 @@
 
 #if defined(RT_CHERRYUSB_HOST)
 #include "usbh_core.h"
-#if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS)
+#if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS) || defined(RT_CHERRYUSB_HOST_MSC)
 /*  使用USB Host 时，开发板建议使用5V外接电源供电，并短接 POWERSEL 的 EXT跳帽
 
-    menuconfig:关键配置
+    menuconfig: ECM 关键配置
 
     RT-Thread Kernel --->[*] Enable soft timer with a timer thread
                             (4096) The stack size of timer thread
@@ -57,11 +57,23 @@
                                                 [*] Enable ping features
 
 
+    menuconfig: MSC 关键配置
+
+    RT-Thread Kernel --->[*] Enable soft timer with a timer thread
+                            (4096) The stack size of timer thread
+
+    RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
+                                                  [*] Enable usb host mode
+                                                      Selectot usb host ip.... --->
+                                                          [*]dwc2_hc
+                                                      [*] Enable usb msc driver
+                                                      ...
+                                                      (/)usb host dfs mount point
 
 */
 
 
-/*  ECM/RNDIS 测试
+/*  ECM 测试
 msh />ipconfig
     network interface: u0 (Default)
     MTU: 1500
@@ -85,12 +97,14 @@ static int cherryusb_host_init(void)
 }
 INIT_APP_EXPORT(cherryusb_host_init);
 
+#if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS)
 void ipconfig(void)
 {
     extern void list_if(void);
     list_if();
 }
 MSH_CMD_EXPORT(ipconfig, list network interface information);
+#endif
 
 #endif
 #endif
