@@ -252,11 +252,16 @@ static int32_t AES_Encrypt(const uint8_t *pu8Plaintext, uint32_t u32PlaintextSiz
 
     if ((pu8Plaintext != NULL) && (u32PlaintextSize > 0UL) && (pu8Key != NULL) && (pu8Ciphertext != NULL))
     {
-        if (u8KeySize == AES_KEY_SIZE_16BYTE) {
+        if (u8KeySize == AES_KEY_SIZE_16BYTE)
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_128;
-        } else if (u8KeySize == AES_KEY_SIZE_24BYTE) {
+        }
+        else if (u8KeySize == AES_KEY_SIZE_24BYTE)
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_192;
-        } else {
+        }
+        else
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_256;
         }
         stcSkeInit.u32Crypto = SKE_CRYPTO_ENCRYPT;
@@ -284,11 +289,16 @@ static int32_t AES_Decrypt(const uint8_t *pu8Ciphertext, uint32_t u32CiphertextS
 
     if ((pu8Plaintext != NULL) && (u32CiphertextSize > 0UL) && (pu8Key != NULL) && (pu8Ciphertext != NULL))
     {
-        if (u8KeySize == AES_KEY_SIZE_16BYTE) {
+        if (u8KeySize == AES_KEY_SIZE_16BYTE)
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_128;
-        } else if (u8KeySize == AES_KEY_SIZE_24BYTE) {
+        }
+        else if (u8KeySize == AES_KEY_SIZE_24BYTE)
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_192;
-        } else {
+        }
+        else
+        {
             stcSkeInit.u32Alg = SKE_ALG_AES_256;
         }
         stcSkeInit.u32Crypto = SKE_CRYPTO_DECRYPT;

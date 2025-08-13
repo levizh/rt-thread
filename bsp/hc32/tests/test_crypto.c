@@ -135,14 +135,16 @@ static void aes_test(rt_uint16_t key_bitlen)
     const char *key256 = "1234567890abcdefghijklmnopqrstuv";
     const char *key;
     rt_uint8_t type_max = 1U;
-    hwcrypto_type types[] = {
+    hwcrypto_type types[] =
+    {
         HWCRYPTO_TYPE_AES_ECB,
         HWCRYPTO_TYPE_AES_CBC,
         HWCRYPTO_TYPE_AES_CTR,
         HWCRYPTO_TYPE_AES_CFB,
         HWCRYPTO_TYPE_AES_OFB,
     };
-    const char *type_str[] = {
+    const char *type_str[] =
+    {
         "aes_ecb",
         "aes_cbc",
         "aes_ctr",
@@ -214,7 +216,7 @@ static void aes_test(rt_uint16_t key_bitlen)
             }
             rt_kprintf("\n");
 
-    _exit:
+_exit:
             rt_hwcrypto_symmetric_destroy(ctx);
         }
     }

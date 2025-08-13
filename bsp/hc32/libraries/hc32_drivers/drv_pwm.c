@@ -683,9 +683,9 @@ static struct rt_pwm_ops _tmra_ops =
 
 #if defined(BSP_USING_PWM_TMR4)
 #if defined (HC32F4A8) || defined (HC32F472) || defined (HC32F4A0) || defined (HC32F460)
-#define TMR4_CHANNEL_NUM_MAX     6U
+    #define TMR4_CHANNEL_NUM_MAX     6U
 #elif defined (HC32F448) || defined (HC32F334)
-#define TMR4_CHANNEL_NUM_MAX     8U
+    #define TMR4_CHANNEL_NUM_MAX     8U
 #endif
 
 enum

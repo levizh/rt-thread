@@ -16,7 +16,7 @@
 #include "hc32_ll.h"
 #include "drv_config.h"
 #if defined(RT_USING_CHERRYUSB)
-#include "usb_config.h"
+    #include "usb_config.h"
 #endif
 
 /************************* XTAL port **********************/

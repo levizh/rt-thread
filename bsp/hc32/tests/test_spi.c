@@ -38,9 +38,9 @@
 
 #define W25Q_SPI_WR_RD_ADDR             0x4000
 #if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F472) || defined (HC32F448) || defined (HC32F4A8)
-#define W25Q_SPI_DATA_BUF_LEN           0x2000
+    #define W25Q_SPI_DATA_BUF_LEN       0x2000
 #elif defined (HC32F334)
-#define W25Q_SPI_DATA_BUF_LEN           0x1000
+    #define W25Q_SPI_DATA_BUF_LEN       0x1000
 #endif
 
 
