@@ -64,6 +64,11 @@ const struct dwc2_user_params param_fs_core =
     .host_perio_tx_fifo_size = CONFIG_USB_FS_CORE_HOST_PE_FIFO_SIZE,
     .device_gccfg = 0,
     .host_gccfg = 0,
+#if defined(HC32F4A0) || defined(HC32F4A8) || defined(HC32F460)
+    .b_session_valid_override = false,
+#elif defined(HC32F472)
+    .b_session_valid_override = true,
+#endif
 };
 
 #if defined(HC32F4A0) || defined(HC32F4A8)
@@ -107,6 +112,7 @@ const struct dwc2_user_params param_hs_core =
     .host_perio_tx_fifo_size = CONFIG_USB_HS_CORE_HOST_PE_FIFO_SIZE,
     .device_gccfg = 0,
     .host_gccfg = 0,
+    .b_session_valid_override = false,
 };
 #endif
 

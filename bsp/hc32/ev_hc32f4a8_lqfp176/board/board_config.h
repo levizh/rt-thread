@@ -592,7 +592,7 @@
         defined(BSP_USING_USBFS) || defined(BSP_USING_USBHS) || \
         defined(BSP_USING_USBHS_PHY_EMBED) || defined(BSP_USING_USBHS_PHY_EXTERN) || \
         defined(RT_USING_USB)
-        #error "When using CherryUSB, Please donnot Enable 'On-Chip Peripheral Driver---> []Enable USB' or using USB legacy version!"
+        #error "When using CherryUSB, Please donot Enable 'On-Chip Peripheral Driver---> []Enable USB' or using USB legacy version!"
     #endif
 #endif
 
