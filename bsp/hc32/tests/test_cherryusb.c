@@ -11,8 +11,7 @@
 #include <rtdevice.h>
 #include <board.h>
 
-/* MDK: 使用 Version 5 Compiler，需勾选 Option --> C/C+ --> GNU extensions
-   CherryUSB 与 legacy USB 组件不可同时使用
+/* 请关注并阅读bsp/hc32/ev_hc32xxxx/README.md中，关于USB使用的相关注意事项
 */
 
 #if defined(RT_CHERRYUSB_HOST) && defined(RT_CHERRYUSB_DEVICE)
@@ -33,7 +32,7 @@
 #if defined(RT_CHERRYUSB_HOST)
 #include "usbh_core.h"
 #if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS) || defined(RT_CHERRYUSB_HOST_MSC)
-/*  使用USB Host 时，开发板建议使用5V外接电源供电，并短接 POWERSEL 的 EXT跳帽
+/*  使用USB Host 时，应确保主机对设备供电充足
 
     menuconfig: ECM 关键配置
 
