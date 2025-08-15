@@ -120,7 +120,7 @@ msh >
 | USB      | device |      ALL       | 由于协议栈的设计，当配置为CDC设备时，打开USB虚拟串口，需使能流控的DTR信号。（如使用SSCOM串口助手打开USB虚拟串口时，勾选DTR选框） |
 | USB      | host   | RTT legacy USB | 若配置为U盘主机模式，出现部分U盘无法识别或者写入失败时，可以尝试将RTT抽象层中rt_udisk_run()函数的rt_usbh_storage_reset()操作注释掉，测试是否可以获得更好的兼容性。 |
 | USB      | host   | RTT legacy USB | 目前仅实现并测试了对U盘的支持。                              |
-| USB      | ALL    |      ALL       | CherryUSB 与 RTT legacy USB 组件不可同时使用                 |
+| USB      | ALL    |      ALL       | CherryUSB 与 RTT legacy USB 组件不可同时使用;<br />CherryUSB与 ”On-Chip Peripheral Driver---> []Enable USB“ 不可同时使能及配置。 |
 | USB      | ALL    | RTT legacy USB | 通过“board/config/usb_config/usb_app_conf.h” 进行应用个性化配置（主要为FIFO分配） |
 | USB      | ALL    |   CherryUSB    | 通过“board/ports/usb_config.h”进行应用个性化配置（如FIFO分配、是否使用DMA[Device]等） |
 

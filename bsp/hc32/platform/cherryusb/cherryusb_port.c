@@ -15,6 +15,12 @@
 
 #include "board_config.h"
 
+#if defined(RT_CHERRYUSB_HOST) && defined(RT_CHERRYUSB_DEVICE)
+    #if defined(HC32F460) || defined(HC32F472)
+        #error "Only one USB role can be selected!"
+    #endif
+#endif
+
 const struct dwc2_user_params param_fs_core =
 {
     .phy_type = DWC2_PHY_TYPE_PARAM_FS,
@@ -148,8 +154,8 @@ void dwc2_get_user_params(uint32_t reg_base, struct dwc2_user_params *params)
 extern rt_err_t rt_hw_usbfs_board_init(uint8_t devmode);
 static uint8_t g_usb_fs_busid = 0U;
 #if defined(HC32F4A0) || defined(HC32F4A8)
-extern rt_err_t rt_hw_usbhs_board_init(uint8_t devmode);
-static uint8_t g_usb_hs_busid = 0U;
+    extern rt_err_t rt_hw_usbhs_board_init(uint8_t devmode);
+    static uint8_t g_usb_hs_busid = 0U;
 #endif
 
 #if defined(RT_CHERRYUSB_HOST)
