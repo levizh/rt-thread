@@ -55,6 +55,22 @@
                                                 ...
                                                 [*] Enable ping features
 
+    备注:CherryUSB Host枚举设备时，默认选择Configuration 1，若指定设备(如CH397A模组CDC-ECM模式)需要选择Configuration 2，需在
+        components/drivers/usb/cherryusb/core/usbh_core.c文件中usbh_enumerate()函数内添加如下代码：
+        int usbh_enumerate(struct usbh_hubport *hport)
+        {
+            ...
+            config_index = 0;
+            // Add code start
+            if((0x1A86 == ((struct usb_device_descriptor *)ep0_request_buffer[hport->bus->busid])->idVendor) && \
+               (0x5397 == ((struct usb_device_descriptor *)ep0_request_buffer[hport->bus->busid])->idProduct)) {
+                config_index = 1; // For CH397, we need to select configuration 2
+            }
+            // Add code end
+            USB_LOG_DBG("The device selects config %d\r\n", config_index);
+            ...
+        }
+
 
     menuconfig: MSC 关键配置
 
