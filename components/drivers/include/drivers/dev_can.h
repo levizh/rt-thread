@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2024 RT-Thread Development Team
+ * Copyright (c) 2006-2025, RT-Thread Development Team
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -20,6 +20,9 @@
 #endif
 #ifndef RT_CANSND_BOX_NUM
 #define RT_CANSND_BOX_NUM   1
+#endif
+#ifndef RT_CANSND_MSG_TIMEOUT
+#define RT_CANSND_MSG_TIMEOUT 100
 #endif
 
 enum CAN_DLC
@@ -64,7 +67,7 @@ enum CANBAUD
 #define RT_CAN_MODE_NOPRIV              0x00
 
 /**
- * @defgroup    group_CAN_Device CAN Driver
+ * @defgroup    group_drivers_can CAN Driver
  * @brief       CAN driver api
  * @ingroup     group_device_driver
  *
@@ -201,7 +204,7 @@ enum CANBAUD
 
 
 /*!
- * @addtogroup group_CAN_Device
+ * @addtogroup group_drivers_can
  * @{
  */
 #define CAN_RX_FIFO0                (0x00000000U)  /*!< CAN receive FIFO 0 */
@@ -541,3 +544,4 @@ void rt_hw_can_isr(struct rt_can_device *can, int event);
 /*! @}*/
 
 #endif /*__DEV_CAN_H*/
+

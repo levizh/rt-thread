@@ -20,7 +20,8 @@
       "RTT_BSP": "RTduino_Arduino Libraries (Raspberry Pico)",
       "RTT_TOOL_CHAIN": "sourcery-arm",
       "SUB_RTT_BSP": [
-        "raspberry-pico"
+        "raspberry-pico/RP2040",
+        "raspberry-pico/RP2350"
       ]
     },
     {
@@ -245,6 +246,7 @@
         "nxp/mcx/mcxc/frdm-mcxc444",
         "nxp/mcx/mcxa/frdm-mcxa153",
         "nxp/mcx/mcxa/frdm-mcxa156",
+		"nxp/mcx/mcxa/frdm-mcxa346",
         "renesas/ebf_qi_min_6m5",
         "renesas/ra6m4-cpk",
         "renesas/ra6m4-iot",
@@ -260,6 +262,7 @@
         "renesas/rzt2m_rsk",
         "renesas/rzn2l_rsk",
         "renesas/rzn2l_etherkit",
+        "renesas/ra2a1-ek",
         "frdm-k64f",
         "xplorer4330/M4"
       ]
@@ -303,6 +306,7 @@
         "gd32/arm/gd32h759i-start",
         "gd32/arm/gd32e503v-eval",
         "gd32/arm/gd32527I-eval",
+        "gd32/arm/gd32e230-lckfb",
         "n32/n32g43xcl-stb",
         "n32/n32g45xcl-stb",
         "n32/n32g45xml-stb",
@@ -488,6 +492,13 @@
       "RTT_TOOL_CHAIN": "sourcery-Xuantie-900-gcc-linux-musl",
       "SUB_RTT_BSP": [
         "xuantie/virt64/c906"
+      ]
+    },
+    {
+      "RTT_BSP": "allwinner-smart",
+      "RTT_TOOL_CHAIN": "sourcery-riscv64-general-toolchain",
+      "SUB_RTT_BSP": [
+        "allwinner/d1s"
       ]
     }
   ]

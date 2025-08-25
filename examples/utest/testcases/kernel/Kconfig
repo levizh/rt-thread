@@ -10,6 +10,12 @@ config UTEST_SMALL_MEM_TC
     default y
     depends on RT_USING_SMALL_MEM
 
+config UTEST_OBJECT_TC
+    select RT_USING_DEVICE
+    select RT_USING_SEMAPHORE
+    bool "object test"
+    default n
+
 config UTEST_SLAB_TC
     bool "slab test"
     default n
