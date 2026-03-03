@@ -1145,6 +1145,10 @@ rt_inline void _isr_can_tx(can_device *p_can_dev)
         {
             is_tx_done = RT_TRUE;
         }
+        else
+        {
+            rt_hw_can_isr(&p_can_dev->rt_can, RT_CAN_EVENT_TX_FAIL);
+        }
     }
     if (is_tx_done)
     {
@@ -1153,7 +1157,6 @@ rt_inline void _isr_can_tx(can_device *p_can_dev)
 
     if (CAN_GetStatus(p_can_dev->instance, CAN_FLAG_ARBITR_LOST) == SET)
     {
-        rt_hw_can_isr(&p_can_dev->rt_can, RT_CAN_EVENT_TX_FAIL);
         CAN_ClearStatus(p_can_dev->instance, CAN_FLAG_ARBITR_LOST);
     }
 }
