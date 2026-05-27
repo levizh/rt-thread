@@ -10,6 +10,7 @@
  * 2022-06-14     CDT                  fix a bug of internal trigger
  * 2024-02-20     CDT                  support HC32F448
  *                                     add function for associating with the dma
+ * 2026-05-27     CDT                  support HC32F4A2
  */
 
 #include <board.h>
@@ -87,7 +88,7 @@ static void _adc_internal_trigger0_set(adc_device *p_adc_dev)
     case (rt_uint32_t)CM_ADC2:
         u32TriggerSel = AOS_ADC2_0;
         break;
-#if defined (HC32F472) || defined (HC32F4A0) || defined (HC32F448) || defined (HC32F4A8) || defined (HC32F334)
+#if defined (HC32F472) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F4A8) || defined (HC32F334)
     case (rt_uint32_t)CM_ADC3:
         u32TriggerSel = AOS_ADC3_0;
         break;
@@ -118,7 +119,7 @@ static void _adc_internal_trigger1_set(adc_device *p_adc_dev)
     case (rt_uint32_t)CM_ADC2:
         u32TriggerSel = AOS_ADC2_1;
         break;
-#if defined (HC32F472) || defined (HC32F4A0) || defined (HC32F448) || defined (HC32F4A8) || defined (HC32F334)
+#if defined (HC32F472) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F4A8) || defined (HC32F334)
     case (rt_uint32_t)CM_ADC3:
         u32TriggerSel = AOS_ADC3_1;
         break;

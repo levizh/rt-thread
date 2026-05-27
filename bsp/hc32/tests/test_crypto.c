@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2024-12-30     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
  */
 
 #include <rtthread.h>
@@ -44,7 +45,7 @@ static void _crypto_cmd_print_usage(void)
     rt_kprintf("  aes: test aes module. \n");
 #if defined(HC32F460)
     rt_kprintf("    e.g. msh >crypto_sample aes 128 \n");
-#elif defined (HC32F4A0) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8)
+#elif defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8)
     rt_kprintf("    e.g. msh >crypto_sample aes 128/192/256 \n");
 #endif
 #endif

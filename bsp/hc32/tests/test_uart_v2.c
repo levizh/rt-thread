@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2024-12-30     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
  */
 
 /*
@@ -68,7 +69,7 @@
 
 #if defined(HC32F460) && defined(BSP_USING_UART2)
     #define SAMPLE_DEFAULT_UART_NAME       "uart2"
-#elif defined(HC32F4A0) && defined (BSP_USING_UART6)
+#elif (defined(HC32F4A0) || defined(HC32F4A2)) && defined (BSP_USING_UART6)
     #define SAMPLE_DEFAULT_UART_NAME       "uart6"
 #elif defined(HC32F448) && defined (BSP_USING_UART1)
     #define SAMPLE_DEFAULT_UART_NAME       "uart1"

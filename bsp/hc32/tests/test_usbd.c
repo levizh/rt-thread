@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2024-12-30     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
  */
 
 #include <rtthread.h>
@@ -90,8 +91,8 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 
 #if defined(RT_USB_DEVICE_MSTORAGE)
 
-/* F4A0 only FS can used with spi flash */
-#if ((defined(HC32F4A0) || defined(HC32F4A8)) && defined(BSP_USING_USBFS)) || \
+/* F4A0/F4A2 only FS can used with spi flash */
+#if ((defined(HC32F4A0) || defined(HC32F4A2)) && defined(BSP_USING_USBFS)) || \
      defined(HC32F460)  || defined(HC32F472)
 
 /* Enable spibus1, SFUD, usb msc */
@@ -117,7 +118,7 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
 #include "dev_spi_flash_sfud.h"
 
 #define SPI_FLASH_CHIP                  RT_USB_MSTORAGE_DISK_NAME /* msc class disk name */
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8)
     #define SPI_FLASH_SS_PORT               GPIO_PORT_C
     #define SPI_FLASH_SS_PIN                GPIO_PIN_07
     #define SPI_BUS_NAME                    "spi1"
@@ -157,7 +158,7 @@ static void rt_hw_spi_flash_reset(char *spi_dev_name)
 
 static int rt_hw_spi_flash_with_sfud_init(void)
 {
-#if defined(HC32F4A0) || defined(HC32F460) || defined(HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F4A8)
     rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, GET_PIN(C, 7));
 #elif defined(HC32F472)
     rt_hw_spi_device_attach(SPI_BUS_NAME, SPI_FLASH_DEVICE_NAME, GET_PIN(B, 12));
@@ -201,7 +202,7 @@ INIT_COMPONENT_EXPORT(rt_hw_spi_flash_with_sfud_init);
 */
 
 #define USBD_DEV_NAME   "hidd"     /* 名称 */
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8)
     #define KEY_PIN_NUM     GET_PIN(A,0)          /* PA0 */
 #elif defined(HC32F460)
     #define KEY_PIN_NUM     GET_PIN(B,1)          /* PB1 */

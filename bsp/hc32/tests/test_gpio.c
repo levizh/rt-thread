@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2024-12-30     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
  */
 
 /*
@@ -29,7 +30,7 @@
 #if defined(HC32F460)
     #define LED1_PIN_NUM                GET_PIN(D, 3)   /* LED0 */
     #define KEY1_PIN_NUM                GET_PIN(B, 1)   /* K10  */
-#elif defined(HC32F4A0) || defined(HC32F4A8)
+#elif defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8)
     #define LED1_PIN_NUM                GET_PIN(B, 11)  /* LED10 */
     #define KEY1_PIN_NUM                GET_PIN(A, 0)   /* K10  */
 #elif defined(HC32F448)

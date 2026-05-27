@@ -9,6 +9,7 @@
  * 2022-06-07     xiaoxiaolisunny      add hc32f460 series
  * 2022-06-08     CDT                  fix a bug of RT_CAN_CMD_SET_FILTER
  * 2022-06-15     lianghongquan        fix bug, CAN_FILTER_COUNT, RT_CAN_CMD_SET_FILTER, interrupt setup and processing.
+ * 2026-05-27     CDT                  support HC32F4A2
  */
 
 #include "drv_can.h"
@@ -20,7 +21,7 @@
 
 #if defined(BSP_USING_CAN1) || defined(BSP_USING_CAN2) || defined(BSP_USING_CAN3)
 
-#if defined(RT_CAN_USING_CANFD) && defined(HC32F460)
+#if defined(RT_CAN_USING_CANFD) && defined (HC32F460)
     #error "Selected mcu does not support canfd!"
 #endif
 
@@ -28,10 +29,10 @@
 #define TSEG1_MAX_FOR_CAN2_0                                (65U)
 #define TSEG2_MIN_FOR_CAN2_0                                (1U)
 #define TSEG2_MAX_FOR_CAN2_0                                (8U)
-#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
     #define TSJW_MIN_FOR_CAN2_0                             (1U)
     #define TSJW_MAX_FOR_CAN2_0                             (16U)
-#elif defined(HC32F460)
+#elif defined (HC32F460)
     #define TSJW_MIN_FOR_CAN2_0                             (1U)
     #define TSJW_MAX_FOR_CAN2_0                             (8U)
 #endif
@@ -88,7 +89,7 @@
 #endif
 
 #define NUM_PRESCALE_MAX                                    (256U)
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     #define CAN_FILTER_COUNT                                (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -236,7 +237,7 @@ static can_device _g_can_dev_array[] =
     {
         {0},
         CAN1_INIT_PARAMS,
-#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
         .instance = CM_CAN1,
 #elif defined (HC32F460)
         .instance = CM_CAN,
@@ -811,7 +812,7 @@ static rt_err_t _canfd_control(can_device *p_can_dev, int cmd, void *arg)
         CAN_Init(p_can_dev->instance, &p_can_dev->ll_init);
         p_can_dev->rt_can.config.enable_canfd = argval;
         argval = (argval > CAN_FRAME_CLASSIC) ? ENABLE : DISABLE;
-#if defined(HC32F472) || defined(HC32F4A8)
+#if defined (HC32F472) || defined (HC32F4A8)
         CAN_FD_Cmd(p_can_dev->instance, (en_functional_state_t)argval);
 #endif
         break;
@@ -1226,7 +1227,7 @@ static void _irq_handler_can1(void)
     rt_interrupt_leave();
 }
 
-#if defined(HC32F472)
+#if defined (HC32F472)
 void CAN1_Handler(void)
 {
     _irq_handler_can1();
@@ -1242,7 +1243,7 @@ static void _irq_handler_can2(void)
     rt_interrupt_leave();
 }
 
-#if defined(HC32F472)
+#if defined (HC32F472)
 void CAN2_Handler(void)
 {
     _irq_handler_can2();
@@ -1258,7 +1259,7 @@ static void _irq_handler_can3(void)
     rt_interrupt_leave();
 }
 
-#if defined(HC32F472)
+#if defined (HC32F472)
 void CAN3_Handler(void)
 {
     _irq_handler_can3();
@@ -1269,9 +1270,9 @@ void CAN3_Handler(void)
 static void _enable_can_clock(void)
 {
 #if defined(BSP_USING_CAN1)
-#if defined(HC32F4A0) || defined(HC32F472) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
-#elif defined(HC32F460)
+#elif defined (HC32F460)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN, ENABLE);
 #endif
 #endif

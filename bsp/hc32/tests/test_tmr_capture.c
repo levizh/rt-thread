@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2025-01-10     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
  */
 
 /*
@@ -58,7 +59,7 @@
 #define MSH_USAGE_IC_SET_WM             "  ic wm <unit> <wm>  - e.g., set warter mark of ic3 to 11: ic wm 3 11\n"
 #define MSH_USAGE_IC_CLR                "  ic clr <unit>      - e.g., clear data buffer of ic3: ic clr 3 \n"
 
-#if defined (HC32F4A0) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     #define IC_DEV_CNT                  (8)
 #elif defined (HC32F460)
     #define IC_DEV_CNT                  (3)

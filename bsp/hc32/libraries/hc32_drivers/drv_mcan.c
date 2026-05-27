@@ -26,7 +26,7 @@ typedef struct hc32_mcan_config_struct
 
     uint32_t int0_sel;
     struct hc32_irq_config int0_cfg;    /* MCAN interrupt line 0 configuration */
-#if defined(HC32F4A8)
+#if defined (HC32F4A8)
     func_ptr_t irq_callback0;
 #endif
 } hc32_mcan_config_t;
@@ -951,7 +951,7 @@ rt_inline void mcan_isr(hc32_mcan_driver_t *driver, uint32_t int_sel)
 /****************************************************************************************
 * mcan irq handler
 ****************************************************************************************/
-#if defined(HC32F448) || defined(HC32F4A8) || defined(HC32F334)
+#if defined (HC32F448) || defined (HC32F4A8) || defined (HC32F334)
 #if defined(BSP_USING_MCAN1)
 void MCAN1_INT0_Handler(void)
 {
@@ -984,12 +984,12 @@ void MCAN2_INT0_Handler(void)
 ****************************************************************************************/
 static void mcan_irq_config(hc32_mcan_config_t *hard)
 {
-#if defined(HC32F448) || defined(HC32F334)
+#if defined (HC32F448) || defined (HC32F334)
     if (hard->int0_sel != 0)
     {
         hc32_install_irq_handler(&hard->int0_cfg, RT_NULL, RT_TRUE);
     }
-#elif defined(HC32F4A8)
+#elif defined (HC32F4A8)
     if (hard->int0_sel != 0)
     {
         hc32_install_irq_handler(&hard->int0_cfg, hard->irq_callback0, RT_TRUE);
@@ -999,14 +999,14 @@ static void mcan_irq_config(hc32_mcan_config_t *hard)
 
 static void mcan_enable_periph_clock(void)
 {
-#if defined(HC32F448) || defined(HC32F4A8)
+#if defined (HC32F448) || defined (HC32F4A8)
 #if defined(BSP_USING_MCAN1)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_MCAN1, ENABLE);
 #endif
 #if defined(BSP_USING_MCAN2)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_MCAN2, ENABLE);
 #endif
-#elif defined(HC32F334)
+#elif defined (HC32F334)
 #if defined(BSP_USING_MCAN1) || defined(BSP_USING_MCAN2)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_MCAN1 | FCG1_PERIPH_MCAN2, ENABLE);
 #endif
@@ -1120,7 +1120,7 @@ static void init_can_cfg(hc32_mcan_driver_t *driver)
     driver->can_device.config = can_cfg;
 }
 
-#if defined(HC32F4A8)
+#if defined (HC32F4A8)
 /**
  * @brief  This function gets mcan irq handle.
  * @param  None
@@ -1147,7 +1147,7 @@ static int rt_hw_mcan_init(void)
 
     mcan_enable_periph_clock();
     mcan_set_init_para();
-#if defined(HC32F4A8)
+#if defined (HC32F4A8)
     mcan_get_irq_callback();
 #endif
     for (i = 0; i < MCAN_DEV_CNT; i++)
