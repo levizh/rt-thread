@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2022-2025, Xiaohua Semiconductor Co., Ltd. All rights reserved.
+ * Copyright (C) 2022-2026, Xiaohua Semiconductor Co., Ltd. All rights reserved.
  *
  * This software component is licensed by XHSC under BSD 3-Clause license
  * (the "License"); You may not use this file except in compliance with the
@@ -12,7 +12,7 @@
 /*  Abstract    Linker script for HC32F4A2 Device with                       */
 /*              2MByte FLASH, 516KByte RAM                                   */
 /*  Version     V1.0                                                         */
-/*  Date        2022-03-31                                                   */
+/*  Date        2026-05-27                                                   */
 /*****************************************************************************/
 /* OTP section(data sections are not flash multiplexed region) implementation.
    You need to pay attention to the size of the specified OTP block.

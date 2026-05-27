@@ -1,11 +1,11 @@
 /**
  *******************************************************************************
- * @file  template/source/hc32f4xx_conf.h
+ * @file  hc32f4xx_conf.h
  * @brief This file contains HC32 Series Device Driver Library usage management.
  @verbatim
    Change Logs:
    Date             Author          Notes
-   2022-03-31       CDT             First version
+   2026-05-27       CDT             First version
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2023, Xiaohua Semiconductor Co., Ltd. All rights reserved.

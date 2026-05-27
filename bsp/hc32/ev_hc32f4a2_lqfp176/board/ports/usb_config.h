@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2025-08-08     CDT          first version
+ * 2026-05-27     CDT          first version
  */
 
 #ifndef CHERRYUSB_CONFIG_H

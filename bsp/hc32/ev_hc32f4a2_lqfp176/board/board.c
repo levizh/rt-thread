@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2026, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author       Notes
- * 2022-04-28     CDT          first version
- * 2024-06-11     CDT          remove CLK_Delay for usb, as it is already included in ddl API
+ * 2026-05-27     CDT          first version
  */
 
 #include "board.h"

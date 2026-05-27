@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2022-2024, Xiaohua Semiconductor Co., Ltd.
+ * Copyright (C) 2022-2026, Xiaohua Semiconductor Co., Ltd.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author            Notes
- * 2023-06-09     CDT               first version
+ * 2026-05-27     CDT               first version
  */
 
 #ifndef __PULSE_ENCODER_CONFIG_H__
