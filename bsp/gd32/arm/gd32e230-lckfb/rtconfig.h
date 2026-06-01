@@ -102,10 +102,13 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart0"
-#define RT_VER_NUM 0x50201
+#define RT_USING_CONSOLE_OUTPUT_CTL
+#define RT_VER_NUM 0x50300
 #define RT_BACKTRACE_LEVEL_MAX_NR 32
 /* end of RT-Thread Kernel */
 #define RT_USING_HW_ATOMIC
+#define ARCH_USING_HW_ATOMIC_8
+#define ARCH_USING_HW_ATOMIC_16
 #define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
 #define ARCH_ARM_CORTEX_M23
@@ -302,6 +305,14 @@
 #define PKG_USING_GD32_ARM_SERIES_DRIVER
 #define PKG_USING_GD32_ARM_SERIES_DRIVER_LATEST_VERSION
 /* end of GD32 Drivers */
+
+/* HPMicro SDK */
+
+/* end of HPMicro SDK */
+
+/* FT32 HAL & SDK Drivers */
+
+/* end of FT32 HAL & SDK Drivers */
 /* end of HAL & SDK Drivers */
 
 /* sensors drivers */
@@ -386,7 +397,7 @@
 
 /* Hardware Drivers Config */
 
-#define SOC_GD32E230C8T6
+#define SOC_GD32E230C8
 
 /* Onboard Peripheral Drivers */
 
@@ -398,11 +409,16 @@
 
 #define BSP_USING_GPIO
 #define BSP_USING_UART
+#define BSP_USING_SERIAL_V1
 #define BSP_USING_UART0
+#define BSP_UART0_TX_PIN "PA9"
+#define BSP_UART0_RX_PIN "PA10"
+#define BSP_UART0_AFIO "AF1"
 
 /* I2C Configuration */
 
 /* end of I2C Configuration */
+#define BSP_USING_GD_DBG
 /* end of On-chip Peripheral Drivers */
 
 /* Board extended module Drivers */
@@ -410,4 +426,3 @@
 /* end of Hardware Drivers Config */
 
 #endif
-

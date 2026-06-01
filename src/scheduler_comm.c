@@ -8,10 +8,11 @@
  * Change Logs:
  * Date           Author       Notes
  * 2024-01-18     Shell        Separate scheduling related codes from thread.c, scheduler_.*
+ * 2025-09-01     Rbb666       Add thread stack overflow hook.
  */
 
-#define DBG_TAG           "kernel.sched"
-#define DBG_LVL           DBG_INFO
+#define DBG_TAG "kernel.sched"
+#define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
 #include <rtthread.h>
@@ -33,7 +34,7 @@
 void rt_sched_thread_init_ctx(struct rt_thread *thread, rt_uint32_t tick, rt_uint8_t priority)
 {
     /* setup thread status */
-    RT_SCHED_CTX(thread).stat  = RT_THREAD_INIT;
+    RT_SCHED_CTX(thread).stat = RT_THREAD_INIT;
 
 #ifdef RT_USING_SMP
     /* not bind on any cpu */
@@ -257,9 +258,9 @@ rt_err_t rt_sched_thread_ready(struct rt_thread *thread)
             /* remove from suspend list */
             rt_list_remove(&RT_THREAD_LIST_NODE(thread));
 
-        #ifdef RT_USING_SMART
+#ifdef RT_USING_SMART
             thread->wakeup_handle.func = RT_NULL;
-        #endif
+#endif
 
             /* insert to schedule ready list and remove from susp list */
             rt_sched_insert_thread(thread);
@@ -296,7 +297,7 @@ rt_err_t rt_sched_tick_increase(rt_tick_t tick)
 
     rt_sched_lock(&slvl);
 
-    if(RT_SCHED_PRIV(thread).remaining_tick > tick)
+    if (RT_SCHED_PRIV(thread).remaining_tick > tick)
     {
         RT_SCHED_PRIV(thread).remaining_tick -= tick;
     }
@@ -411,6 +412,35 @@ rt_err_t rt_sched_thread_reset_priority(struct rt_thread *thread, rt_uint8_t pri
 }
 
 #ifdef RT_USING_OVERFLOW_CHECK
+
+#if defined(RT_USING_HOOK) && defined(RT_HOOK_USING_FUNC_PTR)
+static rt_err_t (*rt_stack_overflow_hook)(struct rt_thread *thread);
+
+/**
+ * @brief Set a hook function to be called when stack overflow is detected
+ *
+ * @param hook The function pointer to be called when stack overflow is detected.
+ *             Pass RT_NULL to disable the hook.
+ *             The hook function should return RT_EOK if overflow is handled,
+ *             otherwise the system will halt in an infinite loop.
+ *
+ * @note The hook function must be simple and never be blocked or suspended.
+ *       This function is typically used for error logging, recovery, or graceful shutdown.
+ *
+ * @details Hook function behavior:
+ *   - Return RT_EOK: System continues execution after overflow handling
+ *   - Return any other value: System enters infinite loop (halt)
+ *   - Hook is called from rt_scheduler_stack_check() when overflow is detected
+ *   - Hook execution context depends on when stack check is performed
+ *
+ * @see rt_scheduler_stack_check()
+ */
+void rt_scheduler_stack_overflow_sethook(rt_err_t (*hook)(struct rt_thread *thread))
+{
+    rt_stack_overflow_hook = hook;
+}
+#endif /* RT_USING_HOOK */
+
 /**
  * @brief Check thread stack for overflow or near-overflow conditions
  *
@@ -434,7 +464,7 @@ void rt_scheduler_stack_check(struct rt_thread *thread)
 
     /* if stack pointer locate in user data section skip stack check. */
     if (lwp && ((rt_uint32_t)thread->sp > (rt_uint32_t)lwp->data_entry &&
-    (rt_uint32_t)thread->sp <= (rt_uint32_t)lwp->data_entry + (rt_uint32_t)lwp->data_size))
+                (rt_uint32_t)thread->sp <= (rt_uint32_t)lwp->data_entry + (rt_uint32_t)lwp->data_size))
     {
         return;
     }
@@ -449,13 +479,26 @@ void rt_scheduler_stack_check(struct rt_thread *thread)
 #endif /* ARCH_CPU_STACK_GROWS_UPWARD */
         (rt_uintptr_t)thread->sp <= (rt_uintptr_t)thread->stack_addr ||
         (rt_uintptr_t)thread->sp >
-        (rt_uintptr_t)thread->stack_addr + (rt_uintptr_t)thread->stack_size)
+            (rt_uintptr_t)thread->stack_addr + (rt_uintptr_t)thread->stack_size)
     {
         rt_base_t dummy = 1;
+        rt_err_t hook_result = -RT_ERROR;
 
         LOG_E("thread:%s stack overflow\n", thread->parent.name);
 
-        while (dummy);
+#if defined(RT_USING_HOOK) && defined(RT_HOOK_USING_FUNC_PTR)
+        if (rt_stack_overflow_hook != RT_NULL)
+        {
+            hook_result = rt_stack_overflow_hook(thread);
+        }
+#endif /* RT_USING_HOOK */
+
+        /* If hook handled the overflow successfully, don't enter infinite loop */
+        if (hook_result != RT_EOK)
+        {
+            while (dummy)
+                ;
+        }
     }
 #endif /* RT_USING_HW_STACK_GUARD */
 #ifdef ARCH_CPU_STACK_GROWS_UPWARD
@@ -466,7 +509,7 @@ void rt_scheduler_stack_check(struct rt_thread *thread)
 #endif
     {
         LOG_W("warning: %s stack is close to the top of stack address.\n",
-                   thread->parent.name);
+              thread->parent.name);
     }
 #else
 #ifndef RT_USING_HW_STACK_GUARD
@@ -476,7 +519,7 @@ void rt_scheduler_stack_check(struct rt_thread *thread)
 #endif
     {
         LOG_W("warning: %s stack is close to end of stack address.\n",
-                   thread->parent.name);
+              thread->parent.name);
     }
 #endif /* ARCH_CPU_STACK_GROWS_UPWARD */
 }

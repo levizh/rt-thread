@@ -64,10 +64,15 @@ static rt_err_t pl031_rtc_control(rt_device_t dev, int cmd, void *args)
 
     RT_ASSERT(dev != RT_NULL);
 
+    if (args == RT_NULL)
+    {
+        return -RT_EINVAL;
+    }
+
     switch (cmd)
     {
     case RT_DEVICE_CTRL_RTC_GET_TIME:
-        *(rt_uint32_t *)args = pl031_read32(RTC_DR);
+        *(time_t *)args = pl031_read32(RTC_DR);
         break;
     case RT_DEVICE_CTRL_RTC_SET_TIME:
         pl031_write32(RTC_LR, *(time_t *)args);
