@@ -34,6 +34,8 @@
     #define TCA9539_RST_PIN             (31)    /* PB15 */
 #elif defined (HC32F472)
     #define TCA9539_RST_PIN             (44)    /* PC12 */
+#elif defined (HC32F467)
+    #define TCA9539_RST_PIN             (141)   /* PI13 */
 #endif
 
 /*******************************************************************************
@@ -138,6 +140,10 @@ static void TCA9539_Reset(void)
     rt_pin_write(TCA9539_RST_PIN, PIN_LOW);
     rt_thread_mdelay(3U);
     rt_pin_write(TCA9539_RST_PIN, PIN_HIGH);
+#if defined (HC32F467)
+    rt_thread_mdelay(3U);
+    rt_pin_write(TCA9539_RST_PIN, PIN_LOW); // reused MD pin, logic low level to reset
+#endif
 }
 
 /**
