@@ -844,7 +844,7 @@ menu "On-chip Peripheral Drivers"
                 bool
                 default n
             config BSP_USING_USBFS
-                bool "Use USBFS Core "
+                bool "Use USBFS Core"
                 default n
             if BSP_USING_USBFS
                 choice
@@ -878,7 +878,7 @@ menu "On-chip Peripheral Drivers"
                 endif
             endif
             config BSP_USING_USBHS
-                bool "Use USBHS Core "
+                bool "Use USBHS Core"
                 default n
             if BSP_USING_USBHS
                 choice
