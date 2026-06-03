@@ -26,7 +26,7 @@
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerConnectionAddress" value=""/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerDebugInterface" value="swd"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerDeviceEndianness" value="little"/>
-    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerDeviceName" value="HC32F4A0"/>
+    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerDeviceName" value="HC32F467"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerDeviceSpeed" value="1000"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerExecutable" value="${jlink_path}/${jlink_gdbserver}"/>
     <intAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.gdbServerGdbPortNumber" value="2331"/>
@@ -41,7 +41,7 @@
     <intAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.swoEnableTargetCpuFreq" value="0"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.swoEnableTargetPortMask" value="0x1"/>
     <intAttribute key="ilg.gnumcueclipse.debug.gdbjtag.jlink.swoEnableTargetSwoFreq" value="0"/>
-    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.svdPath" value="${project_loc}/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f4a0/Source/GCC/svd/HC32F4A0.svd"/>
+    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.svdPath" value="${project_loc}/packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f467/Source/GCC/svd/HC32F467.svd"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageFileName" value=""/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageOffset" value=""/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.ipAddress" value="localhost"/>

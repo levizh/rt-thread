@@ -14,7 +14,7 @@
 #include "tca9539.h"
 
 /**
- * @defgroup HC32F4A0_EV_IO_Function_Sel Expand IO function definition
+ * @defgroup HC32F467_EV_IO_Function_Sel Expand IO function definition
  * @{
  */
 #define EIO_USBFS_OC                    (TCA9539_IO_PIN0)   /* USBFS over-current, input */
