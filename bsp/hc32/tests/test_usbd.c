@@ -109,8 +109,8 @@ MSH_CMD_EXPORT(cdc_sample, usbd cdc sample);
                                                     (50000000)Default spi maximum speed(HZ)
 4. RT-Thread Components--->Using USB legacy version
                                                 [*]Using USB device--->
-                                                    Device type--->...Mass Storage device
-                                                    (spiflash)msc class disk name
+                                                    [*]Device type---> Enable to use device as Mass Storage device
+                                                (spiflash)msc class disk name
 
 */
 #include "drv_gpio.h"
@@ -275,7 +275,7 @@ MSH_CMD_EXPORT(hid_sample, usbd hid sample);
  * 通过llcom.exe可发送bulk数据（100字符以内）到设备，设备收到后会回发给主机(llcom.exe)，同时通过MSH终端显示收到的HEX数据。
  * 注意：1、llcom.exe中的GUID与驱动程序中设定保持一致(通过设备管理器选择RTT Win USB设备的属性来查看)；
  *       2、win_usb_read()函数中的UIO_REQUEST_READ_FULL改为UIO_REQUEST_READ_BEST，实现数据即读即取;
- *          否则需要接满传入的size数量，才会回调接收函数。
+ *          否则需要接满传入的sizeof(str_read)数量的数据，才会回调接收函数。
  *
  */
 #define WINUSB_DEV_NAME   "winusb"     /* 名称 */
