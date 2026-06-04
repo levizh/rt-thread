@@ -29,7 +29,7 @@
 #define TSEG1_MAX_FOR_CAN2_0                                (65U)
 #define TSEG2_MIN_FOR_CAN2_0                                (1U)
 #define TSEG2_MAX_FOR_CAN2_0                                (8U)
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8) || defined (HC32F467)
     #define TSJW_MIN_FOR_CAN2_0                             (1U)
     #define TSJW_MAX_FOR_CAN2_0                             (16U)
 #elif defined (HC32F460)
@@ -89,14 +89,14 @@
 #endif
 
 #define NUM_PRESCALE_MAX                                    (256U)
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     #define CAN_FILTER_COUNT                                (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
 #elif defined (HC32F460)
     #define CAN_FILTER_COUNT                                (8U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN_INT)
-#elif defined (HC32F472)
+#elif defined (HC32F472) 
     #define CAN_FILTER_COUNT                                (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -237,7 +237,7 @@ static can_device _g_can_dev_array[] =
     {
         {0},
         CAN1_INIT_PARAMS,
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8) || defined (HC32F467)
         .instance = CM_CAN1,
 #elif defined (HC32F460)
         .instance = CM_CAN,
@@ -1270,7 +1270,7 @@ void CAN3_Handler(void)
 static void _enable_can_clock(void)
 {
 #if defined(BSP_USING_CAN1)
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8) ||  defined (HC32F467)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN1, ENABLE);
 #elif defined (HC32F460)
     FCG_Fcg1PeriphClockCmd(FCG1_PERIPH_CAN, ENABLE);

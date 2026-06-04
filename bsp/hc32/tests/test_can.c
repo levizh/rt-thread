@@ -173,7 +173,7 @@ static void _msh_cmd_set_baud(int argc, char **argv)
 }
 
 #ifdef RT_CAN_USING_CANFD
-void _msh_cmd_set_timing(int argc, char **argv)
+static void _msh_cmd_set_timing(int argc, char **argv)
 {
     rt_err_t result;
 
@@ -218,7 +218,7 @@ void _msh_cmd_set_timing(int argc, char **argv)
     }
 }
 
-void _msh_cmd_set_baudfd(int argc, char **argv)
+static void _msh_cmd_set_baudfd(int argc, char **argv)
 {
     rt_err_t result;
 
@@ -239,7 +239,7 @@ void _msh_cmd_set_baudfd(int argc, char **argv)
 }
 #endif
 
-void _msh_cmd_send_msg(int argc, char **argv)
+static void _msh_cmd_send_msg(int argc, char **argv)
 {
     rt_size_t  size;
     struct rt_can_msg msg = {0};
@@ -291,7 +291,7 @@ void _msh_cmd_send_msg(int argc, char **argv)
     }
 }
 
-void _show_usage(void)
+static void _show_usage(void)
 {
     rt_kprintf("Usage: \n");
     rt_kprintf(MSH_USAGE_CAN_SET_BAUD);

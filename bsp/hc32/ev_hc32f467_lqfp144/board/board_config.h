@@ -89,7 +89,7 @@
 /***********  CAN configure *********/
 #if defined(BSP_USING_CAN1)
     #define CAN1_TX_PORT                    (GPIO_PORT_D)
-    #define CAN1_TX_PIN                     (GPIO_PIN_05)
+    #define CAN1_TX_PIN                     (GPIO_PIN_11)
     #define CAN1_TX_PIN_FUNC                (GPIO_FUNC_60)
 
     #define CAN1_RX_PORT                    (GPIO_PORT_D)
@@ -99,11 +99,11 @@
 
 #if defined(BSP_USING_CAN2)
     #define CAN2_TX_PORT                    (GPIO_PORT_D)
-    #define CAN2_TX_PIN                     (GPIO_PIN_07)
+    #define CAN2_TX_PIN                     (GPIO_PIN_13)
     #define CAN2_TX_PIN_FUNC                (GPIO_FUNC_62)
 
     #define CAN2_RX_PORT                    (GPIO_PORT_D)
-    #define CAN2_RX_PIN                     (GPIO_PIN_06)
+    #define CAN2_RX_PIN                     (GPIO_PIN_12)
     #define CAN2_RX_PIN_FUNC                (GPIO_FUNC_63)
 #endif
 
@@ -549,16 +549,16 @@
 #if defined(BSP_USING_INPUT_CAPTURE)
     #define INPUT_CAPTURE_TMR6_FUNC                 (GPIO_FUNC_3)
     #if defined(BSP_USING_INPUT_CAPTURE_TMR6_1)
-        #define INPUT_CAPTURE_TMR6_1_PORT           (GPIO_PORT_B)
-        #define INPUT_CAPTURE_TMR6_1_PIN            (GPIO_PIN_09)
+        #define INPUT_CAPTURE_TMR6_1_PORT           (GPIO_PORT_A)
+        #define INPUT_CAPTURE_TMR6_1_PIN            (GPIO_PIN_08)
     #endif
     #if defined(BSP_USING_INPUT_CAPTURE_TMR6_2)
-        #define INPUT_CAPTURE_TMR6_2_PORT           (GPIO_PORT_E)
-        #define INPUT_CAPTURE_TMR6_2_PIN            (GPIO_PIN_07)
+        #define INPUT_CAPTURE_TMR6_2_PORT           (GPIO_PORT_B)
+        #define INPUT_CAPTURE_TMR6_2_PIN            (GPIO_PIN_00)
     #endif
     #if defined(BSP_USING_INPUT_CAPTURE_TMR6_3)
         #define INPUT_CAPTURE_TMR6_3_PORT           (GPIO_PORT_A)
-        #define INPUT_CAPTURE_TMR6_3_PIN            (GPIO_PIN_00)
+        #define INPUT_CAPTURE_TMR6_3_PIN            (GPIO_PIN_14)
     #endif
 #endif
 
