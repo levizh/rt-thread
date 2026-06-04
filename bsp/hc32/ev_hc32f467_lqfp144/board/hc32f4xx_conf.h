@@ -5,7 +5,7 @@
  @verbatim
    Change Logs:
    Date             Author          Notes
-   2024-11-08       CDT             First version
+   2026-06-03       CDT             First version
  @endverbatim
  *******************************************************************************
  * Copyright (C) 2022-2025, Xiaohua Semiconductor Co., Ltd. All rights reserved.

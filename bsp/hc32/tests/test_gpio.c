@@ -43,7 +43,8 @@
     #define LED_PIN_NUM                 GET_PIN(C, 13)  /* LED1 */
     #define KEY_PIN_NUM                 GET_PIN(C, 3)   /* K1  */
 #elif defined(HC32F467)
-    #define LED_PIN_NUM                 GET_PIN(B, 11)  /* LED10 */
+    /* NOTE: NEED short J13 to use LED11. */
+    #define LED_PIN_NUM                 GET_PIN(C, 9)   /* LED11 */
     #define KEY_PIN_NUM                 GET_PIN(A, 0)   /* K5  */
 #endif
 
