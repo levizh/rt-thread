@@ -9,6 +9,7 @@
  * 2024-02-20     CDT               support HC32F448
  * 2024-06-17     CDT               support HC32F472
  * 2026-05-27     CDT               support HC32F4A2
+ * 2026-06-03     CDT               support HC32F467
  */
 
 #include <rtdevice.h>

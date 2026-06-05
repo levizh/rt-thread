@@ -299,41 +299,6 @@ menu "On-chip Peripheral Drivers"
                         default 64
                 endif
 
-
-            menuconfig BSP_USING_UART8
-                bool "Enable UART8"
-                default n
-                if BSP_USING_UART8
-                    config BSP_UART8_RX_BUFSIZE
-                        int "Set UART8 RX buffer size"
-                        range 64 65535
-                        depends on RT_USING_SERIAL_V2
-                        default 256
-
-                    config BSP_UART8_TX_BUFSIZE
-                        int "Set UART8 TX buffer size"
-                        range 0 65535
-                        depends on RT_USING_SERIAL_V2
-                        default 0
-                endif
-
-            menuconfig BSP_USING_UART9
-                bool "Enable UART9"
-                default n
-                if BSP_USING_UART9
-                    config BSP_UART9_RX_BUFSIZE
-                        int "Set UART9 RX buffer size"
-                        range 64 65535
-                        depends on RT_USING_SERIAL_V2
-                        default 256
-
-                    config BSP_UART9_TX_BUFSIZE
-                        int "Set UART9 TX buffer size"
-                        range 0 65535
-                        depends on RT_USING_SERIAL_V2
-                        default 0
-                endif
-
             menuconfig BSP_USING_UART10
                 bool "Enable UART10"
                 default n
@@ -441,66 +406,6 @@ menu "On-chip Peripheral Drivers"
                         default n
                         select BSP_I2C_USING_DMA
                         select BSP_I2C3_USING_DMA
-                endif
-
-            menuconfig BSP_USING_I2C4
-                bool "Enable I2C4 BUS"
-                default n
-                select BSP_USING_I2C_HW
-                if BSP_USING_I2C4
-                    config BSP_I2C4_USING_DMA
-                        bool
-                        default n
-                    config BSP_I2C4_TX_USING_DMA
-                        bool "Enable I2C4 TX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C4_USING_DMA
-                    config BSP_I2C4_RX_USING_DMA
-                        bool "Enable I2C4 RX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C4_USING_DMA
-                endif
-
-            menuconfig BSP_USING_I2C5
-                bool "Enable I2C5 BUS"
-                default n
-                select BSP_USING_I2C_HW
-                if BSP_USING_I2C5
-                    config BSP_I2C5_USING_DMA
-                        bool
-                        default n
-                    config BSP_I2C5_TX_USING_DMA
-                        bool "Enable I2C5 TX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C5_USING_DMA
-                    config BSP_I2C5_RX_USING_DMA
-                        bool "Enable I2C5 RX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C5_USING_DMA
-                endif
-
-            menuconfig BSP_USING_I2C6
-                bool "Enable I2C6 BUS"
-                default n
-                select BSP_USING_I2C_HW
-                if BSP_USING_I2C6
-                    config BSP_I2C6_USING_DMA
-                        bool
-                        default n
-                    config BSP_I2C6_TX_USING_DMA
-                        bool "Enable I2C6 TX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C6_USING_DMA
-                    config BSP_I2C6_RX_USING_DMA
-                        bool "Enable I2C6 RX DMA"
-                        default n
-                        select BSP_I2C_USING_DMA
-                        select BSP_I2C6_USING_DMA
                 endif
         endif
 

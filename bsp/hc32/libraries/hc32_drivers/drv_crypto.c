@@ -9,6 +9,7 @@
  * 2024-06-11     CDT          Fix compiler warning
  * 2025-07-29     CDT          Support HC32F334
  * 2026-05-27     CDT          Support HC32F4A2
+ * 2026-06-03     CDT          Support HC32F467
  */
 #include "board.h"
 
@@ -95,7 +96,7 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
             goto _exit;
         }
 #if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || \
-    defined (HC32F334)
+    defined (HC32F334) || defined (HC32F467)
         stcCrcInit.u32InitValue = ctx->crc_cfg.last_val;
 #elif defined (HC32F4A8)
         stcCrcInit.u64InitValue = ctx->crc_cfg.last_val;
@@ -108,7 +109,7 @@ static rt_uint32_t _crc_update(struct hwcrypto_crc *ctx, const rt_uint8_t *in, r
         LOG_D("CRC_Init.");
         rt_memcpy(&crc_cfgbk, &ctx->crc_cfg, sizeof(struct hwcrypto_crc_cfg));
     }
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     if (16U  == ctx->crc_cfg.width)
     {
         (void)CRC_CRC16_AccumulateData(CRC_DATA_WIDTH_8BIT, in, length, (uint16_t *)&result);
@@ -360,7 +361,8 @@ static rt_err_t _cryp_crypt(struct hwcrypto_symmetric *ctx, struct hwcrypto_symm
         result = -RT_ERROR;
         goto _exit;
     }
-#elif defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8)
+#elif defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8) || \
+      defined (HC32F467)
     if (ctx->key_bitlen != (AES_KEY_SIZE_16BYTE * 8U) && ctx->key_bitlen != (AES_KEY_SIZE_24BYTE * 8U) && \
             ctx->key_bitlen != (AES_KEY_SIZE_32BYTE * 8U))
     {
@@ -473,7 +475,8 @@ static rt_err_t _crypto_create(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_RC4:
     case HWCRYPTO_TYPE_GCM:
     {
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || \
+    defined (HC32F467)
         /* Enable AES peripheral clock. */
         FCG_Fcg0PeriphClockCmd(PWC_FCG0_AES, ENABLE);
 #elif defined (HC32F4A8)
@@ -528,7 +531,8 @@ static void _crypto_destroy(struct rt_hwcrypto_ctx *ctx)
     case HWCRYPTO_TYPE_3DES:
     case HWCRYPTO_TYPE_RC4:
     case HWCRYPTO_TYPE_GCM:
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472)
+#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || \
+    defined (HC32F467)
         AES_DeInit();
         FCG_Fcg0PeriphClockCmd(PWC_FCG0_AES, DISABLE);
 #elif defined (HC32F4A8)
