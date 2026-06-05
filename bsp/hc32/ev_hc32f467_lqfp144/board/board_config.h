@@ -35,8 +35,8 @@
 #endif
 
 #if defined(BSP_USING_UART6)
-    #define USART6_RX_PORT                  (GPIO_PORT_H)
-    #define USART6_RX_PIN                   (GPIO_PIN_06)
+    #define USART6_RX_PORT                  (GPIO_PORT_D)
+    #define USART6_RX_PIN                   (GPIO_PIN_05)
     #define USART6_RX_FUNC                  (GPIO_FUNC_37)
 
     #define USART6_TX_PORT                  (GPIO_PORT_E)

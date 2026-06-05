@@ -59,7 +59,7 @@ menu "Onboard Peripheral Drivers"
                 if ETH_PHY_USING_INTERRUPT_MODE
                     config ETH_PHY_INTERRUPT_PIN
                         int "ETH PHY Interrupt pin number"
-                        range 1 176
+                        range 1 144
                         default 16
                 endif
         endif
@@ -365,12 +365,12 @@ menu "On-chip Peripheral Drivers"
                 select RT_USING_PIN
                 if BSP_USING_I2C1_SW
                     config BSP_I2C1_SCL_PIN
-                        int "i2c1 scl pin number"
-                        range 1 176
+                        int "I2C1 scl pin number"
+                        range 1 144
                         default 8       # PA8
                     config BSP_I2C1_SDA_PIN
                         int "I2C1 sda pin number"
-                        range 1 176
+                        range 1 144
                         default 23      # PB7
                 endif
         endif

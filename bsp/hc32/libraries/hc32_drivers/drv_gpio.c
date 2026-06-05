@@ -10,6 +10,7 @@
  * 2024-06-12       CDT         support external interrupt for HC32F448/HC32F472
  * 2025-07-16       CDT         Support HC32F334
  * 2026-05-27       CDT         Support HC32F4A2
+ * 2026-06-03       CDT         Support HC32F467
  */
 
 #include <rtthread.h>
