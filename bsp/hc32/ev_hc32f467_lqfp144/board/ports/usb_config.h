@@ -5,7 +5,7 @@
  *
  * Change Logs:
  * Date           Author       Notes
- * 2025-08-08     CDT          first version
+ * 2026-06-03     CDT          first version
  */
 
 #ifndef CHERRYUSB_CONFIG_H
@@ -337,15 +337,6 @@
 
 #ifndef CONFIG_USBHOST_PIPE_NUM
     #define CONFIG_USBHOST_PIPE_NUM 10
-#endif
-
-
-#ifndef usb_phyaddr2ramaddr
-    #define usb_phyaddr2ramaddr(addr) (addr)
-#endif
-
-#ifndef usb_ramaddr2phyaddr
-    #define usb_ramaddr2phyaddr(addr) (addr)
 #endif
 
 #endif

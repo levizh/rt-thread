@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2025-08-08     CDT          first version
  * 2026-05-27     CDT          Support HC32F4A2
+ * 2026-06-03     CDT          Support HC32F467
  */
 #include <rtthread.h>
 #include <rtdevice.h>
@@ -16,7 +17,7 @@
 */
 
 #if defined(RT_CHERRYUSB_HOST) && defined(RT_CHERRYUSB_DEVICE)
-    #if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+    #if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
         #define TEST_USBH_CORE_BASE   (CM_USBFS_BASE)
         #define TEST_USBD_CORE_BASE   (CM_USBHS_BASE)
     #else
@@ -108,7 +109,7 @@ msh />ping www.baidu.com
 */
 static int cherryusb_host_init(void)
 {
-    usbh_initialize(0, TEST_USBH_CORE_BASE);
+    usbh_initialize(0, TEST_USBH_CORE_BASE, RT_NULL);
     return 0;
 }
 INIT_APP_EXPORT(cherryusb_host_init);

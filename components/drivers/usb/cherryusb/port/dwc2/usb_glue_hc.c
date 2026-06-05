@@ -6,6 +6,8 @@
  * Change Logs:
  * Date           Author       Notes
  * 2025-08-08     CDT          first version
+ * 2026-05-27     CDT          Support HC32F4A2
+ * 2026-06-03     CDT          Support HC32F467
  */
 
 #include "usbd_core.h"
@@ -15,7 +17,7 @@
 #include "board_config.h"
 
 #if defined(RT_CHERRYUSB_HOST) && defined(RT_CHERRYUSB_DEVICE)
-    #if defined(HC32F460) || defined(HC32F472)
+    #if defined (HC32F460) || defined (HC32F472)
         #error "Only one USB role can be selected!"
     #endif
 #endif
@@ -37,7 +39,7 @@ const struct dwc2_user_params param_fs_core =
         [3] =  CONFIG_USB_FS_CORE_DEVICE_TX3_FIFO_SIZE,
         [4] =  CONFIG_USB_FS_CORE_DEVICE_TX4_FIFO_SIZE,
         [5] =  CONFIG_USB_FS_CORE_DEVICE_TX5_FIFO_SIZE,
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
         [6] =  CONFIG_USB_FS_CORE_DEVICE_TX6_FIFO_SIZE,
         [7] =  CONFIG_USB_FS_CORE_DEVICE_TX7_FIFO_SIZE,
         [8] =  CONFIG_USB_FS_CORE_DEVICE_TX8_FIFO_SIZE,
@@ -48,7 +50,7 @@ const struct dwc2_user_params param_fs_core =
         [13] = CONFIG_USB_FS_CORE_DEVICE_TX13_FIFO_SIZE,
         [14] = CONFIG_USB_FS_CORE_DEVICE_TX14_FIFO_SIZE,
         [15] = CONFIG_USB_FS_CORE_DEVICE_TX15_FIFO_SIZE
-#elif defined(HC32F460) || defined(HC32F472)
+#elif defined (HC32F460) || defined (HC32F472)
         [6] =  0,
         [7] =  0,
         [8] =  0,
@@ -69,14 +71,14 @@ const struct dwc2_user_params param_fs_core =
     .host_perio_tx_fifo_size = CONFIG_USB_FS_CORE_HOST_PE_FIFO_SIZE,
     .device_gccfg = 0,
     .host_gccfg = 0,
-#if defined(HC32F4A0) || defined(HC32F4A8) || defined(HC32F460)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F460) || defined (HC32F467)
     .b_session_valid_override = false,
-#elif defined(HC32F472)
+#elif defined (HC32F472)
     .b_session_valid_override = true,
 #endif
 };
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
 const struct dwc2_user_params param_hs_core =
 {
 #ifdef CONFIG_USB_HS
@@ -124,7 +126,7 @@ const struct dwc2_user_params param_hs_core =
 #ifndef CONFIG_USB_DWC2_CUSTOM_PARAM
 void dwc2_get_user_params(uint32_t reg_base, struct dwc2_user_params *params)
 {
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     if (reg_base == CM_USBHS_BASE)
     {
         memcpy(params, &param_hs_core, sizeof(struct dwc2_user_params));
@@ -152,7 +154,7 @@ void dwc2_get_user_params(uint32_t reg_base, struct dwc2_user_params *params)
 #define BOARD_INIT_USB_DEVICE_MODE  (1U)
 extern rt_err_t rt_hw_usbfs_board_init(uint8_t devmode);
 static uint8_t g_usb_fs_busid = 0U;
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     extern rt_err_t rt_hw_usbhs_board_init(uint8_t devmode);
     static uint8_t g_usb_hs_busid = 0U;
 #endif
@@ -163,14 +165,14 @@ static void usbh_fs_irq_handler(void)
     USBH_IRQHandler(g_usb_fs_busid);
 }
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
 static void usbh_hs_irq_handler(void)
 {
     USBH_IRQHandler(g_usb_hs_busid);
 }
 #endif
 
-#if defined(HC32F472)
+#if defined (HC32F472)
 void USBFS_Handler(void)
 {
     usbh_fs_irq_handler();
@@ -181,7 +183,7 @@ void usb_hc_low_level_init(struct usbh_bus *bus)
 {
     struct hc32_irq_config irq_config;
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     if (bus->hcd.reg_base == CM_USBHS_BASE)
     {
         g_usb_hs_busid = bus->hcd.hcd_id;
@@ -227,14 +229,14 @@ static void usbd_fs_irq_handler(void)
     USBD_IRQHandler(g_usb_fs_busid);
 }
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
 static void usbd_hs_irq_handler(void)
 {
     USBD_IRQHandler(g_usb_hs_busid);
 }
 #endif
 
-#if defined(HC32F472)
+#if defined (HC32F472)
 void USBFS_Handler(void)
 {
     usbd_fs_irq_handler();
@@ -245,7 +247,7 @@ void usb_dc_low_level_init(uint8_t busid)
 {
     struct hc32_irq_config irq_config;
 
-#if defined(HC32F4A0) || defined(HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     if (g_usbdev_bus[busid].reg_base == CM_USBHS_BASE)
     {
         g_usb_hs_busid = busid;
