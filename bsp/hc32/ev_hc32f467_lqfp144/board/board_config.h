@@ -243,8 +243,8 @@
 
 /************************ NAND port **********************/
 #if defined(BSP_USING_NAND)
-    #define NAND_CE_PORT                    (GPIO_PORT_C)   /* PC02 - EXMC_CE0 */
-    #define NAND_CE_PIN                     (GPIO_PIN_02)
+    #define NAND_CE_PORT                    (GPIO_PORT_B)   /* PB06 - EXMC_CE1 */
+    #define NAND_CE_PIN                     (GPIO_PIN_06)
     #define NAND_CE_FUNC                    (GPIO_FUNC_12)
 
     #define NAND_RE_PORT                    (GPIO_PORT_F)   /* PF11 - EXMC_OE */
@@ -267,8 +267,8 @@
     #define NAND_WP_PIN                     (GPIO_PIN_15)
     #define NAND_WP_FUNC                    (GPIO_FUNC_12)
 
-    #define NAND_RB_PORT                    (GPIO_PORT_G)   /* PG06 - EXMC_RB0 */
-    #define NAND_RB_PIN                     (GPIO_PIN_06)
+    #define NAND_RB_PORT                    (GPIO_PORT_G)   /* PG07 - EXMC_RB1 */
+    #define NAND_RB_PIN                     (GPIO_PIN_07)
     #define NAND_RB_FUNC                    (GPIO_FUNC_12)
 
     #define NAND_DATA0_PORT                 (GPIO_PORT_D)   /* PD14 - EXMC_DATA0 */
@@ -341,15 +341,15 @@
     #define SDRAM_DQM1_PIN                  (GPIO_PIN_01)
     #define SDRAM_DQM1_FUNC                 (GPIO_FUNC_12)
 
-    #define SDRAM_BA0_PORT                  (GPIO_PORT_D)   /* PD11 - EXMC_ADD16 */
-    #define SDRAM_BA0_PIN                   (GPIO_PIN_11)
-    #define SDRAM_BA0_FUNC                  (GPIO_FUNC_12)
-    #define SDRAM_BA1_PORT                  (GPIO_PORT_D)   /* PD12 - EXMC_ADD17 */
-    #define SDRAM_BA1_PIN                   (GPIO_PIN_12)
-    #define SDRAM_BA1_FUNC                  (GPIO_FUNC_12)
+    #define SDRAM_BA0_PORT                  (GPIO_PORT_G)   /* PG04 - EXMC_ADD16 */
+    #define SDRAM_BA0_PIN                   (GPIO_PIN_04)
+    #define SDRAM_BA0_FUNC                  (GPIO_FUNC_13)
+    #define SDRAM_BA1_PORT                  (GPIO_PORT_G)   /* PG05 - EXMC_ADD17 */
+    #define SDRAM_BA1_PIN                   (GPIO_PIN_05)
+    #define SDRAM_BA1_FUNC                  (GPIO_FUNC_13)
 
-    #define SDRAM_CS_PORT                   (GPIO_PORT_G)   /* PG09 - EXMC_CE1 */
-    #define SDRAM_CS_PIN                    (GPIO_PIN_09)
+    #define SDRAM_CS_PORT                   (GPIO_PORT_C)   /* PC02 - EXMC_CE0 */
+    #define SDRAM_CS_PIN                    (GPIO_PIN_02)
     #define SDRAM_CS_FUNC                   (GPIO_FUNC_12)
 
     #define SDRAM_RAS_PORT                  (GPIO_PORT_F)   /* PF11 - EXMC_OE */
@@ -411,6 +411,10 @@
     #define SDRAM_ADD11_PORT                (GPIO_PORT_G)   /* PG01 - EXMC_ADD11 */
     #define SDRAM_ADD11_PIN                 (GPIO_PIN_01)
     #define SDRAM_ADD11_FUNC                (GPIO_FUNC_12)
+
+    #define SDRAM_ADD12_PORT                (GPIO_PORT_G)   /* PG02 - EXMC_ADD12 */
+    #define SDRAM_ADD12_PIN                 (GPIO_PIN_02)
+    #define SDRAM_ADD12_FUNC                (GPIO_FUNC_12)
 
     #define SDRAM_DATA0_PORT                (GPIO_PORT_D)   /* PD14 - EXMC_DATA0 */
     #define SDRAM_DATA0_PIN                 (GPIO_PIN_14)

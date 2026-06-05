@@ -23,7 +23,7 @@
 
 /******************** EXMC_NFC configure **************************************/
 /* chip: EXMC_NFC_BANK0~7 */
-#define NAND_EXMC_NFC_BANK              EXMC_NFC_BANK0
+#define NAND_EXMC_NFC_BANK              EXMC_NFC_BANK1
 
 /* density:2Gbit */
 #define NAND_EXMC_NFC_BANK_CAPACITY     EXMC_NFC_BANK_CAPACITY_2GBIT

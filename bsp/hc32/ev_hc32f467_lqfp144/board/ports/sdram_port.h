@@ -14,7 +14,7 @@
 /* parameters for sdram peripheral */
 
 /* chip#0/1/2/3: EXMC_DMC_CHIP0/1/2/3 */
-#define SDRAM_CHIP                      EXMC_DMC_CHIP1
+#define SDRAM_CHIP                      EXMC_DMC_CHIP0
 /* bank address */
 #define SDRAM_BANK_ADDR                 (0x80000000UL)
 /* size(kbyte):8MB = 8*1024*1KBytes */
