@@ -112,13 +112,6 @@ rt_err_t rt_hw_board_adc_init(CM_ADC_TypeDef *ADCx)
 #endif
 
 #if defined(RT_USING_DAC)
-#if defined(BSP_USING_DAC2)
-void EthPhyDisable(void)
-{
-    TCA9539_WritePin(ETH_RST_PORT, ETH_RST_PIN, TCA9539_PIN_RESET);
-    TCA9539_ConfigPin(ETH_RST_PORT, ETH_RST_PIN, TCA9539_DIR_OUT);
-}
-#endif
 rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
 {
     rt_err_t result = RT_EOK;
@@ -132,12 +125,6 @@ rt_err_t rt_hw_board_dac_init(CM_DAC_TypeDef *DACx)
     case (rt_uint32_t)CM_DAC1:
         (void)GPIO_Init(DAC1_CH1_PORT, DAC1_CH1_PIN, &stcGpioInit);
         (void)GPIO_Init(DAC1_CH2_PORT, DAC1_CH2_PIN, &stcGpioInit);
-        break;
-#endif
-#if defined(BSP_USING_DAC2)
-    case (rt_uint32_t)CM_DAC2:
-        (void)GPIO_Init(DAC2_CH1_PORT, DAC2_CH1_PIN, &stcGpioInit);
-        (void)GPIO_Init(DAC2_CH2_PORT, DAC2_CH2_PIN, &stcGpioInit);
         break;
 #endif
     default:
@@ -488,6 +475,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     (void)GPIO_Init(SDRAM_ADD9_PORT, SDRAM_ADD9_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, &stcGpioInit);
     (void)GPIO_Init(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, &stcGpioInit);
+    (void)GPIO_Init(SDRAM_ADD12_PORT, SDRAM_ADD12_PIN, &stcGpioInit);
 
     /************************** Set EXMC pin function *************************/
     /* DMC_CKE */
@@ -537,6 +525,7 @@ rt_err_t rt_hw_board_sdram_init(void)
     GPIO_SetFunc(SDRAM_ADD9_PORT,  SDRAM_ADD9_PIN,  SDRAM_ADD9_FUNC);
     GPIO_SetFunc(SDRAM_ADD10_PORT, SDRAM_ADD10_PIN, SDRAM_ADD10_FUNC);
     GPIO_SetFunc(SDRAM_ADD11_PORT, SDRAM_ADD11_PIN, SDRAM_ADD11_FUNC);
+    GPIO_SetFunc(SDRAM_ADD12_PORT, SDRAM_ADD12_PIN, SDRAM_ADD11_FUNC);
 
     return result;
 }
