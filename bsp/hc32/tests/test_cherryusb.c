@@ -36,8 +36,7 @@
 #if defined(RT_CHERRYUSB_HOST_CDC_ECM) || defined(RT_CHERRYUSB_HOST_CDC_RNDIS) || defined(RT_CHERRYUSB_HOST_MSC)
 /*  使用USB Host 时，应确保主机对设备供电充足
 
-    menuconfig: ECM 关键配置
-
+    ************************* menuconfig: ECM 关键配置 *************************
     RT-Thread Kernel --->[*] Enable soft timer with a timer thread
                             (4096) The stack size of timer thread
 
@@ -57,25 +56,11 @@
                                                 ...
                                                 [*] Enable ping features
 
-    备注:CherryUSB Host枚举设备时，默认选择Configuration 1，若指定设备(如CH397A模组CDC-ECM模式)需要选择Configuration 2，需在
-        components/drivers/usb/cherryusb/core/usbh_core.c文件中usbh_enumerate()函数内添加如下代码：
-        int usbh_enumerate(struct usbh_hubport *hport)
-        {
-            ...
-            config_index = 0;
-            // Add code start
-            if((0x1A86 == ((struct usb_device_descriptor *)ep0_request_buffer[hport->bus->busid])->idVendor) && \
-               (0x5397 == ((struct usb_device_descriptor *)ep0_request_buffer[hport->bus->busid])->idProduct)) {
-                config_index = 1; // For CH397, we need to select configuration 2
-            }
-            // Add code end
-            USB_LOG_DBG("The device selects config %d\r\n", config_index);
-            ...
-        }
+    备注:CherryUSB Host枚举设备时，默认选择Configuration 1，若指定设备(如CH397A模组CDC-ECM模式)需要选择Configuration 2，重新定义
+         uint8_t usbh_get_hport_active_config_index(struct usbh_hubport *hport)。
 
 
-    menuconfig: MSC 关键配置
-
+    ************************* menuconfig: MSC 关键配置 *************************
     RT-Thread Kernel --->[*] Enable soft timer with a timer thread
                             (4096) The stack size of timer thread
 
@@ -86,7 +71,6 @@
                                                       [*] Enable usb msc driver
                                                       ...
                                                       (/)usb host dfs mount point
-
 */
 
 
@@ -121,6 +105,17 @@ void ipconfig(void)
     list_if();
 }
 MSH_CMD_EXPORT(ipconfig, list network interface information);
+
+uint8_t usbh_get_hport_active_config_index(struct usbh_hubport *hport)
+{
+    uint8_t config_index = 0U;   /* Default to configuration index 0 */
+
+    if ((0x1A86U == hport->device_desc.idVendor) && (0x5397U == hport->device_desc.idProduct)) {
+        config_index = 1U;      /* For CH397, we need to select configuration 2 */
+    }
+
+    return config_index;
+}
 #endif
 
 #endif
@@ -129,8 +124,7 @@ MSH_CMD_EXPORT(ipconfig, list network interface information);
 #if defined(RT_CHERRYUSB_DEVICE)
 #if defined(RT_CHERRYUSB_DEVICE_TEMPLATE_CDC_ACM)
 /*
-    menuconfig:关键配置
-
+    ************************* menuconfig: ACM 关键配置 *************************
     RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
                                                   [*] Enable usb device mode
                                                       Selectot usb host ip.... --->

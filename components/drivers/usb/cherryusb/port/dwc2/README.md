@@ -32,7 +32,7 @@ Please note that host must support dma mode.
 
 ### HC32
 
-- HC32F4A0
+- HC32F460、HC32F467、HC32F472、HC32F4A0、HC32F4A2、HC32F4A8
 
 ### Espressif
 
