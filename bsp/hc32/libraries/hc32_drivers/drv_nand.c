@@ -130,7 +130,7 @@ static rt_err_t _nand_init(struct rt_mtd_nand_device *device)
     nfc_init_params.u32OpenPage = EXMC_NFC_OPEN_PAGE_DISABLE;
     nfc_init_params.stcBaseConfig.u32CapacitySize = NAND_EXMC_NFC_BANK_CAPACITY;
     nfc_init_params.stcBaseConfig.u32MemoryWidth = NAND_EXMC_NFC_MEMORY_WIDTH;
-    nfc_init_params.stcBaseConfig.u32BankNum = EXMC_NFC_2BANKS;
+    nfc_init_params.stcBaseConfig.u32BankNum = NAND_EXMC_NFC_BANK_NUMBER;
     nfc_init_params.stcBaseConfig.u32PageSize = NAND_EXMC_NFC_PAGE_SIZE;
     nfc_init_params.stcBaseConfig.u32WriteProtect = EXMC_NFC_WR_PROTECT_DISABLE;
     nfc_init_params.stcBaseConfig.u32EccMode = NAND_EXMC_NFC_ECC_MD;
