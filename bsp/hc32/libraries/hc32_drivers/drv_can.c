@@ -21,7 +21,7 @@
 
 #if defined(BSP_USING_CAN1) || defined(BSP_USING_CAN2) || defined(BSP_USING_CAN3)
 
-#if defined(RT_CAN_USING_CANFD) && defined (HC32F460)
+#if defined(RT_CAN_USING_CANFD) && (defined (HC32F460) || defined (HC32F467))
     #error "Selected mcu does not support canfd!"
 #endif
 
