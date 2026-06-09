@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2024-12-30     CDT          first version
  * 2026-05-27     CDT          Support HC32F4A2
+ * 2026-06-04     CDT          Support HC32F467
  */
 
 /*
@@ -42,7 +43,7 @@
 
 #if defined(BSP_USING_PM)
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     #define PLL_SRC                             ((CM_CMU->PLLHCFGR & CMU_PLLHCFGR_PLLSRC) >> CMU_PLLHCFGR_PLLSRC_POS)
     #define BSP_KEY_PORT                        (GPIO_PORT_A)
     #define BSP_KEY_PIN                         (GPIO_PIN_00)
@@ -233,7 +234,7 @@ static void _sleep_enter_event_deep(void)
 static void _sleep_enter_event_standby(void)
 {
     _wkup_cfg_sleep_standby();
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     PWC_BKR_Write(0, g_keycnt_cmd & 0xFF);
 #endif
     *KEYCNT_BACKUP_ADDR = g_keycnt_cmd;
@@ -351,7 +352,7 @@ static void pm_cmd_handler(void *parameter)
     }
 }
 
-#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F448) || defined(HC32F4A8)
+#if defined (HC32F467) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F448) || defined(HC32F4A8)
 static void pm_run_main(void *parameter)
 {
     static rt_uint8_t run_index = 0;
@@ -384,7 +385,7 @@ static void pm_run_main(void *parameter)
 static void _keycnt_cmd_init_after_power_on(void)
 {
     en_flag_status_t wkup_from_ptwk = PWC_PD_GetWakeupStatus(PWC_PD_WKUP_FLAG_WKUP0);
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     en_flag_status_t bakram_pd = PWC_BKR_GetStatus(PWC_BACKUP_RAM_FLAG_RAMPDF);
     uint8_t bkr0 = PWC_BKR_Read(0);
 
@@ -422,7 +423,7 @@ static void _keycnt_cmd_init_after_power_on(void)
 
     pm_dbg("KEYCNT_BACKUP_ADDR addr =0x%p,value = %d\n", KEYCNT_BACKUP_ADDR, *KEYCNT_BACKUP_ADDR);
     pm_dbg("wkup_from_ptwk = %d\n", wkup_from_ptwk);
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     pm_dbg("bakram_pd = %d\n", bakram_pd);
     pm_dbg("bkr0 = %d\n", bkr0);
 #endif
@@ -430,7 +431,7 @@ static void _keycnt_cmd_init_after_power_on(void)
 
 static void _vbat_init(void)
 {
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
     while (PWC_BKR_GetStatus(PWC_BACKUP_RAM_FLAG_RAMVALID) == RESET)
     {
         rt_thread_delay(10);
@@ -466,7 +467,7 @@ int pm_sample_init(void)
         rt_kprintf("create pm sample thread failed!\n");
     }
 
-#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F448) || defined(HC32F4A8)
+#if defined (HC32F467) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F448) || defined(HC32F4A8)
     thread = rt_thread_create("pm_run_main", pm_run_main, RT_NULL, 1024, 25, 10);
     if (thread != RT_NULL)
     {

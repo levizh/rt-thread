@@ -18,15 +18,15 @@
 /* bank address */
 #define SDRAM_BANK_ADDR                 (0x80000000UL)
 /* size(kbyte):8MB = 8*1024*1KBytes */
-#define SDRAM_SIZE                      (8UL * 1024UL * 1024UL)
+#define SDRAM_SIZE                      (32UL * 1024UL * 1024UL)
 /* auto precharge pin: EXMC_DMC_AUTO_PRECHARGE_A8/10 */
 #define SDRAM_AUTO_PRECHARGE_PIN        EXMC_DMC_AUTO_PRECHARGE_A10
 /* data width: EXMC_DMC_MEMORY_WIDTH_16BIT, EXMC_DMC_MEMORY_WIDTH_32BIT */
 #define SDRAM_DATA_WIDTH                EXMC_DMC_MEMORY_WIDTH_16BIT
 /* column bit numbers: EXMC_DMC_COLUMN_BITS_NUM8/9/10/11/12 */
-#define SDRAM_COLUMN_BITS               EXMC_DMC_COLUMN_BITS_NUM8
+#define SDRAM_COLUMN_BITS               EXMC_DMC_COLUMN_BITS_NUM9
 /* row bit numbers: EXMC_DMC_ROW_BITS_NUM11/12/13/14/15/16 */
-#define SDRAM_ROW_BITS                  EXMC_DMC_ROW_BITS_NUM12
+#define SDRAM_ROW_BITS                  EXMC_DMC_ROW_BITS_NUM13
 /* cas latency clock number: 2, 3 */
 #define SDRAM_CAS_LATENCY               2UL
 /* burst length: EXMC_DMC_BURST_1BEAT/2BEAT/4BEAT/8BEAT/16BEAT */
@@ -39,7 +39,7 @@
 /* write burst mode: SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED/SINGLE */
 #define SDRAM_MODEREG_WRITEBURST_MODE   SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED
 
-/* timing configuration(EXCLK clock frequency: 30MHz) for IS42S16400J-7TLI */
+/* timing configuration(EXCLK clock frequency: 30MHz) for W9825G6KH*/
 /* refresh rate counter (EXCLK clock) */
 #define SDRAM_REFRESH_COUNT             (450U)
 /* TMDR: mode register command time (EXCLK clock) */
