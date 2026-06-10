@@ -142,6 +142,17 @@ extern "C"
 #define ETH_MAC_ADDR4                               (0x00U)
 #define ETH_MAC_ADDR5                               (0x00U)
 
+#if defined (ETH_PHY_USING_RTL8201F)
+/* PHY(RTL8201F) Address*/
+#define ETH_PHY_ADDR                                (0x01U)
+
+/* PHY Status Register */
+#define PHY_SR                                      (0x00U)     /*!< PHY status register */
+#define PHY_DUPLEX_STATUS                           (0x0100U)   /*!< PHY Duplex mask     */
+#define PHY_SPEED_STATUS                            (0x2000U)   /*!< PHY Speed mask      */
+
+#endif
+
 /*******************************************************************************
  * Global variable definitions ('extern')
  ******************************************************************************/

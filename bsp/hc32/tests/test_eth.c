@@ -56,6 +56,8 @@
  * 6）msh>窗口输入命令：eth_webserver
  * 7）PC打开浏览器，输入IP地址：192.168.1.30再按回车键，显示lwip的简介网页（lwIP - A Lightweight TCP/IP Stack），
  *    表示成功访问目标板的HTTP服务器。
+ *
+ * 注意：HC32F467仅支持case 3，且步骤3不需要拨码。
  */
 
 #include <rtthread.h>
