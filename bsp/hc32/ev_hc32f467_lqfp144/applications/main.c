@@ -11,21 +11,18 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
-
-/* defined the LED_GREEN pin: PB11 */
-#define LED_GREEN_PIN GET_PIN(B, 11)
-
+#include <tca9539_port.h>
 
 int main(void)
 {
-    /* set LED_GREEN_PIN pin mode to output */
-    rt_pin_mode(LED_GREEN_PIN, PIN_MODE_OUTPUT);
-
+    /* set LED_BLUE_PIN pin mode to output */
+    TCA9539_ConfigPin(LED_BLUE_PORT, LED_BLUE_PIN, TCA9539_DIR_OUT);
+    
     while (1)
     {
-        rt_pin_write(LED_GREEN_PIN, PIN_HIGH);
+        TCA9539_WritePin(LED_BLUE_PORT, LED_BLUE_PIN, TCA9539_PIN_SET);
         rt_thread_mdelay(500);
-        rt_pin_write(LED_GREEN_PIN, PIN_LOW);
+        TCA9539_WritePin(LED_BLUE_PORT, LED_BLUE_PIN, TCA9539_PIN_RESET);
         rt_thread_mdelay(500);
     }
 }

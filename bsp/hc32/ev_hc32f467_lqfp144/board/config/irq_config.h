@@ -153,6 +153,11 @@ extern "C" {
 #define BSP_UART2_TX_CPLT_IRQ_NUM       INT087_IRQn
 #define BSP_UART2_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
+#elif defined(BSP_USING_SPI1) || defined(BSP_USING_SPI2)
+#define BSP_SPI1_ERR_IRQ_NUM            INT007_IRQn
+#define BSP_SPI1_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
+#define BSP_SPI2_ERR_IRQ_NUM            INT011_IRQn
+#define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif /* BSP_USING_UART2 */
 
 #if defined(BSP_USING_UART3)
@@ -224,11 +229,6 @@ extern "C" {
 #define BSP_UART7_TX_CPLT_IRQ_NUM       INT105_IRQn
 #define BSP_UART7_TX_CPLT_IRQ_PRIO      DDL_IRQ_PRIO_DEFAULT
 #endif
-#elif defined(BSP_USING_SPI1) || defined(BSP_USING_SPI2)
-#define BSP_SPI1_ERR_IRQ_NUM            INT009_IRQn
-#define BSP_SPI1_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
-#define BSP_SPI2_ERR_IRQ_NUM            INT016_IRQn
-#define BSP_SPI2_ERR_IRQ_PRIO           DDL_IRQ_PRIO_DEFAULT
 #endif /* BSP_USING_UART7 */
 
 #if defined(BSP_USING_SPI3)
