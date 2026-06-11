@@ -110,7 +110,8 @@ uint8_t usbh_get_hport_active_config_index(struct usbh_hubport *hport)
 {
     uint8_t config_index = 0U;   /* Default to configuration index 0 */
 
-    if ((0x1A86U == hport->device_desc.idVendor) && (0x5397U == hport->device_desc.idProduct)) {
+    if ((0x1A86U == hport->device_desc.idVendor) && (0x5397U == hport->device_desc.idProduct))
+    {
         config_index = 1U;      /* For CH397, we need to select configuration 2 */
     }
 

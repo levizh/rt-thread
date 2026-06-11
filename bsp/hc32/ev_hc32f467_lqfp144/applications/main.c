@@ -26,4 +26,3 @@ int main(void)
         rt_thread_mdelay(500);
     }
 }
-
