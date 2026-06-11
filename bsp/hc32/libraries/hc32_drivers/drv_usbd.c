@@ -8,6 +8,7 @@
  * 2023-02-14     CDT          first version
  * 2025-07-25     CDT          support HC32F4A8
  * 2026-05-27     CDT          support HC32F4A2
+ * 2026-06-03     CDT          support HC32F467
  */
 
 /*******************************************************************************
@@ -54,7 +55,7 @@ static struct ep_id _ep_pool[] =
     {0x4,  USB_EP_ATTR_INT,         USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x5,  USB_EP_ATTR_ISOC,        USB_DIR_OUT,    64, ID_UNASSIGNED},
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
     {0x6,  USB_EP_ATTR_BULK,        USB_DIR_OUT,    64, ID_UNASSIGNED},
     {0x7,  USB_EP_ATTR_BULK,        USB_DIR_IN,     64, ID_UNASSIGNED},
@@ -401,7 +402,8 @@ static void usb_wrblanktxfifo(usb_core_instance *pdev, uint32_t epnum)
     }
 }
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F4A8) || \
+    defined (HC32F467)
 #ifdef VBUS_SENSING_ENABLED
 static void usb_sessionrequest_isr(usb_core_instance *pdev)
 {
@@ -719,7 +721,8 @@ static void usb_isr_handler(usb_core_instance *pdev)
         {
             usb_isooutincomplt_isr(pdev);
         }
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F4A8) || \
+    defined (HC32F467)
 #ifdef VBUS_SENSING_ENABLED
         if ((u32gintsts & VBUSV_INT) != 0UL)
         {
@@ -853,7 +856,7 @@ static rt_err_t _usbd_init(rt_device_t device)
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
 #endif
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
 #if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
 #else

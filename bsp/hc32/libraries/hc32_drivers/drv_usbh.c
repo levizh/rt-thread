@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2023-05-25     CDT          first version
  * 2026-05-27     CDT          support HC32F4A2
+ * 2026-06-03     CDT          support HC32F467
  */
 
 /*******************************************************************************
@@ -113,7 +114,8 @@ static void usb_host_chx_out_isr(usb_core_instance *pdev, uint8_t chnum)
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8) || \
+    defined (HC32F467)
     else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
@@ -237,7 +239,8 @@ static void usb_host_chx_in_isr(usb_core_instance *pdev, uint8_t chnum)
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_ACK);
     }
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F472) || defined (HC32F4A8) || \
+    defined (HC32F467)
     else if (0UL != (u32hcint & USBFS_HCINT_AHBERR))
     {
         usb_host_clrint(pdev, chnum, USBFS_HCINT_AHBERR);
@@ -1107,7 +1110,7 @@ static rt_err_t _usbh_init(rt_device_t device)
 #else
     stcPortIdentify.u8CoreID = USBHS_CORE_ID;
 #endif
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
+#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
 #if !defined(BSP_USING_USBHS_PHY_EXTERN)
     stcPortIdentify.u8PhyType = USBHS_PHY_EMBED;
 #else
