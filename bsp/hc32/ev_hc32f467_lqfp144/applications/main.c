@@ -17,7 +17,7 @@ int main(void)
 {
     /* set LED_BLUE_PIN pin mode to output */
     TCA9539_ConfigPin(LED_BLUE_PORT, LED_BLUE_PIN, TCA9539_DIR_OUT);
-    
+
     while (1)
     {
         TCA9539_WritePin(LED_BLUE_PORT, LED_BLUE_PIN, TCA9539_PIN_SET);
