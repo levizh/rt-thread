@@ -484,11 +484,11 @@
     #endif
     #if defined(BSP_USING_INPUT_CAPTURE_TMR6_2)
         #define INPUT_CAPTURE_TMR6_2_PORT           (GPIO_PORT_B)
-        #define INPUT_CAPTURE_TMR6_2_PIN            (GPIO_PIN_00)
+        #define INPUT_CAPTURE_TMR6_2_PIN            (GPIO_PIN_02)
     #endif
     #if defined(BSP_USING_INPUT_CAPTURE_TMR6_3)
         #define INPUT_CAPTURE_TMR6_3_PORT           (GPIO_PORT_A)
-        #define INPUT_CAPTURE_TMR6_3_PIN            (GPIO_PIN_14)
+        #define INPUT_CAPTURE_TMR6_3_PIN            (GPIO_PIN_00)
     #endif
 #endif
 
