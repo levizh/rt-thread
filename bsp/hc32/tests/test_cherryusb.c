@@ -128,7 +128,7 @@ uint8_t usbh_get_hport_active_config_index(struct usbh_hubport *hport)
     ************************* menuconfig: ACM 关键配置 *************************
     RT-Thread Components--->Devicee Drivers--->[*] Using USB with CherryUSB
                                                   [*] Enable usb device mode
-                                                      Selectot usb host ip.... --->
+                                                      Selectot usb device ip.... --->
                                                          [*]dwc2_hc
                                                       [*] Enable usb cdc acm device
                                                           Select usb device template...--->
