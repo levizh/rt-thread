@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2023-02-09     CDT          first version
  * 2026-05-27     CDT          support HC32F4A2
+ * 2026-06-03     CDT          support HC32F467
  */
 
 #include <board.h>
