@@ -144,6 +144,18 @@ static void usb_shutdevep(usb_core_instance *pdev, uint8_t  ep_addr)
     usb_epdeactive(&pdev->regs, ep);
 }
 
+static void usb_flsdevep(usb_core_instance *pdev, uint8_t epnum)
+{
+    __IO uint8_t tmp_1;
+
+    tmp_1 = epnum >> 7;     /* EP type, it is IN(=1) or OUT(=0) */
+    if (tmp_1 != 0U) {
+        usb_txfifoflush(&pdev->regs, (uint32_t)epnum & (uint32_t)0x7F);
+    } else {
+        usb_rxfifoflush(&pdev->regs);
+    }
+}
+
 static void usb_readytorx(usb_core_instance *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t buf_len)
 {
     USB_DEV_EP *ep;
@@ -790,6 +802,7 @@ static rt_err_t _usbd_ep_enable(uep_t ep)
     RT_ASSERT(ep->ep_desc != RT_NULL);
     usb_opendevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress,
                   ep->ep_desc->wMaxPacketSize, ep->ep_desc->bmAttributes);
+    usb_flsdevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress);
     return RT_EOK;
 }
 
@@ -797,6 +810,7 @@ static rt_err_t _usbd_ep_disable(uep_t ep)
 {
     RT_ASSERT(ep != RT_NULL);
     RT_ASSERT(ep->ep_desc != RT_NULL);
+    usb_flsdevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress);
     usb_shutdevep(&_hc32_usbd, ep->ep_desc->bEndpointAddress);
     return RT_EOK;
 }
