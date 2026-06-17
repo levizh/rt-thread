@@ -11,6 +11,11 @@
 /*
  * 程序清单：这是 RTC 设备使用例程和 Alarm 使用示例。
  * 例程导出了 rtc_sample 命令到控制终端。
+ *  menuconfig:
+ *   1.Hardware Drivers Config--->On-Chip Peripheral Driver--->Enable RTC---> Select clock source(RTC USING XTAL32)
+ *   2.RT-Thread Components---> Device Drivers ---> [-*-] Using RTC device drivers ---> [*] Using RTC alarm
+ *                                                                                      (1024) stack size for alarm thread
+ *                                                                                      [*] Using local time for the alarm calculation
  * 命令调用格式：rtc_sample x
  * 命令解释：命令第二个参数是要使用的功能对应的编号，
  *           RTC 基本功能对应的编号为 0~3，Alarm 功能对应的编号为 4~9
@@ -74,18 +79,20 @@ static int rtc_sample(int argc, char *argv[])
     if (argc < 2)
     {
         rt_kprintf("unkown rtc command, rtc [usage] as the following: \n");
-        rt_kprintf("\'0\': find and open rtc \n");
-        rt_kprintf("\'1 HH:MM:SS\': set time with \n");
-        rt_kprintf("\'2 yyyy-mm-dd\': set date with \n");
-        rt_kprintf("\'3\': get time and date \n");
+        rt_kprintf("\'rtc_sample 0\': find and open rtc \n");
+        rt_kprintf("\'rtc_sample 1 HH:MM:SS\': set time with \n");
+        rt_kprintf("\'rtc_sample 2 yyyy-mm-dd\': set date with \n");
+        rt_kprintf("\'rtc_sample 3\': get time and date \n");
 #if defined(RT_USING_ALARM)
-        rt_kprintf("\'4\': set current time + 1 Min as alarm \n");
-        rt_kprintf("\'5\': start alarm \n");
-        rt_kprintf("\'6\': stop alarm \n");
+        rt_kprintf("\'rtc_sample 4\': set current time + 1 Min as alarm \n");
+        rt_kprintf("\'rtc_sample 5\': start alarm \n");
+        rt_kprintf("\'rtc_sample 6\': stop alarm \n");
         rt_kprintf("cmd-7 based on cmd-4\n");
-        rt_kprintf("\'7\' o: oneshot,\n\'7\' s: second,\n\'7\' m: minute \n");
-        rt_kprintf("\'8\': dump all alarm \n");
-        rt_kprintf("\'9\': delete all alarm \n");
+        rt_kprintf("\'rtc_sample 7 o\': oneshot \n");
+        rt_kprintf("\'rtc_sample 7 s\': second  \n");
+        rt_kprintf("\'rtc_sample 7 m\': minute  \n");
+        rt_kprintf("\'rtc_sample 8\': dump all alarm \n");
+        rt_kprintf("\'rtc_sample 9\': delete all alarm \n");
 #endif /* RT_USING_ALARM */
         return -RT_ERROR;
     }
@@ -143,7 +150,7 @@ static int rtc_sample(int argc, char *argv[])
             rt_kprintf("failed to set date for %s\n", SAMPLE_RTC_NAME);
             return -RT_ERROR;
         }
-        rt_kprintf("\nset RTC date as %4d-%2d-%2d\n", temp1, temp2, temp3);
+        rt_kprintf("\nset RTC date as %4d-%02d-%02d\n", temp1, temp2, temp3);
         break;
     case CMD_GET_DATE_TIME:
         /* get current time and print it */
