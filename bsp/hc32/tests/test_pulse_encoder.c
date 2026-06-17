@@ -11,8 +11,11 @@
  */
 
 /*
- * 程序清单： Pulse encoder 设备使用例程, 请在图形化配置界面打开pulse encoder device，
- * 并使能tmra_1和tmr6_1.
+ * 程序清单： Pulse encoder 设备使用例程
+ *
+ * menuconfig:
+ *     Hardware Drivers Config ---> On-Chip Peripheral Drivers ----> [*] Enable Pulse Encoder  ----> [*] Use TIMERA As The Pulse Encoder ---> [*] Use TIMERA_1 As The Pulse Encoder
+ *                                                                                                   [*] Use TIMER6 As The Pulse Encoder ---> [*] Use TIMER6_1 As The Pulse Encoder
  * 例程导出了 encoder_sample 命令到控制终端, 通过串口可查看当前的count数值
  * 命令调用格式：pulse_encoder_sample devname [option1] [option2]
  *                                  devname: [pulse_a1/pulse_61] 编码器单元名称
@@ -21,7 +24,6 @@
  * eg:encoder_sample pulse_a1 2000 1000
  * 编码器的分辨率是1000
  * 硬件IO查看对应board/board_config.h中相关端口定义，并且需要正确连接到对应模拟脉冲生成的端口
- * 程序功能：
  */
 
 #include <rtthread.h>
