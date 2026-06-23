@@ -297,7 +297,8 @@ static void  _notify_func(uint8_t event, uint8_t mode, void *data)
         {
             return;
         }
-        GPIO_ResetPins(LED_GREEN_PORT, LED_GREEN_PIN);
+        /* shutdown LED before enter sleep mode to decrease power consumption */
+        rt_pin_write(LED_GREEN_PIN, PIN_LOW);
         sleep_enter_func[mode]();
     }
     else
