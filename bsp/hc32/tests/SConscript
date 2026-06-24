@@ -68,6 +68,7 @@ if GetDepend(['BSP_USING_INPUT_CAPTURE']):
 
 if GetDepend(['BSP_USING_PM']):
     src += ['test_pm.c']
+    src += ['test_wktm.c']
 
 if GetDepend('BSP_USING_HWCRYPTO'):
     src += ['test_crypto.c']
