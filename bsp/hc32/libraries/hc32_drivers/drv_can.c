@@ -9,7 +9,8 @@
  * 2022-06-07     xiaoxiaolisunny      add hc32f460 series
  * 2022-06-08     CDT                  fix a bug of RT_CAN_CMD_SET_FILTER
  * 2022-06-15     lianghongquan        fix bug, CAN_FILTER_COUNT, RT_CAN_CMD_SET_FILTER, interrupt setup and processing.
- * 2026-05-27     CDT                  support HC32F4A2
+ * 2026-05-27     CDT                  support HC32F4A2.
+ * 2026-06-24     CDT                  Added _can_sendmsg_nonblocking.
  */
 
 #include "drv_can.h"
@@ -96,7 +97,7 @@
 #elif defined (HC32F460)
     #define CAN_FILTER_COUNT                                (8U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN_INT)
-#elif defined (HC32F472) 
+#elif defined (HC32F472)
     #define CAN_FILTER_COUNT                                (16U)
     #define CAN1_INT_SRC                                    (INT_SRC_CAN1_HOST)
     #define CAN2_INT_SRC                                    (INT_SRC_CAN2_HOST)
@@ -966,6 +967,7 @@ static rt_ssize_t _can_sendmsg(struct rt_can_device *can, const void *buf, rt_ui
     stc_can_tx_frame_t stc_tx_frame = {0};
     int32_t ll_ret;
 
+    (void)box_num;
     RT_ASSERT(can != RT_NULL);
     can_device *p_can_dev = (can_device *)rt_container_of(can, can_device, rt_can);
     RT_ASSERT(p_can_dev);
@@ -1007,6 +1009,11 @@ static rt_ssize_t _can_sendmsg(struct rt_can_device *can, const void *buf, rt_ui
     CAN_StartTx(p_can_dev->instance, CAN_TX_REQ_PTB);
 
     return RT_EOK;
+}
+
+rt_ssize_t _can_sendmsg_nonblocking(struct rt_can_device *can, const void *buf)
+{
+    return _can_sendmsg(can, buf, 0);
 }
 
 static rt_ssize_t _can_recvmsg(struct rt_can_device *can, void *buf, rt_uint32_t fifo)
@@ -1065,6 +1072,7 @@ static const struct rt_can_ops _can_ops =
     _can_control,
     _can_sendmsg,
     _can_recvmsg,
+    _can_sendmsg_nonblocking,
 };
 
 rt_inline void _isr_can_rx(can_device *p_can_dev)
@@ -1142,7 +1150,7 @@ rt_inline void _isr_can_tx(can_device *p_can_dev)
     if (need_check_single_trans)
     {
         if ((CAN_GetStatus(p_can_dev->instance, CAN_FLAG_BUS_ERR) != SET) \
-                || (CAN_GetStatus(p_can_dev->instance, CAN_FLAG_ARBITR_LOST) != SET))
+                && (CAN_GetStatus(p_can_dev->instance, CAN_FLAG_ARBITR_LOST) != SET))
         {
             is_tx_done = RT_TRUE;
         }

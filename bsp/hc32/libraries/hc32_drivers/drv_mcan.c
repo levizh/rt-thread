@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author               Notes
  * 2024-xx-xx     CDT                  first version
+ * 2026-06-24     CDT                  Added _can_sendmsg_nonblocking. Fixed comments.
  */
 
 #include "drv_mcan.h"
@@ -186,43 +187,50 @@ static hc32_mcan_driver_t m_mcan_driver_list[] =
 ****************************************************************************************/
 /**
  * @brief Configure CAN controller
- * @param [in/out] can CAN device pointer
+ * @param [inout] device CAN device pointer
  * @param [in] cfg CAN configuration pointer
- * @retval RT_EOK for valid configuration
- * @retval -RT_ERROR for invalid configuration
+ * @retval RT_EOK No error
+ * @retval An error code on failure
  */
 static rt_err_t mcan_configure(struct rt_can_device *device, struct can_configure *cfg);
 
 /**
  * @brief Control/Get CAN state
  *        including:interrupt, mode, priority, baudrate, filter, status
- * @param [in/out] can CAN device pointer
+ * @param [inout] device CAN device pointer
  * @param [in] cmd Control command
- * @param [in/out] arg Argument pointer
- * @retval RT_EOK for valid control command and arg
- * @retval -RT_ERROR for invalid control command or arg
+ * @param [inout] arg Argument pointer
+ * @retval RT_EOK No error
+ * @retval An error code on failure
  */
 static rt_err_t mcan_control(struct rt_can_device *device, int cmd, void *arg);
 
 /**
  * @brief Send out CAN message
- * @param [in] can CAN device pointer
+ * @param [inout] device CAN device pointer
  * @param [in] buf CAN message buffer
  * @param [in] boxno Mailbox number, it is not used in this porting
  * @retval RT_EOK No error
- * @retval -RT_ETIMEOUT timeout happened
- * @retval -RT_EFULL Transmission buffer is full
+ * @retval An error code on failure
  */
 static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt_uint32_t boxno);
+
+/**
+ * @brief Send out CAN message non-blocking
+ * @param [inout] device CAN device pointer
+ * @param [in] buf CAN message buffer
+ * @retval RT_EOK No error
+ * @retval An error code on failure
+ */
+static rt_ssize_t mcan_sendmsg_nonblocking(struct rt_can_device *device, const void *buf);
 
 /**
  * @brief Receive message from CAN
  * @param [in] can CAN device pointer
  * @param [out] buf CAN receive buffer
  * @param [in] boxno Mailbox Number, it is not used in this porting
- * @retval RT_EOK no error
- * @retval -RT_ERROR Error happened during reading receive FIFO
- * @retval -RT_EMPTY no data in receive FIFO
+ * @retval RT_EOK No error
+ * @retval An error code on failure
  */
 static rt_ssize_t mcan_recvmsg(struct rt_can_device *device, void *buf, rt_uint32_t boxno);
 
@@ -236,6 +244,7 @@ static const struct rt_can_ops m_mcan_ops =
     mcan_control,
     mcan_sendmsg,
     mcan_recvmsg,
+    mcan_sendmsg_nonblocking,
 };
 
 /****************************************************************************************
@@ -761,6 +770,11 @@ static rt_ssize_t mcan_sendmsg(struct rt_can_device *device, const void *buf, rt
         return -RT_ERROR;
     }
     return RT_EOK;
+}
+
+static rt_ssize_t mcan_sendmsg_nonblocking(struct rt_can_device *device, const void *buf)
+{
+    return mcan_sendmsg(device, buf, 0);
 }
 
 /****************************************************************************************
