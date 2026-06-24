@@ -60,13 +60,13 @@ void wktm_sample(int argc, char **argv)
         }
         else if (cmp_value > cmp_max)
         {
-            /*********************** Don't change configeration ***************/
-            rt_kprintf("compare value %d is out of %d(max), don't change configuration \n\n", cmp_value, cmp_max);
+            /*********************** Hold the wakeup timer configuration ******/
+            rt_kprintf("compare value %d is out of %d(max), so hold the wakeup timer configuration \n\n", cmp_value, cmp_max);
         }
         else if (cmp_value < (cmp_max/2))
         {
-            /*********************** Don't change configeration ***************/
-            rt_kprintf("compare value %d is less of %d(max/2), don't change configuration: ", cmp_value, cmp_max/2);
+            /*********************** Hold the wakeup timer configuration ******/
+            rt_kprintf("compare value %d is less of %d(max/2), so hold the wakeup timer configuration: ", cmp_value, cmp_max/2);
             rt_kprintf("to avoid frequent interruptions: too much printed information affcets console commands \n\n");
         }
         else
