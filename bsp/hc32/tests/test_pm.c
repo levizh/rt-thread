@@ -51,7 +51,7 @@
     #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ0)
     #define BSP_KEY_IRQn                        (INT001_IRQn)
     #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH0)
-    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ0)
+    #define BSP_KEY_EVT                         (INTC_EVT1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP0)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP00)
 
@@ -70,7 +70,7 @@
     #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ1)
     #define BSP_KEY_IRQn                        (INT001_IRQn)
     #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH1)
-    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ1)
+    #define BSP_KEY_EVT                         (INTC_EVT1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP01)
 
@@ -89,7 +89,7 @@
     #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ6)
     #define BSP_KEY_IRQn                        (INT001_IRQn)
     #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH6)
-    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ6)
+    #define BSP_KEY_EVT                         (INTC_EVT1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP12)
 
@@ -108,7 +108,7 @@
     #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ5)
     #define BSP_KEY_IRQn                        (INT001_IRQn)
     #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH5)
-    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ5)
+    #define BSP_KEY_EVT                         (INTC_EVT1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP1)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP11)
 
@@ -123,7 +123,7 @@
     #define BSP_KEY_INT_SRC                     (INT_SRC_PORT_EIRQ9)
     #define BSP_KEY_IRQn                        (INT001_IRQn)
     #define BSP_KEY_INTC_STOP_WKUP_EXTINT       (INTC_STOP_WKUP_EXTINT_CH9)
-    #define BSP_KEY_EVT                         (EVT_SRC_PORT_EIRQ9)
+    #define BSP_KEY_EVT                         (INTC_EVT1)
     #define BSP_KEY_PWC_PD_WKUP_TRIG_WKUP       (PWC_PD_WKUP_TRIG_WKUP2)
     #define BSP_KEY_PWC_PD_WKUP_WKUP            (PWC_PD_WKUP_WKUP21)
 
@@ -200,10 +200,10 @@ static void _key_int_init(void)
     NVIC_EnableIRQ(stcIrqSignConfig.enIRQn);
 }
 
-
 static void _wkup_cfg_sleep_deep()
 {
     INTC_WakeupSrcCmd(BSP_KEY_INTC_STOP_WKUP_EXTINT, ENABLE);
+    INTC_EventCmd(BSP_KEY_EVT, ENABLE);
 }
 
 static void _wkup_cfg_sleep_standby(void)
@@ -292,13 +292,14 @@ static void  _notify_func(uint8_t event, uint8_t mode, void *data)
 {
     if (event == RT_PM_ENTER_SLEEP)
     {
-        SysTick_Suspend();
         if (sleep_enter_func[mode] == RT_NULL)
         {
             return;
         }
         /* shutdown LED before enter sleep mode to decrease power consumption */
         rt_pin_write(LED_GREEN_PIN, PIN_LOW);
+
+        SysTick_Suspend();
         sleep_enter_func[mode]();
     }
     else
