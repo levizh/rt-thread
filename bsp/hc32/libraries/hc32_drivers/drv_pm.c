@@ -9,6 +9,7 @@
  * 2024-06-14     CDT          Move common function SysTick_Configuration to _pm_run
  * 2026-05-27     CDT          Support HC32F4A2
  * 2026-06-04     CDT          Support HC32F467
+ * 2026-06-24     CDT          rt_system_pm_init parameter timer_mask change to 0 for unsupport pm tickless timer
  */
 
 #include <board.h>
@@ -231,9 +232,8 @@ int rt_hw_pm_init(void)
         _timer_get_tick,
     };
 
-    rt_uint8_t timer_mask = PM_TICKLESS_TIMER_ENABLE_MASK;
     /* initialize system pm module */
-    rt_system_pm_init(&_ops, timer_mask, RT_NULL);
+    rt_system_pm_init(&_ops, 0U, RT_NULL);
     return 0;
 }
 
