@@ -217,6 +217,10 @@ static rt_err_t _adc_convert(struct rt_adc_device *device, rt_int8_t channel, rt
                         (void)DMA_ChCmd(adc_eoca_dma->Instance, adc_eoca_dma->channel, DISABLE);
                         rt_ret = -RT_ETIMEOUT;
                     }
+                    else
+                    {
+                        rt_ret = LL_OK;
+                    }
                     if (adc_dev_priv->ops->dma_trig_stop != RT_NULL)
                     {
                         adc_dev_priv->ops->dma_trig_stop();
@@ -357,15 +361,16 @@ int rt_hw_adc_init(void)
 
         ADC_TriggerCmd(_g_adc_dev_array[i].instance, ADC_SEQ_A, (en_functional_state_t)_g_adc_dev_array[i].init.hard_trig_enable);
         ADC_TriggerConfig(_g_adc_dev_array[i].instance, ADC_SEQ_A, _g_adc_dev_array[i].init.hard_trig_src);
+        
+        if (_g_adc_dev_array[i].init.adc_eoca_dma != RT_NULL)
+        {
+            hc32_adc_dma_config(&_g_adc_dev_array[i]);
+        }
+        
         if (_g_adc_dev_array[i].init.hard_trig_enable && _g_adc_dev_array[i].init.hard_trig_src != ADC_HARDTRIG_ADTRG_PIN)
         {
             _adc_internal_trigger0_set(&_g_adc_dev_array[i]);
             _adc_internal_trigger1_set(&_g_adc_dev_array[i]);
-        }
-
-        if (_g_adc_dev_array[i].init.adc_eoca_dma != RT_NULL)
-        {
-            hc32_adc_dma_config(&_g_adc_dev_array[i]);
         }
 
         rt_hw_board_adc_init((void *)_g_adc_dev_array[i].instance);
