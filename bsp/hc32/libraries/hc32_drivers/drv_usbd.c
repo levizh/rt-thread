@@ -149,9 +149,12 @@ static void usb_flsdevep(usb_core_instance *pdev, uint8_t epnum)
     __IO uint8_t tmp_1;
 
     tmp_1 = epnum >> 7;     /* EP type, it is IN(=1) or OUT(=0) */
-    if (tmp_1 != 0U) {
+    if (tmp_1 != 0U)
+    {
         usb_txfifoflush(&pdev->regs, (uint32_t)epnum & (uint32_t)0x7F);
-    } else {
+    }
+    else
+    {
         usb_rxfifoflush(&pdev->regs);
     }
 }
