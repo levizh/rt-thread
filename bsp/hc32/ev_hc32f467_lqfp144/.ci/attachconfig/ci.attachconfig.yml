@@ -29,7 +29,7 @@ devices.flash:
       - CONFIG_RT_USING_SPI=y
       - CONFIG_RT_USING_SFUD=y
 devices.gpio:
-    kconfig: 
+    kconfig:
       - CONFIG_BSP_USING_GPIO=y
 devices.hwtimer:
     kconfig:
@@ -167,12 +167,6 @@ devices.watchdog_wdt:
       - CONFIG_BSP_USING_WDT=y
 
 # ------ peripheral CI ------
-peripheral.eth_mii:
-    kconfig:
-      - CONFIG_BSP_USING_ETH=y
-      - CONFIG_ETH_INTERFACE_USING_MII=y
-      - CONFIG_RT_USING_LWIP212=y
-      - CONFIG_RT_USING_LWIP_VER_NUM=0x20102
 peripheral.eth_rmii:
     kconfig:
       - CONFIG_BSP_USING_ETH=y

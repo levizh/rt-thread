@@ -45,10 +45,8 @@ menu "Onboard Peripheral Drivers"
 
             choice
                 prompt "Select ETH Communication Interface"
-                default ETH_INTERFACE_USING_MII
+                default ETH_INTERFACE_USING_RMII
 
-                config ETH_INTERFACE_USING_MII
-                    bool "ETH Communication USING MII"
                 config ETH_INTERFACE_USING_RMII
                     bool "ETH Communication USING RMII"
             endchoice

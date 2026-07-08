@@ -127,7 +127,6 @@
 /************************* ETH port ***********************/
 
 #if defined(BSP_USING_ETH)
-    #if defined(ETH_INTERFACE_USING_RMII)
         #define ETH_SMI_MDIO_PORT       (GPIO_PORT_A)
         #define ETH_SMI_MDIO_PIN        (GPIO_PIN_02)
         #define ETH_SMI_MDIO_FUNC       (GPIO_FUNC_11)
@@ -163,8 +162,6 @@
         #define ETH_RMII_RXD1_PORT      (GPIO_PORT_C)
         #define ETH_RMII_RXD1_PIN       (GPIO_PIN_05)
         #define ETH_RMII_RXD1_FUNC      (GPIO_FUNC_11)
-    #else
-    #endif
 #endif
 
 /************************ NAND port **********************/
