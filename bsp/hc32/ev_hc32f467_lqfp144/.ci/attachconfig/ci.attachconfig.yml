@@ -8,7 +8,6 @@ devices.can:
     kconfig:
       - CONFIG_BSP_USING_CAN=y
       - CONFIG_BSP_USING_CAN1=y
-      - CONFIG_RT_CAN_USING_CANFD=y
       - CONFIG_RT_CAN_USING_HDR=y
 devices.crypto:
     kconfig:
@@ -31,9 +30,9 @@ devices.flash:
 devices.gpio:
     kconfig:
       - CONFIG_BSP_USING_GPIO=y
-devices.hwtimer:
+devices.clock_timer:
     kconfig:
-      - CONFIG_BSP_USING_HWTIMER=y
+      - CONFIG_BSP_USING_CLOCK_TIMER=y
       - CONFIG_BSP_USING_TMRA_1=y
 devices.i2c:
     kconfig:
@@ -113,18 +112,18 @@ devices.uart_v1:
     kconfig:
       - CONFIG_RT_USING_SERIAL_V1=y
       - CONFIG_BSP_USING_UART=y
-      - CONFIG_BSP_USING_UART1=y
+      - CONFIG_BSP_USING_UART6=y
       - CONFIG_RT_SERIAL_USING_DMA=y
-      - CONFIG_BSP_UART1_RX_USING_DMA=y
-      - CONFIG_BSP_UART1_TX_USING_DMA=y
+      - CONFIG_BSP_UART6_RX_USING_DMA=y
+      - CONFIG_BSP_UART6_TX_USING_DMA=y
 devices.uart_v2:
     kconfig:
       - CONFIG_RT_USING_SERIAL_V2=y
       - CONFIG_BSP_USING_UART=y
-      - CONFIG_BSP_USING_UART1=y
+      - CONFIG_BSP_USING_UART6=y
       - CONFIG_RT_SERIAL_USING_DMA=y
-      - CONFIG_BSP_UART1_RX_USING_DMA=y
-      - CONFIG_BSP_UART1_TX_USING_DMA=y
+      - CONFIG_BSP_UART6_RX_USING_DMA=y
+      - CONFIG_BSP_UART6_TX_USING_DMA=y
 devices.usb_hs_device:
     kconfig:
       - CONFIG_BSP_USING_USB=y

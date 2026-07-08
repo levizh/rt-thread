@@ -110,11 +110,6 @@ scons --attach=devices.watchdog_wdt
 scons -j4
 scons --attach=default
 
-
-scons --attach=peripheral.eth_mii
-scons -j4
-scons --attach=default
-
 scons --attach=peripheral.eth_rmii
 scons -j4
 scons --attach=default
