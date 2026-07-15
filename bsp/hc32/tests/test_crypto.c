@@ -17,15 +17,17 @@
 
 #if defined(BSP_USING_HWCRYPTO)
 
-#define ARR_SIZE(arr)               (sizeof(arr)/sizeof(*arr))
-#define PRINT_DIGIT_ARR(arr)        do {                                       \
-                                        rt_kprintf("%s: ", #arr);              \
-                                        for(int i = 0; i < ARR_SIZE(arr); i++) \
-                                            rt_kprintf("%d ", arr[i]);         \
-                                            rt_kprintf("\n");                  \
-                                    } while(0)
+#define ARR_SIZE(arr) (sizeof(arr) / sizeof(*arr))
+#define PRINT_DIGIT_ARR(arr)                    \
+    do                                          \
+    {                                           \
+        rt_kprintf("%s: ", #arr);               \
+        for (int i = 0; i < ARR_SIZE(arr); i++) \
+            rt_kprintf("%d ", arr[i]);          \
+        rt_kprintf("\n");                       \
+    } while (0)
 
-#define WDT_DEVICE_NAME    "crypto"
+#define WDT_DEVICE_NAME "crypto"
 
 static void _crypto_cmd_print_usage(void)
 {
@@ -46,8 +48,8 @@ static void _crypto_cmd_print_usage(void)
     rt_kprintf("  aes: test aes module. \n");
 #if defined(HC32F460)
     rt_kprintf("    e.g. msh >crypto_sample aes 128 \n");
-#elif defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F448) || defined (HC32F472) || defined (HC32F4A8) || \
-      defined (HC32F467)
+#elif defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F448) || defined(HC32F472) || defined(HC32F4A8) || \
+    defined(HC32F467)
     rt_kprintf("    e.g. msh >crypto_sample aes 128/192/256 \n");
 #endif
 #endif
@@ -68,16 +70,15 @@ static void _crypto_cmd_print_usage(void)
  * 程序功能：打印CRC输入数据和计数结果，使用第三方软件计算数据，再做比较
  */
 
-#define CRC16_WIDTH    16U
-#define CRC32_WIDTH    32U
+#define CRC16_WIDTH 16U
+#define CRC32_WIDTH 32U
 static void crc_test(rt_uint32_t width)
 {
-    rt_uint8_t temp_in[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    rt_uint8_t temp_in[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     struct rt_hwcrypto_ctx *ctx;
     rt_uint32_t result = 0;
     /* CRC16_X25 */
-    struct hwcrypto_crc_cfg cfg =
-    {
+    struct hwcrypto_crc_cfg cfg = {
         .last_val = 0xFFFFU,
         .poly = 0x1021U,
         .width = CRC16_WIDTH,
@@ -133,7 +134,7 @@ static void crc_test(rt_uint32_t width)
  * AES命令调用：crypto_sample aes 128/192/256
  * 程序功能：打印明文、密文、密文解密后的数据
  */
-#define AES_DATA_LEN    32U      /* data of length must be a multiple of 16(128 Bit) */
+#define AES_DATA_LEN 32U      /* data of length must be a multiple of 16(128 Bit) */
 static void aes_test(rt_uint16_t key_bitlen)
 {
     rt_uint32_t result = RT_EOK;
@@ -146,23 +147,21 @@ static void aes_test(rt_uint16_t key_bitlen)
     const char *key256 = "1234567890abcdefghijklmnopqrstuv";
     const char *key;
     rt_uint8_t type_max = 1U;
-    hwcrypto_type types[] =
-    {
+    hwcrypto_type types[] = {
         HWCRYPTO_TYPE_AES_ECB,
         HWCRYPTO_TYPE_AES_CBC,
         HWCRYPTO_TYPE_AES_CTR,
         HWCRYPTO_TYPE_AES_CFB,
         HWCRYPTO_TYPE_AES_OFB,
     };
-    const char *type_str[] =
-    {
+    const char *type_str[] = {
         "aes_ecb",
         "aes_cbc",
         "aes_ctr",
         "aes_cfb",
         "aes_ofb",
     };
-#if defined (HC32F4A8)
+#if defined(HC32F4A8)
     type_max = 5U;
 #endif
     for (int i = 0; i < type_max; i++)
@@ -189,7 +188,7 @@ static void aes_test(rt_uint16_t key_bitlen)
             break;
         }
         result = rt_hwcrypto_symmetric_setkey(ctx, (rt_uint8_t *)key, key_bitlen);
-#if defined (HC32F4A8)
+#if defined(HC32F4A8)
         const char *iv = "1234567812345678";
         result = rt_hwcrypto_symmetric_setiv(ctx, (const rt_uint8_t *)iv, strlen(iv));
 #endif
@@ -227,7 +226,7 @@ static void aes_test(rt_uint16_t key_bitlen)
             }
             rt_kprintf("\n\n");
 
-_exit:
+        _exit:
             rt_hwcrypto_symmetric_destroy(ctx);
         }
     }
@@ -241,15 +240,15 @@ _exit:
  * Hash命令调用：crypto_sample hash test
  * 程序功能：打印hash原始消息、期望的SHA256结果和计算的SHA256结果
  */
-#define HASH_SHA256_MSG_DIGEST_SIZE        (32U)
+#define HASH_SHA256_MSG_DIGEST_SIZE (32U)
 static void hash_sha256_test(void)
 {
     const char *in = "0123456789abcdefghijklmnopqrstuvwxyz";
     uint8_t calc_out[HASH_SHA256_MSG_DIGEST_SIZE];
-    const uint8_t expect_out[HASH_SHA256_MSG_DIGEST_SIZE] = {0x74, 0xE7, 0xE5, 0xBB, 0x9D, 0x22, 0xD6, 0xDB, 0x26, 0xBF,
-                                                       0x76, 0x94, 0x6D, 0x40, 0xFF, 0xF3, 0xEA, 0x9F, 0x03, 0x46,
-                                                       0xB8, 0x84, 0xFD, 0x06, 0x94, 0x92, 0x0F, 0xCC, 0xFA, 0xD1,
-                                                       0x5E, 0x33};
+    const uint8_t expect_out[HASH_SHA256_MSG_DIGEST_SIZE] = { 0x74, 0xE7, 0xE5, 0xBB, 0x9D, 0x22, 0xD6, 0xDB, 0x26, 0xBF,
+                                                              0x76, 0x94, 0x6D, 0x40, 0xFF, 0xF3, 0xEA, 0x9F, 0x03, 0x46,
+                                                              0xB8, 0x84, 0xFD, 0x06, 0x94, 0x92, 0x0F, 0xCC, 0xFA, 0xD1,
+                                                              0x5E, 0x33 };
     struct rt_hwcrypto_ctx *ctx;
 
     ctx = rt_hwcrypto_hash_create(rt_hwcrypto_dev_default(), HWCRYPTO_TYPE_SHA256);
@@ -358,6 +357,6 @@ _exit:
     return -RT_ERROR;
 }
 
-MSH_CMD_EXPORT(crypto_sample, crypto [option]);
+MSH_CMD_EXPORT(crypto_sample, crypto[option]);
 
 #endif

@@ -119,13 +119,8 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>UL2CM3</Key>
-          <Name>UL2CM3(-S0 -C0 -P0 -FD1FFE0000 -FC4000 -FN2 -FF0HC32F467_1M -FS00 -FL0100000 -FF1HC32F467_otp -FS13000000 -FL11800 -FP0($$Device:HC32F467RGTI$FlashARM\HC32F467_1M.FLM) -FP1($$Device:HC32F467RGTI$FlashARM\HC32F467_otp.FLM))</Name>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>CMSIS_AGDI</Key>
-          <Name>-X"" -O206 -S0 -C0 -P00 -FO15 -FD1FFE0000 -FC4000 -FN2 -FF0HC32F467_1M -FS00 -FL0100000 -FP0($$Device:HC32F467RGTI$FlashARM\HC32F467_1M.FLM) -FF1HC32F467_otp -FS13000000 -FL11800 -FP1($$Device:HC32F467RGTI$FlashARM\HC32F467_otp.FLM)</Name>
+          <Name>-X"" -O206 -S0 -C0 -P00 -FO15 -FD1FFE0000 -FC4000 -FN2 -FF0HC32F467_1M -FS00 -FL0100000 -FP0($$Device:HC32F467RGTI$FlashARM/HC32F467_1M.FLM) -FF1HC32F467_otp -FS13000000 -FL11800 -FP1($$Device:HC32F467RGTI$FlashARM/HC32F467_otp.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>

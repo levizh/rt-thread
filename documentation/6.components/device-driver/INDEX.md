@@ -17,6 +17,7 @@
 - @subpage page_device_rtc_dm
 - @subpage page_device_clock_time
 - @subpage page_device_hwtimer
+- @subpage page_device_ptp
 - @subpage page_device_watchdog
 - @subpage page_device_wlan
 - @subpage page_device_sensor
@@ -34,6 +35,7 @@
 - @subpage page_device_disk
 - @subpage page_device_partitions
 - @subpage page_device_hwcache
+- @subpage page_device_dvfs
 - @subpage page_device_can
 - @subpage page_device_can_dm
 - @subpage page_device_clk

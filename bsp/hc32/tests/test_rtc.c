@@ -32,23 +32,23 @@
 #if defined(BSP_USING_RTC)
 
 /* macros define */
-#define SAMPLE_RTC_NAME         "rtc"
+#define SAMPLE_RTC_NAME "rtc"
 
 /* variables define */
 static rt_device_t rtc_dev;
 #if defined(RT_USING_ALARM)
-    extern void rt_alarm_dump(void);
+extern void rt_alarm_dump(void);
 
-    static struct rt_alarm *ptr_alarm = RT_NULL;
-    static struct rt_alarm_setup alarm_setup;
+static struct rt_alarm *ptr_alarm = RT_NULL;
+static struct rt_alarm_setup alarm_setup;
 #endif /* RT_USING_ALARM */
 
 /* command type */
 enum RTC_CMD
 {
-    CMD_OPEN_RTC        = 0x00,
-    CMD_SET_TIME        = 0x01,
-    CMD_SET_DATE        = 0x02,
+    CMD_OPEN_RTC = 0x00,
+    CMD_SET_TIME = 0x01,
+    CMD_SET_DATE = 0x02,
     CMD_GET_DATE_TIME,
 #if defined(RT_USING_ALARM)
     CMD_SET_ALARM,
@@ -122,11 +122,11 @@ static int rtc_sample(int argc, char *argv[])
             rt_kprintf("unsurpported command\n");
             return -RT_ERROR;
         }
-        temp1 = ((argv[2][0] - '0') * 10) + \
+        temp1 = ((argv[2][0] - '0') * 10) +
                 (argv[2][1] - '0');
-        temp2 = ((argv[2][3] - '0') * 10) + \
+        temp2 = ((argv[2][3] - '0') * 10) +
                 (argv[2][4] - '0');
-        temp3 = ((argv[2][6] - '0') * 10) + \
+        temp3 = ((argv[2][6] - '0') * 10) +
                 (argv[2][7] - '0');
         if (RT_EOK != set_time(temp1, temp2, temp3))
         {
@@ -137,13 +137,13 @@ static int rtc_sample(int argc, char *argv[])
         break;
     case CMD_SET_DATE:
         /* set data yyyy-mm-dd format characters */
-        temp1 = ((argv[2][0] - '0') * 1000) + \
-                ((argv[2][1] - '0') * 100) + \
-                ((argv[2][2] - '0') * 10) + \
+        temp1 = ((argv[2][0] - '0') * 1000) +
+                ((argv[2][1] - '0') * 100) +
+                ((argv[2][2] - '0') * 10) +
                 (argv[2][3] - '0');
-        temp2 = ((argv[2][5] - '0') * 10) + \
+        temp2 = ((argv[2][5] - '0') * 10) +
                 (argv[2][6] - '0');
-        temp3 = ((argv[2][8] - '0') * 10) + \
+        temp3 = ((argv[2][8] - '0') * 10) +
                 (argv[2][9] - '0');
         if (RT_EOK != set_date(temp1, temp2, temp3))
         {

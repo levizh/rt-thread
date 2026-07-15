@@ -34,19 +34,19 @@
 
 #ifdef BSP_USING_PULSE_ENCODER
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
-    #define TEST_IO_A_PIN GET_PIN(A, 5)
-    #define TEST_IO_B_PIN GET_PIN(A, 6)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
+#define TEST_IO_A_PIN GET_PIN(A, 5)
+#define TEST_IO_B_PIN GET_PIN(A, 6)
 #else
-    #define TEST_IO_A_PIN GET_PIN(B, 0)
-    #define TEST_IO_B_PIN GET_PIN(B, 1)
+#define TEST_IO_A_PIN GET_PIN(B, 0)
+#define TEST_IO_B_PIN GET_PIN(B, 1)
 #endif
 
 static rt_device_t pulse_encoder_dev = RT_NULL;
 
 static void printf_connect(void)
 {
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
 #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PA5-->PA8 PA6-->PA9\n");
 #endif
@@ -54,7 +54,7 @@ static void printf_connect(void)
     rt_kprintf("  [tmr6]*connect PA5-->PB9 PA6-->PB8\n");
 #endif
 #endif
-#if defined (HC32F460)
+#if defined(HC32F460)
 #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA8 PB1-->PA9\n");
 #endif
@@ -62,7 +62,7 @@ static void printf_connect(void)
     rt_kprintf("  [tmr6]*connect PB0-->PE9 PB1-->PE8\n");
 #endif
 #endif
-#if defined (HC32F448)
+#if defined(HC32F448)
 #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA8 PB1-->PA9\n");
 #endif
@@ -70,7 +70,7 @@ static void printf_connect(void)
     rt_kprintf("  [tmr6]*connect PB0-->PB5 PB1-->PB13\n");
 #endif
 #endif
-#if defined (HC32F472)
+#if defined(HC32F472)
 #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA0 PB1-->PA1\n");
 #endif
@@ -78,7 +78,7 @@ static void printf_connect(void)
     rt_kprintf("  [tmr6]*connect PB0-->PA3 PB1-->PA7\n");
 #endif
 #endif
-#if defined (HC32F334)
+#if defined(HC32F334)
 #if defined(BSP_USING_PULSE_ENCODER_TMRA_1)
     rt_kprintf("  [tmra]*connect PB0-->PA0 PB1-->PA1\n");
 #endif
@@ -102,8 +102,8 @@ static void GenClkUp(const uint16_t cnt)
 {
     uint32_t i, j;
     rt_int32_t count;
-    const uint8_t bAin[4U] = {1U, 1U, 0U, 0U};
-    const uint8_t bBin[4U] = {0U, 1U, 1U, 0U};
+    const uint8_t bAin[4U] = { 1U, 1U, 0U, 0U };
+    const uint8_t bBin[4U] = { 0U, 1U, 1U, 0U };
     for (j = 0UL; j < cnt; j++)
     {
         for (i = 0UL; i < 4UL; i++)
@@ -135,8 +135,8 @@ static void GenClkDown(const uint16_t cnt)
 {
     uint32_t i, j;
     rt_int32_t count;
-    const uint8_t bAin[4U] = {0U, 1U, 1U, 0U};
-    const uint8_t bBin[4U] = {1U, 1U, 0U, 0U};
+    const uint8_t bAin[4U] = { 0U, 1U, 1U, 0U };
+    const uint8_t bBin[4U] = { 1U, 1U, 0U, 0U };
     for (j = 0UL; j < cnt; j++)
     {
         for (i = 0UL; i < 4UL; i++)
@@ -226,5 +226,5 @@ static int encoder_sample(int argc, char **argv)
 }
 
 /* 导出到 msh 命令列表中 */
-MSH_CMD_EXPORT(encoder_sample, encoder sample devname [option1] [option2]);
+MSH_CMD_EXPORT(encoder_sample, encoder sample devname[option1][option2]);
 #endif

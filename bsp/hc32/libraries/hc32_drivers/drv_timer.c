@@ -16,7 +16,7 @@
 #include "drv_config.h"
 
 // #define DRV_DEBUG
-#define LOG_TAG             "drv.clock_timer"
+#define LOG_TAG "drv.clock_timer"
 #include <drv_log.h>
 
 #ifdef BSP_USING_CLOCK_TIMER
@@ -75,15 +75,14 @@ struct hc32_clock_timer
         en_int_src_t enIntSrc;
         IRQn_Type enIRQn;
         rt_uint8_t u8Int_Prio;
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
+#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
         func_ptr_t irq_callback;
 #endif
     } isr;
     char *name;
 };
 
-static struct hc32_clock_timer hc32_clock_timer_obj[] =
-{
+static struct hc32_clock_timer hc32_clock_timer_obj[] = {
 #ifdef BSP_USING_TMRA_1
     TMRA_1_CONFIG,
 #endif
@@ -146,22 +145,22 @@ static void _timer_init(struct rt_clock_timer_device *timer, rt_uint32_t state)
         /* TIMERA configuration */
         (void)TMRA_StructInit(&stcTmraInit);
         stcTmraInit.sw_count.u8ClockDiv = TMRA_CLK_DIV32;
-        stcTmraInit.u32PeriodValue      = timer->info->maxcnt;
+        stcTmraInit.u32PeriodValue = timer->info->maxcnt;
         (void)TMRA_Init(tmr_device->tmr_handle, &stcTmraInit);
 
         TMRA_IntCmd(tmr_device->tmr_handle, TMRA_INT_OVF, ENABLE);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
+#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
         hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_TRUE);
-#elif defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#elif defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
         hc32_install_irq_handler(&irq_config, NULL, RT_TRUE);
 #endif
     }
     else    /* close */
     {
         TMRA_DeInit(tmr_device->tmr_handle);
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
+#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
         hc32_install_irq_handler(&irq_config, tmr_device->isr.irq_callback, RT_FALSE);
-#elif defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#elif defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
         hc32_install_irq_handler(&irq_config, NULL, RT_FALSE);
 #endif
         FCG_Fcg2PeriphClockCmd(tmr_device->clock, DISABLE);
@@ -253,7 +252,7 @@ static void TMRA_1_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_1_INDEX].time_device);
 }
 
-#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#if defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
 void TMRA_1_Ovf_Udf_Handler(void)
 {
     TMRA_1_callback();
@@ -268,7 +267,7 @@ static void TMRA_2_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_2_INDEX].time_device);
 }
 
-#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#if defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
 void TMRA_2_Ovf_Udf_Handler(void)
 {
     TMRA_2_callback();
@@ -283,7 +282,7 @@ static void TMRA_3_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_3_INDEX].time_device);
 }
 
-#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#if defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
 void TMRA_3_Ovf_Udf_Handler(void)
 {
     TMRA_3_callback();
@@ -298,7 +297,7 @@ static void TMRA_4_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_4_INDEX].time_device);
 }
 
-#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#if defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
 void TMRA_4_Ovf_Udf_Handler(void)
 {
     TMRA_4_callback();
@@ -313,7 +312,7 @@ static void TMRA_5_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_5_INDEX].time_device);
 }
 
-#if defined (HC32F448) || defined (HC32F472) || defined (HC32F334)
+#if defined(HC32F448) || defined(HC32F472) || defined(HC32F334)
 void TMRA_5_Ovf_Udf_Handler(void)
 {
     TMRA_5_callback();
@@ -328,7 +327,7 @@ static void TMRA_6_callback(void)
     rt_clock_timer_isr(&hc32_clock_timer_obj[TMRA_6_INDEX].time_device);
 }
 
-#if defined (HC32F472)
+#if defined(HC32F472)
 void TMRA_6_Ovf_Udf_Handler(void)
 {
     TMRA_6_callback();
@@ -391,13 +390,13 @@ void tmra_get_info_callback(void)
     /* Div = 32 */
     for (rt_uint8_t i = 0; i < sizeof(_info) / sizeof(_info[0]); i++)
     {
-        _info[i].maxcnt  = CLK_GetBusClockFreq(hc32_clock_timer_obj[i].clock_source) / 32U / 1000U; /* Period = 1ms */
+        _info[i].maxcnt = CLK_GetBusClockFreq(hc32_clock_timer_obj[i].clock_source) / 32U / 1000U; /* Period = 1ms */
         _info[i].maxfreq = CLK_GetBusClockFreq(hc32_clock_timer_obj[i].clock_source) / 32U;
         _info[i].minfreq = CLK_GetBusClockFreq(hc32_clock_timer_obj[i].clock_source) / 32U / _info[i].maxcnt;
         _info[i].cntmode = CLOCK_TIMER_CNTMODE_UP;
     }
 
-#if defined (HC32F460) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
+#if defined(HC32F460) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
 #ifdef BSP_USING_TMRA_1
     hc32_clock_timer_obj[TMRA_1_INDEX].isr.irq_callback = TMRA_1_callback;
 #endif
@@ -437,8 +436,7 @@ void tmra_get_info_callback(void)
 #endif
 }
 
-static const struct rt_clock_timer_ops _ops =
-{
+static const struct rt_clock_timer_ops _ops = {
     .init = _timer_init,
     .start = _timer_start,
     .stop = _timer_stop,
@@ -455,9 +453,9 @@ static int rt_hw_clock_timer_init(void)
     for (i = 0; i < sizeof(hc32_clock_timer_obj) / sizeof(hc32_clock_timer_obj[0]); i++)
     {
         hc32_clock_timer_obj[i].time_device.info = &_info[i];
-        hc32_clock_timer_obj[i].time_device.ops  = &_ops;
+        hc32_clock_timer_obj[i].time_device.ops = &_ops;
         if (rt_clock_timer_register(&hc32_clock_timer_obj[i].time_device,
-                                       hc32_clock_timer_obj[i].name, &hc32_clock_timer_obj[i].tmr_handle) == RT_EOK)
+                                    hc32_clock_timer_obj[i].name, &hc32_clock_timer_obj[i].tmr_handle) == RT_EOK)
         {
             LOG_D("%s register success", hc32_clock_timer_obj[i].name);
         }

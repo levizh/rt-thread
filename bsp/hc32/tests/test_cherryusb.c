@@ -17,18 +17,18 @@
 */
 
 #if defined(RT_CHERRYUSB_HOST) && defined(RT_CHERRYUSB_DEVICE)
-    #if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8) || defined (HC32F467)
-        #define TEST_USBH_CORE_BASE   (CM_USBFS_BASE)
-        #define TEST_USBD_CORE_BASE   (CM_USBHS_BASE)
-    #else
-        #error "Only one USB role can be selected"
-    #endif
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8) || defined(HC32F467)
+#define TEST_USBH_CORE_BASE (CM_USBFS_BASE)
+#define TEST_USBD_CORE_BASE (CM_USBHS_BASE)
 #else
-    #if defined(RT_CHERRYUSB_HOST)
-        #define TEST_USBH_CORE_BASE   (CM_USBFS_BASE)
-    #elif defined(RT_CHERRYUSB_DEVICE)
-        #define TEST_USBD_CORE_BASE   (CM_USBFS_BASE)
-    #endif
+#error "Only one USB role can be selected"
+#endif
+#else
+#if defined(RT_CHERRYUSB_HOST)
+#define TEST_USBH_CORE_BASE (CM_USBFS_BASE)
+#elif defined(RT_CHERRYUSB_DEVICE)
+#define TEST_USBD_CORE_BASE (CM_USBFS_BASE)
+#endif
 #endif
 
 #if defined(RT_CHERRYUSB_HOST)
@@ -135,7 +135,7 @@ uint8_t usbh_get_hport_active_config_index(struct usbh_hubport *hport)
                                                              [*] cdc acm
 */
 
-static int  cherryusb_device_cdc_acm_init(void)
+static int cherryusb_device_cdc_acm_init(void)
 {
     extern void cdc_acm_init(uint8_t busid, uint32_t reg_base);
     cdc_acm_init(0, TEST_USBD_CORE_BASE);

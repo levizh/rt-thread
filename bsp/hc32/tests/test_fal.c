@@ -27,15 +27,15 @@
 #include "board.h"
 #include <fal.h>
 
-#define FAL_PART_NAME                   "app"
-#define TEST_BUF_SIZE                   1024UL
-#define TEST_RW_CNT                     32UL
+#define FAL_PART_NAME "app"
+#define TEST_BUF_SIZE 1024UL
+#define TEST_RW_CNT   32UL
 
-#define TEST_RW_START_ADDR              HC32_FLASH_END_ADDRESS - (TEST_BUF_SIZE * TEST_RW_CNT)
+#define TEST_RW_START_ADDR HC32_FLASH_END_ADDRESS - (TEST_BUF_SIZE * TEST_RW_CNT)
 
 
-static uint8_t write_buffer[TEST_BUF_SIZE] = {0};
-static uint8_t read_buffer[TEST_BUF_SIZE] = {0};
+static uint8_t write_buffer[TEST_BUF_SIZE] = { 0 };
+static uint8_t read_buffer[TEST_BUF_SIZE] = { 0 };
 
 
 static int fal_sample(int argc, char **argv)
@@ -109,8 +109,7 @@ static int fal_sample(int argc, char **argv)
         for (int i = 0; i < TEST_BUF_SIZE; i++)
         {
 #if defined(HC32F460)
-            if ((j == (TEST_RW_CNT - 1)) && (i >= (TEST_BUF_SIZE - 32)) ?
-                    (read_buffer[i] != 0xFF) : (read_buffer[i] != write_buffer[i]))
+            if ((j == (TEST_RW_CNT - 1)) && (i >= (TEST_BUF_SIZE - 32)) ? (read_buffer[i] != 0xFF) : (read_buffer[i] != write_buffer[i]))
 #else
             if (read_buffer[i] != write_buffer[i])
 #endif

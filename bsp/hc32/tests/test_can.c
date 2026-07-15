@@ -64,29 +64,29 @@
 #include "rtdevice.h"
 #include "drv_can.h"
 
-#if defined (HC32F452) || defined (HC32F460)
-    #define CAN_DEV_CNT                  (1)
-#elif defined (HC32F472)
-    #define CAN_DEV_CNT                  (3)
-#elif defined (HC32F467) || defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F4A8)
-    #define CAN_DEV_CNT                  (2)
+#if defined(HC32F452) || defined(HC32F460)
+#define CAN_DEV_CNT (1)
+#elif defined(HC32F472)
+#define CAN_DEV_CNT (3)
+#elif defined(HC32F467) || defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F4A8)
+#define CAN_DEV_CNT (2)
 #endif
 
-#if defined (HC32F334) || defined (HC32F336) || defined (HC32F448) || defined (HC32F4A8)
-    #define MCAN_DEV_CNT                 (2)
-#elif defined (HC32K118)
-    #define MCAN_DEV_CNT                 (1)
-#elif defined (HC32F558)
-    #define MCAN_DEV_CNT                 (3)
+#if defined(HC32F334) || defined(HC32F336) || defined(HC32F448) || defined(HC32F4A8)
+#define MCAN_DEV_CNT (2)
+#elif defined(HC32K118)
+#define MCAN_DEV_CNT (1)
+#elif defined(HC32F558)
+#define MCAN_DEV_CNT (3)
 #endif
 
-#define MSH_USAGE_CAN_SAMPLE            "can_sample <can1 | can2 | mcan1 | mcan2>          - open can device and test\n"
-#define MSH_USAGE_CAN_SET_BAUD          "can set_baud <baud>        - set can baud\n"
-#define MSH_USAGE_CAN_SET_BAUDFD        "can set_baudfd <baudfd>    - set can baudfd\n"
-#define MSH_USAGE_CAN_SET_BITTIMING     "can set_bittiming <count> <rt_can_bit_timing_arbitration> <rt_can_bit_timing_data>  - set can bit timing,\n"
-#define MSH_USAGE_CAN_SEND_MSG          "can send_msg \n"
+#define MSH_USAGE_CAN_SAMPLE        "can_sample <can1 | can2 | mcan1 | mcan2>          - open can device and test\n"
+#define MSH_USAGE_CAN_SET_BAUD      "can set_baud <baud>        - set can baud\n"
+#define MSH_USAGE_CAN_SET_BAUDFD    "can set_baudfd <baudfd>    - set can baudfd\n"
+#define MSH_USAGE_CAN_SET_BITTIMING "can set_bittiming <count> <rt_can_bit_timing_arbitration> <rt_can_bit_timing_data>  - set can bit timing,\n"
+#define MSH_USAGE_CAN_SEND_MSG      "can send_msg \n"
 
-#define MSH_RESULT_STR(result)          ((result == RT_EOK) ? "success" : "failure")
+#define MSH_RESULT_STR(result) ((result == RT_EOK) ? "success" : "failure")
 
 static rt_device_t can_dev = RT_NULL;
 static struct rt_semaphore can_rx_sem;
@@ -94,15 +94,18 @@ static rt_mutex_t can_mutex = RT_NULL;
 static rt_thread_t rx_thread;
 
 #ifdef RT_CAN_USING_CANFD
-static const uint8_t mcan_data_size[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
+static const uint8_t mcan_data_size[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64 };
 #endif
 
-#define CAN_IF_INIT()                   do {                            \
-                                            if (can_dev == RT_NULL || can_mutex == RT_NULL) { \
-                                                rt_kprintf("failed! please first execute can_sample cmd!\n"); \
-                                                return;                 \
-                                            }                           \
-                                        } while (0)
+#define CAN_IF_INIT()                                                     \
+    do                                                                    \
+    {                                                                     \
+        if (can_dev == RT_NULL || can_mutex == RT_NULL)                   \
+        {                                                                 \
+            rt_kprintf("failed! please first execute can_sample cmd!\n"); \
+            return;                                                       \
+        }                                                                 \
+    } while (0)
 
 static rt_err_t can_rx_call(rt_device_t dev, rt_size_t size)
 {
@@ -113,13 +116,12 @@ static rt_err_t can_rx_call(rt_device_t dev, rt_size_t size)
 static void _set_default_filter(void)
 {
 #ifdef RT_CAN_USING_HDR
-    struct rt_can_filter_item can_items[3] =
-    {
+    struct rt_can_filter_item can_items[3] = {
         RT_CAN_FILTER_ITEM_INIT(0x100, RT_CAN_STDID, RT_CAN_DTR, 1, 0x700, RT_NULL, RT_NULL),           /* std,match ID:0x100~0x1ff，过滤表模式为1(0表示标识符列表模式，1表示标识符屏蔽位模式)，hdr = -1(表示不指定过滤表号)，设置默认过滤表，过滤表回调函数和参数均为NULL */
         RT_CAN_FILTER_ITEM_INIT(0x12345100, RT_CAN_EXTID, RT_CAN_DTR, 1, 0xFFFFFF00, RT_NULL, RT_NULL), /* ext,match ID:0x12345100~0x123451ff，hdr = -1 */
-        {0x555, RT_CAN_STDID, RT_CAN_DTR, 1, 0x7ff, 7}                                                  /* std,match ID:0x555，hdr= 7，指定设置7号过滤表 */
+        { 0x555, RT_CAN_STDID, RT_CAN_DTR, 1, 0x7ff, 7 }                                                  /* std,match ID:0x555，hdr= 7，指定设置7号过滤表 */
     };
-    struct rt_can_filter_config cfg = {3, 1, can_items}; /* 一共有3个过滤表，1表示初始化过滤表控制块 */
+    struct rt_can_filter_config cfg = { 3, 1, can_items }; /* 一共有3个过滤表，1表示初始化过滤表控制块 */
     rt_err_t res;
     res = rt_device_control(can_dev, RT_CAN_CMD_SET_FILTER, &cfg);
     RT_ASSERT(res == RT_EOK);
@@ -144,8 +146,8 @@ static uint8_t _get_can_data_bytes_len(uint32_t dlc)
 
 static void can_rx_thread(void *parameter)
 {
-    struct rt_can_msg rxmsg = {0};
-    rt_size_t  size;
+    struct rt_can_msg rxmsg = { 0 };
+    rt_size_t size;
     uint8_t data_len;
 
     while (1)
@@ -213,17 +215,17 @@ static void _msh_cmd_set_timing(int argc, char **argv)
         struct rt_can_bit_timing_config cfg;
         uint32_t pos = 3;
         items[0].prescaler = atoi(argv[pos++]);
-        items[0].num_seg1 =  atoi(argv[pos++]);
-        items[0].num_seg2 =  atoi(argv[pos++]);
-        items[0].num_sjw =   atoi(argv[pos++]);
+        items[0].num_seg1 = atoi(argv[pos++]);
+        items[0].num_seg2 = atoi(argv[pos++]);
+        items[0].num_sjw = atoi(argv[pos++]);
         items[0].num_sspoff = atoi(argv[pos++]);
         if (count > 1)
         {
-            items[1].prescaler =  atoi(argv[pos++]);
-            items[1].num_seg1 =  atoi(argv[pos++]);
-            items[1].num_seg2 =  atoi(argv[pos++]);
-            items[1].num_sjw =  atoi(argv[pos++]);
-            items[1].num_sspoff =  atoi(argv[pos]);
+            items[1].prescaler = atoi(argv[pos++]);
+            items[1].num_seg1 = atoi(argv[pos++]);
+            items[1].num_seg2 = atoi(argv[pos++]);
+            items[1].num_sjw = atoi(argv[pos++]);
+            items[1].num_sspoff = atoi(argv[pos]);
         }
         cfg.count = count;
         cfg.items = items;
@@ -264,8 +266,8 @@ static void _msh_cmd_set_baudfd(int argc, char **argv)
 
 static void _msh_cmd_send_msg(int argc, char **argv)
 {
-    rt_size_t  size;
-    struct rt_can_msg msg = {0};
+    rt_size_t size;
+    struct rt_can_msg msg = { 0 };
     uint8_t u8Tick;
 
     if (argc == 2)
@@ -273,7 +275,7 @@ static void _msh_cmd_send_msg(int argc, char **argv)
         CAN_IF_INIT();
         rt_mutex_take(can_mutex, RT_WAITING_FOREVER);
 #ifdef RT_CAN_USING_CANFD
-        msg.id  = 0x300;
+        msg.id = 0x300;
         msg.ide = RT_CAN_STDID;
         msg.rtr = RT_CAN_DTR;
         msg.len = 0xFU;
@@ -284,7 +286,7 @@ static void _msh_cmd_send_msg(int argc, char **argv)
             msg.data[u8Tick] = u8Tick + 1 + 0xA0;
         }
 #else
-        msg.id  = 0x300;
+        msg.id = 0x300;
         msg.ide = RT_CAN_STDID;
         msg.rtr = RT_CAN_DTR;
 #ifdef BSP_USING_MCAN
@@ -428,4 +430,4 @@ int can_sample(int argc, char **argv)
         return -RT_ERROR;
     }
 }
-MSH_CMD_EXPORT(can_sample, can sample: select < can1 | can2 | mcan1 | mcan2 >);
+MSH_CMD_EXPORT(can_sample, can sample : select<can1 | can2 | mcan1 | mcan2>);

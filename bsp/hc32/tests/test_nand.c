@@ -28,7 +28,7 @@
 #if defined(BSP_USING_EXMC) && defined(BSP_USING_NAND)
 #include "nand_port.h"
 
-#define NAND_DEVICE_NAME             "nand"
+#define NAND_DEVICE_NAME "nand"
 
 static rt_err_t nand_read_id(struct rt_mtd_nand_device *mtd_nand)
 {

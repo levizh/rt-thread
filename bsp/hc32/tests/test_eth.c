@@ -71,6 +71,6 @@ void eth_webserver(void)
     rt_kprintf("Initialize the httpd...... \r\n");
     httpd_init();
 }
-MSH_CMD_EXPORT(eth_webserver, eth: start web server);
+MSH_CMD_EXPORT(eth_webserver, eth : start web server);
 
 #endif

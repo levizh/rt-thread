@@ -22,13 +22,13 @@
 
 #if defined(BSP_USING_PM)
 
-#define LOG_TAG             "drv_pm"
+#define LOG_TAG "drv_pm"
 #include <drv_log.h>
 
-#define IS_PWC_UNLOCKED()           ((CM_PWC->FPRC & PWC_FPRC_FPRCB1) == PWC_FPRC_FPRCB1)
+#define IS_PWC_UNLOCKED() ((CM_PWC->FPRC & PWC_FPRC_FPRCB1) == PWC_FPRC_FPRCB1)
 
-typedef void (* run_switch_func_type)(void);
-typedef void (* sleep_enter_func_type)(void);
+typedef void (*run_switch_func_type)(void);
+typedef void (*sleep_enter_func_type)(void);
 static void _sleep_enter_idle(void);
 static void _sleep_enter_deep(void);
 static void _sleep_enter_standby(void);
@@ -36,16 +36,14 @@ static void _sleep_enter_shutdown(void);
 static void _run_switch_high_to_low(void);
 static void _run_switch_low_to_high(void);
 
-static run_switch_func_type _run_switch_func[PM_RUN_MODE_MAX][PM_RUN_MODE_MAX] =
-{
-    {RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low},
-    {RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low},
-    {RT_NULL, RT_NULL, RT_NULL, RT_NULL},
-    {_run_switch_low_to_high, _run_switch_low_to_high, RT_NULL, RT_NULL},
+static run_switch_func_type _run_switch_func[PM_RUN_MODE_MAX][PM_RUN_MODE_MAX] = {
+    { RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low },
+    { RT_NULL, RT_NULL, RT_NULL, _run_switch_high_to_low },
+    { RT_NULL, RT_NULL, RT_NULL, RT_NULL },
+    { _run_switch_low_to_high, _run_switch_low_to_high, RT_NULL, RT_NULL },
 };
 
-static sleep_enter_func_type _sleep_enter_func[PM_SLEEP_MODE_MAX] =
-{
+static sleep_enter_func_type _sleep_enter_func[PM_SLEEP_MODE_MAX] = {
     RT_NULL,
     _sleep_enter_idle,
     RT_NULL,
@@ -75,7 +73,7 @@ static void _sleep_enter_deep(void)
 
     (void)PWC_STOP_Config(&sleep_deep_cfg.cfg);
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F467) || defined (HC32F448) || defined (HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F467) || defined(HC32F448) || defined(HC32F4A8)
     if (PWC_PWRC2_DVS == (READ_REG8(CM_PWC->PWRC2) & PWC_PWRC2_DVS))
     {
         CLR_REG8_BIT(CM_PWC->PWRC1, PWC_PWRC1_STPDAS);
@@ -131,7 +129,7 @@ static void _run_switch_high_to_low(void)
 
     st_run_mode_cfg.sys_clk_cfg(PM_RUN_MODE_LOW_SPEED);
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F467) || defined (HC32F448) || defined (HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F467) || defined(HC32F448) || defined(HC32F4A8)
     PWC_HighSpeedToLowSpeed();
 #endif
 }
@@ -140,7 +138,7 @@ static void _run_switch_low_to_high(void)
 {
     struct pm_run_mode_config st_run_mode_cfg = PM_RUN_MODE_CFG;
 
-#if defined (HC32F4A0) || defined (HC32F4A2) || defined (HC32F460) || defined (HC32F467) || defined (HC32F448) || defined (HC32F4A8)
+#if defined(HC32F4A0) || defined(HC32F4A2) || defined(HC32F460) || defined(HC32F467) || defined(HC32F448) || defined(HC32F4A8)
     PWC_LowSpeedToHighSpeed();
 #endif
 
@@ -223,8 +221,7 @@ static rt_tick_t _timer_get_tick(struct rt_pm *pm)
  */
 int rt_hw_pm_init(void)
 {
-    static const struct rt_pm_ops _ops =
-    {
+    static const struct rt_pm_ops _ops = {
         _pm_sleep,
         _pm_run,
         _pm_wakeup_timer_start,

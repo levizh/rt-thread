@@ -17,7 +17,7 @@ config SOC_MIMXRT1189CVM8C_CM33
     default y
     depends on SOC_MIMXRT1189CVM8C
     select ARCH_ARM_CORTEX_M33
-    select ARCH_ARM_CORTEX_FPU       
+    select ARCH_ARM_CORTEX_FPU
     select ARCH_ARM_CORTEX_SECURE
 
 menu "On-chip Peripheral Drivers"
@@ -128,6 +128,42 @@ menu "On-chip Peripheral Drivers"
                         default 1
         endif
 
+        menuconfig BSP_USING_I2C
+            bool "Enable I2C"
+            select RT_USING_I2C
+            default n
+            if BSP_USING_I2C
+                config BSP_USING_I2C2
+                    bool "Enable I2C2"
+                    default y
+
+                config BSP_USING_I2C3
+                    bool "Enable I2C3"
+                    default n
+
+                choice
+                    prompt "Select I2C2 badurate"
+                    default HW_I2C2_BADURATE_100kHZ
+
+                    config HW_I2C2_BADURATE_100kHZ
+                        bool "Badurate 100kHZ"
+
+                    config HW_I2C2_BADURATE_400kHZ
+                        bool "Badurate 400kHZ"
+                endchoice
+
+                choice
+                    prompt "Select I2C3 badurate"
+                    default HW_I2C3_BADURATE_100kHZ
+
+                    config HW_I2C3_BADURATE_100kHZ
+                        bool "Badurate 100kHZ"
+
+                    config HW_I2C3_BADURATE_400kHZ
+                        bool "Badurate 400kHZ"
+                endchoice
+            endif
+
         menuconfig BSP_USING_CAN
             bool "Enable CAN"
             select RT_USING_CAN
@@ -135,6 +171,20 @@ menu "On-chip Peripheral Drivers"
             if BSP_USING_CAN
                 config BSP_USING_CAN3
                     bool "Enable FLEXCAN3"
+                    default n
+            endif
+
+        menuconfig BSP_USING_CLOCK_TIMER
+            bool "Enable GPT"
+            default n
+            select RT_USING_CLOCK_TIME
+            if BSP_USING_CLOCK_TIMER
+                config BSP_USING_CLOCK_TIMER1
+                    bool "Enable GPT1"
+                    default n
+
+                config BSP_USING_CLOCK_TIMER2
+                    bool "Enable GPT2"
                     default n
             endif
 
@@ -228,6 +278,16 @@ menu "Onboard Peripheral Drivers"
                 bool "Enable SDCARD (FATFS)"
                 select BSP_USING_SDIO
                 select RT_USING_DFS_ELMFAT
+                default n
+
+            config BSP_USING_QSPI_FLASH_FS
+                bool "Enable QSPI Flash (LittleFS)"
+                select BSP_USING_FLEXSPI
+                select BSP_USING_FLEXSPI1
+                select RT_USING_FAL
+                select FAL_PART_HAS_TABLE_CFG
+                select RT_USING_MTD_NOR
+                select PKG_USING_LITTLEFS
                 default n
         endif
 
