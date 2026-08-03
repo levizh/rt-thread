@@ -43,6 +43,16 @@
     #define USART6_TX_FUNC                  (GPIO_FUNC_36)
 #endif
 
+#if defined(BSP_USING_UART7)
+    #define USART7_RX_PORT                  (GPIO_PORT_H)
+    #define USART7_RX_PIN                   (GPIO_PIN_06)
+    #define USART7_RX_FUNC                  (GPIO_FUNC_39)
+
+    #define USART7_TX_PORT                  (GPIO_PORT_E)
+    #define USART7_TX_PIN                   (GPIO_PIN_06)
+    #define USART7_TX_FUNC                  (GPIO_FUNC_38)
+#endif
+
 /************************ I2C port **********************/
 #if defined(BSP_USING_I2C1)
     #define I2C1_SDA_PORT                   (GPIO_PORT_F)

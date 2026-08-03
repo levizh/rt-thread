@@ -581,7 +581,7 @@ extern "C" {
         .clock          = UART7_TX_DMA_CLOCK,                   \
         .trigger_select = UART7_TX_DMA_TRIG_SELECT,             \
         .trigger_event  = EVT_SRC_USART7_TI,                    \
-        .flag           = UART1_TX_DMA_TRANS_FLAG,              \
+        .flag           = UART7_TX_DMA_TRANS_FLAG,              \
         .irq_config     =                                       \
         {                                                       \
             .irq_num    = UART7_TX_DMA_IRQn,                    \

@@ -21,8 +21,7 @@
 
 /* C binding of definitions if building with C++ compiler */
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*******************************************************************************
@@ -57,13 +56,13 @@ struct hc32_uart_config
     struct hc32_uart_irq_config tc_irq;
 #ifdef RT_SERIAL_USING_DMA
     struct hc32_uart_rxto       *rx_timeout;
-    stc_dma_llp_descriptor_t    llp_desc;
+    stc_dma_llp_descriptor_t    llp_desc[2U];
     struct dma_config           *dma_rx;
     struct dma_config           *dma_tx;
 #endif
 };
 
-/* HC32 uart dirver class */
+/* HC32 uart driver class */
 struct hc32_uart
 {
     struct hc32_uart_config *config;
