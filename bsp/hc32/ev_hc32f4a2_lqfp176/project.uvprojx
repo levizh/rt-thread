@@ -333,9 +333,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls />
-              <Define>HC32F4A2, USE_DDL_DRIVER, RT_USING_ARMLIBC, __CLK_TCK=RT_TICK_PER_SECOND, __RTTHREAD__, RT_USING_LIBC, __DEBUG, __STDC_LIMIT_MACROS</Define>
+              <Define>USE_DDL_DRIVER, __RTTHREAD__, __STDC_LIMIT_MACROS, RT_USING_LIBC, HC32F4A2, __DEBUG, __CLK_TCK=RT_TICK_PER_SECOND, RT_USING_ARMLIBC</Define>
               <Undefine />
-              <IncludePath>..\..\..\libcpu\arm\cortex-m4;..\platform\tca9539;..\..\..\components\libc\posix\io\epoll;board;..\..\..\components\libc\compilers\common\include;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\include;..\..\..\components\libc\posix\io\poll;..\..\..\components\drivers\include;packages\hc32-f4-cmsis-latest\Include;board\ports;packages\hc32-f4-series-latest\hc32f4a2\inc;..\..\..\components\drivers\smp_call;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\drivers\phy;board\config;..\libraries\hc32_drivers;..\..\..\components\libc\posix\ipc;..\..\..\components\drivers\include;..\tests;..\..\..\libcpu\arm\common;board\config\usb_config;.;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\libc\posix\io\eventfd;..\..\..\components\drivers\include;..\..\..\components\finsh;packages\hc32-f4-cmsis-latest\Device\HDSC\hc32f4a2\Include;applications</IncludePath>
+              <IncludePath>.;applications;board;board\ports;board\config;board\config\usb_config;packages\hc32-f4-cmsis-latest\Include;packages\hc32-f4-cmsis-latest\Device\HDSC\hc32f4a2\Include;packages\hc32-f4-series-latest\hc32f4a2\inc;..\..\..\include;..\..\..\libcpu\arm\common;..\..\..\libcpu\arm\cortex-m4;..\..\..\components\drivers\include;..\..\..\components\drivers\smp_call;..\..\..\components\finsh;..\..\..\components\libc\compilers\common\include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\libc\posix\io\epoll;..\..\..\components\libc\posix\io\eventfd;..\..\..\components\libc\posix\io\poll;..\..\..\components\libc\posix\ipc;..\..\..\components\net\utest;..\libraries\hc32_drivers;..\platform\tca9539;..\tests</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -782,13 +782,6 @@
               <FileName>drv_irq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_irq.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
-              <FileName>drv_soft_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32_drivers\drv_soft_i2c.c</FilePath>
             </File>
           </Files>
           <Files>
@@ -1354,13 +1347,6 @@
           </Files>
           <Files>
             <File>
-              <FileName>test_gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\tests\test_gpio.c</FilePath>
-            </File>
-          </Files>
-          <Files>
-            <File>
               <FileName>test_i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\tests\test_i2c.c</FilePath>
@@ -1368,9 +1354,9 @@
           </Files>
           <Files>
             <File>
-              <FileName>test_soft_i2c.c</FileName>
+              <FileName>test_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\tests\test_soft_i2c.c</FilePath>
+              <FilePath>..\tests\test_gpio.c</FilePath>
             </File>
           </Files>
         </Group>

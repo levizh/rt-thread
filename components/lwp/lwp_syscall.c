@@ -299,7 +299,7 @@ static void convert_sockopt(int *level, int *optname)
 }
 #endif  /* RT_USING_SAL */
 
-#if defined(RT_USING_LWIP) || defined(SAL_USING_UNET)
+#if defined(RT_USING_LWIP) || defined(SAL_USING_UNET) || defined(RT_USING_SAL)
 static void sockaddr_tolwip(const struct musl_sockaddr *std, struct sockaddr *lwip)
 {
     if (std && lwip)
@@ -425,20 +425,18 @@ ssize_t sys_read(int fd, void *buf, size_t nbyte)
     void *kmem = RT_NULL;
     ssize_t ret = -1;
 
-    if (!nbyte)
+    if (nbyte)
     {
-        return -EINVAL;
-    }
+        if (!lwp_user_accessable((void *)buf, nbyte))
+        {
+            return -EFAULT;
+        }
 
-    if (!lwp_user_accessable((void *)buf, nbyte))
-    {
-        return -EFAULT;
-    }
-
-    kmem = kmem_get(nbyte);
-    if (!kmem)
-    {
-        return -ENOMEM;
+        kmem = kmem_get(nbyte);
+        if (!kmem)
+        {
+            return -ENOMEM;
+        }
     }
 
     ret = read(fd, kmem, nbyte);
@@ -794,6 +792,28 @@ sysret_t sys_close(int fd)
  */
 sysret_t sys_ioctl(int fd, unsigned long cmd, void *data)
 {
+#ifdef ARCH_MM_MMU
+    if (cmd == F_GETLK || cmd == F_SETLK || cmd == F_SETLKW)
+    {
+        struct flock lock;
+        int ret;
+
+        if (data == RT_NULL ||
+            !lwp_user_accessable(data, sizeof(lock)) ||
+            lwp_get_from_user(&lock, data, sizeof(lock)) != sizeof(lock))
+        {
+            return -EFAULT;
+        }
+
+        ret = ioctl(fd, cmd, &lock);
+        if (ret >= 0 && cmd == F_GETLK &&
+            lwp_put_to_user(data, &lock, sizeof(lock)) != sizeof(lock))
+        {
+            return -EFAULT;
+        }
+        return ret < 0 ? GET_ERRNO() : ret;
+    }
+#endif
     int ret = ioctl(fd, cmd, data);
     return (ret < 0 ? GET_ERRNO() : ret);
 }
@@ -970,6 +990,7 @@ sysret_t sys_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptf
 #ifdef ARCH_MM_MMU
     int ret = -1;
     fd_set *kreadfds = RT_NULL, *kwritefds = RT_NULL, *kexceptfds = RT_NULL;
+    struct timeval ktimeout, *ptimeout = RT_NULL;
 
     if (readfds)
     {
@@ -1016,8 +1037,18 @@ sysret_t sys_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptf
         }
         lwp_get_from_user(kexceptfds, exceptfds, sizeof *kexceptfds);
     }
+    if (timeout)
+    {
+        if (!lwp_user_accessable((void *)timeout, sizeof *timeout))
+        {
+            SET_ERRNO(EFAULT);
+            goto quit;
+        }
+        lwp_get_from_user(&ktimeout, timeout, sizeof ktimeout);
+        ptimeout = &ktimeout;
+    }
 
-    ret = select(nfds, kreadfds, kwritefds, kexceptfds, timeout);
+    ret = select(nfds, kreadfds, kwritefds, kexceptfds, ptimeout);
     if (kreadfds)
     {
         lwp_put_to_user(readfds, kreadfds, sizeof *kreadfds);
@@ -5054,6 +5085,74 @@ rt_ssize_t sys_device_write(rt_device_t dev, rt_off_t pos, const void *buffer, r
 #ifdef RT_USING_SAL
 /* network interfaces */
 
+union lwp_sockaddr_buffer
+{
+    struct sockaddr address;
+    struct sockaddr_un unix_address;
+};
+
+static int lwp_sockaddr_from_user(union lwp_sockaddr_buffer *kernel_address,
+                                  const struct musl_sockaddr *user_address,
+                                  socklen_t length)
+{
+    uint16_t family;
+    struct musl_sockaddr musl_address;
+
+    if (user_address == RT_NULL || length < sizeof(family) ||
+        length > sizeof(*kernel_address))
+    {
+        return -EINVAL;
+    }
+    if (!lwp_user_accessable((void *)user_address, length))
+    {
+        return -EFAULT;
+    }
+
+    rt_memset(kernel_address, 0, sizeof(*kernel_address));
+    lwp_get_from_user(&family, (void *)user_address, sizeof(family));
+    if (family == AF_UNIX || family == AF_NETLINK)
+    {
+        lwp_get_from_user(kernel_address, (void *)user_address, length);
+    }
+    else
+    {
+        if (length > sizeof(musl_address))
+        {
+            return -EINVAL;
+        }
+        rt_memset(&musl_address, 0, sizeof(musl_address));
+        lwp_get_from_user(&musl_address, (void *)user_address, length);
+        sockaddr_tolwip(&musl_address, &kernel_address->address);
+    }
+    return 0;
+}
+
+static socklen_t lwp_sockaddr_to_user(
+    struct musl_sockaddr *user_address, socklen_t user_length,
+    const union lwp_sockaddr_buffer *kernel_address,
+    socklen_t kernel_length)
+{
+    socklen_t actual_length;
+    socklen_t copy_length;
+    struct musl_sockaddr musl_address;
+
+    if (kernel_address->unix_address.sa_family == AF_UNIX)
+    {
+        actual_length = kernel_length;
+        copy_length = user_length < actual_length ? user_length : actual_length;
+        lwp_put_to_user(user_address, (void *)kernel_address, copy_length);
+    }
+    else
+    {
+        rt_memset(&musl_address, 0, sizeof(musl_address));
+        sockaddr_tomusl(&kernel_address->address, &musl_address);
+        actual_length = sizeof(musl_address);
+        copy_length = user_length < actual_length ? user_length : actual_length;
+        lwp_put_to_user(user_address, &musl_address, copy_length);
+    }
+    return actual_length;
+}
+
 /**
  * @brief Accepts a connection on a socket.
  *
@@ -5091,8 +5190,7 @@ rt_ssize_t sys_device_write(rt_device_t dev, rt_off_t pos, const void *buffer, r
 sysret_t sys_accept(int socket, struct musl_sockaddr *addr, socklen_t *addrlen)
 {
     int ret = -1;
-    struct sockaddr ksa;
-    struct musl_sockaddr kmusladdr;
+    union lwp_sockaddr_buffer kernel_address;
     socklen_t uaddrlen;
     socklen_t kaddrlen;
 
@@ -5114,19 +5212,16 @@ sysret_t sys_accept(int socket, struct musl_sockaddr *addr, socklen_t *addrlen)
         }
     }
 
-    kaddrlen = sizeof(struct sockaddr);
-    ret = accept(socket, &ksa, &kaddrlen);
+    rt_memset(&kernel_address, 0, sizeof(kernel_address));
+    kaddrlen = sizeof(kernel_address);
+    ret = accept(socket, &kernel_address.address, &kaddrlen);
     if (ret >= 0)
     {
         if (addr)
         {
-            sockaddr_tomusl(&ksa, &kmusladdr);
-            if (uaddrlen > sizeof(struct musl_sockaddr))
-            {
-                uaddrlen = sizeof(struct musl_sockaddr);
-            }
-            lwp_put_to_user(addr, &kmusladdr, uaddrlen);
-            lwp_put_to_user(addrlen, &uaddrlen, sizeof(socklen_t));
+            kaddrlen = lwp_sockaddr_to_user(addr, uaddrlen,
+                                            &kernel_address, kaddrlen);
+            lwp_put_to_user(addrlen, &kaddrlen, sizeof(socklen_t));
         }
     }
     return ret;
@@ -5160,34 +5255,15 @@ sysret_t sys_accept(int socket, struct musl_sockaddr *addr, socklen_t *addrlen)
  */
 sysret_t sys_bind(int socket, const struct musl_sockaddr *name, socklen_t namelen)
 {
-    rt_err_t ret = 0;
-    struct sockaddr sa;
-    struct sockaddr_un un_addr;
-    struct musl_sockaddr kname;
-    rt_uint16_t family = 0;
+    int ret;
+    union lwp_sockaddr_buffer kernel_address;
 
-    if (!lwp_user_accessable((void *)name, namelen))
+    ret = lwp_sockaddr_from_user(&kernel_address, name, namelen);
+    if (ret < 0)
     {
-        return -EFAULT;
+        return ret;
     }
-
-    lwp_get_from_user(&family, (void *)name, 2);
-    if (family == AF_UNIX)
-    {
-        lwp_get_from_user(&un_addr, (void *)name, sizeof(struct sockaddr_un));
-        ret = bind(socket, (struct sockaddr *)&un_addr, namelen);
-    }
-    else if (family == AF_NETLINK)
-    {
-        lwp_get_from_user(&sa, (void *)name, namelen);
-        ret = bind(socket, &sa, namelen);
-    }
-    else
-    {
-        lwp_get_from_user(&kname, (void *)name, namelen);
-        sockaddr_tolwip(&kname, &sa);
-        ret = bind(socket, &sa, namelen);
-    }
+    ret = bind(socket, &kernel_address.address, namelen);
 
     return (ret < 0 ? GET_ERRNO() : ret);
 }
@@ -5252,8 +5328,7 @@ sysret_t sys_shutdown(int socket, int how)
 sysret_t sys_getpeername(int socket, struct musl_sockaddr *name, socklen_t *namelen)
 {
     int ret = -1;
-    struct sockaddr sa;
-    struct musl_sockaddr kname;
+    union lwp_sockaddr_buffer kernel_address;
     socklen_t unamelen;
     socklen_t knamelen;
 
@@ -5272,18 +5347,15 @@ sysret_t sys_getpeername(int socket, struct musl_sockaddr *name, socklen_t *name
         return -EFAULT;
     }
 
-    knamelen = sizeof(struct sockaddr);
-    ret = getpeername(socket, &sa, &knamelen);
+    rt_memset(&kernel_address, 0, sizeof(kernel_address));
+    knamelen = sizeof(kernel_address);
+    ret = getpeername(socket, &kernel_address.address, &knamelen);
 
     if (ret == 0)
     {
-        sockaddr_tomusl(&sa, &kname);
-        if (unamelen > sizeof(struct musl_sockaddr))
-        {
-            unamelen = sizeof(struct musl_sockaddr);
-        }
-        lwp_put_to_user(name, &kname, unamelen);
-        lwp_put_to_user(namelen, &unamelen, sizeof(socklen_t));
+        knamelen = lwp_sockaddr_to_user(name, unamelen,
+                                        &kernel_address, knamelen);
+        lwp_put_to_user(namelen, &knamelen, sizeof(socklen_t));
     }
     else
     {
@@ -5320,8 +5392,7 @@ sysret_t sys_getpeername(int socket, struct musl_sockaddr *name, socklen_t *name
 sysret_t sys_getsockname(int socket, struct musl_sockaddr *name, socklen_t *namelen)
 {
     int ret = -1;
-    struct sockaddr sa;
-    struct musl_sockaddr kname;
+    union lwp_sockaddr_buffer kernel_address;
     socklen_t unamelen;
     socklen_t knamelen;
 
@@ -5340,17 +5411,14 @@ sysret_t sys_getsockname(int socket, struct musl_sockaddr *name, socklen_t *name
         return -EFAULT;
     }
 
-    knamelen = sizeof(struct sockaddr);
-    ret = getsockname(socket, &sa, &knamelen);
+    rt_memset(&kernel_address, 0, sizeof(kernel_address));
+    knamelen = sizeof(kernel_address);
+    ret = getsockname(socket, &kernel_address.address, &knamelen);
     if (ret == 0)
     {
-        sockaddr_tomusl(&sa, &kname);
-        if (unamelen > sizeof(struct musl_sockaddr))
-        {
-            unamelen = sizeof(struct musl_sockaddr);
-        }
-        lwp_put_to_user(name, &kname, unamelen);
-        lwp_put_to_user(namelen, &unamelen, sizeof(socklen_t));
+        knamelen = lwp_sockaddr_to_user(name, unamelen,
+                                        &kernel_address, knamelen);
+        lwp_put_to_user(namelen, &knamelen, sizeof(socklen_t));
     }
     else
     {
@@ -5506,36 +5574,16 @@ sysret_t sys_setsockopt(int socket, int level, int optname, const void *optval, 
  */
 sysret_t sys_connect(int socket, const struct musl_sockaddr *name, socklen_t namelen)
 {
-    int ret = 0;
-    rt_uint16_t family = 0;
-    struct sockaddr sa;
-    struct musl_sockaddr kname;
-    struct sockaddr_un addr_un;
+    int ret;
+    union lwp_sockaddr_buffer kernel_address;
 
-    if (!lwp_user_accessable((void *)name, namelen))
+    ret = lwp_sockaddr_from_user(&kernel_address, name, namelen);
+    if (ret < 0)
     {
-        return -EFAULT;
+        return ret;
     }
-
-    lwp_get_from_user(&family, (void *)name, 2);
-    if (family == AF_UNIX)
-    {
-        if (!lwp_user_accessable((void *)name, sizeof(struct sockaddr_un)))
-        {
-            return -EFAULT;
-        }
-
-        lwp_get_from_user(&addr_un, (void *)name, sizeof(struct sockaddr_un));
-        ret = connect(socket, (struct sockaddr *)(&addr_un), namelen);
-    }
-    else
-    {
-        lwp_get_from_user(&kname, (void *)name, namelen);
-        sockaddr_tolwip(&kname, &sa);
-        ret = connect(socket, &sa, namelen);
-    }
-
-    return ret;
+    ret = connect(socket, &kernel_address.address, namelen);
+    return (ret < 0 ? GET_ERRNO() : ret);
 }
 
 /**
@@ -5566,6 +5614,7 @@ sysret_t sys_listen(int socket, int backlog)
 
 #define MUSLC_MSG_OOB      0x0001
 #define MUSLC_MSG_PEEK     0x0002
+#define MUSLC_MSG_CTRUNC   0x0008
 #define MUSLC_MSG_DONTWAIT 0x0040
 #define MUSLC_MSG_WAITALL  0x0100
 #define MUSLC_MSG_MORE     0x8000
@@ -5602,21 +5651,129 @@ static int netflags_muslc_2_lwip(int flags)
     return flgs;
 }
 
-#ifdef ARCH_MM_MMU
-static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
-                                 struct iovec **out_iov, void **out_msg_control)
+static int netflags_lwip_2_muslc(int flags)
 {
+    int flgs = 0;
+
+    if (flags & MSG_CTRUNC)
+    {
+        flgs |= MUSLC_MSG_CTRUNC;
+    }
+    return flgs;
+}
+
+static void cmsg_level_muslc_2_lwip(struct msghdr *message)
+{
+    struct cmsghdr *cmsg;
+
+    for_each_cmsghdr(cmsg, message)
+    {
+        if (!CMSG_OK(message, cmsg))
+        {
+            break;
+        }
+        if (cmsg->cmsg_level == INTF_SOL_SOCKET)
+        {
+            cmsg->cmsg_level = IMPL_SOL_SOCKET;
+        }
+    }
+}
+
+static void cmsg_level_lwip_2_muslc(struct msghdr *message)
+{
+    struct cmsghdr *cmsg;
+
+    for_each_cmsghdr(cmsg, message)
+    {
+        if (!CMSG_OK(message, cmsg))
+        {
+            break;
+        }
+        if (cmsg->cmsg_level == IMPL_SOL_SOCKET)
+        {
+            cmsg->cmsg_level = INTF_SOL_SOCKET;
+        }
+    }
+}
+
+#ifdef ARCH_MM_MMU
+static int copy_msghdr_from_user(struct msghdr *kmsg,
+                                 struct musl_msghdr *umsg,
+                                 struct iovec **out_iov, void **out_msg_control,
+                                 void **out_msg_name, void **out_buffer,
+                                 socklen_t *out_user_name_length,
+                                 rt_bool_t receive)
+{
+    int index;
     size_t iovs_size;
+    struct musl_msghdr user_message;
     struct iovec *uiov, *kiov;
     size_t iovs_buffer_size = 0;
-    void *iovs_buffer;
+    char *iovs_buffer;
+    char *buffer_cursor;
 
-    if (!lwp_user_accessable(umsg, sizeof(*umsg)))
+    if (!lwp_user_accessable(umsg, sizeof(user_message)))
     {
         return -EFAULT;
     }
 
-    lwp_get_from_user(kmsg, umsg, sizeof(*kmsg));
+    lwp_get_from_user(&user_message, umsg, sizeof(user_message));
+    kmsg->msg_name = user_message.msg_name;
+    kmsg->msg_namelen = user_message.msg_namelen;
+    kmsg->msg_iov = user_message.msg_iov;
+    kmsg->msg_iovlen = user_message.msg_iovlen;
+    kmsg->msg_control = user_message.msg_control;
+    kmsg->msg_controllen = user_message.msg_controllen;
+    kmsg->msg_flags = user_message.msg_flags;
+
+    if (out_user_name_length != RT_NULL)
+    {
+        *out_user_name_length = kmsg->msg_namelen;
+    }
+
+    if (kmsg->msg_iovlen < 0 ||
+        (size_t)kmsg->msg_iovlen > SIZE_MAX / sizeof(*kmsg->msg_iov) ||
+        (!receive &&
+         kmsg->msg_namelen > sizeof(union lwp_sockaddr_buffer)))
+    {
+        return -EINVAL;
+    }
+    if (receive)
+    {
+        if (kmsg->msg_name == RT_NULL)
+        {
+            kmsg->msg_namelen = 0;
+        }
+        else if (kmsg->msg_namelen > sizeof(union lwp_sockaddr_buffer))
+        {
+            kmsg->msg_namelen = sizeof(union lwp_sockaddr_buffer);
+        }
+        if (kmsg->msg_control == RT_NULL)
+        {
+            kmsg->msg_controllen = 0;
+        }
+    }
+    if (kmsg->msg_name != RT_NULL &&
+        !lwp_user_accessable(kmsg->msg_name, kmsg->msg_namelen))
+    {
+        return -EFAULT;
+    }
+    if (kmsg->msg_control != RT_NULL &&
+        !lwp_user_accessable(kmsg->msg_control, kmsg->msg_controllen))
+    {
+        return -EFAULT;
+    }
+    if (kmsg->msg_control == RT_NULL)
+    {
+        if (kmsg->msg_controllen != 0)
+        {
+            return -EFAULT;
+        }
+    }
+    if (kmsg->msg_name == RT_NULL)
+    {
+        kmsg->msg_namelen = 0;
+    }
 
     iovs_size = sizeof(*kmsg->msg_iov) * kmsg->msg_iovlen;
     if (!lwp_user_accessable(kmsg->msg_iov, iovs_size))
@@ -5640,7 +5797,7 @@ static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
     }
     kmsg->msg_iov = kiov;
 
-    for (int i = 0; i < kmsg->msg_iovlen; ++i)
+    for (index = 0; index < kmsg->msg_iovlen; ++index)
     {
         /*
          * We MUST check we can copy data to user after socket done in uiov
@@ -5653,6 +5810,11 @@ static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
             return -EPERM;
         }
 
+        if (SIZE_MAX - iovs_buffer_size < uiov->iov_len)
+        {
+            kmem_put(kmsg->msg_iov);
+            return -EINVAL;
+        }
         iovs_buffer_size += uiov->iov_len;
         kiov->iov_len = uiov->iov_len;
 
@@ -5661,7 +5823,15 @@ static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
     }
 
     /* msg_iov and msg_control */
-    iovs_buffer = kmem_get(iovs_buffer_size + kmsg->msg_controllen);
+    if (SIZE_MAX - iovs_buffer_size < kmsg->msg_controllen ||
+        SIZE_MAX - iovs_buffer_size - kmsg->msg_controllen <
+            kmsg->msg_namelen)
+    {
+        kmem_put(kmsg->msg_iov);
+        return -EINVAL;
+    }
+    iovs_buffer = kmem_get(iovs_buffer_size + kmsg->msg_controllen +
+                           kmsg->msg_namelen);
 
     if (!iovs_buffer)
     {
@@ -5670,18 +5840,33 @@ static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
         return -ENOMEM;
     }
 
+    *out_buffer = iovs_buffer;
+    buffer_cursor = iovs_buffer;
     kiov = kmsg->msg_iov;
 
-    for (int i = 0; i < kmsg->msg_iovlen; ++i)
+    for (index = 0; index < kmsg->msg_iovlen; ++index)
     {
-        kiov->iov_base = iovs_buffer;
-        iovs_buffer += kiov->iov_len;
+        kiov->iov_base = buffer_cursor;
+        buffer_cursor += kiov->iov_len;
         ++kiov;
     }
 
     *out_msg_control = kmsg->msg_control;
-    /* msg_control is the end of the iovs_buffer */
-    kmsg->msg_control = iovs_buffer;
+    if (kmsg->msg_control != RT_NULL)
+    {
+        kmsg->msg_control = buffer_cursor;
+        buffer_cursor += kmsg->msg_controllen;
+    }
+    *out_msg_name = kmsg->msg_name;
+    if (kmsg->msg_name != RT_NULL && kmsg->msg_namelen != 0)
+    {
+        kmsg->msg_name = buffer_cursor;
+    }
+    else
+    {
+        kmsg->msg_name = RT_NULL;
+        kmsg->msg_namelen = 0;
+    }
 
     return 0;
 }
@@ -5717,12 +5902,18 @@ static int copy_msghdr_from_user(struct msghdr *kmsg, struct msghdr *umsg,
  *
  * @see sys_sendmsg()
  */
-sysret_t sys_recvmsg(int socket, struct msghdr *msg, int flags)
+sysret_t sys_recvmsg(int socket, struct musl_msghdr *msg, int flags)
 {
     int flgs, ret = -1;
+    int error = 0;
     struct msghdr kmsg;
 #ifdef ARCH_MM_MMU
+    int index;
+    size_t remaining;
+    socklen_t user_name_length;
+    void *buffer;
     void *msg_control;
+    void *msg_name;
     struct iovec *uiov, *kiov;
 #endif
 
@@ -5734,38 +5925,82 @@ sysret_t sys_recvmsg(int socket, struct msghdr *msg, int flags)
     flgs = netflags_muslc_2_lwip(flags);
 
 #ifdef ARCH_MM_MMU
-    ret = copy_msghdr_from_user(&kmsg, msg, &uiov, &msg_control);
+    ret = copy_msghdr_from_user(&kmsg, msg, &uiov, &msg_control,
+                                &msg_name, &buffer, &user_name_length,
+                                RT_TRUE);
 
-    if (!ret)
+    if (ret < 0)
     {
-        ret = recvmsg(socket, &kmsg, flgs);
-
-        if (ret < 0)
-        {
-            goto _free_res;
-        }
-
-        kiov = kmsg.msg_iov;
-
-        for (int i = 0; i < kmsg.msg_iovlen; ++i)
-        {
-            lwp_put_to_user(uiov->iov_base, kiov->iov_base, kiov->iov_len);
-
-            ++kiov;
-            ++uiov;
-        }
-
-        lwp_put_to_user(msg_control, kmsg.msg_control, kmsg.msg_controllen);
-        lwp_put_to_user(&msg->msg_flags, &kmsg.msg_flags, sizeof(kmsg.msg_flags));
-
-    _free_res:
-        kmem_put(kmsg.msg_iov->iov_base);
-        kmem_put(kmsg.msg_iov);
+        return ret;
     }
+    ret = recvmsg(socket, &kmsg, flgs);
+    if (ret < 0)
+    {
+        error = GET_ERRNO();
+    }
+
+    if (ret < 0)
+    {
+        goto _free_res;
+    }
+
+    kiov = kmsg.msg_iov;
+    remaining = (size_t)ret;
+
+    for (index = 0; index < kmsg.msg_iovlen && remaining != 0; ++index)
+    {
+        size_t copy_length = kiov->iov_len;
+
+        if (copy_length > remaining)
+        {
+            copy_length = remaining;
+        }
+        lwp_put_to_user(uiov->iov_base, kiov->iov_base, copy_length);
+        remaining -= copy_length;
+
+        ++kiov;
+        ++uiov;
+    }
+
+    if (msg_control != RT_NULL && kmsg.msg_controllen != 0)
+    {
+        cmsg_level_lwip_2_muslc(&kmsg);
+        lwp_put_to_user(msg_control, kmsg.msg_control,
+                        kmsg.msg_controllen);
+    }
+    if (msg_name != RT_NULL && kmsg.msg_name != RT_NULL)
+    {
+        socklen_t name_length;
+
+        name_length = lwp_sockaddr_to_user(
+            (struct musl_sockaddr *)msg_name, user_name_length,
+            (const union lwp_sockaddr_buffer *)kmsg.msg_name,
+            kmsg.msg_namelen);
+        lwp_put_to_user(&msg->msg_namelen, &name_length,
+                        sizeof(name_length));
+    }
+    kmsg.msg_flags = netflags_lwip_2_muslc(kmsg.msg_flags);
+    lwp_put_to_user(&msg->msg_flags, &kmsg.msg_flags, sizeof(kmsg.msg_flags));
+    lwp_put_to_user(&msg->msg_controllen, &kmsg.msg_controllen,
+                    sizeof(kmsg.msg_controllen));
+
+_free_res:
+    kmem_put(buffer);
+    kmem_put(kmsg.msg_iov);
 #else
-    rt_memcpy(&kmsg, msg, sizeof(kmsg));
+    kmsg.msg_name = msg->msg_name;
+    kmsg.msg_namelen = msg->msg_namelen;
+    kmsg.msg_iov = msg->msg_iov;
+    kmsg.msg_iovlen = msg->msg_iovlen;
+    kmsg.msg_control = msg->msg_control;
+    kmsg.msg_controllen = msg->msg_controllen;
+    kmsg.msg_flags = msg->msg_flags;
 
     ret = recvmsg(socket, &kmsg, flgs);
+    if (ret < 0)
+    {
+        error = GET_ERRNO();
+    }
 
     if (!ret)
     {
@@ -5773,7 +6008,11 @@ sysret_t sys_recvmsg(int socket, struct msghdr *msg, int flags)
     }
 #endif /* ARCH_MM_MMU */
 
-    return (ret < 0 ? GET_ERRNO() : ret);
+    if (ret >= 0)
+    {
+        return ret;
+    }
+    return error != 0 ? error : ret;
 }
 
 /**
@@ -5814,18 +6053,33 @@ sysret_t sys_recvfrom(int socket, void *mem, size_t len, int flags,
                       struct musl_sockaddr *from, socklen_t *fromlen)
 {
     int flgs = 0;
-#ifdef ARCH_MM_MMU
     int ret = -1;
+    socklen_t user_from_length = 0;
+    socklen_t kernel_from_length = 0;
+    union lwp_sockaddr_buffer kernel_address;
+#ifdef ARCH_MM_MMU
     void *kmem = RT_NULL;
 #endif
 
     flgs = netflags_muslc_2_lwip(flags);
-#ifdef ARCH_MM_MMU
-    if (!len)
+    if (from != RT_NULL)
     {
-        return -EINVAL;
+        if (fromlen == RT_NULL ||
+            !lwp_user_accessable(fromlen, sizeof(*fromlen)))
+        {
+            return -EFAULT;
+        }
+        lwp_get_from_user(&user_from_length, fromlen,
+                          sizeof(user_from_length));
+        if (user_from_length == 0 ||
+            !lwp_user_accessable(from, user_from_length))
+        {
+            return -EFAULT;
+        }
+        rt_memset(&kernel_address, 0, sizeof(kernel_address));
+        kernel_from_length = sizeof(kernel_address);
     }
-
+#ifdef ARCH_MM_MMU
     if (!lwp_user_accessable((void *)mem, len))
     {
         return -EFAULT;
@@ -5837,26 +6091,30 @@ sysret_t sys_recvfrom(int socket, void *mem, size_t len, int flags,
         return -ENOMEM;
     }
 
-    if (flags == 0x2)
-    {
-        flags = 0x1;
-    }
-
     if (from)
     {
-        struct sockaddr sa;
-
-        ret = recvfrom(socket, kmem, len, flgs, &sa, fromlen);
-        sockaddr_tomusl(&sa, from);
+        ret = recvfrom(socket, kmem, len, flgs,
+                       &kernel_address.address, &kernel_from_length);
     }
     else
     {
         ret = recvfrom(socket, kmem, len, flgs, NULL, NULL);
     }
 
-    if (ret > 0)
+    if (ret >= 0)
     {
-        lwp_put_to_user(mem, kmem, len);
+        if (ret > 0)
+        {
+            lwp_put_to_user(mem, kmem, ret);
+        }
+        if (from != RT_NULL)
+        {
+            kernel_from_length = lwp_sockaddr_to_user(
+                from, user_from_length, &kernel_address,
+                kernel_from_length);
+            lwp_put_to_user(fromlen, &kernel_from_length,
+                            sizeof(kernel_from_length));
+        }
     }
 
     if (ret < 0)
@@ -5868,17 +6126,22 @@ sysret_t sys_recvfrom(int socket, void *mem, size_t len, int flags,
 
     return ret;
 #else
-    int ret = -1;
     if (from)
     {
-        struct sockaddr sa = { 0 };
-
-        ret = recvfrom(socket, mem, len, flgs, &sa, fromlen);
-        sockaddr_tomusl(&sa, from);
+        ret = recvfrom(socket, mem, len, flgs,
+                       &kernel_address.address, &kernel_from_length);
+        if (ret >= 0)
+        {
+            kernel_from_length = lwp_sockaddr_to_user(
+                from, user_from_length, &kernel_address,
+                kernel_from_length);
+            lwp_put_to_user(fromlen, &kernel_from_length,
+                            sizeof(kernel_from_length));
+        }
     }
     else
     {
-        ret = recvfrom(socket, mem, len, flags, NULL, NULL);
+        ret = recvfrom(socket, mem, len, flgs, NULL, NULL);
     }
     return (ret < 0 ? GET_ERRNO() : ret);
 #endif
@@ -5919,7 +6182,7 @@ sysret_t sys_recv(int socket, void *mem, size_t len, int flags)
     if (!lwp_user_accessable((void *)mem, len))
         return -EFAULT;
 
-    kmem = kmem_get(sizeof(*kmem));
+    kmem = kmem_get(len);
     if (kmem == RT_NULL)
     {
         return -ENOMEM;
@@ -5928,7 +6191,10 @@ sysret_t sys_recv(int socket, void *mem, size_t len, int flags)
     flgs = netflags_muslc_2_lwip(flags);
     ret = recvfrom(socket, kmem, len, flgs, NULL, NULL);
 
-    lwp_put_to_user((void *)mem, kmem, len);
+    if (ret > 0)
+    {
+        lwp_put_to_user((void *)mem, kmem, ret);
+    }
     kmem_put(kmem);
 
     return (ret < 0 ? GET_ERRNO() : ret);
@@ -5966,12 +6232,16 @@ sysret_t sys_recv(int socket, void *mem, size_t len, int flags)
  *
  * @see sys_send(), sys_sendto(), sys_recvmsg()
  */
-sysret_t sys_sendmsg(int socket, const struct msghdr *msg, int flags)
+sysret_t sys_sendmsg(int socket, const struct musl_msghdr *msg, int flags)
 {
     int flgs, ret = -1;
+    int error = 0;
     struct msghdr kmsg;
 #ifdef ARCH_MM_MMU
+    int index;
+    void *buffer;
     void *msg_control;
+    void *msg_name;
     struct iovec *uiov, *kiov;
 #endif
     if (!msg)
@@ -5982,39 +6252,76 @@ sysret_t sys_sendmsg(int socket, const struct msghdr *msg, int flags)
     flgs = netflags_muslc_2_lwip(flags);
 
 #ifdef ARCH_MM_MMU
-    ret = copy_msghdr_from_user(&kmsg, (struct msghdr *)msg, &uiov, &msg_control);
+    ret = copy_msghdr_from_user(&kmsg, (struct musl_msghdr *)msg, &uiov,
+                                &msg_control, &msg_name, &buffer, RT_NULL,
+                                RT_FALSE);
 
-    if (!ret)
+    if (ret < 0)
     {
-        kiov = kmsg.msg_iov;
-
-        for (int i = 0; i < kmsg.msg_iovlen; ++i)
-        {
-            lwp_get_from_user(kiov->iov_base, uiov->iov_base, kiov->iov_len);
-
-            ++kiov;
-            ++uiov;
-        }
-
-        lwp_get_from_user(kmsg.msg_control, msg_control, kmsg.msg_controllen);
-
-        ret = sendmsg(socket, &kmsg, flgs);
-
-        kmem_put(kmsg.msg_iov->iov_base);
-        kmem_put(kmsg.msg_iov);
+        return ret;
     }
-#else
-    rt_memcpy(&kmsg, msg, sizeof(kmsg));
+    kiov = kmsg.msg_iov;
+
+    for (index = 0; index < kmsg.msg_iovlen; ++index)
+    {
+        lwp_get_from_user(kiov->iov_base, uiov->iov_base, kiov->iov_len);
+
+        ++kiov;
+        ++uiov;
+    }
+
+    if (msg_control != RT_NULL && kmsg.msg_controllen != 0)
+    {
+        lwp_get_from_user(kmsg.msg_control, msg_control,
+                          kmsg.msg_controllen);
+        cmsg_level_muslc_2_lwip(&kmsg);
+    }
+    if (msg_name != RT_NULL && kmsg.msg_namelen != 0)
+    {
+        union lwp_sockaddr_buffer kernel_address;
+
+        ret = lwp_sockaddr_from_user(&kernel_address,
+                                     (struct musl_sockaddr *)msg_name,
+                                     kmsg.msg_namelen);
+        if (ret < 0)
+        {
+            kmem_put(buffer);
+            kmem_put(kmsg.msg_iov);
+            return ret;
+        }
+        rt_memcpy(kmsg.msg_name, &kernel_address, kmsg.msg_namelen);
+    }
 
     ret = sendmsg(socket, &kmsg, flgs);
-
-    if (!ret)
+    if (ret < 0)
     {
-        msg->msg_flags = kmsg.msg_flags;
+        error = GET_ERRNO();
     }
+
+    kmem_put(buffer);
+    kmem_put(kmsg.msg_iov);
+#else
+    kmsg.msg_name = msg->msg_name;
+    kmsg.msg_namelen = msg->msg_namelen;
+    kmsg.msg_iov = msg->msg_iov;
+    kmsg.msg_iovlen = msg->msg_iovlen;
+    kmsg.msg_control = msg->msg_control;
+    kmsg.msg_controllen = msg->msg_controllen;
+    kmsg.msg_flags = msg->msg_flags;
+
+    ret = sendmsg(socket, &kmsg, flgs);
+    if (ret < 0)
+    {
+        error = GET_ERRNO();
+    }
+
 #endif /* ARCH_MM_MMU */
 
-    return (ret < 0 ? GET_ERRNO() : ret);
+    if (ret >= 0)
+    {
+        return ret;
+    }
+    return error != 0 ? error : ret;
 }
 
 /**
@@ -6050,18 +6357,22 @@ sysret_t sys_sendto(int socket, const void *dataptr, size_t size, int flags,
                     const struct musl_sockaddr *to, socklen_t tolen)
 {
     int flgs = 0;
-#ifdef ARCH_MM_MMU
     int ret = -1;
+    union lwp_sockaddr_buffer kernel_address;
+#ifdef ARCH_MM_MMU
     void *kmem = RT_NULL;
 #endif
 
     flgs = netflags_muslc_2_lwip(flags);
-#ifdef ARCH_MM_MMU
-    if (!size)
+    if (to != RT_NULL)
     {
-        return -EINVAL;
+        ret = lwp_sockaddr_from_user(&kernel_address, to, tolen);
+        if (ret < 0)
+        {
+            return ret;
+        }
     }
-
+#ifdef ARCH_MM_MMU
     if (!lwp_user_accessable((void *)dataptr, size))
     {
         return -EFAULT;
@@ -6077,10 +6388,8 @@ sysret_t sys_sendto(int socket, const void *dataptr, size_t size, int flags,
 
     if (to)
     {
-        struct sockaddr sa;
-        sockaddr_tolwip(to, &sa);
-
-        ret = sendto(socket, kmem, size, flgs, &sa, tolen);
+        ret = sendto(socket, kmem, size, flgs,
+                     &kernel_address.address, tolen);
     }
     else
     {
@@ -6096,13 +6405,10 @@ sysret_t sys_sendto(int socket, const void *dataptr, size_t size, int flags,
 
     return ret;
 #else
-    int ret;
     if (to)
     {
-        struct sockaddr sa;
-        sockaddr_tolwip(to, &sa);
-
-        ret = sendto(socket, dataptr, size, flgs, &sa, tolen);
+        ret = sendto(socket, dataptr, size, flgs,
+                     &kernel_address.address, tolen);
     }
     else
     {
@@ -6296,7 +6602,9 @@ sysret_t sys_socketpair(int domain, int type, int protocol, int fd[2])
  */
 sysret_t sys_closesocket(int socket)
 {
-    return closesocket(socket);
+    sysret_t ret;
+    ret = closesocket(socket);
+    return ret;
 }
 
 #endif
@@ -10385,6 +10693,14 @@ sysret_t sys_chmod(const char *pathname, mode_t mode)
     return (ret < 0 ? GET_ERRNO() : ret);
 }
 
+sysret_t sys_fchmod(int fd, mode_t mode)
+{
+    int ret;
+
+    ret = fchmod(fd, mode);
+    return (ret < 0 ? GET_ERRNO() : ret);
+}
+
 /**
  * @brief Change the ownership of a file or directory.
  *
@@ -11263,6 +11579,7 @@ const static struct rt_syscall_def func_table[] = {
     SYSCALL_SIGN(sys_getppid),
     SYSCALL_SIGN(sys_fchdir),
     SYSCALL_SIGN(sys_chown),
+    SYSCALL_SIGN(sys_fchmod),
 };
 
 const void *lwp_get_sys_api(rt_uint32_t number)

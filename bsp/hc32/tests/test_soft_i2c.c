@@ -25,10 +25,10 @@
 
 #if defined(RT_USING_I2C)
 
-#if defined(BSP_USING_I2C1_SW)
+#if defined(RT_USING_SOFT_I2C1)
 
 /* using i2c1 control oled12864 */
-#define SW_I2C_NAME     "i2c1_sw"
+#define SW_I2C_NAME     RT_SOFT_I2C1_BUS_NAME
 #define SSD1306_ADDR    (0x78U >> 1)
 #define SSD1306_MD_CMD  (0x00U)
 #define SSD1306_MD_DATA (0x40U)
@@ -205,7 +205,9 @@ void mOledWriteCharHnWm(struct rt_i2c_bus_device *i2c_dev,
                         uint8_t page, uint8_t col, uint8_t *ArrChar)
 {
     if (ArrChar == NULL)
+    {
         return;
+    }
     rt_kprintf("x=%3d, y=%d\n", col, page);
     for (uint8_t page_idx = 0; page_idx < SYM_H_BYTE; page_idx++)
     {
@@ -336,7 +338,7 @@ rt_uint8_t logo_array[][SYM_BYTE_SIZE] = {
 
 MSH_CMD_EXPORT(sw_i2c_sample, soft i2c sample);
 
-#endif /* BSP_USING_I2C1_SW */
+#endif /* RT_USING_SOFT_I2C1 */
 
 #endif/* RT_USING_I2C */
 /*

@@ -32,7 +32,7 @@ menu "Onboard Peripheral Drivers"
         select RT_LWIP_USING_HW_CHECKSUM
 
         if BSP_USING_ETH
-            choice
+            choice ETH_PHY_SEL
                 prompt "Select ETH PHY type"
                 default ETH_PHY_USING_RTL8201F
 
@@ -43,7 +43,7 @@ menu "Onboard Peripheral Drivers"
                     select BSP_USING_TCA9539
             endchoice
 
-            choice
+            choice ETH_IF_SEL
                 prompt "Select ETH Communication Interface"
                 default ETH_INTERFACE_USING_MII
 
@@ -68,7 +68,7 @@ menu "Onboard Peripheral Drivers"
         bool "Enable EXMC"
         default n
         if BSP_USING_EXMC
-            choice
+            choice SDRAM_NAND_SEL
                 prompt "Using SDRAM or NAND"
                 default BSP_USING_NAND
 
@@ -359,21 +359,33 @@ menu "On-chip Peripheral Drivers"
 
         if BSP_USING_I2C
             menuconfig BSP_USING_I2C1_SW
-                bool "Enable I2C1 BUS (software simulation)"
+                bool "Enable software I2C1 Bus (swi2c1)"
                 default n
-                select RT_USING_I2C_BITOPS
-                select RT_USING_PIN
+                select RT_USING_SOFT_I2C
+                select RT_USING_SOFT_I2C1
                 if BSP_USING_I2C1_SW
-                    config BSP_I2C1_SCL_PIN
-                        int "i2c1 scl pin number"
+                    config RT_SOFT_I2C1_SCL_PIN
+                        int "swi2c1 SCL pin number"
                         range 1 176
                         default 8       # PA8
-                    config BSP_I2C1_SDA_PIN
-                        int "I2C1 sda pin number"
+                    config RT_SOFT_I2C1_SDA_PIN
+                        int "swi2c1 SDA pin number"
                         range 1 176
                         default 23      # PB7
                 endif
         endif
+
+        config RT_SOFT_I2C1_HAS_PIN_DEFAULT
+            bool
+            default y if RT_USING_SOFT_I2C1
+
+        config RT_SOFT_I2C1_SCL_PIN_DEFAULT
+            int
+            default 8 if RT_USING_SOFT_I2C1
+
+        config RT_SOFT_I2C1_SDA_PIN_DEFAULT
+            int
+            default 23 if RT_USING_SOFT_I2C1
 
         if BSP_USING_I2C
             config BSP_I2C_USING_DMA
@@ -642,7 +654,7 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_WDT
         if BSP_USING_WDT_TMR
-            choice
+            choice SWDT_WDT_SEL
                 prompt "Select SWDT/WDT"
                 default BSP_USING_SWDT
 
@@ -662,7 +674,7 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_RTC
         default n
         if BSP_USING_RTC
-            choice
+            choice RTC_CLK_SEL
                 prompt "Select clock source"
                 default BSP_RTC_USING_XTAL32
 
@@ -693,7 +705,7 @@ menu "On-chip Peripheral Drivers"
         default n
         select RT_USING_PM
         if BSP_USING_PM
-            choice
+            choice WKTM_CLK_SEL
                 prompt "Select WKTM Clock Src"
                 default BSP_USING_WKTM_LRC
 
@@ -732,7 +744,7 @@ menu "On-chip Peripheral Drivers"
             default n
             select RT_HWCRYPTO_USING_AES
             if BSP_USING_AES
-                choice
+                choice AES_MODE_SEL
                     prompt "Select AES Mode"
                     default BSP_USING_AES_ECB
 
@@ -747,7 +759,7 @@ menu "On-chip Peripheral Drivers"
             default n
             select RT_HWCRYPTO_USING_SHA2
             if BSP_USING_HASH
-                choice
+                choice HASH_MODE_SEL
                     prompt "Select Hash Mode"
                     default BSP_USING_SHA2_256
 
@@ -847,7 +859,7 @@ menu "On-chip Peripheral Drivers"
                 bool "Use USBFS Core"
                 default n
             if BSP_USING_USBFS
-                choice
+                choice USBFS_MODE_SEL
                     prompt "Select USB Mode"
                     default BSP_USING_USBD_FS
 
@@ -881,7 +893,7 @@ menu "On-chip Peripheral Drivers"
                 bool "Use USBHS Core"
                 default n
             if BSP_USING_USBHS
-                choice
+                choice USBHS_MODE_SEL
                     prompt "Select USB Mode"
                     default BSP_USING_USBH_HS
 
@@ -897,7 +909,7 @@ menu "On-chip Peripheral Drivers"
                         select RT_USING_USB_HOST
                         depends on !BSP_USING_USBH_FS
                 endchoice
-                choice
+                choice USBHS_PHY_SEL
                     prompt "Select USB PHY"
                     default BSP_USING_USBHS_PHY_EMBED
 

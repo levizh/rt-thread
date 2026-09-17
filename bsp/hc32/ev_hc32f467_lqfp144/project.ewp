@@ -323,7 +323,6 @@
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
-          <state>$PROJ_DIR$\..\..\..\components\drivers\phy</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\smp_call</state>
           <state>$PROJ_DIR$\board</state>
           <state>$PROJ_DIR$\board\ports</state>
@@ -1320,7 +1319,6 @@
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\common</state>
           <state>$PROJ_DIR$\..\..\..\libcpu\arm\cortex-m4</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\include</state>
-          <state>$PROJ_DIR$\..\..\..\components\drivers\phy</state>
           <state>$PROJ_DIR$\..\..\..\components\drivers\smp_call</state>
           <state>$PROJ_DIR$\board</state>
           <state>$PROJ_DIR$\board\ports</state>
@@ -2093,9 +2091,6 @@
       <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_irq.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_soft_i2c.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\libraries\hc32_drivers\drv_tmr_capture.c</name>
     </file>
     <file>
@@ -2307,9 +2302,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\tests\test_i2c.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\tests\test_soft_i2c.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\tests\test_gpio.c</name>

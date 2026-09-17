@@ -46,6 +46,7 @@ DefaultEnvironment(tools=[])
 env = Environment(tools = ['mingw'],
     AS = rtconfig.AS, ASFLAGS = rtconfig.AFLAGS,
     CC = rtconfig.CC, CCFLAGS = rtconfig.CFLAGS,
+    CXX = rtconfig.CXX, CXXFLAGS = rtconfig.CXXFLAGS,
     AR = rtconfig.AR, ARFLAGS = '-rc',
     LINK = rtconfig.LINK, LINKFLAGS = rtconfig.LFLAGS,
     CXXCOM = '$CXX -o $TARGET -c $CXXFLAGS $_CCCOMCOM $SOURCES')
@@ -76,7 +77,7 @@ objs = PrepareBuilding(env, RTT_ROOT, has_libcpu=False)
 
 
 # includes rtt drivers
-objs.extend(SConscript(os.path.join(libraries_path_prefix, 'drivers',  'SConscript')))
+objs.extend(SConscript(os.path.join(libraries_path_prefix, 'drivers',  'SConscript'), variant_dir='build/libraries/drivers', duplicate=0))
 
 # make a building
 DoBuilding(TARGET, objs)

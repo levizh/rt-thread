@@ -221,6 +221,7 @@
         "stm32/stm32h7r7-artpi2",
         "stm32/stm32mp157a-st-discovery",
         "stm32/stm32mp157a-st-ev1",
+        "stm32/stm32n657-st-nucleo",
         "stm32/stm32u575-st-nucleo",
         "stm32/stm32u585-iot02a",
         "stm32/stm32wb55-st-nucleo"
@@ -258,6 +259,7 @@
         "nxp/imx/imxrt/imxrt1180-nxp-evk/cm7",
         "nxp/mcx/mcxn/frdm-mcxn947",
         "nxp/mcx/mcxn/frdm-mcxn236",
+        "nxp/mcx/mcxc/frdm-mcxc162",
         "nxp/mcx/mcxc/frdm-mcxc444",
         "nxp/mcx/mcxa/frdm-mcxa153",
         "nxp/mcx/mcxa/frdm-mcxa156",
@@ -271,6 +273,7 @@
         "renesas/ra6m3-hmi-board",
         "renesas/ra6e2-ek",
         "renesas/ra6e2-fpb",
+        "renesas/ra6w1-ek",
         "renesas/ra4e2-eco",
         "renesas/ra4m1-ek",
         "renesas/ra4m2-eco",
@@ -278,7 +281,8 @@
         "renesas/ra8m1-ek",
         "renesas/ra8d1-ek",
         "renesas/ra8d1-vision-board",
-        "renesas/ra8p1-titan-board",
+        "renesas/ra8p1-titan-board/m33",
+        "renesas/ra8p1-titan-board/m85",
         "renesas/rzt2m_rsk",
         "renesas/rzn2l_rsk",
         "renesas/rzn2l_etherkit",
@@ -342,8 +346,9 @@
         "n32/n32gxx_lxx/n32l43xrl-stb",
         "n32/n32gxx_lxx/n32l436-evb",
         "n32/n32gxx_lxx/n32wb45xl-evb",
-        "n32g452xx/n32g452xx-mini-system",
-		"n32/n32hxxx/n32h760zil7-stb",
+        "n32/n32hxxx/n32h760zil7-stb",
+        "n32/n32hxxx/n32h487zgl7-evb",
+        "n32/n32hxxx/n32h497zgl7-evb",
         "apm32/apm32f103xe-minibroard",
         "apm32/apm32f407ig-minibroard",
         "apm32/apm32f407zg-evalboard",
@@ -526,7 +531,6 @@
         "xuantie/smartl/e907",
         "xuantie/xiaohui/c906",
         "xuantie/xiaohui/c907",
-        "xuantie/xiaohui/c908",
         "xuantie/xiaohui/c908x",
         "xuantie/xiaohui/c920",
         "xuantie/xiaohui/r908",
@@ -538,7 +542,9 @@
       "RTT_BSP": "xuantie-smart",
       "RTT_TOOL_CHAIN": "sourcery-Xuantie-900-gcc-linux-musl",
       "SUB_RTT_BSP": [
-        "xuantie/virt64/c906"
+        "xuantie/virt64/c906",
+        "xuantie/virt64/c908",
+        "xuantie/xiaohui/c908"
       ]
     },
     {

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_projx.xsd">
+
   <SchemaVersion>2.1</SchemaVersion>
+
   <Header>### uVision Project, (C) Keil Software</Header>
+
   <Targets>
     <Target>
       <TargetName>rt-thread</TargetName>
@@ -16,28 +19,28 @@
           <PackID>HDSC.HC32F467.1.0.2</PackID>
           <PackURL>https://raw.githubusercontent.com/hdscmcu/pack/master/</PackURL>
           <Cpu>IROM1(0x00000000,0x100000) IROM2(0x03000000,0x1800) IRAM1(0x1FFE0000,0x80000) IRAM2(0x200F0000,0x1000) CPUTYPE("Cortex-M4") FPU2 CLOCK(8000000) ESEL ELITTLE</Cpu>
-          <FlashUtilSpec />
-          <StartupFile />
+          <FlashUtilSpec></FlashUtilSpec>
+          <StartupFile></StartupFile>
           <FlashDriverDll>CMSIS_AGDI(-S0 -C0 -P00 -FO15 -FD1FFE0000 -FC4000 -FN2 -FF0HC32F467_1M -FS00 -FL0100000 -FP0($$Device:HC32F467RGTI$FlashARM/HC32F467_1M.FLM) -FF1HC32F467_otp -FS13000000 -FL11800 -FP1($$Device:HC32F467RGTI$FlashARM/HC32F467_otp.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
           <RegisterFile>$$Device:HC32F467RGTI$Device\Include\HC32F467RGTI.h</RegisterFile>
-          <MemoryEnv />
-          <Cmp />
-          <Asm />
-          <Linker />
-          <OHString />
-          <InfinionOptionDll />
-          <SLE66CMisc />
-          <SLE66AMisc />
-          <SLE66LinkerMisc />
+          <MemoryEnv></MemoryEnv>
+          <Cmp></Cmp>
+          <Asm></Asm>
+          <Linker></Linker>
+          <OHString></OHString>
+          <InfinionOptionDll></InfinionOptionDll>
+          <SLE66CMisc></SLE66CMisc>
+          <SLE66AMisc></SLE66AMisc>
+          <SLE66LinkerMisc></SLE66LinkerMisc>
           <SFDFile>./packages/hc32-f4-cmsis-latest/Device/HDSC/hc32f467/Source/ARM/sfr/HC32F467.SFR</SFDFile>
           <bCustSvd>1</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath />
-          <IncludePath />
-          <LibPath />
-          <RegisterFilePath />
-          <DBRegisterFilePath />
+          <BinPath></BinPath>
+          <IncludePath></IncludePath>
+          <LibPath></LibPath>
+          <RegisterFilePath></RegisterFilePath>
+          <DBRegisterFilePath></DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -135,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -242,7 +245,7 @@
               </Ocm6>
               <IRAM>
                 <Type>0</Type>
-                <StartAddress>0x1FFE0000</StartAddress>
+                <StartAddress>0x1ffe0000</StartAddress>
                 <Size>0x80000</Size>
               </IRAM>
               <IROM>
@@ -277,7 +280,7 @@
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
-                <StartAddress>0x03000000</StartAddress>
+                <StartAddress>0x3000000</StartAddress>
                 <Size>0x1800</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
@@ -297,7 +300,7 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x1FFE0000</StartAddress>
+                <StartAddress>0x1ffe0000</StartAddress>
                 <Size>0x80000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
@@ -334,9 +337,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>__DEBUG, USE_DDL_DRIVER, __RTTHREAD__, RT_USING_ARMLIBC, RT_USING_LIBC, __CLK_TCK=RT_TICK_PER_SECOND, HC32F467, __STDC_LIMIT_MACROS</Define>
+              <Define>__RTTHREAD__, HC32F467, USE_DDL_DRIVER, RT_USING_LIBC, __DEBUG, __STDC_LIMIT_MACROS, __CLK_TCK=RT_TICK_PER_SECOND, RT_USING_ARMLIBC</Define>
               <Undefine></Undefine>
-              <IncludePath>board\config\usb_config;..\..\..\components\finsh;..\..\..\libcpu\arm\cortex-m4;..\..\..\components\libc\posix\ipc;board\ports;..\..\..\components\drivers\smp_call;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\epoll;..\platform\tca9539;..\..\..\components\net\utest;..\..\..\components\drivers\include;packages\hc32-f4-cmsis-latest\Device\HDSC\hc32f467\Include;packages\hc32-f4-series-latest\hc32f467\inc;.;..\..\..\components\drivers\include;applications;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\tests;packages\hc32-f4-cmsis-latest\Include;..\..\..\components\drivers\include;..\..\..\components\libc\posix\io\eventfd;..\..\..\components\drivers\phy;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\libraries\hc32_drivers;board\config;..\..\..\components\libc\posix\io\poll;board;..\..\..\components\libc\compilers\common\extension;..\..\..\include;..\..\..\libcpu\arm\common;..\..\..\components\drivers\include;..\..\..\components\libc\compilers\common\include</IncludePath>
+              <IncludePath>.;applications;board;board\ports;board\config;board\config\usb_config;packages\hc32-f4-cmsis-latest\Include;packages\hc32-f4-cmsis-latest\Device\HDSC\hc32f467\Include;packages\hc32-f4-series-latest\hc32f467\inc;..\..\..\include;..\..\..\libcpu\arm\common;..\..\..\libcpu\arm\cortex-m4;..\..\..\components\drivers\include;..\..\..\components\drivers\smp_call;..\..\..\components\finsh;..\..\..\components\libc\compilers\common\include;..\..\..\components\libc\compilers\common\extension;..\..\..\components\libc\compilers\common\extension\fcntl\octal;..\..\..\components\libc\posix\io\epoll;..\..\..\components\libc\posix\io\eventfd;..\..\..\components\libc\posix\io\poll;..\..\..\components\libc\posix\ipc;..\..\..\components\net\utest;..\libraries\hc32_drivers;..\platform\tca9539;..\tests</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1355,11 +1358,6 @@
               <FileName>drv_irq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\hc32_drivers\drv_irq.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_soft_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\libraries\hc32_drivers\drv_soft_i2c.c</FilePath>
             </File>
             <File>
               <FileName>drv_tmr_capture.c</FileName>

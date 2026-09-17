@@ -21,40 +21,48 @@
 
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#define I2C_USING_TX_DMA_FLAG       (1U)
-#define I2C_USING_RX_DMA_FLAG       (1U << 1)
+#define I2C_USING_TX_DMA_FLAG (1U)
+#define I2C_USING_RX_DMA_FLAG (1U << 1)
 
 
 typedef enum
 {
-    I2C_RESET   = 0x00U,
-    I2C_READY   = 0x01U,
+    I2C_RESET = 0x00U,
+    I2C_READY = 0x01U,
     I2C_BUSY_TX = 0x02U,
     I2C_BUSY_RX = 0x03U,
 } I2C_StateTypeDef;
 
 struct n32_i2c_config
 {
-    const char    *name;
-    I2C_Module    *Instance;
-    rt_uint32_t   timing;
-    rt_uint32_t   timeout;
-    IRQn_Type     evirq_type;
-    IRQn_Type     erirq_type;
+    const char *name;
+    I2C_Module *Instance;
+#if defined(SOC_SERIES_N32H7xx)
+    rt_uint32_t timing;
+#endif
+    rt_uint32_t timeout;
+    IRQn_Type evirq_type;
+    IRQn_Type erirq_type;
 
-    rt_uint32_t   scl_af_width;  /* SCL Analog Filter Width */
-    rt_uint32_t   sda_af_width;  /* SDA Analog Filter Width */
-    rt_uint32_t   df_width;      /* Digital Filter Width */
+    rt_uint32_t scl_af_width;  /* SCL Analog Filter Width */
+    rt_uint32_t sda_af_width;  /* SDA Analog Filter Width */
+    rt_uint32_t df_width;      /* Digital Filter Width */
 
     uint32_t periph;
     void (*EnablePeriphClk)(uint32_t periph, FunctionalState cmd);
+#if defined(SOC_SERIES_N32H7xx)
     void (*I2CKerClkSource)(uint32_t CLK_source);
+#endif
 
     struct dma_config *dma_rx, *dma_tx;
+
+#if defined(SOC_SERIES_N32H49x) || defined(SOC_SERIES_N32H47x_48x)
+    DMA_InitType dma_rx_init_str;
+    DMA_InitType dma_tx_init_str;
+#endif
 };
 
 struct hard_i2c_transfer
@@ -71,14 +79,13 @@ struct n32_i2c
 {
     struct hard_i2c_transfer transfer;
 
-    struct n32_i2c_config       *config;
-    struct rt_i2c_bus_device    i2c_bus;
-    rt_uint8_t                  i2c_dma_flag;
+    struct n32_i2c_config *config;
+    struct rt_i2c_bus_device i2c_bus;
+    rt_uint8_t i2c_dma_flag;
     struct rt_completion completion;
 
     void (*i2c_isr_callback)(struct n32_i2c *drv_i2c);
 };
-
 
 
 #ifdef __cplusplus
